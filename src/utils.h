@@ -124,9 +124,9 @@ namespace utils{
 	} //Passing cols to be exctracted and row index to be extracted.
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
+		//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
 	template<template <typename> class Graph, typename T = unsigned int >
-	bool check_structure(Graph<T> const & G, MatRow const & data){
-		double threshold = 1e-6;
+	bool check_structure(Graph<T> const & G, MatRow const & data, double threshold = 1e-5){
 		for(IdxType i = 1; i < data.rows()-1; ++i){
 			for(IdxType j = i+1; j < data.cols(); ++j){
 				if( ( G(i,j) == 0 && std::abs(data(i,j))>threshold ) || (G(i,j) == 1 && std::abs(data(i,j))<threshold)){
@@ -178,21 +178,21 @@ namespace utils{
 	}; //returns sum_ij(a_ij - b_ij)/N*N
 
 
-
- template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, typename NormType = MeanNorm >
- MatRow rgwish(GraphStructure<T> const & G, double const & b, Eigen::MatrixXd const & D, unsigned int seed = 0){
-	//Typedefs
+	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
+ 	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, typename NormType = MeanNorm >
+ 	MatRow rgwish(GraphStructure<T> const & G, double const & b, Eigen::MatrixXd const & D, unsigned int seed = 0){
+		//Typedefs
 		using MatRow  	= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 		using MatCol   	= Eigen::MatrixXd;
 		using IdxType  	= std::size_t;
 		using iterator  = std::vector<unsigned int>::iterator;
 		using citerator = std::vector<unsigned int>::const_iterator;
-	//Checks -> meglio farli in R
+		//Checks -> meglio farli in R
 		if(D.rows()!=D.cols())
 			throw std::runtime_error("Non squared matrix inserted");
 		if(G.get_size() != D.rows())
 			throw std::runtime_error("Dimension of D is not equal to the number of nodes");
-	//Set parameters
+		//Set parameters
 		unsigned int const N = G.get_size();
 		unsigned int const n_links = G.get_n_links();
 		unsigned int const max_iter = 500;
@@ -212,7 +212,7 @@ namespace utils{
 			return K_return;
 		}
 
-	//Step 1: Draw K from Wish(b,D) = wish(D^-1, b+N-1)
+		//Step 1: Draw K from Wish(b,D) = wish(D^-1, b+N-1)
 		MatCol Inv_D(D.llt().solve(MatCol::Identity(N,N))); 
 		MatCol K( sample::rwish<MatCol, sample::isChol::False>()(engine, b, Inv_D) ); 
 				//std::cout<<"K: "<<std::endl<<K<<std::endl;
@@ -221,15 +221,15 @@ namespace utils{
 			MatRow K_return(K);
 			return K_return; 
 		}
-	//Step 2: Set Sigma=K^-1 and initialize Omega=Sigma
-		MatRow Sigma(K.llt().solve(MatRow::Identity(N, N)));
-		MatRow Omega_old(Sigma);
-		MatRow Omega(Sigma);
+		//Step 2: Set Sigma=K^-1 and initialize Omega=Sigma
+			MatRow Sigma(K.llt().solve(MatRow::Identity(N, N)));
+			MatRow Omega_old(Sigma);
+			MatRow Omega(Sigma);
 
 			//std::cout<<"Sigma: "<<std::endl<<Sigma<<std::endl;
 			//std::cout<<"Omega: "<<std::endl<<Omega<<std::endl;
-	//Start looping
-		while(!converged && it < max_iter){
+		//Start looping
+			while(!converged && it < max_iter){
 			it++;
 			//For every node. Perché devo farlo in ordine? Posso paralellizzare? Avrei sicuro data race ma perché devo fare questi aggiornamenti in ordine
 			for(IdxType i = 0; i < N; ++i){
@@ -314,19 +314,170 @@ namespace utils{
 				converged = true;
 			}
 		}
-	//Step 8: check if everything is fine
+		//Step 8: check if everything is fine
 		//std::cout<<"Converged? "<<converged<<std::endl;
 		//std::cout<<"#iterazioni = "<<it<<std::endl;
-	//Step 9: return K = Omega^-1
+		//Step 9: return K = Omega^-1
 		return Omega.selfadjointView<Eigen::Upper>().llt().solve(MatRow::Identity(N, N));
 		//Omega = Omega.selfadjointView<Eigen::Upper>();
 		//return Omega.inverse();
 	}
+	//------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
+	//This functions returns also if convergence was reached and the number of iterations
+	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, typename NormType = MeanNorm >
+	std::tuple< MatRow, bool, int> 
+	rgwish_verbose(GraphStructure<T> const & G, double const & b, Eigen::MatrixXd const & D, unsigned int const & max_iter = 500, unsigned int seed = 0)
+	{
+		//Typedefs
+			using MatRow  	= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+			using MatCol   	= Eigen::MatrixXd;
+			using IdxType  	= std::size_t;
+			using iterator  = std::vector<unsigned int>::iterator;
+			using citerator = std::vector<unsigned int>::const_iterator;
+		//Checks 
+			if(b <= 2)
+				throw std::runtime_error("The Gwishart distribution is well defined only if shape parameter b is larger than 2");
+			if(D.rows()!=D.cols())
+				throw std::runtime_error("Non squared matrix inserted");
+			if(G.get_size() != D.rows())
+				throw std::runtime_error("Dimension of D is not equal to the number of nodes");
+		//Set parameters
+			unsigned int const N = G.get_size();
+			unsigned int const n_links = G.get_n_links();
+			double const threshold = 1e-8;
+			bool converged = false;
+			unsigned int it{0};
+			double norm_res{1.0};
+			if(seed == 0)
+				seed = std::chrono::system_clock::now().time_since_epoch().count();	
+			sample::GSL_RNG engine(seed);
+
+			if(n_links == 0){
+						//std::cout<<"Empty Graph"<<std::endl;
+				MatRow K_return(MatRow::Identity(N,N));
+				for(unsigned int i = 0; i < N; ++i) //Non cache friendly
+					K_return(i,i) = std::sqrt(  sample::rchisq()(engine, (double)(b + N - i - 1))  );
+				return std::tuple(K_return,true, 0);
+			}
+
+		//Step 1: Draw K from Wish(b,D) = wish(D^-1, b+N-1)
+			MatCol Inv_D(D.llt().solve(MatCol::Identity(N,N))); 
+			MatCol K( sample::rwish<MatCol, sample::isChol::False>()(engine, b, Inv_D) ); 
+					//std::cout<<"K: "<<std::endl<<K<<std::endl;
+			if(n_links == G.get_possible_links()){
+						//std::cout<<"Complete Graph"<<std::endl;
+				MatRow K_return(K);
+				return std::tuple(K_return,true, 0); 
+			}
+		//Step 2: Set Sigma=K^-1 and initialize Omega=Sigma
+			MatRow Sigma(K.llt().solve(MatRow::Identity(N, N)));
+			MatRow Omega_old(Sigma);
+			MatRow Omega(Sigma);
+
+				//std::cout<<"Sigma: "<<std::endl<<Sigma<<std::endl;
+				//std::cout<<"Omega: "<<std::endl<<Omega<<std::endl;
+		//Start looping
+			while(!converged && it < max_iter){
+				it++;
+				//For every node. Perché devo farlo in ordine? Posso paralellizzare? Avrei sicuro data race ma perché devo fare questi aggiornamenti in ordine
+				for(IdxType i = 0; i < N; ++i){
+						//std::cout<<"i = "<<i<<std::endl;
+						//std::cout<<"Stampo il nbd:"<<std::endl;
+					std::vector<unsigned int> nbd_i = G.get_nbd(i);
+						//for(auto el : nbd_i)
+							//std::cout<<el<<" ";
+						//std::cout<<" "<<std::endl;
+
+					Eigen::VectorXd beta_i = Eigen::VectorXd::Zero(N-1);
+					if(nbd_i.size() == 0){
+						//do nothing
+					}
+					else if( nbd_i.size() == 1){
+						//I need Omega to be symmetric here. This is not the best possible way because a need to complete Omega.
+						//However i guess that this case would be pretty rare.
+						Omega = Omega.selfadjointView<Eigen::Upper>();
+								//std::cout<<"Omega quando nbd_i è single: "<<std::endl<<Omega<<std::endl;
+						unsigned int k = nbd_i[0];
+						double beta_star_i = Sigma(k,i) / Omega(k,k); //In this case it is not a linear system but a simple, scalar, equation
+						if(i == 0){
+							beta_i = Omega.block(1,k, N-1,1) * beta_star_i; //get k-th column except first row
+						}
+						else if(i == N-1){
+							beta_i = Omega.block(0,k, N-1,1) * beta_star_i; //get k-th column except last row
+						}
+						else{
+							//get k-th column except i-th row
+							beta_i.head(i) = Omega.block(0,k, i, 1) * beta_star_i;
+							beta_i.tail(beta_i.size()-i) = Omega.block(i+1,k, N-i-1,1) * beta_star_i;
+						}
+									//std::cout<<"beta_i: "<<std::endl<<beta_i<<std::endl;
+					}
+					else{
+						//Step 3: Compute beta_star_i = (Omega_Ni_Ni)^-1*Sigma_Ni_i. beta_star_i in R^|Ni|
+							MatRow Omega_Ni_Ni( SubMatrix<Symmetric::True>(nbd_i, Omega) );
+								//std::cout<<"Omega_Ni_Ni: "<<std::endl<<Omega_Ni_Ni<<std::endl;
+							Eigen::VectorXd Sigma_Ni_i( SubMatrix(nbd_i, i, Sigma) ); //-->questa SubMatrix() meglio farla con block() di eigen -> ma è sbatti
+								//std::cout<<"Sigma_Ni_i: "<<std::endl<<Sigma_Ni_i<<std::endl;
+							Eigen::VectorXd beta_star_i = Omega_Ni_Ni.llt().solve(Sigma_Ni_i);
+								//std::cout<<"beta_star_i: "<<std::endl<<beta_star_i<<std::endl;
+						//Step 4: Define beta_hat_i in R^N-1 such that:
+						//- Entries not associated to elements in Ni are 0
+						//- Entries associated to elements in Ni are given by beta_star_i
+						//- Has no element associated to i
+							Eigen::VectorXd beta_hat_i(Eigen::VectorXd::Zero(N-1));
+							for(citerator j_it = nbd_i.cbegin(); j_it < nbd_i.cend(); ++j_it){
+									//std::cout<<"*j_it = "<<*j_it<<std::endl;
+								if(*j_it < i)
+									beta_hat_i(*j_it) = beta_star_i( j_it - nbd_i.cbegin() );
+								else if(*j_it > i)
+									beta_hat_i(*j_it - 1) = beta_star_i( j_it - nbd_i.cbegin() );
+							}
+									//std::cout<<"beta_hat_i: "<<std::endl<<beta_hat_i<<std::endl;
+						//Step 5: Set i-th row and col of Omega equal to Omega_noti_noti*beta_hat_i
+							MatRow Omega_noti_noti( SubMatrix<Symmetric::True>(i , Omega) );
+									//std::cout<<"Omega_noti_noti: "<<std::endl<<Omega_noti_noti<<std::endl;
+							beta_i = Omega_noti_noti * beta_hat_i;
+									//std::cout<<"beta_i: "<<std::endl<<beta_i<<std::endl;
+					}
+					//Plug beta_i into the i-th row / col except from diagonal element
+					if(i == 0)//plug in first row (no first element)
+						Omega.block(0,1,1,N-1) = beta_i.transpose();
+					else if(i == N-1)//plug in last column (no last element)
+						Omega.block(0,N-1,N-1,1) = beta_i;
+					else{
+								//std::cout<<"Omega block 1:"<<std::endl<<Omega.block(0,i,i,1)<<std::endl;
+								//std::cout<<"Omega block 2:"<<std::endl<<Omega.block(i,i+1,1,beta_i.size()-i)<<std::endl;
+								//std::cout<<"beta_i: "<<std::endl<<beta_i<<std::endl;
+						Omega.block(0,i,i,1) 	   			 = beta_i.head(i);
+						Omega.block(i,i+1,1,beta_i.size()-i) = beta_i.transpose().tail(beta_i.size()-i);
+					}
+								//std::cout<<"Omega: "<<std::endl<<Omega<<std::endl;
+				}
+			//Step 6: Compute the norm of differences
+				norm_res = NormType::norm(Omega.selfadjointView<Eigen::Upper>(), Omega_old.selfadjointView<Eigen::Upper>());
+				Omega_old = Omega;
+			//Step 7: Check stop criteria
+					//std::cout<<"Norm res = "<<norm_res<<std::endl;
+				if(norm_res < threshold){
+					converged = true;
+				}
+			}
+		//Step 8: check if everything is fine
+			//std::cout<<"Converged? "<<converged<<std::endl;
+			//std::cout<<"#iterazioni = "<<it<<std::endl;
+		//Step 9: return K = Omega^-1
+			return std::make_tuple(Omega.selfadjointView<Eigen::Upper>().llt().solve(MatRow::Identity(N, N)),converged, it);
+			//Omega = Omega.selfadjointView<Eigen::Upper>();
+			//return Omega.inverse();
+	}
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 
+	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
 	template<template <typename> class GraphStructure = GraphType, typename Type = unsigned int >
-	long double log_normalizing_constat(GraphStructure<Type> const & G, double const & b, Eigen::MatrixXd const & D, unsigned int const & MCiteration, unsigned int seed){
+	long double log_normalizing_constat(GraphStructure<Type> const & G, double const & b, Eigen::MatrixXd const & D, unsigned int const & MCiteration, unsigned int seed = 0){
 		//Typedefs
 		using MatRow  	  = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 		using MatCol      = Eigen::MatrixXd;
@@ -353,9 +504,6 @@ namespace utils{
 			seed = std::chrono::system_clock::now().time_since_epoch().count();
 		sample::GSL_RNG engine(seed);
 		sample::rnorm rnorm;
-		//std::default_random_engine engine(seed);
-		//std::normal_distribution<> rnorm{0.0,1.0}; //For sampling from normal distribution
-
 		//Start
 		//nu[i] = #1's in i-th row, from position i+1 up to end. Note that it is also  che number of off-diagonal elements in each row
 		std::vector<unsigned int> nu(N);
@@ -552,11 +700,6 @@ namespace utils{
 				result_MC += std::exp((long double)(-0.5 * sq_sum_nonfree));
 				//result_MC += std::exp(-0.5 * sq_sum_nonfree);
 
-				//#pragma omp critical
-				//{
-					//std::cout<<"I'm thread #"<<thread_id<<", my result is = "<<result_MC<<std::endl;
-				//}
-
 			}
 
 			result_MC /= MCiteration;
@@ -577,7 +720,6 @@ namespace utils{
 						//std::cout<<"Constant term = "<<result_const_term<<std::endl;
 			return result_MC + result_const_term;
 		}
-
 	}
 
 
