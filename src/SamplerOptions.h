@@ -25,8 +25,8 @@ struct SamplerTraits{
 	using RetTaueps	  		= std::vector<double>;
 	//using RetGraph 			= std::unordered_map< std::vector<bool>, int>;
 	//using RetGraph 			= std::map< std::vector<bool>, int>;
-	using RetGraph       	= std::vector< std::pair< std::vector<bool>, int> >;
-	using RetType	  		= std::tuple<RetBeta, RetMu, RetK, RetGraph, RetTaueps>;
+	//using RetGraph       	= std::vector< std::pair< std::vector<bool>, int> >;
+	//using RetType	  		= std::tuple<RetBeta, RetMu, RetK, RetGraph, RetTaueps>;
 	using IteratorRetBeta	= std::vector<MatCol>::iterator;
 	using IteratorRetMu		= std::vector<VecCol>::iterator;
 	using IteratorRetK	 	= std::vector<MatRow>::iterator; //Non memory friendly perché sto salvando anche la lower part di una matrice simmetrica

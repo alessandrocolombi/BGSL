@@ -1,8 +1,12 @@
 #ifndef __GROUPS_H__
 #define __GROUPS_H__
 
-#include "include_headers.h"
+#ifndef NORCPP
+  #define STRICT_R_HEADERS
+  #include <Rcpp.h>
+#endif
 
+#include "include_headers.h"
 // #ifdef PARALLELEXEC
 // #  if defined(__GNUC__) && (__GNUC__ >= 9)
 // #    include <execution>
@@ -40,6 +44,10 @@ public:
   Groups(unsigned int const & _M, unsigned int const & _p);
   //Groups(Container const & _C);
   Groups(Container const & _C);
+  #ifndef NORCPP
+   Groups(Rcpp::List const & _L);
+  #endif
+ 
   Groups()=default;
   //Getters
   unsigned int get_n_groups() const{

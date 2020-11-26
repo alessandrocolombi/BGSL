@@ -6,20 +6,56 @@
 
 using namespace Rcpp;
 
-// timesTwo
-int timesTwo(int x);
-RcppExport SEXP _BGSL_timesTwo(SEXP xSEXP) {
+// test_null
+void test_null(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, Rcpp::Nullable<Rcpp::List> l);
+RcppExport SEXP _BGSL_test_null(SEXP GSEXP, SEXP lSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> >::type G(GSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::List> >::type l(lSEXP);
+    test_null(G, l);
+    return R_NilValue;
+END_RCPP
+}
+// rGwish
+Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, double const& b, Eigen::MatrixXd const& D, Rcpp::String norm, Rcpp::Nullable<Rcpp::List> groups, unsigned int const& max_iter, long double const& threshold, int seed);
+RcppExport SEXP _BGSL_rGwish(SEXP GSEXP, SEXP bSEXP, SEXP DSEXP, SEXP normSEXP, SEXP groupsSEXP, SEXP max_iterSEXP, SEXP thresholdSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< int >::type x(xSEXP);
-    rcpp_result_gen = Rcpp::wrap(timesTwo(x));
+    Rcpp::traits::input_parameter< Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> >::type G(GSEXP);
+    Rcpp::traits::input_parameter< double const& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd const& >::type D(DSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type norm(normSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::List> >::type groups(groupsSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< long double const& >::type threshold(thresholdSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(rGwish(G, b, D, norm, groups, max_iter, threshold, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
+// log_Gconstant
+long double log_Gconstant(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, double const& b, Eigen::MatrixXd const& D, unsigned int const& MCiteration, Rcpp::Nullable<Rcpp::List> groups, int seed);
+RcppExport SEXP _BGSL_log_Gconstant(SEXP GSEXP, SEXP bSEXP, SEXP DSEXP, SEXP MCiterationSEXP, SEXP groupsSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> >::type G(GSEXP);
+    Rcpp::traits::input_parameter< double const& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd const& >::type D(DSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type MCiteration(MCiterationSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::List> >::type groups(groupsSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(log_Gconstant(G, b, D, MCiteration, groups, seed));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BGSL_timesTwo", (DL_FUNC) &_BGSL_timesTwo, 1},
+    {"_BGSL_test_null", (DL_FUNC) &_BGSL_test_null, 2},
+    {"_BGSL_rGwish", (DL_FUNC) &_BGSL_rGwish, 8},
+    {"_BGSL_log_Gconstant", (DL_FUNC) &_BGSL_log_Gconstant, 6},
     {NULL, NULL, 0}
 };
 
