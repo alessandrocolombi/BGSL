@@ -46,8 +46,18 @@ public:
   }; //passo solo il numero di vertici
   //GraphType(GraphType const & _Gr); default is ok
   //GraphType(GraphType&& _Gr); default is ok
-
-
+  GraphType(InnerData const & _M): data(_M){
+    if(data.rows() != data.cols())
+      throw std::runtime_error("Matrix insereted as graph is not squared");
+    data.diagonal().array()=1;
+    this->find_neighbours();
+  }
+  GraphType(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const & _M): data(_M){
+    if(data.rows() != data.cols())
+      throw std::runtime_error("Matrix insereted as graph is not squared");
+    data.diagonal().array()=1;
+    this->find_neighbours();
+  }
   //Getters
   inline InnerData get_graph() const{
     return data;

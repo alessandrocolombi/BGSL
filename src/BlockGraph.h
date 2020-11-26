@@ -585,6 +585,26 @@ public:
     }
   };
   BlockGraph(GroupsPtr const & _Gr):BlockGraphBase<T>(_Gr){};
+  BlockGraph(InnerData const & _Mat, GroupsPtr const & _Gr):data(_Mat),BlockGraphBase<T>(_Gr){
+    if(data.rows() != data.cols())
+      throw std::runtime_error("Matrix insereted as graph is not squared");
+    if( this->ptr_groups->get_n_groups() != data.rows() )
+      throw std::runtime_error("The number of groups is not coherent with the size of the adjacency matrix");
+    std::vector<unsigned int> sing = this->ptr_groups->get_pos_singleton();
+    std::for_each(sing.cbegin(), sing.cend(),[this](unsigned int const & pos){this->data(pos,pos) = true;}); //To ensure sigleton to be set as ones
+    this->find_neighbours();
+    this->compute_nlinks_nblocks();
+  }
+  BlockGraph(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const & _Mat, GroupsPtr const & _Gr):data(_Mat),BlockGraphBase<T>(_Gr){
+    if(data.rows() != data.cols())
+      throw std::runtime_error("Matrix insereted as graph is not squared");
+    if( this->ptr_groups->get_n_groups() != data.rows() )
+      throw std::runtime_error("The number of groups is not coherent with the size of the adjacency matrix");
+    std::vector<unsigned int> sing = this->ptr_groups->get_pos_singleton();
+    std::for_each(sing.cbegin(), sing.cend(),[this](unsigned int const & pos){this->data(pos,pos) = true;}); //To ensure sigleton to be set as ones
+    this->find_neighbours();
+    this->compute_nlinks_nblocks();
+  }
   //BlockGraph(BlockGraph const & _Gr); default is ok
   //BlockGraph(BlockGraph&& _Gr); default is ok
   //BlockGraph()=default; NON voglio il default constructor

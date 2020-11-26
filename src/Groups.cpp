@@ -46,6 +46,24 @@ Groups::Groups(Container const & C){
   this->createMapIdx();
 }
 
+#ifndef NORCPP
+  Groups::Groups(Rcpp::List const & _L){
+    this->resize(_L.size());
+    for(IdxType i = 0; i < this->size(); ++i){
+      InnerContainer v = _L[i];
+      if( std::is_sorted(v.cbegin(), v.cend()) )
+        (*this)[i] = v;
+      else{
+        InnerContainer sorted(v.cbegin(), v.cend());
+        std::sort(sorted.begin(), sorted.end());
+        (*this)[i] = sorted;
+      }
+    }
+    this->createMapIdx();
+  }
+#endif
+
+
 InnerContainer Groups::get_pos_singleton() const{
 
   InnerContainer res;
