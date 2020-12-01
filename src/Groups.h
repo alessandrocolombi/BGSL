@@ -3,7 +3,7 @@
 
 #ifndef NORCPP
   #define STRICT_R_HEADERS
-  #include <Rcpp.h>
+  //#include <Rcpp.h>
 #endif
 
 #include "include_headers.h"
@@ -44,7 +44,7 @@ public:
   Groups(unsigned int const & _M, unsigned int const & _p);
   //Groups(Container const & _C);
   Groups(Container const & _C);
-  #ifndef NORCPP
+  #ifdef STRICT_R_HEADERS
    Groups(Rcpp::List const & _L);
   #endif
  
@@ -73,6 +73,9 @@ public:
     if(i > this->get_n_groups())
       throw std::runtime_error("Invalid group index request");
     return (*this)[i];
+  }
+  unsigned int get_possible_block_links()const{
+    return (0.5*this->size()*(this->size()-1) + this->size() - this->get_n_singleton());
   }
   //Setters -> not used and dangerous. Watch out for createMapIdx();
   //inline void set_n_groups(unsigned int const & N){

@@ -3,7 +3,6 @@
 
 #include "include_headers.h"
 #include "include_graphs.h"
-#include "GSLwrappers.h"
 #include "utils.h"
 
 struct PrecisionTraits{
@@ -44,7 +43,7 @@ public:
 		if( cholD.info() != Eigen::Success)
 			throw std::runtime_error("Chol decomposition of Inv Scale matrix failed, probably the matrix is not sdp");
 		else
-			chol_invD = cholD.solve(InvScale::Identity(D.rows(), D.cols())).llt().matrixL();
+			chol_invD = cholD.solve(InvScale::Identity(D.rows(), D.cols())).llt().matrixU();
 	};
 	//Receive Matrix and Parameters. Graph is not saved but it is needed to be sure that data satisfies a certain structure
 	Precision(Graph const & G, InnerData const & _data, Shape _b, InvScale const & _DD):
@@ -61,7 +60,7 @@ public:
 		if( cholD.info() != Eigen::Success)
 			throw std::runtime_error("Chol decomposition of Inv Scale matrix failed, probably the matrix is not sdp");
 		else
-			chol_invD = cholD.solve(InvScale::Identity(G.get_size(),G.get_size())).llt().matrixL();
+			chol_invD = cholD.solve(InvScale::Identity(G.get_size(),G.get_size())).llt().matrixU();
 		//Check structure
 		if(!this->check_structure(G)){
 			std::cout<<"Structures of matrix and graph are not compatible"<<std::endl;
@@ -107,7 +106,7 @@ public:
 		if( cholD.info() != Eigen::Success)
 			throw std::runtime_error("Chol decomposition of Inv Scale matrix failed, probably the matrix is not sdp");
 		else
-			chol_invD = cholD.solve(InvScale::Identity(D.rows(),D.rows() )).llt().matrixL();
+			chol_invD = cholD.solve(InvScale::Identity(D.rows(),D.rows() )).llt().matrixU();
 	};//devo passargli (..., mat.triangularView<Eigen::Upper>())
 	
 	Precision(UpperTri const & _U, Shape _b, InvScale const & _DD, InvScale const & _chol_invD)
@@ -230,7 +229,7 @@ public:
 		return true;	
 	}
 
-	long double log_normalizing_constat(const Graph & G, unsigned int const & MCiteration = 100, unsigned int seed=0); //Forse addirittura long double come return type
+	long double log_normalizing_constat(const Graph & G, unsigned int const & MCiteration = 100, unsigned int seed=0); 
 
 	//Public member stating if the matrix is factorized or not, i.e if U is such that data=U.transpose()*U
 	bool 		isFactorized;
@@ -277,6 +276,7 @@ long double Precision<CompleteStructure, Type>::log_normalizing_constat(const Co
 		std::vector<unsigned int> nbd_i = G.get_nbd(i);
 		nu[i] = std::count_if(nbd_i.cbegin(), nbd_i.cend(), [i](const unsigned int & idx){return idx > i;});
 	} 
+		//std::cout<<"nbd:"<<std::endl;
 			//for(auto v : nu)
 				//std::cout<<v<<", ";
 			//std::cout<<std::endl;
@@ -303,7 +303,7 @@ long double Precision<CompleteStructure, Type>::log_normalizing_constat(const Co
 	else{
 		//- Compute T = chol(D^-1), T has to be upper diagonal
 					//std::cout<<"D = "<<std::endl<<D<<std::endl;
-		const MatCol &T(chol_invD); //T is colwise because i need to extract its columns. Operazione inutile perché l'ho gia calcolata ma non voglio cambiare nome
+		const MatCol &T(chol_invD); //T is colwise because i need to extract its columns. Take a reference to keep same notation of free function
 							//std::cout<<"T = "<<std::endl<<T<<std::endl;
 		//- Define H st h_ij = t_ij/t_jj
 		MatCol H(MatCol::Zero(N,N)); //H is colwise because i would need to scan its col
@@ -522,8 +522,6 @@ void Precision<CompleteStructure, T>::rgwish(const CompleteStructure<T> & G, uns
 	sample::GSL_RNG engine(seed);
 
 	if(n_links == 0){
-				std::cout<<"Grafo vuoto"<<std::endl;
-				std::cout<<"seed = "<<seed<<std::endl;
 				//std::cout<<"Empty Graph"<<std::endl;
 		MatRow K_return(MatRow::Identity(N,N));
 		for(unsigned int i = 0; i < N; ++i) //Non cache friendly
@@ -540,10 +538,10 @@ void Precision<CompleteStructure, T>::rgwish(const CompleteStructure<T> & G, uns
 			//std::cout<<"D ="<<std::endl<<D<<std::endl;
 			//std::cout<<"chol_invD"<<std::endl;
 			//std::cout<<chol_invD<<std::endl;
-	MatCol K( sample::rwish<MatCol, sample::isChol::Lower>()(engine, b, chol_invD) );  
+	MatCol K( sample::rwish<MatCol, sample::isChol::Upper>()(engine, b, chol_invD) );  
 			//std::cout<<"K: "<<std::endl<<K<<std::endl;
 	if(n_links == G.get_possible_links()){
-				std::cout<<"Complete Graph"<<std::endl;
+				//std::cout<<"Complete Graph"<<std::endl;
 		data = K;
 		return; 
 	}

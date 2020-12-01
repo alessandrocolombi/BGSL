@@ -15,11 +15,14 @@ namespace analysis{
 	using RetMu		 = SamplerTraits::RetMu;
 	using RetK	 	 = SamplerTraits::RetK;
 	using RetTaueps	 = SamplerTraits::RetTaueps;
-	using RetGraph   = SamplerTraits::RetGraph;
-	using RetType	 = SamplerTraits::RetType;
+	//using RetGraph   = SamplerTraits::RetGraph;
+	//using RetType	 = SamplerTraits::RetType;
 
 	//It works both for all types of RetGraphs (vector / map / unordered_map)
-	MatRow Compute_plinks(RetGraph const & SampledGraphs, const unsigned int & iter_saved, GroupsPtr const & groups = nullptr){
+	template< class RetGraph = std::unordered_map< std::vector<bool>, int> >
+	MatRow Compute_plinks(RetGraph const & SampledGraphs, const unsigned int & iter_saved, GroupsPtr const & groups = nullptr)
+	{
+
 		// Need to have the same size!
 		auto sum_adj = [](std::pair< std::vector<bool>, int> const & a1, std::pair< std::vector<bool>, int> const & a2){
 			std::vector<int> res(a1.first.size());
@@ -66,8 +69,13 @@ namespace analysis{
 		}
 	}
 
-	std::tuple<MatCol, VecCol, MatRow, MatRow, double> 
-	PointwiseEstimate(RetType const & ret, const int& iter_to_store, const int& iter_to_storeG, GroupsPtr const & groups = nullptr){
+	template< class RetGraph = std::unordered_map< std::vector<bool>, int> > //template parameters
+	std::tuple<MatCol, VecCol, MatRow, MatRow, double>  //Return type
+	PointwiseEstimate(	std::tuple<RetBeta, RetMu, RetK, RetGraph, RetTaueps> const & ret, 
+						const int& iter_to_store, const int& iter_to_storeG, GroupsPtr const & groups = nullptr)
+	{
+		
+		//Unpacking the tuple with reference binding (c++17)
 		const auto&[SaveBeta, SaveMu, SaveK, SaveG, SaveTaueps] = ret;
 
 		//SaveBeta is a vector of size iter_to_store  with (p x n)-dimensional matrices
@@ -99,7 +107,6 @@ namespace analysis{
 		//plinks
 		MatRow plinks(Compute_plinks(SaveG, iter_to_storeG, groups));
 		return std::make_tuple(MeanBeta, MeanMu, MeanK, plinks, MeanTaueps);
-
 	}
 
 }

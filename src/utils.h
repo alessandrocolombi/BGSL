@@ -18,15 +18,15 @@ namespace utils{
 	using IdxType   = std::size_t;
 	using Container = std::vector<unsigned int>;
 	//Some constants
-	constexpr double pi 			 = M_PI;
-	constexpr double pi_2 			 = M_PI_2;
-	constexpr double sqrt_2 		 = M_SQRT2;
-	constexpr double two_over_sqrtpi = M_2_SQRTPI;
-	constexpr long double log_2	 	 = M_LN2;
-	constexpr double sqrt_pi 		 = two_over_sqrtpi*pi_2;
-	constexpr long double sqrt_2pi 	 = sqrt_pi*sqrt_2;
-	constexpr long double log_2pi	 = std::log(2*pi);
-	constexpr long double log_pi	 = std::log(pi);
+	inline constexpr double pi 			 = M_PI;
+	inline constexpr double pi_2 			 = M_PI_2;
+	inline constexpr double sqrt_2 		 = M_SQRT2;
+	inline constexpr double two_over_sqrtpi = M_2_SQRTPI;
+	inline constexpr long double log_2	 	 = M_LN2;
+	inline constexpr double sqrt_pi 		 = two_over_sqrtpi*pi_2;
+	inline constexpr long double sqrt_2pi 	 = sqrt_pi*sqrt_2;
+	inline constexpr long double log_2pi	 = std::log(2*pi);
+	inline constexpr long double log_pi	 = std::log(pi);
 
 
   //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -182,12 +182,15 @@ namespace utils{
  	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, typename NormType = MeanNorm >
  	MatRow rgwish(GraphStructure<T> const & G, double const & b, Eigen::MatrixXd const & D, unsigned int seed = 0){
 		//Typedefs
+		using Graph = GraphStructure<T>;
 		using MatRow  	= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 		using MatCol   	= Eigen::MatrixXd;
 		using IdxType  	= std::size_t;
 		using iterator  = std::vector<unsigned int>::iterator;
 		using citerator = std::vector<unsigned int>::const_iterator;
 		//Checks -> meglio farli in R
+		static_assert(	std::is_same_v<Graph, GraphType<T> > || std::is_same_v<Graph, CompleteView<T> > || std::is_same_v<Graph, CompleteViewAdj<T> >,
+						"Error, rgwish requires a Complete graph for the sampling. The only possibilities are GraphType, CompleteViewAdj, CompleteView.");
 		if(D.rows()!=D.cols())
 			throw std::runtime_error("Non squared matrix inserted");
 		if(G.get_size() != D.rows())
@@ -331,12 +334,15 @@ namespace utils{
 	rgwish_verbose(GraphStructure<T> const & G, double const & b, Eigen::MatrixXd const & D, unsigned int const & max_iter = 500, unsigned int seed = 0)
 	{
 		//Typedefs
+			using Graph 	= GraphStructure<T>;
 			using MatRow  	= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 			using MatCol   	= Eigen::MatrixXd;
 			using IdxType  	= std::size_t;
 			using iterator  = std::vector<unsigned int>::iterator;
 			using citerator = std::vector<unsigned int>::const_iterator;
 		//Checks 
+			static_assert(	std::is_same_v<Graph, GraphType<T> > || std::is_same_v<Graph, CompleteView<T> > || std::is_same_v<Graph, CompleteViewAdj<T> >,
+							"Error, rgwish requires a Complete graph for the sampling. The only possibilities are GraphType, CompleteViewAdj, CompleteView.");
 			if(b <= 2)
 				throw std::runtime_error("The Gwishart distribution is well defined only if shape parameter b is larger than 2");
 			if(D.rows()!=D.cols())
@@ -477,14 +483,18 @@ namespace utils{
 
 	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
 	template<template <typename> class GraphStructure = GraphType, typename Type = unsigned int >
-	long double log_normalizing_constat(GraphStructure<Type> const & G, double const & b, Eigen::MatrixXd const & D, unsigned int const & MCiteration, unsigned int seed = 0){
+	long double log_normalizing_constat(GraphStructure<Type> const & G, double const & b, Eigen::MatrixXd const & D, unsigned int const & MCiteration, unsigned int seed = 0)
+	{
 		//Typedefs
+		using Graph 	  = GraphStructure<Type>;
 		using MatRow  	  = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 		using MatCol      = Eigen::MatrixXd;
 		using CholTypeCol = Eigen::LLT<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>, Eigen::Lower>;
 		using iterator    = std::vector<unsigned int>::iterator;
 		using citerator   = std::vector<unsigned int>::const_iterator;
 		//Check
+		static_assert(	std::is_same_v<Graph, GraphType<Type> > || std::is_same_v<Graph, CompleteView<Type> > || std::is_same_v<Graph, CompleteViewAdj<Type> >,
+						"Error, log_normalizing_constat requires a Complete graph for the approximation. The only possibilities are GraphType, CompleteViewAdj, CompleteView.");
 		if(b <= 2)
 			throw std::runtime_error("Shape parameter has to be larger than 2");
 		if(D != D.transpose()){
@@ -512,6 +522,10 @@ namespace utils{
 			std::vector<unsigned int> nbd_i = G.get_nbd(i);
 			nu[i] = std::count_if(nbd_i.cbegin(), nbd_i.cend(), [i](const unsigned int & idx){return idx > i;});
 		}
+				//std::cout<<"nbd:"<<std::endl;
+					//for(auto v : nu)
+						//std::cout<<v<<", ";
+					//std::cout<<std::endl;
 		if(n_links == max_n_links){
 			long double res_gamma{0};
 			for(IdxType i = 0; i < N; ++i){
@@ -536,6 +550,7 @@ namespace utils{
 			//- Compute T = chol(D^-1), T has to be upper diagonal
 						//std::cout<<"D = "<<std::endl<<D<<std::endl;
 			MatCol T(cholD.solve(Eigen::MatrixXd::Identity(N,N)).llt().matrixU()); //T is colwise because i need to extract its columns
+						//std::cout<<"T:"<<std::endl<<T<<std::endl;
 			//- Define H st h_ij = t_ij/t_jj
 			MatCol H(MatCol::Zero(N,N)); //H is colwise because i would need to scan its col
 			for(unsigned int j = 0; j < N ; ++j)
@@ -722,8 +737,6 @@ namespace utils{
 		}
 	}
 
-
-
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	using MatRow  	= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
@@ -761,12 +774,11 @@ namespace utils{
 		MatCol Beta(MatCol::Zero(p,n));
 		MatCol data(MatCol::Zero(r,n));
 		MatRow Sigma = K.inverse();
+		MatRow Cov_tau = (1/tau_eps)*MatRow::Identity(r,r);
 		for(unsigned int i = 0; i < n; ++i){
 			Beta.col(i) = rmv(engine, mu, Sigma);
 			VecCol media(BaseMat*Beta.col(i));
-			for(unsigned int j = 0; j < r; ++j){
-				data(j,i) = sample::rnorm()(engine, media(j), std::sqrt(1/tau_eps));
-			}
+			data.col(i) = rmv(engine, media, Cov_tau);
 		}
 				//std::cout<<"Beta:"<<std::endl<<Beta<<std::endl;
 				//std::cout<<"data:"<<std::endl<<data<<std::endl;
@@ -809,12 +821,11 @@ namespace utils{
 		MatCol Beta(MatCol::Zero(p,n));
 		MatCol data(MatCol::Zero(r,n));
 		MatRow Sigma = K.inverse();
+		MatRow Cov_tau = (1/tau_eps)*Ir;
 		for(unsigned int i = 0; i < n; ++i){
 			Beta.col(i) = rmv(engine, mu, Sigma);
 			VecCol media(BaseMat*Beta.col(i));
-			for(unsigned int j = 0; j < r; ++j){
-				data(j,i) = sample::rnorm()(engine, media(j), std::sqrt(1/tau_eps));
-			}
+			data.col(i) = rmv(engine, media, Cov_tau);
 		}
 				//std::cout<<"Beta:"<<std::endl<<Beta<<std::endl;
 				//std::cout<<"data:"<<std::endl<<data<<std::endl;
@@ -853,12 +864,11 @@ namespace utils{
 		MatCol Beta(MatCol::Zero(p,n));
 		MatCol data(MatCol::Zero(r,n));
 		MatRow Sigma = K.inverse();
+		MatRow Cov_tau = (1/tau_eps)*Ir;
 		for(unsigned int i = 0; i < n; ++i){
 			Beta.col(i) = rmv(engine, mu, Sigma);
 			VecCol media(BaseMat*Beta.col(i));
-			for(unsigned int j = 0; j < r; ++j){
-				data(j,i) = sample::rnorm()(engine, media(j), std::sqrt(1/tau_eps));
-			}
+			data.col(i) = rmv(engine, media, Cov_tau);
 		}
 				//std::cout<<"Beta:"<<std::endl<<Beta<<std::endl;
 				//std::cout<<"data:"<<std::endl<<data<<std::endl;
@@ -895,12 +905,11 @@ namespace utils{
 		MatCol Beta(MatCol::Zero(p,n));
 		MatCol data(MatCol::Zero(r,n));
 		MatRow Sigma = K.inverse();
+		MatRow Cov_tau = (1/tau_eps)*Ir;
 		for(unsigned int i = 0; i < n; ++i){
 			Beta.col(i) = rmv(engine, mu, Sigma);
 			VecCol media(BaseMat*Beta.col(i));
-			for(unsigned int j = 0; j < r; ++j){
-				data(j,i) = sample::rnorm()(engine, media(j), std::sqrt(1/tau_eps));
-			}
+			data.col(i) = rmv(engine, media, Cov_tau);
 		}
 				//std::cout<<"Beta:"<<std::endl<<Beta<<std::endl;
 				//std::cout<<"data:"<<std::endl<<data<<std::endl;
@@ -908,13 +917,198 @@ namespace utils{
 		return std::make_tuple(data, Beta, mu, tau_eps, K, G.get_adj_list());
 	}
 
+	//------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	using MatRow  	= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+	using MatCol   	= Eigen::MatrixXd;
+	using VecCol    = Eigen::VectorXd;
+	//Those functions all return:
+	// - A pxp matrix representing sum_i=1:n[(beta_i - mu)*(beta_i - mu)^T]
+	// - A precision matrix
+	// - The adj list of a graph
+	std::tuple<MatCol, MatRow, std::vector<bool> > 
+	SimulateDataGGM_Block(unsigned int const & p, unsigned int const & n, BlockGraph<bool> & G, unsigned int seed = 0, bool mean_null = true)
+	{
+	
+		if(seed==0){
+		  std::random_device rd;
+		  seed=rd();
+		}
+		sample::GSL_RNG engine(seed);
+		sample::rmvnorm rmv; //Covariance parametrization
+				//std::cout<<"G:"<<std::endl<<G<<std::endl;
+		//Precision
+		MatRow K = utils::rgwish(G.completeview(), 3.0, MatRow::Identity(p,p), seed);
+				//std::cout<<"K:"<<std::endl<<K<<std::endl;
+		//mu
+		VecCol mu(VecCol::Zero(p));
+		if(!mean_null){
+			for(unsigned int i = 0; i < p; ++i)
+				mu(i) = sample::rnorm()(engine, 0, 0.1);
+		}
+
+				//std::cout<<"mu:"<<std::endl<<mu<<std::endl;
+		//Beta and data
+		MatCol data(MatCol::Zero(p,p));
+		MatRow Sigma = K.inverse();
+		for(unsigned int i = 0; i < n; ++i){
+			VecCol beta_i = rmv(engine, mu, Sigma);
+			data += (beta_i - mu)*(beta_i - mu).transpose();
+		}
+				//std::cout<<"Beta:"<<std::endl<<Beta<<std::endl;
+				//std::cout<<"data:"<<std::endl<<data<<std::endl;
+		
+		return std::make_tuple(data, K, G.get_adj_list());
+	}
+	std::tuple<MatCol, MatRow, std::vector<bool> > 
+	SimulateDataGGM_Block(	unsigned int const & p, unsigned int const & n, std::shared_ptr<const Groups> const & Gr,  unsigned int seed = 0, 
+							bool mean_null = true, double const & sparsity = 0.3)
+	{
+		if(seed==0){
+		  std::random_device rd;
+		  seed=rd();
+		}
+		sample::GSL_RNG engine(seed);
+		sample::rmvnorm rmv; //Covariance parametrization
+		//Graph
+		BlockGraph<bool> G(Gr);
+		G.fillRandom(sparsity, seed);
+		return SimulateDataGGM_Block(p, n, G, seed, mean_null);
+	}
+	std::tuple<MatCol, MatRow, std::vector<bool> > 
+	SimulateDataGGM_Block(unsigned int const & p, unsigned int const & n, unsigned int const & M, unsigned int seed = 0, bool mean_null = true, double const & sparsity = 0.3)
+	{
+		return SimulateDataGGM_Block(p, n, std::make_shared<const Groups>(M,p), seed, mean_null, sparsity);
+	}
+
+	std::tuple<MatCol, MatRow, std::vector<bool> > 
+	SimulateDataGGM_Complete(unsigned int const & p, unsigned int const & n, GraphType<bool> & G, unsigned int seed = 0, bool mean_null = true)
+	{
+		if(seed==0){
+		  std::random_device rd;
+		  seed=rd();
+		}
+		sample::GSL_RNG engine(seed);
+		sample::rmvnorm rmv; //Covariance parametrization
+				//std::cout<<"G:"<<std::endl<<G<<std::endl;
+		//Precision
+		MatRow K = utils::rgwish(G, 3.0, MatRow::Identity(p,p), seed);
+				//std::cout<<"K:"<<std::endl<<K<<std::endl;
+		//mu
+		VecCol mu(VecCol::Zero(p));
+		if(!mean_null){
+			for(unsigned int i = 0; i < p; ++i)
+				mu(i) = sample::rnorm()(engine, 0, 0.1);
+		}
+
+				//std::cout<<"mu:"<<std::endl<<mu<<std::endl;
+		//Beta and data
+		MatCol data(MatCol::Zero(p,p));
+		MatRow Sigma = K.inverse();
+		for(unsigned int i = 0; i < n; ++i){
+			VecCol beta_i = rmv(engine, mu, Sigma);
+			data += (beta_i - mu)*(beta_i - mu).transpose();
+		}
+				//std::cout<<"Beta:"<<std::endl<<Beta<<std::endl;
+				//std::cout<<"data:"<<std::endl<<data<<std::endl;
+		
+		return std::make_tuple(data, K, G.get_adj_list());
+	}
+	std::tuple<MatCol, MatRow, std::vector<bool> > 
+	SimulateDataGGM_Complete(unsigned int const & p, unsigned int const & n, unsigned int seed = 0, bool mean_null = true, double const & sparsity = 0.3)
+	{
+		if(seed==0){
+		  std::random_device rd;
+		  seed=rd();
+		}
+		sample::GSL_RNG engine(seed);
+		sample::rmvnorm rmv; //Covariance parametrization
+		//Graph
+		GraphType<bool> G(p);
+		G.fillRandom(sparsity, seed);
+		return SimulateDataGGM_Complete(p, n, G, seed, mean_null);
+	}
+	//------------------------------------------------------------------------------------------------------------------------------------------------------
+	//Usage:
+	//std::vector< GraphType<unsigned int> > all_G_c = utils::list_all_graphs(p);
+	//std::vector< BlockGraph<bool> > all_G_b = utils::list_all_graphs<BlockGraph, bool>(ptr_gruppi_nosin);
+	//Template parameters are not deduced. They have to be specified  or defaulted
+
+	template< class T = unsigned int>
+	void build_adjs(std::vector< std::vector<T> > & all_G, std::vector<T> g, unsigned int const & n_el){
+		if(g.size() == n_el)
+			all_G.emplace_back(g);
+		else{
+			std::vector<T> g_left(g);
+			std::vector<T> g_right(g);
+			g_left.emplace_back(true);
+			g_right.emplace_back(false);
+			build_adjs(all_G, g_left, n_el);
+			build_adjs(all_G, g_right, n_el);
+		}
+	}
+
+	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int >
+	std::vector< GraphStructure<T> > list_all_graphs(unsigned int p = 0, std::shared_ptr<const Groups> const & ptr_groups = nullptr){
+		using Graph = GraphStructure<T>;
+		static_assert(	std::is_same_v<Graph, GraphType<T> > || std::is_same_v<Graph, BlockGraph<T> > || std::is_same_v<Graph, BlockGraphAdj<T> >,
+						"Wrong type of graph inserted, it can only be GraphType, BlockGraph or BlockGraphAdj.");
+		if( p <= 0 && ptr_groups == nullptr )
+			throw std::runtime_error("Wrong dimension inserted, need to know the dimension of the Graph or the list of Groups");
+		unsigned int n_el{0};
+		if constexpr(std::is_same_v<Graph, GraphType<T> >){
+			n_el = 0.5*(p*p - p);
+		}
+		else if constexpr(std::is_same_v<Graph, BlockGraph<T> > || std::is_same_v<Graph, BlockGraphAdj<T> >){
+			if(ptr_groups == nullptr)
+				throw std::runtime_error("In case of block graphs, it is mandatory to pass the list of Groups");	
+			n_el = ptr_groups->get_possible_block_links();
+		}
+		else
+			throw std::runtime_error("Something bad and strange happened with the type of graph in function list_all_graphs");
+		if(n_el > 20)
+		 	std::cout<<"Very large graph required: "<<n_el<<" possible links and "<<utils::power(2.0, n_el)<<" possible graphs"<<std::endl;
+	   	std::vector< std::vector<T> > all_G; 
+	   	std::vector<T> g;
+	   	build_adjs<T>(all_G, g, n_el);
+	   	for(int i = 0; i < all_G.size(); ++i){
+	   		std::cout<<"["<<i<<"] -> ";
+	   		for(auto __v : all_G[i])
+	   			std::cout<<__v<<", ";
+	   		std::cout<<std::endl;
+	   	}
+	   	std::vector< Graph > result;
+	   	result.reserve(all_G.size());
+	   	
+	   	if constexpr(std::is_same_v<Graph, GraphType<T> >){
+			for(int i = 0; i < all_G.size(); ++i){
+				result.emplace_back(Graph (all_G[i]) );
+			}
+		}
+		else if constexpr(std::is_same_v<Graph, BlockGraph<T> > || std::is_same_v<Graph, BlockGraphAdj<T> >){
+			for(int i = 0; i < all_G.size(); ++i){
+				result.emplace_back(Graph (all_G[i], ptr_groups) );
+			}
+		}
+		
+		return result;
+	}
+
+	template<template <typename> class GraphStructure = BlockGraph, typename T = unsigned int >
+	std::vector< GraphStructure<T> > list_all_graphs(std::shared_ptr<const Groups> const & ptr_groups){
+		using Graph = GraphStructure<T>;
+		static_assert(	std::is_same_v<Graph, BlockGraph<T> > || std::is_same_v<Graph, BlockGraphAdj<T> >,
+						"Wrong type of graph inserted, since the specialization for block graphs has been called, the only possibilities are BlockGraph or BlockGraphAdj" );
+		return list_all_graphs<GraphStructure, T>(0,ptr_groups);
+	}
+
+
+
+
+
+
 
 }
-
-
-	
-
-
 
 
 #endif

@@ -8,7 +8,6 @@
 #include "GGMFactory.h"
 #include "ProgressBar.h"
 
-
 struct SamplerTraits{
 	
 	using IdxType  	  		= std::size_t;
@@ -23,26 +22,28 @@ struct SamplerTraits{
 	using RetMu		  		= std::vector<VecCol>; //Sarebbe meglio salvarli in una matrice pxiter_to_store cosi poi posso fare operazioni rowwise
 	using RetK	 	  		= std::vector<MatRow>; //Non memory friendly perché sto salvando anche la lower part di una matrice simmetrica
 	using RetTaueps	  		= std::vector<double>;
-	//using RetGraph 			= std::unordered_map< std::vector<bool>, int>;
-	//using RetGraph 			= std::map< std::vector<bool>, int>;
+	//using RetGraph 		= std::unordered_map< std::vector<bool>, int>;
+	//using RetGraph 		= std::map< std::vector<bool>, int>;
 	//using RetGraph       	= std::vector< std::pair< std::vector<bool>, int> >;
 	//using RetType	  		= std::tuple<RetBeta, RetMu, RetK, RetGraph, RetTaueps>;
 	using IteratorRetBeta	= std::vector<MatCol>::iterator;
 	using IteratorRetMu		= std::vector<VecCol>::iterator;
-	using IteratorRetK	 	= std::vector<MatRow>::iterator; //Non memory friendly perché sto salvando anche la lower part di una matrice simmetrica
+	using IteratorRetK	 	= std::vector<MatRow>::iterator; 
 	using IteratorRetTaueps	= std::vector<double>::iterator;
 
 };
 
 
 class Hyperparameters : public SamplerTraits{
-public:
+	public:
 	Hyperparameters()=default;
 	Hyperparameters(unsigned int const & _p):a_tau_eps(2.0*10), b_tau_eps(2.0*0.001), sigma_mu(100.0), p_addrm(0.5), 
 											 b_K(3.0), D_K(MatCol::Identity(_p,_p)), sigmaG(0.1), Gprior(0.5){}
-	Hyperparameters(double const & _a, double const & _b, double const & _sigmamu, double const & _bk, MatCol const & _D, double const & _p, 
+	Hyperparameters(double const & _bK, MatCol const & _D, double const & _paddrm, double const & _sigmaG, double const & _Gprior)
+					:a_tau_eps(0.0), b_tau_eps(0.0), sigma_mu(1.0), p_addrm(_paddrm), b_K(_bK), D_K(_D), sigmaG(_sigmaG), Gprior(_Gprior){}										 
+	Hyperparameters(double const & _a, double const & _b, double const & _sigmamu, double const & _bk, MatCol const & _D, double const & _paddrm, 
 					double const & _sigmaG, double const & _Gprior):
-					a_tau_eps(_a), b_tau_eps(_b), sigma_mu(_sigmamu), b_K(_bk), D_K(_D), p_addrm(_p), sigmaG(_sigmaG), Gprior(_Gprior){}
+					a_tau_eps(_a), b_tau_eps(_b), sigma_mu(_sigmamu), b_K(_bk), D_K(_D), p_addrm(_paddrm), sigmaG(_sigmaG), Gprior(_Gprior){}
 
 	double a_tau_eps;
     double b_tau_eps;
@@ -68,7 +69,7 @@ public:
 
 
 class Parameters : public SamplerTraits{
-public:
+	public:
 	Parameters()=default;
 	Parameters(int const & _niter, int const & _nburn, double const & _thin, double const & _thinG, 
 				unsigned int const & _MCiterPr, unsigned int const & _MCiterPost , MatCol const & _PHI, GroupsPtr const & _ptrGr = nullptr):
@@ -79,7 +80,13 @@ public:
 	}
 	Parameters(int const & _niter, int const & _nburn, double const & _thin, double const & _thinG, 
 				unsigned int const & _MCiterPr, MatCol const & _PHI, GroupsPtr const & _ptrGr):
-				niter(_niter), nburn(_nburn), thin(_thin), thinG(_thinG), MCiterPrior(_MCiterPr),Basemat(_PHI), ptr_groups(_ptrGr)
+				niter(_niter), nburn(_nburn), thin(_thin), thinG(_thinG), MCiterPrior(_MCiterPr), MCiterPost(_MCiterPr), Basemat(_PHI), ptr_groups(_ptrGr)
+	{
+					iter_to_store  = static_cast<unsigned int>((niter - nburn)/thin );
+					iter_to_storeG = static_cast<unsigned int>((niter - nburn)/thinG);
+	}		
+	Parameters(int const & _niter, int const & _nburn, double const & _thin, unsigned int const & _MCiterPr, unsigned int const & _MCiterPost):
+				niter(_niter), nburn(_nburn), thin(_thin), thinG(_thin), MCiterPrior(_MCiterPr), MCiterPost(_MCiterPost), ptr_groups(nullptr)
 	{
 					iter_to_store  = static_cast<unsigned int>((niter - nburn)/thin );
 					iter_to_storeG = static_cast<unsigned int>((niter - nburn)/thinG);

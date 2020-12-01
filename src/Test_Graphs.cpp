@@ -1,6 +1,6 @@
 #ifndef __TESTGRAPH_HPP__
 #define __TESTGRAPH_HPP__
-/*
+
 
 // [[Rcpp::depends(RcppEigen)]]
 // [[Rcpp::depends(RcppParallel)]]
@@ -10,7 +10,6 @@
 #include <RcppParallel.h>
 #include "include_headers.h"
 #include "include_graphs.h"
-#include "include_helpers.h"
 
 using namespace std;
 using MyEigenMat 	= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
@@ -263,6 +262,6 @@ void GraphTest() {
 
 
 }
-*/
+
 
 #endif
