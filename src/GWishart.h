@@ -3,7 +3,6 @@
 
 #include "include_headers.h"
 #include "include_graphs.h"
-#include "GSLwrappers.h"
 #include "utils.h"
 
 struct GWishartTraits{

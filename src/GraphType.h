@@ -31,6 +31,7 @@ public:
   //using ColType       = typename GraphTypeTraits<T>::ColType;
   //using RowType       = typename GraphTypeTraits<T>::RowType;
   //Constructors
+  //GraphType()=default;
   GraphType(Adj const & _A){
     //data.resize( 0.5 * ( 1 + std::sqrt(1 + 8*_A.size() )), 0.5 * ( 1 + std::sqrt(1 + 8*_A.size() )) );
     data = InnerData::Identity( 0.5 * ( 1 + std::sqrt(1 + 8*_A.size() )),  0.5 * ( 1 + std::sqrt(1 + 8*_A.size() )));

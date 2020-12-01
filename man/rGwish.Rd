@@ -30,7 +30,7 @@ i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. L
 
 \item{threshold}{double, the accurancy for checking if the sampled matrix respects the structure of the graph.}
 
-\item{seed}{int with the value of the seed. Default value is 0 that implies that a random seed is drawn.}
+\item{seed}{int, the value of the seed. Default value is 0 that implies that a random seed is drawn.}
 
 \item{unsigned}{int, the maximum number of iteration.}
 }

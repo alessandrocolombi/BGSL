@@ -770,6 +770,7 @@ void BlockGraph<T>::fillRandom(double sparsity, unsigned int seed){
   //fill the graph
   unsigned int M{this->ptr_groups->get_n_groups()};
   data.resize(M,M);
+  data = InnerData::Zero(M,M);
   for(unsigned int i = 0; i < M; ++i){
     for(unsigned int j = i; j < M; ++j){
 

@@ -24,7 +24,7 @@ test_null <- function(G, l = NULL) {
 #' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave NULL if the graph is not in block form.
 #' @param unsigned int, the maximum number of iteration.
 #' @param threshold double, the accurancy for checking if the sampled matrix respects the structure of the graph.
-#' @param seed int with the value of the seed. Default value is 0 that implies that a random seed is drawn.
+#' @param seed int, the value of the seed. Default value is 0 that implies that a random seed is drawn.
 #' @return Rcpp::List containing the sampled matrix as an Eigen RowMajor matrix, a bool that states if the convergence was reached or not and finally an int with the number of performed iterations.
 #' If the graph is empty or complete, no iterations are performed. It is automatically converted in standard R list.
 #' @export
@@ -45,10 +45,54 @@ rGwish <- function(G, b, D, norm = "Mean", groups = NULL, max_iter = 500L, thres
 #' @param MCiteration unsigned int, the number of iteration for the MonteCarlo approximation. 
 #' @param groups a Rcpp list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group, 
 #' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave NULL if the graph is not in block form.
-#' @param seed int with the value of the seed. Default value is 0 that implies that a random seed is drawn.
+#' @param seed int, the value of the seed. Default value is 0 that implies that a random seed is drawn.
 #' @return long double, the logarithm of the normalizing constant of GWishart distribution.
 #' @export
 log_Gconstant <- function(G, b, D, MCiteration = 100L, groups = NULL, seed = 0L) {
     .Call(`_BGSL_log_Gconstant`, G, b, D, MCiteration, groups, seed)
+}
+
+#' Testing all the Gaussian Graphical Models samplers with simulated data
+#'
+#' @param b double, it is shape parameter. It has to be larger than 2 in order to have a well defined distribution.
+#' @param D Eigen Matrix of double stored columnwise. It has to be symmetric and positive definite. 
+#' @param MCiteration unsigned int, the number of iteration for the MonteCarlo approximation. 
+#' @export
+GGM_sim_sampling <- function(p, n, niter, burnin, thin, D, b = 3.0, MCprior = 100L, MCpost = 100L, form = "Complete", prior = "Uniform", algo = "MH", n_groups = 0L, seed = 0L, sparsity = 0.5, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5) {
+    .Call(`_BGSL_GGM_sim_sampling`, p, n, niter, burnin, thin, D, b, MCprior, MCpost, form, prior, algo, n_groups, seed, sparsity, Gprior, sigmaG, paddrm)
+}
+
+#' Testing all the Gaussian Graphical Models samplers
+#'
+#' @param b double, it is shape parameter. It has to be larger than 2 in order to have a well defined distribution.
+#' @param D Eigen Matrix of double stored columnwise. It has to be symmetric and positive definite. 
+#' @param MCiteration unsigned int, the number of iteration for the MonteCarlo approximation. 
+#' @export
+GGM_sampling <- function(data, p, n, niter, burnin, thin, D, b = 3.0, MCprior = 100L, MCpost = 100L, form = "Complete", prior = "Uniform", algo = "MH", n_groups = 0L, seed = 0L, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5) {
+    .Call(`_BGSL_GGM_sampling`, data, p, n, niter, burnin, thin, D, b, MCprior, MCpost, form, prior, algo, n_groups, seed, Gprior, sigmaG, paddrm)
+}
+
+#' Generates random Graphs
+#'
+#' This function genrates random graph both in Complete or Block form
+#' @param p int, the dimension of the graph in its complete form.
+#' @param n_groups int, the number of desired groups. Not used if form is Complete or if the groups are directly insered as group parameter.
+#' @param form Rcpp::String, the only possibilities are Complete and Block.
+#' @param groups a Rcpp list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group, 
+#' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave NULL if the graph is not in block form.
+#' @param sparsity double, the desired sparsity of the randomly generated graph. It has to be striclty positive and striclty less than one. It is set to 0.5 otherwise.
+#' @param seed int, the value of the seed. Default value is 0 that implies that a random seed is drawn.
+#' @return the adjacency matrix of the randomly generated graph.
+#' @export
+Create_RandomGraph <- function(p, n_groups = 0L, form = "Complete", groups = NULL, sparsity = 0.5, seed = 0L) {
+    .Call(`_BGSL_Create_RandomGraph`, p, n_groups, form, groups, sparsity, seed)
+}
+
+#' Function for testing properties of Graph classes
+#'
+#' @param No parameters are required
+#' @export
+GraphTest <- function() {
+    invisible(.Call(`_BGSL_GraphTest`))
 }
 

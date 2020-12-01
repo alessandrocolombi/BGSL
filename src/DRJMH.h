@@ -41,7 +41,7 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 										  	    	   typename GGMTraits<GraphStructure, T>::Graph & Gold,  
 										         	   double alpha, unsigned int seed)
 {
-	std::cout<<"Sono dentro DoubleReversibleJumpsMH"<<std::endl;
+	//std::cout<<"Sono dentro DoubleReversibleJumpsMH"<<std::endl;
 	if(seed==0){
 	  std::random_device rd;
 	  seed=rd();
@@ -84,7 +84,7 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 	//6) Perform the move and return
 	int accepted;
 	if( rand(engine) < acceptance_ratio ){
-		std::cout<<"Ho accettato"<<std::endl;
+				//std::cout<<"Ho accettato"<<std::endl;
 		Gold = Gnew;
 		//Gold = std::move(Gnew);
 		this->Kprior = Knew; //oppure piu semplicemente, basta aggiornare la U. Qua faccio un sacco di copie inutili
@@ -92,7 +92,7 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 		accepted = 1;
 	}
 	else{
-		std::cout<<"Ho rifiutato"<<std::endl;
+				//std::cout<<"Ho rifiutato"<<std::endl;
 		accepted = 0;
 	}
 	return std::make_tuple(utils::rgwish(Gold.completeview(), this->Kprior.get_shape(), this->Kprior.get_inv_scale() + data , seed ), accepted );

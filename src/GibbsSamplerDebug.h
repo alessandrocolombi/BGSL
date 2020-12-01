@@ -4,14 +4,15 @@
 #include "SamplerOptions.h"
 
 //Questo potrebbe chiamarsi invece tipo FGMsamplerDegub
-template<template <typename> class GraphStructure = GraphType, typename T = unsigned int>
+template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, class RetGraph = std::unordered_map< std::vector<bool>, int>>
 class FGMsamplerDegub : public SamplerTraits
 {
-public:
+	public:
 	using Graph 	    = GraphStructure<T>;
 	using CompleteType  = typename GGMTraits<GraphStructure, T>::CompleteType;
 	using PrecisionType = typename GGMTraits<GraphStructure, T>::PrecisionType;
 	using GGMType 	    = std::unique_ptr<GGM<GraphStructure, T>>;
+	using RetType 	    = std::tuple<RetBeta, RetMu, RetK, RetGraph, RetTaueps>;
 
 	FGMsamplerDegub( MatCol const & _data, Parameters const & _params, Hyperparameters const & _hy_params, 
 			   		 Init<GraphStructure, T> const & _init, GGMType & _GGM_method, 
@@ -27,7 +28,7 @@ public:
 	RetType run();
 	std::tuple<MatCol, VecCol, MatRow, std::vector<int>, double> PointwiseEstimate(RetType const & ret);
 
-private:
+	private:
 	void check() const;
 	MatCol data; //grid_pts x n
 	Parameters params;
@@ -50,8 +51,8 @@ private:
 };
 
 
-template<template <typename> class GraphStructure, typename T>
-void FGMsamplerDegub<GraphStructure, T>::check() const{
+template<template <typename> class GraphStructure, typename T, class RetGraph>
+void FGMsamplerDegub<GraphStructure, T, RetGraph>::check() const{
 	if(data.rows() != grid_pts) //check for grid_pts
 		throw std::runtime_error("Error, incoerent number of grid points");
 	if(data.cols() != n) //check for n
@@ -62,9 +63,10 @@ void FGMsamplerDegub<GraphStructure, T>::check() const{
 			throw std::runtime_error("Error, incoerent number of basis");
 }
 
-
-template<template <typename> class GraphStructure, typename T>
-SamplerTraits::RetType FGMsamplerDegub<GraphStructure, T>::run(){
+template<template <typename> class GraphStructure, typename T, class RetGraph >
+typename FGMsamplerDegub<GraphStructure, T, RetGraph>::RetType 
+FGMsamplerDegub<GraphStructure, T, RetGraph>::run()
+{
 	std::cout<<"FGM sampler started"<<std::endl;
 	//Typedefs
 	GGM<GraphStructure, T> & GGM_method= *ptr_GGM_method;
@@ -189,13 +191,13 @@ SamplerTraits::RetType FGMsamplerDegub<GraphStructure, T>::run(){
 				else if constexpr (std::is_same_v< RetGraph, std::map< std::vector<bool>, int> > || 
 								   std::is_same_v< RetGraph, std::unordered_map< std::vector<bool>, int> >) 
 				{
-					//auto it = SaveG.find(adj);
-					//if(it == SaveG.end()){
-						//SaveG.insert(std::make_pair(adj, 1));
-						//visited++;
-					//}
-					//else
-						//it->second++;
+					auto it = SaveG.find(adj);
+					if(it == SaveG.end()){
+						SaveG.insert(std::make_pair(adj, 1));
+						visited++;
+					}
+					else
+						it->second++;
 					//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 					//La seconda parte non viene instanziata solo se if constexpr dipende da un template parameter!
 					//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

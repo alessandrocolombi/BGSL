@@ -18,7 +18,7 @@ struct GGMTraits{
 	using CholTypeCol 		= Eigen::LLT<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>, Eigen::Lower>;
 	using GroupsPtr   		= std::shared_ptr<const Groups>;
 	using PriorPtr			= std::unique_ptr<GraphPrior<GraphStructure, T>>;
-	//Da qua le cose difficili
+	//Watch out here, using template aliasing for template parameters
 	using Graph 			= GraphStructure<T>;
 	template <typename Partial>
 	using CompleteBlockType = std::conditional_t< std::is_same_v<Graph,  BlockGraph<T>>, CompleteView<Partial> , CompleteViewAdj<Partial> > ;	

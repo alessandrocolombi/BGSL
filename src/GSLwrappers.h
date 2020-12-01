@@ -9,9 +9,15 @@
 #include <gsl/gsl_bspline.h> //For spline operations
 #include <gsl/gsl_linalg.h>
 
+//Important note:
+// rmvnorm_prec / rmvnorm / rwish_old / rwish functions access directly to data() buffer of eigen matrix. This implies that the matrix passed as input
+// cannot be a temporary object constructed inside the function call.
+// Things that works:
+// MatCol Icol = MatCol::Identity(p,p); res = sample::rmvnorm()(engine, mean, Irow); -> OK
+// Thing that does not work:
+// res = sample::rmvnorm()(engine, mean, MatCol::Identity(p,p)); -> NO
+// res = sample::rmvnorm()(engine, mean, A*B); -> NO
 
-//Della normale MV ci sta fare due versioni, una che prende la precisione e ne calcola dentro il chol 
-//e una che prende direttamente chol ma inteso come cholType e non gia la matrice upper
 
 namespace sample{
 
@@ -210,9 +216,6 @@ namespace sample{
 	};
 
 
-	
-
-	
 	template<typename RetType = MatCol>
 	struct rwish_old{
 		template<typename EigenType>
@@ -283,39 +286,45 @@ namespace sample{
 			
 
 			//auto start = std::chrono::high_resolution_clock::now();
-			
-			if constexpr( isCholType == isChol::False){
-				//Map in GSL matrix
-				gsl_matrix * V 	    = gsl_matrix_calloc(Psi.rows(), Psi.rows());
-				V->data = Psi.data();
-				//Chol decomposition
-				gsl_matrix_memcpy(cholMat, V);
-				gsl_linalg_cholesky_decomp1(cholMat);
-				gsl_matrix_free(V); //Free V
+			if(Psi.isIdentity()){
+				gsl_matrix_set_identity(cholMat);
 			}
-			else if constexpr(isCholType == isChol::Upper){
-				//Psi has to be ColMajor
-				if constexpr( std::is_same_v< EigenType, MatRow> ){
-					MatCol PsiCol(Psi);
-					for(int i = 0; i < Psi.rows()*Psi.rows(); ++i)
-						cholMat->data[i] = PsiCol.data()[i];
+			else {
+				if constexpr( isCholType == isChol::False){
+					//Map in GSL matrix
+					gsl_matrix * V 	    = gsl_matrix_calloc(Psi.rows(), Psi.rows());
+					V->data = Psi.data();
+					//Chol decomposition
+					gsl_matrix_memcpy(cholMat, V);
+					gsl_linalg_cholesky_decomp1(cholMat);
+					gsl_matrix_free(V); //Free V
 				}
-				else{
-					cholMat->data = Psi.data();
+				else if constexpr(isCholType == isChol::Upper){
+					//Psi has to be ColMajor
+					if constexpr( std::is_same_v< EigenType, MatRow> ){
+						MatCol PsiCol(Psi);
+						for(int i = 0; i < Psi.rows()*Psi.rows(); ++i)
+							cholMat->data[i] = PsiCol.data()[i];
+					}
+					else{
+						cholMat->data = Psi.data();
+					}
+					
 				}
-				
+				else if constexpr(isCholType == isChol::Lower){ 
+					//Psi has to be RowMajor
+					if constexpr( std::is_same_v< EigenType, MatCol> ){
+						MatRow PsiRow(Psi);
+						for(int i = 0; i < Psi.rows()*Psi.rows(); ++i) //In questo caso devo essere esplicito. buffer rovinato?? non so ma mi salta la prima riga altrimenti
+							cholMat->data[i] = PsiRow.data()[i];
+					}
+					else{
+						cholMat->data = Psi.data();
+					}
+				} 		
 			}
-			else if constexpr(isCholType == isChol::Lower){ 
-				//Psi has to be RowMajor
-				if constexpr( std::is_same_v< EigenType, MatCol> ){
-					MatRow PsiRow(Psi);
-					for(int i = 0; i < Psi.rows()*Psi.rows(); ++i) //In questo caso devo essere esplicito. buffer rovinato?? non so ma mi salta la prima riga altrimenti
-						cholMat->data[i] = PsiRow.data()[i];
-				}
-				else{
-					cholMat->data = Psi.data();
-				}
-			} 		
+
+
 							//std::cout<<"cholMat "<<std::endl;
 			 				//for(auto i = 0; i < Psi.rows(); ++i){
 			 					//for(auto j = 0; j < Psi.rows(); ++j){

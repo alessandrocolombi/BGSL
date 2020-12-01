@@ -46,7 +46,7 @@ Groups::Groups(Container const & C){
   this->createMapIdx();
 }
 
-#ifndef NORCPP
+#ifdef STRICT_R_HEADERS
   Groups::Groups(Rcpp::List const & _L){
     this->resize(_L.size());
     for(IdxType i = 0; i < this->size(); ++i){
