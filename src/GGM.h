@@ -122,6 +122,7 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 	if(Gold.get_n_links() == 0){
 				//std::cout<<"Empty graph, add"<<std::endl;
 		Move = MoveType::Add;
+		/*
 		log_proposal_Graph = std::log(1-alpha)-std::log(alpha) ;
 		if constexpr(std::is_same_v<Graph , GraphType<T> >){
 			log_proposal_Graph += std::log(Gold.get_possible_links());
@@ -129,10 +130,12 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 		else{
 			log_proposal_Graph += std::log(Gold.get_possible_block_links());
 		}
+		*/
 	}
 	else if(Gold.get_n_links() == Gold.get_possible_links()){
 				//std::cout<<"Full graph, remove"<<std::endl;
 		Move = MoveType::Remove;
+		/*
 		log_proposal_Graph = std::log(alpha)-std::log(1-alpha);
 		if constexpr(std::is_same_v<Graph , GraphType<T> >){
 			log_proposal_Graph += std::log(Gold.get_possible_links());
@@ -140,6 +143,7 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 		else{
 			log_proposal_Graph += std::log(Gold.get_possible_block_links());
 		}
+		*/
 	}
 	else{
 				//std::cout<<"Not empty nor full, choose by change"<<std::endl;
@@ -186,7 +190,7 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 		//Compute log proposal ratio
 		log_proposal_Graph = std::log(alpha)-std::log(1 - alpha);
 		if constexpr(std::is_same_v<Graph , GraphType<T> >){
-			log_proposal_Graph += std::log(Gold.get_possible_links() - Gold.get_n_links()) - std::log(1 + Gold.get_n_links());
+			log_proposal_Graph += std::log(Gold.get_n_links()) - std::log(1 + Gold.get_possible_links() - Gold.get_n_links());
 		}
 		else{
 			log_proposal_Graph += std::log(Gold.get_n_block_links()) - std::log(1 + Gold.get_possible_block_links() - Gold.get_n_block_links());

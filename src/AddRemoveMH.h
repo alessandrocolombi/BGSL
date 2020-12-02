@@ -31,6 +31,8 @@ class AddRemoveMH : public GGM<GraphStructure, T> {
 	protected:
 		unsigned int MCiterPrior;
 		unsigned int MCiterPost;
+		double negative_infinity = -std::numeric_limits<double>::infinity();
+		double infinity = std::numeric_limits<double>::infinity();
 }; 
 
 
@@ -51,9 +53,9 @@ AddRemoveMH<GraphStructure, T>::operator()(MatCol const & data, unsigned int con
 	std::uniform_real_distribution<double> rand(0.,1.);
 	//1) Propose new Graph
 	auto [Gnew, log_proposal_Graph] = this->propose_new_graph(Gold, alpha, seed) ;
-			std::cout<<std::endl;
-			std::cout<<"Gold:"<<std::endl<<Gold<<std::endl;
-			std::cout<<"Gnew:"<<std::endl<<Gnew<<std::endl;
+			//std::cout<<std::endl;
+			//std::cout<<"Gold:"<<std::endl<<Gold<<std::endl;
+			//std::cout<<"Gnew:"<<std::endl<<Gnew<<std::endl;
 
 	//2) Create GWishart wrt Gnew and wrt posterior parameters
 	PrecisionType Kpost(this->Kprior.get_shape() + n , this->Kprior.get_inv_scale() + data );
@@ -65,12 +67,13 @@ AddRemoveMH<GraphStructure, T>::operator()(MatCol const & data, unsigned int con
 	double new_prior =  utils::log_normalizing_constat(Gnew.completeview(), this->Kprior.get_shape(), this->Kprior.get_inv_scale(), MCiterPrior);
 	double log_acceptance_ratio( new_post - new_prior - old_post + old_prior ); 
 	*/
-	/*
+	
 	double old_prior_member =  this->Kprior.log_normalizing_constat(Gold.completeview(),MCiterPrior, seed);
 	double old_post_member  =  Kpost.log_normalizing_constat(Gold.completeview(),MCiterPost, seed);
 	double new_post_member  =  Kpost.log_normalizing_constat(Gnew.completeview(),MCiterPost, seed);
 	double new_prior_member =  this->Kprior.log_normalizing_constat(Gnew.completeview(),MCiterPrior, seed);
-	*/
+	
+
 
 	double log_acceptance_ratio(this->ptr_prior->log_ratio(Gnew, Gold) + log_proposal_Graph +
 								this->Kprior.log_normalizing_constat(Gold.completeview(),MCiterPrior, seed)  - 
@@ -80,7 +83,7 @@ AddRemoveMH<GraphStructure, T>::operator()(MatCol const & data, unsigned int con
 	
 	
 
-	std::cout<<"proposal_Graph = "<< std::exp( log_proposal_Graph ) <<std::endl;
+				//std::cout<<"proposal_Graph = "<< std::exp( log_proposal_Graph ) <<std::endl;
 	/*
 	std::cout<<std::endl;
 	std::cout<<"old post = "<<old_post<<std::endl;
@@ -101,7 +104,6 @@ AddRemoveMH<GraphStructure, T>::operator()(MatCol const & data, unsigned int con
 	
 				//std::cout<<"log acceptance ratio = "<<log_acceptance_ratio<<std::endl;
 	double acceptance_ratio = std::min(1.0, std::exp(log_acceptance_ratio)); 
-				std::cout<<"acceptance ratio = "<<acceptance_ratio<<std::endl;
 	//4) Perform the move and return
 	if(rand(engine) < acceptance_ratio){
 				//std::cout<<"Accepted"<<std::endl;
