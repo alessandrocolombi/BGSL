@@ -96,11 +96,11 @@ GGMsampler<GraphStructure, T, RetGraph>::run()
 
 		//Graphical Step
 		std::tie(K, accepted_mv) = GGM_method(data, n, G, p_addrm, 0); //G is modified inside the function.
+				//std::cout<<"SampledK:"<<std::endl<<K<<std::endl;
 		total_accepted += accepted_mv;
-		//std::cout<<"K:"<<std::endl<<K<<std::endl;
 		//Save
 		if(iter >= nburn){
-			if((iter - nburn)%thinG == 0){
+			if((iter - nburn)%thinG == 0){ 
 				//SaveK.emplace_back(K);
 				std::vector<bool> adj;
 				if constexpr( ! std::is_same_v<T, bool>){

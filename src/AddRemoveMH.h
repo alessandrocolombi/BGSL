@@ -52,7 +52,7 @@ AddRemoveMH<GraphStructure, T>::operator()(MatCol const & data, unsigned int con
 	std::default_random_engine engine(seed);
 	std::uniform_real_distribution<double> rand(0.,1.);
 	//1) Propose new Graph
-	auto [Gnew, log_proposal_Graph] = this->propose_new_graph(Gold, alpha, seed) ;
+	auto [Gnew, log_proposal_Graph, mv_type] = this->propose_new_graph(Gold, alpha, seed) ; //mv_type probably wont be used here
 			//std::cout<<std::endl;
 			//std::cout<<"Gold:"<<std::endl<<Gold<<std::endl;
 			//std::cout<<"Gnew:"<<std::endl<<Gnew<<std::endl;
@@ -67,12 +67,12 @@ AddRemoveMH<GraphStructure, T>::operator()(MatCol const & data, unsigned int con
 	double new_prior =  utils::log_normalizing_constat(Gnew.completeview(), this->Kprior.get_shape(), this->Kprior.get_inv_scale(), MCiterPrior);
 	double log_acceptance_ratio( new_post - new_prior - old_post + old_prior ); 
 	*/
-	
+	/*
 	double old_prior_member =  this->Kprior.log_normalizing_constat(Gold.completeview(),MCiterPrior, seed);
 	double old_post_member  =  Kpost.log_normalizing_constat(Gold.completeview(),MCiterPost, seed);
 	double new_post_member  =  Kpost.log_normalizing_constat(Gnew.completeview(),MCiterPost, seed);
 	double new_prior_member =  this->Kprior.log_normalizing_constat(Gnew.completeview(),MCiterPrior, seed);
-	
+	*/
 
 
 	double log_acceptance_ratio(this->ptr_prior->log_ratio(Gnew, Gold) + log_proposal_Graph +

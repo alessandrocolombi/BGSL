@@ -98,7 +98,7 @@ public:
 	{ 
 		if(_b <= 2)
 			throw std::runtime_error("Shape parameter has to be larger than 2");
-		data = U * U.transpose();
+		data = U.transpose() * U;
 		if(_DD != _DD.transpose()){
 			throw std::runtime_error("Inv_Scale matrix is not symetric");
 		}
@@ -114,7 +114,7 @@ public:
 	{ 
 		if(_b <= 2)
 			throw std::runtime_error("Shape parameter has to be larger than 2");
-		data = U * U.transpose();
+		data = U.transpose() * U;
 	};//devo passargli (..., mat.triangularView<Eigen::Upper>())
 	//Getters
 	inline CholMatrix& get_upper_Chol(){
@@ -167,7 +167,7 @@ public:
 		data = Mat.selfadjointView<Eigen::Upper>();
 		//Check structure
 		if(!this->check_structure(G)){
-			std::cout<<"Structures of matrix and graph are not compatible"<<std::endl;
+			std::cout<<"Setting a new matrix: Structures of matrix and graph are not compatible"<<std::endl;
 			//throw std::runtime_error("Structures of matrix and graph are not compatible");
 		}
 		//compute_Chol();
@@ -260,6 +260,7 @@ long double Precision<CompleteStructure, Type>::log_normalizing_constat(const Co
 	const unsigned int N_free_elements(n_links + N);
 	const long double min_numeric_limits_ld = std::numeric_limits<long double>::min() * 1000;
 	long double result_MC{0};
+	unsigned int number_nan{0};
 	if(seed == 0)
 		seed = std::chrono::system_clock::now().time_since_epoch().count();	
 	sample::GSL_RNG engine(seed);
@@ -269,7 +270,7 @@ long double Precision<CompleteStructure, Type>::log_normalizing_constat(const Co
 	
 
 	//Start
-	//nu[i] = #1's in i-th row, from position i+1 up to end. Note that it is also  che number of off-diagonal elements in each row 
+	//nu[i] = #1's in i-th row, from position i+1 up to end. Note that it is also the number of off-diagonal elements in each row 
 	std::vector<unsigned int> nu(N); 
 	#pragma omp parallel for shared(nu)
 	for(IdxType i = 0; i < N; ++i){
@@ -442,15 +443,28 @@ long double Precision<CompleteStructure, Type>::log_normalizing_constat(const Co
 				//std::cout<<"Psi dopo i = 1: "<<std::endl<<Psi<<std::endl;
 				//std::cout<<"Sums dopo i = 1: "<<std::endl<<Sums<<std::endl;
 				//- If i>1 -> formula 2
-				for(unsigned int i = 2; i < N-1; ++i){
-					Psi(i,i) = *it_fe;
-					it_fe++;
-					Eigen::VectorXd S = Psi.block(0,i,i,1) + Sums.block(0,i-1,i,1); //non cache friendly operation perché Psi e Sums sono per righe e qua sto estraendo delle colonne
-					for(unsigned int j = i+1; j < N; ++j){
-						Sums(i,j-1) = CumSum(i,j);
+				Psi = Psi.template selfadjointView<Eigen::Upper>(); 
+				for(unsigned int i = 2; i < N-1; ++i){ // i = N-1 (last element) is useless
+					Eigen::RowVectorXd S = Psi.block(i,0,1,i);
+					for(unsigned int j = i; j < N; ++j){ //Counting also the diagonal element because they have to be updated too
 						if(G(i,j) == false){
-							Eigen::VectorXd S_star = Psi.block(0,j,i,1) + Sums.block(0,j-1,i,1); //non cache friendly operation perché Psi e Sums sono per righe e qua sto estraendo delle colonne
-							Psi(i,j) = - ( Sums(i,j-1) + S.dot(S_star)/Psi(i,i) );
+							Eigen::RowVectorXd S_star = Psi.block(j,0,1,i);
+							Psi(i,j) = - S.dot(S_star)/Psi(i,i) ;
+							/*
+							if( Psi(i,j) != Psi(i,j)){
+								std::cout<<"************ Psi("<<i<<","<<j<<") is nan? **************"<<std::endl;
+								//std::cout<<"G("<<i<<","<<j<<") = "<<G(i,j)<<std::endl;
+								//std::cout<<"Psi("<<i<<","<<i<<") = "<<Psi(i,i)<<std::endl;
+								//std::cout<<"Psi("<<i<<","<<j<<") = "<<Psi(i,j)<<std::endl;
+								//std::cout<<"S_star:"<<std::endl<<S_star<<std::endl;
+								//std::cout<<"S:"<<std::endl<<S<<std::endl;
+								//std::cout<<"Elementi diagonali"<<std::endl;
+								//for(unsigned int kk = 0; kk < i; ++kk){
+									//std::cout<<Psi(kk,kk)<<"  ";
+								//}
+								//std::cout<<std::endl;
+							}//Check for NaN
+							*/
 							sq_sum_nonfree += Psi(i,j)*Psi(i,j);
 						}
 						else{
@@ -458,20 +472,25 @@ long double Precision<CompleteStructure, Type>::log_normalizing_constat(const Co
 							it_fe++;
 						}
 					}
-						//std::cout<<"Psi dopo i = "<<i<<": "<<std::endl<<Psi<<std::endl;
+					Psi.block(i+1,i,N-1-i,1) = Psi.block(i,i+1,1,N-1-i).transpose();
+							//std::cout<<"Psi dopo i = "<<i<<": "<<std::endl<<Psi<<std::endl;
 				}
+
 			}
 			//Step 4: Compute exp( -0.5 * sum_NonFreeElements(Psi_ij)^2 )
 			long double temp = std::exp((long double)(-0.5 * sq_sum_nonfree));
-			if(temp < min_numeric_limits_ld)  
-				temp = min_numeric_limits_ld;
-			result_MC += std::exp((long double)(-0.5 * sq_sum_nonfree));
-			//result_MC += std::exp(-0.5 * sq_sum_nonfree);
-
-			//#pragma omp critical
-			//{
-				//std::cout<<"I'm thread #"<<thread_id<<", my result is = "<<result_MC<<std::endl;
-			//}
+			//if(temp < min_numeric_limits_ld)  
+				//temp = min_numeric_limits_ld;
+			if( sq_sum_nonfree != sq_sum_nonfree){
+				//throw std::runtime_error("!!!!!!!!!!!!!!! Molto probabile che ci sia un nan !!!!!!!!!!!!!!!!!!!");
+				//std::cout<<"!!!!!!!!!!!!!!! Molto probabile che ci sia un nan !!!!!!!!!!!!!!!!!!!"<<std::endl;
+				number_nan++;
+			}
+			else{
+				result_MC += std::exp((long double)(-0.5 * sq_sum_nonfree));
+				//result_MC += std::exp(-0.5 * sq_sum_nonfree);
+			}
+			
 
 		}
 

@@ -48,15 +48,26 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 	}
 	std::default_random_engine engine(seed);
 	std::uniform_real_distribution< double > rand(0.,1.);
-	double log_acceptance_ratio{0}; //questo deve rimanere
+	double log_acceptance_ratio{0}; 
 	//1) Propose a new graph
-	auto [Gnew, log_GraphMove_proposal] = this->propose_new_graph(Gold, alpha, seed) ;
+	auto [Gnew, log_GraphMove_proposal, mv_type] = this->propose_new_graph(Gold, alpha, seed);
+	MoveType inverse_mv_type;
+	(mv_type == MoveType::Add) ? (inverse_mv_type = MoveType::Remove) : (inverse_mv_type = MoveType::Add);
+					//std::cout<<std::endl;
+					//std::cout<<"Gold:"<<std::endl<<Gold<<std::endl;
+					//std::cout<<"Gnew:"<<std::endl<<Gnew<<std::endl;
 	//2) Sample auxiliary matrix according to Gnew
 	this->Waux.rgwish(Gnew.completeview(), seed);
+	this->Waux.compute_Chol();
+					
 	//3) Perform the first jump with respect to the actual precision matrix K -> K'
-	auto [Knew, log_rj_proposal_K, log_jacobian_mv_K ] = this->RJ(Gnew.completeview(), this->Kprior) ;
-	//4) Perform the second jump with respect to auxiliary matrix W_tilde -> W0	
-	auto [W0, log_rj_proposal_W, log_jacobian_mv_W ] = this->RJ(Gold.completeview(), this->Waux) ;
+	auto [Knew, log_rj_proposal_K, log_jacobian_mv_K ] = this->RJ(Gnew.completeview(), this->Kprior, mv_type) ;
+					//std::cout<<"Kold:"<<std::endl<<this->Kprior.get_matrix()<<std::endl;
+					//std::cout<<"Knew:"<<std::endl<<Knew.get_matrix()<<std::endl;
+	//4) Perform the second jump with respect to auxiliary matrix Waux -> W0	
+	auto [W0, log_rj_proposal_W, log_jacobian_mv_W ] = this->RJ(Gold.completeview(), this->Waux, inverse_mv_type) ;
+					//std::cout<<"Waux:"<<std::endl<<Waux.get_matrix()<<std::endl;
+					//std::cout<<"W0:"<<std::endl<<W0.get_matrix()<<std::endl;
 
 	//NOTE: Step 3 is the jump (K,G) --> (K',G') while step 4 is the jump (Waux,G') --> (W0,G0)
 
@@ -65,14 +76,30 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 	double log_LL_GWishPr_ratio( -0.5 * ((Knew.get_matrix() - this->Kprior.get_matrix())*(this->Kprior.get_inv_scale() + data)).trace()  );
 	double log_aux_ratio( -0.5 * ((this->Waux.get_matrix() - W0.get_matrix())*( this->Waux.get_inv_scale() )).trace() );
 
-	if(this->Move == MoveType::Add){
+	//Questo lo metto solo per fare un confronto
+	double log_GWishPrConst_ratio(this->Kprior.log_normalizing_constat(Gold.completeview(),500, seed) - 
+								  Knew.log_normalizing_constat(Gnew.completeview(),500, seed) );
+
+
+					//std::cout<<"GraphMove_proposal = "<<std::exp(log_GraphMove_proposal)<<std::endl;
+					//std::cout<<"K'-K:"<<std::endl<<Knew.get_matrix() - this->Kprior.get_matrix()<<std::endl;
+					//std::cout<<"Waux - W0:"<<std::endl<<this->Waux.get_matrix() - W0.get_matrix()<<std::endl;
+					//std::cout<<"log_aux_ratio = "<<log_aux_ratio<<std::endl;
+					//std::cout<<"log_LL_GWishPr_ratio = "<<log_LL_GWishPr_ratio<<std::endl;
+					//std::cout<<"log_rj_proposal_K = "<<log_rj_proposal_K<<std::endl;
+					//std::cout<<"log_rj_proposal_W = "<<log_rj_proposal_W<<std::endl;
+					//std::cout<<"log_jacobian_mv_K = "<<log_jacobian_mv_K<<std::endl;
+					//std::cout<<"log_jacobian_mv_W = "<<log_jacobian_mv_W<<std::endl;
+
+
+	if(mv_type == MoveType::Add){
 		log_acceptance_ratio = log_GraphPr_ratio + log_GraphMove_proposal + 
 							   log_LL_GWishPr_ratio - log_aux_ratio 	  + 
 							   log_rj_proposal_K - log_rj_proposal_W	  + 
 							   log_jacobian_mv_K - log_jacobian_mv_W	  ;
 	}
 
-	else if(this->Move == MoveType::Remove){
+	else if(mv_type == MoveType::Remove){
 		log_acceptance_ratio = log_GraphPr_ratio + log_GraphMove_proposal + 
 							   log_LL_GWishPr_ratio - log_aux_ratio 	  + 
 							   log_rj_proposal_W - log_rj_proposal_K	  + 
@@ -80,14 +107,13 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 	}
 
 	double acceptance_ratio = std::min(1.0, std::exp(log_acceptance_ratio)); 
-
+					//std::cout<<"acceptance_ratio = "<<acceptance_ratio<<std::endl;
 	//6) Perform the move and return
 	int accepted;
 	if( rand(engine) < acceptance_ratio ){
 				//std::cout<<"Ho accettato"<<std::endl;
 		Gold = Gnew;
 		//Gold = std::move(Gnew);
-		this->Kprior = Knew; //oppure piu semplicemente, basta aggiornare la U. Qua faccio un sacco di copie inutili
 		//this->Kprior = std::move(Knew);
 		accepted = 1;
 	}
@@ -95,7 +121,11 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 				//std::cout<<"Ho rifiutato"<<std::endl;
 		accepted = 0;
 	}
-	return std::make_tuple(utils::rgwish(Gold.completeview(), this->Kprior.get_shape(), this->Kprior.get_inv_scale() + data , seed ), accepted );
+
+	this->Kprior.set_matrix(Gold.completeview(), utils::rgwish(Gold.completeview(), this->Kprior.get_shape() + n, this->Kprior.get_inv_scale() + data , seed ) ); 
+	this->Kprior.compute_Chol();
+	return std::make_tuple(this->Kprior.get_matrix(),accepted);
+	//return std::make_tuple(utils::rgwish(Gold.completeview(), this->Kprior.get_shape(), this->Kprior.get_inv_scale() + data , seed ), accepted );
 	//It is easier to use the free function becuase the inv_scale matrix has to be factorized for sure.
 	//If the move is accepted, Gold is the new graph
 }

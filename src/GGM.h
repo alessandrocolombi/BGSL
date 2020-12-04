@@ -89,21 +89,21 @@ class GGM : public GGMTraits<GraphStructure, T> {
 		//This method taks the current graph (both form are accepted) and the probability of selecting an addition and return a tuple,
 		//the proposed new graph, a double that is the (log) proposal ratio and the type of selected move
 		
-		std::tuple<Graph, double>  propose_new_graph(Graph & Gold, double alpha, unsigned int seed = 0); 
+		std::tuple<Graph, double, MoveType>  propose_new_graph(Graph & Gold, double alpha, unsigned int seed = 0); 
 		
 		virtual ReturnType operator()(MatCol const & data, unsigned int const & n, Graph & Gold, double alpha, unsigned int seed = 0) = 0;
 		virtual ~GGM() = default;
 		PriorPtr ptr_prior; //Poi deve tornare protected questo
 	protected:	
 		PrecisionType Kprior;
-		MoveType Move;
+		//MoveType Move;
 		std::pair<unsigned int, unsigned int> selected_link; //Questo in realtà non è usato da ARMH
 		
 };
 
 //Sicuramente migliorabile. 
 template<template <typename> class GraphStructure, typename T>
-std::tuple< typename GGMTraits<GraphStructure, T>::Graph, double> 
+std::tuple< typename GGMTraits<GraphStructure, T>::Graph, double, MoveType> 
 GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>::Graph & Gold, double alpha, unsigned int seed){
 	
 	using Graph = GraphStructure<T>;
@@ -118,6 +118,7 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 	std::default_random_engine engine(seed);
 	std::uniform_real_distribution<double> rand(0.,1.);
 	double log_proposal_Graph;
+	MoveType Move;
 	//Select move type
 	if(Gold.get_n_links() == 0){
 				//std::cout<<"Empty graph, add"<<std::endl;
@@ -178,11 +179,11 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 			adj_list[selected[0]] = 1;
 			selected_link = Gold.pos_to_ij(selected[0]);
 			if constexpr(std::is_same_v<Graph , GraphType<T> >){
-				return std::make_tuple( Graph (adj_list),  log_proposal_Graph );
+				return std::make_tuple( Graph (adj_list),  log_proposal_Graph, Move );
 			}
 			else{
 				std::vector< std::pair<unsigned int, unsigned int> > L(Gold.map_to_complete(selected_link.first, selected_link.second));
-				return std::make_tuple( Graph (adj_list, Gold.get_ptr_groups()), log_proposal_Graph );
+				return std::make_tuple( Graph (adj_list, Gold.get_ptr_groups()), log_proposal_Graph, Move );
 			}
 			
 	}
@@ -211,11 +212,11 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 		adj_list[selected[0]] = 0;
 		selected_link = Gold.pos_to_ij(selected[0]);
 		if constexpr(std::is_same_v<Graph , GraphType<T> >){
-			return std::make_tuple( Graph (adj_list), log_proposal_Graph );
+			return std::make_tuple( Graph (adj_list), log_proposal_Graph, Move );
 		}
 		else{
 			std::vector< std::pair<unsigned int, unsigned int> > L(Gold.map_to_complete(selected_link.first, selected_link.second));
-			return std::make_tuple( Graph (adj_list, Gold.get_ptr_groups()), log_proposal_Graph );
+			return std::make_tuple( Graph (adj_list, Gold.get_ptr_groups()), log_proposal_Graph, Move );
 		}
 	}
 
