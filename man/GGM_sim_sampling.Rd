@@ -14,6 +14,7 @@ GGM_sim_sampling(
   b = 3,
   MCprior = 100L,
   MCpost = 100L,
+  threshold = 1e-08,
   form = "Complete",
   prior = "Uniform",
   algo = "MH",
