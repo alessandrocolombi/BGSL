@@ -175,7 +175,7 @@ namespace utils{
 			Eigen::VectorXd Ones(Eigen::VectorXd::Constant(A.cols(), 1));
 			return  ( static_cast<double>(Ones.transpose() * (A-B).cwiseAbs() * Ones) ) / static_cast<double>(A.cols()*A.cols());
 		}
-	}; //returns sum_ij(a_ij - b_ij)/N*N
+	}; //returns sum_ij( |a_ij - b_ij| )/N*N
 
 
 	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
@@ -331,7 +331,8 @@ namespace utils{
 	//This functions returns also if convergence was reached and the number of iterations
 	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, typename NormType = MeanNorm >
 	std::tuple< MatRow, bool, int> 
-	rgwish_verbose(GraphStructure<T> const & G, double const & b, Eigen::MatrixXd const & D, unsigned int const & max_iter = 500, unsigned int seed = 0)
+	rgwish_verbose( GraphStructure<T> const & G, double const & b, Eigen::MatrixXd const & D, unsigned int const & max_iter = 500, 
+					double const & threshold = 1e-8, unsigned int seed = 0)
 	{
 		//Typedefs
 			using Graph 	= GraphStructure<T>;
@@ -352,7 +353,7 @@ namespace utils{
 		//Set parameters
 			unsigned int const N = G.get_size();
 			unsigned int const n_links = G.get_n_links();
-			double const threshold = 1e-8;
+			//double const threshold = 1e-8;
 			bool converged = false;
 			unsigned int it{0};
 			double norm_res{1.0};
@@ -468,6 +469,7 @@ namespace utils{
 					//std::cout<<"Norm res = "<<norm_res<<std::endl;
 				if(norm_res < threshold){
 					converged = true;
+					//std::cout<<"norm_res = "<<norm_res<<std::endl;
 				}
 			}
 		//Step 8: check if everything is fine
@@ -768,7 +770,9 @@ namespace utils{
 		using iterator    = std::vector<unsigned int>::iterator;
 		using citerator   = std::vector<unsigned int>::const_iterator;
 		//Check
-		static_assert(	std::is_same_v<Graph, GraphType<Type> > || std::is_same_v<Graph, CompleteView<Type> > || std::is_same_v<Graph, CompleteViewAdj<Type> >,
+		static_assert(	std::is_same_v<Graph, GraphType<Type> > || 
+						std::is_same_v<Graph, CompleteView<Type> > || std::is_same_v<Graph, CompleteViewAdj<Type> > ||
+						std::is_same_v<Graph, CompleteViewCRTP<Type> > || std::is_same_v<Graph, CompleteViewAdjCRTP<Type> >,
 						"Error, log_normalizing_constat requires a Complete graph for the approximation. The only possibilities are GraphType, CompleteViewAdj, CompleteView.");
 		if(b <= 2)
 			throw std::runtime_error("Shape parameter has to be larger than 2");
@@ -786,8 +790,10 @@ namespace utils{
 		const long double min_numeric_limits_ld = std::numeric_limits<long double>::min() * 1000;
 		unsigned int number_nan{0};
 		long double result_MC{0};
-		if(seed == 0)
-			seed = std::chrono::system_clock::now().time_since_epoch().count();
+		if(seed == 0){
+			std::random_device rd;
+			seed=rd();
+		}
 		sample::GSL_RNG engine(seed);
 		sample::rnorm rnorm;
 		//Start
