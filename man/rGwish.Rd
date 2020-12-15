@@ -11,7 +11,8 @@ rGwish(
   norm = "Mean",
   groups = NULL,
   max_iter = 500L,
-  threshold = 1e-05,
+  threshold_check = 1e-05,
+  threshold_conv = 1e-08,
   seed = 0L
 )
 }
@@ -28,11 +29,13 @@ is not used, the elements is taken in consideration only if the graph is in bloc
 \item{groups}{a Rcpp list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
 i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave NULL if the graph is not in block form.}
 
-\item{threshold}{double, the accurancy for checking if the sampled matrix respects the structure of the graph.}
+\item{max_iter}{unsigned int, the maximum number of iteration.}
+
+\item{threshold_check}{double, the accurancy for checking if the sampled matrix respects the structure of the graph.}
+
+\item{threshold_conv}{double, stop algorithm if the difference between two subsequent iterations is less than threshold_conv.}
 
 \item{seed}{int, the value of the seed. Default value is 0 that implies that a random seed is drawn.}
-
-\item{unsigned}{int, the maximum number of iteration.}
 }
 \value{
 Rcpp::List containing the sampled matrix as an Eigen RowMajor matrix, a bool that states if the convergence was reached or not and finally an int with the number of performed iterations.
