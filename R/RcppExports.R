@@ -22,14 +22,15 @@ test_null <- function(G, l = NULL) {
 #' @param norm Rcpp::String to choose the matrix norm with respect to whom convergence takes place. The available choices are Mean, Inf, One and Squared. Mean is the default value
 #' @param groups a Rcpp list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group, 
 #' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave NULL if the graph is not in block form.
-#' @param unsigned int, the maximum number of iteration.
-#' @param threshold double, the accurancy for checking if the sampled matrix respects the structure of the graph.
+#' @param max_iter unsigned int, the maximum number of iteration.
+#' @param threshold_check double, the accurancy for checking if the sampled matrix respects the structure of the graph.
+#' @param threshold_conv double, stop algorithm if the difference between two subsequent iterations is less than threshold_conv.
 #' @param seed int, the value of the seed. Default value is 0 that implies that a random seed is drawn.
 #' @return Rcpp::List containing the sampled matrix as an Eigen RowMajor matrix, a bool that states if the convergence was reached or not and finally an int with the number of performed iterations.
 #' If the graph is empty or complete, no iterations are performed. It is automatically converted in standard R list.
 #' @export
-rGwish <- function(G, b, D, norm = "Mean", groups = NULL, max_iter = 500L, threshold = 1e-5L, seed = 0L) {
-    .Call(`_BGSL_rGwish`, G, b, D, norm, groups, max_iter, threshold, seed)
+rGwish <- function(G, b, D, norm = "Mean", groups = NULL, max_iter = 500L, threshold_check = 1e-5L, threshold_conv = 1e-8L, seed = 0L) {
+    .Call(`_BGSL_rGwish`, G, b, D, norm, groups, max_iter, threshold_check, threshold_conv, seed)
 }
 
 #' log of GWishart normalizing constant
@@ -52,14 +53,34 @@ log_Gconstant <- function(G, b, D, MCiteration = 100L, groups = NULL, seed = 0L)
     .Call(`_BGSL_log_Gconstant`, G, b, D, MCiteration, groups, seed)
 }
 
+#' Second version of log of GWishart normalizing constant
+#'
+#' This function computes the logarithm of the normalizing constant of GWishart distribution. It implements the Monte Carlo method, developed by Atay-Kayis and Massam (2005).
+#' METTERE LA FORMULA
+#' It also works for non decomposable graphs, actually the exact formula for the decomposable case is not yet implemented. 
+#' In particular it is possible to provide a graph in block form. 
+#' @param G Eigen Matrix of unsigned int stored columnwise. If a standard R matrix is provided, it is automaticaly converted. The lower part 
+#' is not used, the elements is taken in consideration only if the graph is in block form, i.e if groups is non null.
+#' @param b double, it is shape parameter. It has to be larger than 2 in order to have a well defined distribution.
+#' @param D Eigen Matrix of double stored columnwise. It has to be symmetric and positive definite. 
+#' @param MCiteration unsigned int, the number of iteration for the MonteCarlo approximation. 
+#' @param groups a Rcpp list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group, 
+#' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave NULL if the graph is not in block form.
+#' @param seed int, the value of the seed. Default value is 0 that implies that a random seed is drawn.
+#' @return long double, the logarithm of the normalizing constant of GWishart distribution.
+#' @export
+log_Gconstant2 <- function(G, b, D, MCiteration = 100L, groups = NULL, seed = 0L) {
+    .Call(`_BGSL_log_Gconstant2`, G, b, D, MCiteration, groups, seed)
+}
+
 #' Testing all the Gaussian Graphical Models samplers with simulated data
 #'
 #' @param b double, it is shape parameter. It has to be larger than 2 in order to have a well defined distribution.
 #' @param D Eigen Matrix of double stored columnwise. It has to be symmetric and positive definite. 
 #' @param MCiteration unsigned int, the number of iteration for the MonteCarlo approximation. 
 #' @export
-GGM_sim_sampling <- function(p, n, niter, burnin, thin, D, b = 3.0, MCprior = 100L, MCpost = 100L, form = "Complete", prior = "Uniform", algo = "MH", n_groups = 0L, seed = 0L, sparsity = 0.5, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5) {
-    .Call(`_BGSL_GGM_sim_sampling`, p, n, niter, burnin, thin, D, b, MCprior, MCpost, form, prior, algo, n_groups, seed, sparsity, Gprior, sigmaG, paddrm)
+GGM_sim_sampling <- function(p, n, niter, burnin, thin, D, b = 3.0, MCprior = 100L, MCpost = 100L, threshold = 1e-8L, form = "Complete", prior = "Uniform", algo = "MH", n_groups = 0L, seed = 0L, sparsity = 0.5, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5) {
+    .Call(`_BGSL_GGM_sim_sampling`, p, n, niter, burnin, thin, D, b, MCprior, MCpost, threshold, form, prior, algo, n_groups, seed, sparsity, Gprior, sigmaG, paddrm)
 }
 
 #' Testing all the Gaussian Graphical Models samplers
@@ -68,8 +89,22 @@ GGM_sim_sampling <- function(p, n, niter, burnin, thin, D, b = 3.0, MCprior = 10
 #' @param D Eigen Matrix of double stored columnwise. It has to be symmetric and positive definite. 
 #' @param MCiteration unsigned int, the number of iteration for the MonteCarlo approximation. 
 #' @export
-GGM_sampling <- function(data, p, n, niter, burnin, thin, D, b = 3.0, MCprior = 100L, MCpost = 100L, form = "Complete", prior = "Uniform", algo = "MH", n_groups = 0L, seed = 0L, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5) {
-    .Call(`_BGSL_GGM_sampling`, data, p, n, niter, burnin, thin, D, b, MCprior, MCpost, form, prior, algo, n_groups, seed, Gprior, sigmaG, paddrm)
+GGM_sampling <- function(data, p, n, niter, burnin, thin, D, b = 3.0, MCprior = 100L, MCpost = 100L, threshold = 1e-8L, form = "Complete", prior = "Uniform", algo = "MH", n_groups = 0L, seed = 0L, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5) {
+    .Call(`_BGSL_GGM_sampling`, data, p, n, niter, burnin, thin, D, b, MCprior, MCpost, threshold, form, prior, algo, n_groups, seed, Gprior, sigmaG, paddrm)
+}
+
+#' Functional Linear model for smoothing
+#'
+#' This function performs a linear regression for functional data, according to model (INSERIRE FORMULA MODELLO). 
+#' It is not a graphical model, indeed the precision matrix for the regression coefficients is chosen diagonal.
+#' @param data matrix of dimension r x n containing the evaluation of n functional data over a grid of r nodes.
+#' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be (niter - burnin)/thin.
+#' @param burnin the number of discarded iterations. 
+#' @param thin the thining value, it means that only one out of thin itarations is saved.
+#' @param BaseMat matrix of dimension r x p containing the evalutation of p Bspline basis over a grid of r nodes
+#' 
+FLM_sampling_c <- function(data, niter, burnin, thin, BaseMat, G, diagonal_graph = TRUE, threshold_GWish = 1e-8L) {
+    .Call(`_BGSL_FLM_sampling_c`, data, niter, burnin, thin, BaseMat, G, diagonal_graph, threshold_GWish)
 }
 
 #' Generates random Graphs
@@ -86,6 +121,82 @@ GGM_sampling <- function(data, p, n, niter, burnin, thin, D, b = 3.0, MCprior = 
 #' @export
 Create_RandomGraph <- function(p, n_groups = 0L, form = "Complete", groups = NULL, sparsity = 0.5, seed = 0L) {
     .Call(`_BGSL_Create_RandomGraph`, p, n_groups, form, groups, sparsity, seed)
+}
+
+#' Sampler for Multivariate Normal random variables
+#'
+#' This function draws random samples from Multivariate Gaussian distribution. It implements both covariance and precision parametrization.
+#' It is also possible to pass directly the Cholesky decomposition if it is available before the call.
+#' @param mean Eigen column vector of size p representig the mean of the Gaussian distribution.
+#' @param Mat Eigen p x p column major matrix reprenting the covariance or the precision or their Cholesky decompositions.
+#' @param isPrec bool, set true if Mat parameter is a precision, false if it is a covariance.
+#' @param isChol bool, set true if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance
+#' @param isUpper bool, used only if isChol is true. Set true if Mat is upper triangular, false if lower.
+#' @return It returns a p dimensional vector with the sampled values.
+#' @export
+rmvnormal <- function(mean, Mat, isPrec = FALSE, isChol = FALSE, isUpper = FALSE) {
+    .Call(`_BGSL_rmvnormal`, mean, Mat, isPrec, isChol, isUpper)
+}
+
+#' Sampler for Wishart random variables
+#'
+#' This function draws random samples from Wishart distribution. 
+#' It is also possible to pass directly the Cholesky decomposition of the inverse scale matrix if it is available before the call.
+#' @param b double, it is shape parameter. 
+#' @param D Eigen p x p Matrix of double stored columnwise representig the inverse scale parameter. It has to be symmetric and positive definite. 
+#' @param isChol bool, set true if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance
+#' @param isUpper bool, used only if isChol is true. Set true if Mat is upper triangular, false if lower.
+#' @return It returns a p x p matrix.
+#' @export
+rwishart <- function(b, D, isChol = FALSE, isUpper = FALSE) {
+    .Call(`_BGSL_rwishart`, b, D, isChol, isUpper)
+}
+
+#' Sampler for Normal distribution
+#'
+#' @export
+rnormal <- function(mean = 0.0, sd = 1.0) {
+    .Call(`_BGSL_rnormal`, mean, sd)
+}
+
+#' Generate Bspine basis 
+#'
+#' This function creates a truncated Bspline basis in the interval [range(1),range(2)] and evaluate them over a grid of points.
+#' It assumes uniformly spaced breakpoints and constructs the corresponding knot vector using a number of breaks equal to n_basis + 2 - order.
+#' @param n_basis number of basis functions.
+#' @param range vector of two elements containing first the lower and then the upper bound of the interval.
+#' @param points number of grid points where the basis has to be evaluated. It is not used if the points are directly passed in the grid_points parameter.
+#' @param grid_points vector of points where the basis has to be evaluated. If defaulted, then n_points are uniformly generated in the interval.
+#' @param order order of the Bsplines. Set four for cubic splines.
+#' @return a List with a matrix of dimension grid_points.size() x n_basis such that r-th rows contains all the spline computed in grid_points[r] and j-th column
+#' contains the j-th spline evaluated in all points. It also returns a vector of size n_basis + 2 - order containing the internal knots used to create the spline
+#' @export
+Generate_Basis <- function(n_basis, range, n_points = 0L, grid_points = as.numeric( c(0)), order = 3L) {
+    .Call(`_BGSL_Generate_Basis`, n_basis, range, n_points, grid_points, order)
+}
+
+#' Generate Bspine basis and its derivatives
+#'
+#' This function creates a truncated Bspline basis in the interval [range(1),range(2)] and evaluate them over a grid of points up to derivative of order nderiv.
+#' For convention, derivatives of order 0 are the splines themselves. This implimes that the first returned element is always equal to the output of the function Generate_Basis.
+#' @param n_basis number of basis functions.
+#' @param nderiv number of derivates that have to be computed.
+#' @param range vector of two elements containing first the lower and then the upper bound of the interval.
+#' @param points number of grid points where the basis has to be evaluated. It is not used if the points are directly passed in the grid_points parameter.
+#' @param grid_points vector of points where the basis has to be evaluated. If defaulted, then n_points are uniformly generated in the interval.
+#' @param order order of the Bsplines. Set four for cubic splines.
+#' @return a List of length nderiv+1 such that each element is a grid_points.size() x n_basis matrix representing the evaluation of 
+#' all the k-th derivative of all the splines in all the grid points. 
+#' @export
+Generate_Basis_derivatives <- function(n_basis, nderiv, range, n_points = 0L, grid_points = as.numeric( c(0)), order = 3L) {
+    .Call(`_BGSL_Generate_Basis_derivatives`, n_basis, nderiv, range, n_points, grid_points, order)
+}
+
+#' Generate Bspine basis and its derivatives
+#'
+#' @export
+Compute_QuantileBeta <- function(SaveBeta, lower_qtl = 0.05, upper_qtl = 0.95) {
+    .Call(`_BGSL_Compute_QuantileBeta`, SaveBeta, lower_qtl, upper_qtl)
 }
 
 #' Function for testing properties of Graph classes
