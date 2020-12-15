@@ -22,10 +22,10 @@ class DoubleReversibleJumpsMH : public ReversibleJumpsMH<GraphStructure, T> {
 		using PrecisionType     = typename GGMTraits<GraphStructure, T>::PrecisionType;
 		using ReturnType 		= typename GGMTraits<GraphStructure, T>::ReturnType;
 		//Constructors
-		DoubleReversibleJumpsMH(	PriorPtr& _ptr_prior,double const & _b , MatCol const & _D, double const & _sigma, unsigned int const & _MCiterPrior = 0):
-						 		 		ReversibleJumpsMH<GraphStructure, T>(_ptr_prior, _b, _D, _sigma, _MCiterPrior), Waux( _b, _D ) {}
-		DoubleReversibleJumpsMH(	PriorPtr& _ptr_prior,unsigned int const & _p, double const & _sigma, unsigned int const & _MCiterPrior = 0):
-						 			 ReversibleJumpsMH<GraphStructure, T>(_ptr_prior, _p, _sigma, _MCiterPrior), Waux(_p){}
+		DoubleReversibleJumpsMH(	PriorPtr& _ptr_prior,double const & _b , MatCol const & _D, double const & _trGwishSampler, double const & _sigma, unsigned int const & _MCiterPrior = 0):
+						 		 		ReversibleJumpsMH<GraphStructure, T>(_ptr_prior, _b, _D, _trGwishSampler, _sigma, _MCiterPrior), Waux( _b, _D ) {}
+		DoubleReversibleJumpsMH(	PriorPtr& _ptr_prior,unsigned int const & _p, double const & _trGwishSampler, double const & _sigma, unsigned int const & _MCiterPrior = 0):
+						 			 ReversibleJumpsMH<GraphStructure, T>(_ptr_prior, _p, _trGwishSampler, _sigma, _MCiterPrior), Waux(_p){}
 		//Methods
 		ReturnType operator()(MatCol const & data, unsigned int const & n, Graph & Gold, double alpha, unsigned int seed = 0);
 	protected:
@@ -53,13 +53,12 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 	auto [Gnew, log_GraphMove_proposal, mv_type] = this->propose_new_graph(Gold, alpha, seed);
 	MoveType inverse_mv_type;
 	(mv_type == MoveType::Add) ? (inverse_mv_type = MoveType::Remove) : (inverse_mv_type = MoveType::Add);
-					//std::cout<<std::endl;
+					//std::cout<<""<<std::endl;
 					//std::cout<<"Gold:"<<std::endl<<Gold<<std::endl;
 					//std::cout<<"Gnew:"<<std::endl<<Gnew<<std::endl;
 	//2) Sample auxiliary matrix according to Gnew
-	this->Waux.rgwish(Gnew.completeview(), seed);
+	this->Waux.rgwish(Gnew.completeview(), this->trGwishSampler, seed);
 	this->Waux.compute_Chol();
-					
 	//3) Perform the first jump with respect to the actual precision matrix K -> K'
 	auto [Knew, log_rj_proposal_K, log_jacobian_mv_K ] = this->RJ(Gnew.completeview(), this->Kprior, mv_type) ;
 					//std::cout<<"Kold:"<<std::endl<<this->Kprior.get_matrix()<<std::endl;
@@ -72,13 +71,22 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 	//NOTE: Step 3 is the jump (K,G) --> (K',G') while step 4 is the jump (Waux,G') --> (W0,G0)
 
 	//5) Compute acceptance probability ratio
+	auto TraceProd = [](MatRow const & A, MatCol const & B){
+		double res{0};
+		#pragma omp parallel for reduction(+:res)
+		for(unsigned int i = 0; i < A.rows(); ++i)
+			res += A.row(i)*B.col(i);
+		return( -0.5*res );
+	}; //This lambda function computes trace(A*B)
 	double log_GraphPr_ratio(this->ptr_prior->log_ratio(Gnew, Gold));
-	double log_LL_GWishPr_ratio( -0.5 * ((Knew.get_matrix() - this->Kprior.get_matrix())*(this->Kprior.get_inv_scale() + data)).trace()  );
-	double log_aux_ratio( -0.5 * ((this->Waux.get_matrix() - W0.get_matrix())*( this->Waux.get_inv_scale() )).trace() );
+	//double log_LL_GWishPr_ratio( -0.5 * ((Knew.get_matrix() - this->Kprior.get_matrix())*(this->Kprior.get_inv_scale() + data)).trace()  );
+	double log_LL_GWishPr_ratio(  TraceProd( Knew.get_matrix() - this->Kprior.get_matrix() , this->Kprior.get_inv_scale() + data)  );
+	//double log_aux_ratio( -0.5 * ((this->Waux.get_matrix() - W0.get_matrix())*( this->Waux.get_inv_scale() )).trace() );
+	double log_aux_ratio( TraceProd(this->Waux.get_matrix() - W0.get_matrix(), this->Waux.get_inv_scale() ) );
 
-	//Questo lo metto solo per fare un confronto
-	double log_GWishPrConst_ratio(this->Kprior.log_normalizing_constat(Gold.completeview(),500, seed) - 
-								  Knew.log_normalizing_constat(Gnew.completeview(),500, seed) );
+			//Questo lo metto solo per fare un confronto
+			//double log_GWishPrConst_ratio(this->Kprior.log_normalizing_constat(Gold.completeview(),500, seed) - 
+			//							  Knew.log_normalizing_constat(Gnew.completeview(),500, seed) );
 
 
 					//std::cout<<"GraphMove_proposal = "<<std::exp(log_GraphMove_proposal)<<std::endl;
@@ -107,13 +115,13 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 	}
 
 	double acceptance_ratio = std::min(1.0, std::exp(log_acceptance_ratio)); 
-					//std::cout<<"acceptance_ratio = "<<acceptance_ratio<<std::endl;
+				//std::cout<<"acceptance_ratio = "<<acceptance_ratio<<std::endl;
 	//6) Perform the move and return
 	int accepted;
 	if( rand(engine) < acceptance_ratio ){
 				//std::cout<<"Ho accettato"<<std::endl;
-		Gold = Gnew;
-		//Gold = std::move(Gnew);
+		//Gold = Gnew;
+		Gold = std::move(Gnew); //Move semantic is available for graphs
 		//this->Kprior = std::move(Knew);
 		accepted = 1;
 	}
@@ -121,8 +129,7 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 				//std::cout<<"Ho rifiutato"<<std::endl;
 		accepted = 0;
 	}
-
-	this->Kprior.set_matrix(Gold.completeview(), utils::rgwish(Gold.completeview(), this->Kprior.get_shape() + n, this->Kprior.get_inv_scale() + data , seed ) ); 
+	this->Kprior.set_matrix(Gold.completeview(), utils::rgwish(Gold.completeview(), this->Kprior.get_shape() + n, this->Kprior.get_inv_scale() + data , this->trGwishSampler, seed ) ); 
 	this->Kprior.compute_Chol();
 	return std::make_tuple(this->Kprior.get_matrix(),accepted);
 	//return std::make_tuple(utils::rgwish(Gold.completeview(), this->Kprior.get_shape(), this->Kprior.get_inv_scale() + data , seed ), accepted );

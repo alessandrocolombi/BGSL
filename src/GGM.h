@@ -55,14 +55,17 @@ class GGM : public GGMTraits<GraphStructure, T> {
 	
 	
 	public:
-		//Takes a ptr
-		GGM(PriorPtr& _ptr_prior,double const & _b , MatCol const & _D): ptr_prior(std::move(_ptr_prior)), Kprior( _b, _D ) {}
-		GGM(PriorPtr& _ptr_prior,unsigned int const & _p): ptr_prior(std::move(_ptr_prior)), Kprior(_p) {}
-		GGM(GGM & _ggm):ptr_prior(_ggm.ptr_prior->clone()), Kprior(_ggm.Kprior){}
+		//Constructors
+		//GGM(PriorPtr& _ptr_prior):
+				//ptr_prior(std::move(_ptr_prior)) {} 
+		GGM(PriorPtr& _ptr_prior,double const & _b , MatCol const & _D, double const & _trGwishSampler):
+				ptr_prior(std::move(_ptr_prior)),  Kprior( _b, _D ), trGwishSampler(_trGwishSampler) {}
+		GGM(PriorPtr& _ptr_prior,unsigned int const & _p, double const & _trGwishSampler): 
+				ptr_prior(std::move(_ptr_prior)), Kprior(_p), trGwishSampler(_trGwishSampler) {}
+		GGM(GGM & _ggm):
+				ptr_prior(_ggm.ptr_prior->clone()), Kprior(_ggm.Kprior), trGwishSampler(_ggm.trGwishSampler){}
 		GGM(GGM &&) = default;
 
-
-		
 		//Operators
 		GGM & operator=(const GGM & _ggm){
 			if(&_ggm != this){
@@ -93,9 +96,10 @@ class GGM : public GGMTraits<GraphStructure, T> {
 		
 		virtual ReturnType operator()(MatCol const & data, unsigned int const & n, Graph & Gold, double alpha, unsigned int seed = 0) = 0;
 		virtual ~GGM() = default;
-		PriorPtr ptr_prior; //Poi deve tornare protected questo
-	protected:	
+	protected:
+		PriorPtr ptr_prior; //Poi deve tornare protected questo	
 		PrecisionType Kprior;
+		double trGwishSampler;
 		//MoveType Move;
 		std::pair<unsigned int, unsigned int> selected_link; //Questo in realtà non è usato da ARMH
 		
@@ -123,28 +127,10 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 	if(Gold.get_n_links() == 0){
 				//std::cout<<"Empty graph, add"<<std::endl;
 		Move = MoveType::Add;
-		/*
-		log_proposal_Graph = std::log(1-alpha)-std::log(alpha) ;
-		if constexpr(std::is_same_v<Graph , GraphType<T> >){
-			log_proposal_Graph += std::log(Gold.get_possible_links());
-		}
-		else{
-			log_proposal_Graph += std::log(Gold.get_possible_block_links());
-		}
-		*/
 	}
 	else if(Gold.get_n_links() == Gold.get_possible_links()){
 				//std::cout<<"Full graph, remove"<<std::endl;
 		Move = MoveType::Remove;
-		/*
-		log_proposal_Graph = std::log(alpha)-std::log(1-alpha);
-		if constexpr(std::is_same_v<Graph , GraphType<T> >){
-			log_proposal_Graph += std::log(Gold.get_possible_links());
-		}
-		else{
-			log_proposal_Graph += std::log(Gold.get_possible_block_links());
-		}
-		*/
 	}
 	else{
 				//std::cout<<"Not empty nor full, choose by change"<<std::endl;

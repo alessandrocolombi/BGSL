@@ -64,7 +64,7 @@ GGMsampler<GraphStructure, T, RetGraph>::run()
 	// Declare all parameters (makes use of C++17 structured bindings)
 	const unsigned int & r = grid_pts;
 	const double&  p_addrm   = this->hy_params.p_addrm; 
-	const auto &[niter, nburn, thin, thinG, MCiterPrior, MCiterPost, Basemat, ptr_groups, iter_to_store, iter_to_storeG] = this->params;
+	const auto &[niter, nburn, thin, thinG, MCiterPrior, MCiterPost, Basemat, ptr_groups, iter_to_store, iter_to_storeG, threshold] = this->params;
 	MatRow K = init.K0; 
 	Graph  G = init.G0;
 	GGM_method.init_precision(G,K); //non serve per ARMH

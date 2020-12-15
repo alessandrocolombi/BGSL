@@ -4,7 +4,7 @@
 //#include <Rcpp.h>
 
 #include "include_headers.h"
-#include "Groups.h"
+#include "include_graphs.h"
 
 template<class D, class T=unsigned int>
 class BlockGraphBaseCRTP{
@@ -57,8 +57,12 @@ class BlockGraphBaseCRTP{
     }
     unsigned int get_n_links() const              {static_cast<D*>(this)->get_n_links();}
     unsigned int get_n_block_links() const        {static_cast<D*>(this)->get_n_block_links();}
-    unsigned int get_possible_links() const       {static_cast<D*>(this)->get_possible_links();}
-    unsigned int get_possible_block_links() const {static_cast<D*>(this)->get_possible_block_links();}
+    inline unsigned int get_possible_links() const{
+      return 0.5*this->get_complete_size()*(this->get_complete_size()-1);
+    }
+    inline unsigned int get_possible_block_links() const{
+      return (0.5*this->get_size()*(this->get_size()-1) + this->get_size() - this->get_number_singleton());
+    }
     //Find
           //inline unsigned int find_group_idx(IdxType const & i)const{
             //return ptr_groups->find(i);
@@ -173,19 +177,19 @@ BlockGraphBaseCRTP<D,T>::pos_to_ij(typename BlockGraphBaseCRTP<D,T>::IdxType con
 //------------------------------------------------------------------------------------------------------------------------------------------------
 
 template<class T=unsigned int>
-class CompleteViewCRTP;
+class CompleteView;
 
 template<class T=unsigned int>
-class BlockGraphCRTP : public BlockGraphBaseCRTP<BlockGraphCRTP<T>, T>{
+class BlockGraph : public BlockGraphBaseCRTP<BlockGraph<T>, T>{
   public:
-    using value_type    = typename BlockGraphBaseCRTP<BlockGraphCRTP,T>::value_type;
-    using Adj           = typename BlockGraphBaseCRTP<BlockGraphCRTP,T>::Adj;
-    using IdxType       = typename BlockGraphBaseCRTP<BlockGraphCRTP,T>::IdxType;
+    using value_type    = typename BlockGraphBaseCRTP<BlockGraph,T>::value_type;
+    using Adj           = typename BlockGraphBaseCRTP<BlockGraph,T>::Adj;
+    using IdxType       = typename BlockGraphBaseCRTP<BlockGraph,T>::IdxType;
     using InnerData     = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
-    using GroupsPtr     = typename BlockGraphBaseCRTP<BlockGraphCRTP,T>::GroupsPtr;
-    using Neighbourhood = typename BlockGraphBaseCRTP<BlockGraphCRTP,T>::Neighbourhood;
+    using GroupsPtr     = typename BlockGraphBaseCRTP<BlockGraph,T>::GroupsPtr;
+    using Neighbourhood = typename BlockGraphBaseCRTP<BlockGraph,T>::Neighbourhood;
     //Constructors
-    BlockGraphCRTP(Adj const & _A, GroupsPtr const & _Gr):BlockGraphBaseCRTP<BlockGraphCRTP,T>(_Gr){
+    BlockGraph(Adj const & _A, GroupsPtr const & _Gr):BlockGraphBaseCRTP<BlockGraph,T>(_Gr){
       unsigned int M{this->ptr_groups->get_n_groups()};
       if( M*(M-1)/2 + M - this->n_singleton != _A.size() )
         throw std::runtime_error("The number of groups is not coherent with the size of the adjacency matrix");
@@ -195,8 +199,8 @@ class BlockGraphCRTP : public BlockGraphBaseCRTP<BlockGraphCRTP<T>, T>{
         this->compute_nlinks_nblocks();
       }
     };
-    BlockGraphCRTP(GroupsPtr const & _Gr):BlockGraphBaseCRTP<BlockGraphCRTP,T>(_Gr){};
-    BlockGraphCRTP(InnerData const & _Mat, GroupsPtr const & _Gr):data(_Mat),BlockGraphBaseCRTP<BlockGraphCRTP,T>(_Gr){
+    BlockGraph(GroupsPtr const & _Gr):BlockGraphBaseCRTP<BlockGraph,T>(_Gr){};
+    BlockGraph(InnerData const & _Mat, GroupsPtr const & _Gr):data(_Mat),BlockGraphBaseCRTP<BlockGraph,T>(_Gr){
       if(data.rows() != data.cols())
         throw std::runtime_error("Matrix insereted as graph is not squared");
       if( this->ptr_groups->get_n_groups() != data.rows() )
@@ -206,7 +210,7 @@ class BlockGraphCRTP : public BlockGraphBaseCRTP<BlockGraphCRTP<T>, T>{
       this->find_neighbours();
       this->compute_nlinks_nblocks();
     }
-    BlockGraphCRTP(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const & _Mat, GroupsPtr const & _Gr):data(_Mat),BlockGraphBaseCRTP<BlockGraphCRTP,T>(_Gr){
+    BlockGraph(Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const & _Mat, GroupsPtr const & _Gr):data(_Mat),BlockGraphBaseCRTP<BlockGraph,T>(_Gr){
       if(data.rows() != data.cols())
         throw std::runtime_error("Matrix insereted as graph is not squared");
       if( this->ptr_groups->get_n_groups() != data.rows() )
@@ -216,9 +220,9 @@ class BlockGraphCRTP : public BlockGraphBaseCRTP<BlockGraphCRTP<T>, T>{
       this->find_neighbours();
       this->compute_nlinks_nblocks();
     }
-    //BlockGraphCRTP(BlockGraphCRTP const & _Gr); default is ok
-    //BlockGraphCRTP(BlockGraphCRTP&& _Gr); default is ok
-    //BlockGraphCRTP()=default; NON voglio il default constructor
+    //BlockGraph(BlockGraph const & _Gr); default is ok
+    //BlockGraph(BlockGraph&& _Gr); default is ok
+    //BlockGraph()=default; NON voglio il default constructor
 
     //Getters
     inline InnerData get_graph() const{
@@ -235,12 +239,6 @@ class BlockGraphCRTP : public BlockGraphBaseCRTP<BlockGraphCRTP<T>, T>{
     inline unsigned int get_n_block_links() const{
       return this->n_blocks;
     }
-    inline unsigned int get_possible_links() const{
-      return 0.5*this->get_complete_size()*(this->get_complete_size()-1);
-    }
-    inline unsigned int get_possible_block_links() const{
-      return (0.5*this->get_size()*(this->get_size()-1) + this->get_size() - this->get_number_singleton());
-    }
     //Set the entire graph
     void set_graph(Adj const & A);//Usage, GraphObj.set_graph(A);
     void set_graph(Adj&& A);    //Usage, GraphObj.set_graph(std::move(A));
@@ -253,8 +251,8 @@ class BlockGraphCRTP : public BlockGraphBaseCRTP<BlockGraphCRTP<T>, T>{
     inline void remove_link(IdxType const & i, IdxType const & j){
       data(i,j) = false;
     }    
-    inline CompleteViewCRTP<T> completeview(){
-      return CompleteViewCRTP (*this);
+    inline CompleteView<T> completeview(){
+      return CompleteView (*this);
     }
     // Operators
     T operator()(IdxType const & i, IdxType const & j)const{
@@ -264,7 +262,7 @@ class BlockGraphCRTP : public BlockGraphBaseCRTP<BlockGraphCRTP<T>, T>{
       return (i<j) ? (data(i,j)) : (data(j,i));
     }
 
-    friend std::ostream & operator<<(std::ostream & str, BlockGraphCRTP & G){
+    friend std::ostream & operator<<(std::ostream & str, BlockGraph & G){
       //str<<G.data;
       for(IdxType i = 0; i < G.get_size(); ++i){
         for(IdxType j = 0; j < G.get_size(); ++j){
@@ -279,7 +277,7 @@ class BlockGraphCRTP : public BlockGraphBaseCRTP<BlockGraphCRTP<T>, T>{
     }
     //Clone
     //virtual std::unique_ptr< BlockGraphBaseCRTP<T> > clone() const{
-      //return std::make_unique< BlockGraphCRTP<T> > (*this);
+      //return std::make_unique< BlockGraph<T> > (*this);
     //};
     void find_neighbours();
   private:
@@ -292,7 +290,7 @@ class BlockGraphCRTP : public BlockGraphBaseCRTP<BlockGraphCRTP<T>, T>{
 
 
 template<class T>
-typename BlockGraphCRTP<T>::Adj BlockGraphCRTP<T>::get_adj_list()const{
+typename BlockGraph<T>::Adj BlockGraph<T>::get_adj_list()const{
   Adj adj_list;
   adj_list.reserve(this->get_possible_block_links());
   unsigned int M{this->ptr_groups->get_n_groups()};
@@ -321,7 +319,7 @@ typename BlockGraphCRTP<T>::Adj BlockGraphCRTP<T>::get_adj_list()const{
   return adj_list;
 }
 template<class T>
-void BlockGraphCRTP<T>::set_graph(typename BlockGraphCRTP<T>::Adj const & A){
+void BlockGraph<T>::set_graph(typename BlockGraph<T>::Adj const & A){
   unsigned int M{this->ptr_groups->get_n_groups()};
   if( M*(M-1)/2 + M - this->n_singleton != A.size() )
     throw std::runtime_error("The number of groups is not coherent with the size of the adjacency matrix");
@@ -333,7 +331,7 @@ void BlockGraphCRTP<T>::set_graph(typename BlockGraphCRTP<T>::Adj const & A){
   this->compute_nlinks_nblocks();
 }
 template<class T>
-void BlockGraphCRTP<T>::set_graph(typename BlockGraphCRTP<T>::Adj&& A){
+void BlockGraph<T>::set_graph(typename BlockGraph<T>::Adj&& A){
 
   unsigned int M{this->ptr_groups->get_n_groups()};
   if( M*(M-1)/2 + M - this->n_singleton != A.size() )
@@ -350,7 +348,7 @@ void BlockGraphCRTP<T>::set_graph(typename BlockGraphCRTP<T>::Adj&& A){
 }
 
 template<class T>
-void BlockGraphCRTP<T>::set_empty_graph(){
+void BlockGraph<T>::set_empty_graph(){
   data = InnerData::Zero(this->get_size(), this->get_size());
   std::vector<unsigned int> pos_sing = this->ptr_groups->get_pos_singleton();
   if(pos_sing.size() > 0){
@@ -362,7 +360,7 @@ void BlockGraphCRTP<T>::set_empty_graph(){
   this->compute_nlinks_nblocks();
 }
 template<class T>
-void BlockGraphCRTP<T>::fillRandom(double sparsity, unsigned int seed){
+void BlockGraph<T>::fillRandom(double sparsity, unsigned int seed){
 
   if(sparsity > 1.0){
     std::cerr<<"Sparsity larger then 1, set to 0.5";
@@ -408,7 +406,7 @@ void BlockGraphCRTP<T>::fillRandom(double sparsity, unsigned int seed){
   this->compute_nlinks_nblocks();
 }
 template<class T>
-void BlockGraphCRTP<T>::fillFromAdj(Adj const & A){
+void BlockGraph<T>::fillFromAdj(Adj const & A){
   //std::cout<<"Copy!"<<std::endl;
   unsigned int M{this->ptr_groups->get_n_groups()};
   data.resize(M,M);
@@ -434,7 +432,7 @@ void BlockGraphCRTP<T>::fillFromAdj(Adj const & A){
 }
 
 template<class T>
-void BlockGraphCRTP<T>::fillFromAdj(typename BlockGraphCRTP<T>::Adj&& A){
+void BlockGraph<T>::fillFromAdj(typename BlockGraph<T>::Adj&& A){
   //std::cout<<"Move!"<<std::endl;
   unsigned int M{this->ptr_groups->get_n_groups()};
   data.resize(M,M);
@@ -461,8 +459,8 @@ void BlockGraphCRTP<T>::fillFromAdj(typename BlockGraphCRTP<T>::Adj&& A){
 }
 
 template<class T>
-void BlockGraphCRTP<T>::find_neighbours(){
-  using IdxType = typename BlockGraphCRTP<T>::IdxType;
+void BlockGraph<T>::find_neighbours(){
+  using IdxType = typename BlockGraph<T>::IdxType;
   
   for(IdxType i=0; i < this->get_complete_size(); ++i){
     std::set<unsigned int> temp; //it is mandatory for my_nbd to be sorted. Insert element in a set and the plug the set into the vector
@@ -487,7 +485,7 @@ void BlockGraphCRTP<T>::find_neighbours(){
 }
 
 template<class T>
-void BlockGraphCRTP<T>::compute_nlinks_nblocks(){
+void BlockGraph<T>::compute_nlinks_nblocks(){
   this->n_links  = 0;
   this->n_blocks = 0;
       for(IdxType i = 0; i < this->get_size(); ++i){
@@ -508,16 +506,16 @@ void BlockGraphCRTP<T>::compute_nlinks_nblocks(){
 //-------------------------------------------------------------------------------------------------------------------------------------------------------
 
 template<class T>
-class CompleteViewCRTP{
+class CompleteView{
   public:
-    using value_type    = typename BlockGraphBaseCRTP<BlockGraphCRTP<T>,T>::value_type;
-    using IdxType       = typename BlockGraphBaseCRTP<BlockGraphCRTP<T>,T>::IdxType;
-    using Neighbourhood = typename BlockGraphBaseCRTP<BlockGraphCRTP<T>,T>::Neighbourhood;
+    using value_type    = typename BlockGraphBaseCRTP<BlockGraph<T>,T>::value_type;
+    using IdxType       = typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType;
+    using Neighbourhood = typename BlockGraphBaseCRTP<BlockGraph<T>,T>::Neighbourhood;
     //Constructor
-    CompleteViewCRTP(BlockGraphCRTP<T> & _G):G(_G){};
+    CompleteView(BlockGraph<T> & _G):G(_G){};
 
-    T operator()( typename BlockGraphBaseCRTP<BlockGraphCRTP<T>,T>::IdxType const & i, 
-                  typename BlockGraphBaseCRTP<BlockGraphCRTP<T>,T>::IdxType const & j) const
+    T operator()( typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & i, 
+                  typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & j) const
     {
       if(i == j)
         return true;
@@ -565,7 +563,7 @@ class CompleteViewCRTP{
       return G.get_group_size(i);
     }
 
-    friend std::ostream & operator<<(std::ostream & str, CompleteViewCRTP & _G){
+    friend std::ostream & operator<<(std::ostream & str, CompleteView & _G){
       for(IdxType i = 0; i < _G.G.get_complete_size(); ++i){
         for(IdxType j = 0; j < _G.G.get_complete_size(); ++j)
           std::cout<<_G(i,j)<<" ";
@@ -576,28 +574,28 @@ class CompleteViewCRTP{
     }
 
   private:
-    BlockGraphCRTP<T>&  G;
+    BlockGraph<T>&  G;
 };
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
 
 template<class T>
-class CompleteViewAdjCRTP;
+class CompleteViewAdj;
 
 template<class T = unsigned int>
-class BlockGraphAdjCRTP : public BlockGraphBaseCRTP<BlockGraphAdjCRTP<T>, T>{
+class BlockGraphAdj : public BlockGraphBaseCRTP<BlockGraphAdj<T>, T>{
   public:
-    using value_type    = typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::value_type;
-    using Adj           = typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::Adj;
-    using IdxType       = typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::IdxType;
-    using InnerData     = typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::Adj;
+    using value_type    = typename BlockGraphBaseCRTP<BlockGraphAdj,T>::value_type;
+    using Adj           = typename BlockGraphBaseCRTP<BlockGraphAdj,T>::Adj;
+    using IdxType       = typename BlockGraphBaseCRTP<BlockGraphAdj,T>::IdxType;
+    using InnerData     = typename BlockGraphBaseCRTP<BlockGraphAdj,T>::Adj;
     using Iterator      = typename InnerData::iterator;
     using ConstIterator = typename InnerData::const_iterator;
-    using GroupsPtr     = typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::GroupsPtr;
-    using Neighbourhood = typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::Neighbourhood;
+    using GroupsPtr     = typename BlockGraphBaseCRTP<BlockGraphAdj,T>::GroupsPtr;
+    using Neighbourhood = typename BlockGraphBaseCRTP<BlockGraphAdj,T>::Neighbourhood;
 
-    BlockGraphAdjCRTP(GroupsPtr const & _Gr): BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>(_Gr){};
-    BlockGraphAdjCRTP(typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::Adj const & _A, GroupsPtr const & _Gr):BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>(_Gr), data(_A){
+    BlockGraphAdj(GroupsPtr const & _Gr): BlockGraphBaseCRTP<BlockGraphAdj,T>(_Gr){};
+    BlockGraphAdj(typename BlockGraphBaseCRTP<BlockGraphAdj,T>::Adj const & _A, GroupsPtr const & _Gr):BlockGraphBaseCRTP<BlockGraphAdj,T>(_Gr), data(_A){
       unsigned int M{this->ptr_groups->get_n_groups()};
       if( M*(M-1)/2 + M - this->n_singleton != data.size() ){
         throw std::runtime_error("The number of groups is not coherent with the size of the adjacency matrix");
@@ -621,13 +619,6 @@ class BlockGraphAdjCRTP : public BlockGraphBaseCRTP<BlockGraphAdjCRTP<T>, T>{
     unsigned int get_n_block_links() const{
       return this->n_blocks;
     }
-    unsigned int get_possible_links() const{
-      return 0.5*this->get_complete_size()*(this->get_complete_size()-1);
-    }
-    unsigned int get_possible_block_links() const{
-      return (0.5*this->get_size()*(this->get_size()-1) + this->get_size() - this->get_number_singleton());
-    }
-
     //Set the entire graph
     void set_graph(Adj const & A);//Usage, GraphObj.set_graph(A);
     void set_graph(Adj&& A);    //Usage, GraphObj.set_graph(std::move(A));
@@ -651,14 +642,14 @@ class BlockGraphAdjCRTP : public BlockGraphBaseCRTP<BlockGraphAdjCRTP<T>, T>{
     }
     void add_link(IdxType const & i, IdxType const & j);
     void remove_link(IdxType const & i, IdxType const & j);
-    inline CompleteViewAdjCRTP<T> completeview(){
-      return CompleteViewAdjCRTP (*this);
+    inline CompleteViewAdj<T> completeview(){
+      return CompleteViewAdj (*this);
     }
     // Operators
     T  operator()(IdxType const & i, IdxType const & j)const;
     //T& operator()(IdxType const & i, IdxType const & j; //Meglio usare add e remove (i,j), questa nel caso in cui selezioni un singleton è un problema
 
-    friend std::ostream & operator<<(std::ostream & str, BlockGraphAdjCRTP const & G){
+    friend std::ostream & operator<<(std::ostream & str, BlockGraphAdj const & G){
       if(G.get_size() == 0)
         return str;
       auto it = G.data.cbegin();
@@ -670,7 +661,7 @@ class BlockGraphAdjCRTP : public BlockGraphBaseCRTP<BlockGraphAdjCRTP<T>, T>{
     }
     //Clone
     //virtual std::unique_ptr< ... > clone() const{
-      //return std::make_unique< BlockGraphAdjCRTP<T> > (*this);
+      //return std::make_unique< BlockGraphAdj<T> > (*this);
     //};
   private:
     InnerData  data;
@@ -680,7 +671,7 @@ class BlockGraphAdjCRTP : public BlockGraphBaseCRTP<BlockGraphAdjCRTP<T>, T>{
 };
 
 template<class T>
-void BlockGraphAdjCRTP<T>::set_graph(typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::Adj&& A){
+void BlockGraphAdj<T>::set_graph(typename BlockGraphBaseCRTP<BlockGraphAdj,T>::Adj&& A){
 
   unsigned int M{this->ptr_groups->get_n_groups()};
   if( M*(M-1)/2 + M - this->n_singleton != A.size() )
@@ -698,7 +689,7 @@ void BlockGraphAdjCRTP<T>::set_graph(typename BlockGraphBaseCRTP<BlockGraphAdjCR
 }
 
 template<class T>
-void BlockGraphAdjCRTP<T>::set_graph(typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::Adj const & A){
+void BlockGraphAdj<T>::set_graph(typename BlockGraphBaseCRTP<BlockGraphAdj,T>::Adj const & A){
   unsigned int M{this->ptr_groups->get_n_groups()};
   if( M*(M-1)/2 + M - this->n_singleton != A.size() )
     throw std::runtime_error("The number of groups is not coherent with the size of the adjacency matrix");
@@ -710,7 +701,7 @@ void BlockGraphAdjCRTP<T>::set_graph(typename BlockGraphBaseCRTP<BlockGraphAdjCR
 }
 
 template<class T>
-void BlockGraphAdjCRTP<T>::fillRandom(double sparsity, unsigned int seed){
+void BlockGraphAdj<T>::fillRandom(double sparsity, unsigned int seed){
 
   if(sparsity > 1.0){
     std::cerr<<"Sparsity larger then 1, set to 0.5";
@@ -738,7 +729,7 @@ void BlockGraphAdjCRTP<T>::fillRandom(double sparsity, unsigned int seed){
 }
 
 template<class T>
-void BlockGraphAdjCRTP<T>::add_link(typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::IdxType const & i, typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::IdxType const & j){
+void BlockGraphAdj<T>::add_link(typename BlockGraphBaseCRTP<BlockGraphAdj,T>::IdxType const & i, typename BlockGraphBaseCRTP<BlockGraphAdj,T>::IdxType const & j){
 
   if(i == j){
     std::vector<unsigned int> singleton = this->ptr_groups->get_pos_singleton();
@@ -756,7 +747,7 @@ void BlockGraphAdjCRTP<T>::add_link(typename BlockGraphBaseCRTP<BlockGraphAdjCRT
 }
 
 template<class T>
-void BlockGraphAdjCRTP<T>::remove_link(typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::IdxType const & i, typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::IdxType const & j){
+void BlockGraphAdj<T>::remove_link(typename BlockGraphBaseCRTP<BlockGraphAdj,T>::IdxType const & i, typename BlockGraphBaseCRTP<BlockGraphAdj,T>::IdxType const & j){
 
   if(i == j){
     std::vector<unsigned int> singleton = this->ptr_groups->get_pos_singleton(); //Perché mi obbliga a definirlo fuorii??
@@ -774,8 +765,8 @@ void BlockGraphAdjCRTP<T>::remove_link(typename BlockGraphBaseCRTP<BlockGraphAdj
 }
 
 template<class T>
-T BlockGraphAdjCRTP<T>::operator()(typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::IdxType const & i, 
-                                   typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::IdxType const & j)const
+T BlockGraphAdj<T>::operator()(typename BlockGraphBaseCRTP<BlockGraphAdj,T>::IdxType const & i, 
+                                   typename BlockGraphBaseCRTP<BlockGraphAdj,T>::IdxType const & j)const
 {
   if(i > this->get_size() || j > this->get_size())
     throw std::runtime_error("Invalid index request");
@@ -794,7 +785,7 @@ T BlockGraphAdjCRTP<T>::operator()(typename BlockGraphBaseCRTP<BlockGraphAdjCRTP
 }
 
 //template<class T>
-//T& BlockGraphAdjCRTP<T>::operator()(typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::IdxType const & i, typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::IdxType const & j){
+//T& BlockGraphAdj<T>::operator()(typename BlockGraphBaseCRTP<BlockGraphAdj,T>::IdxType const & i, typename BlockGraphBaseCRTP<BlockGraphAdj,T>::IdxType const & j){
 //
   //if(i == j){
     //std::vector<unsigned int> singleton = this->ptr_groups->get_pos_singleton();
@@ -814,8 +805,8 @@ T BlockGraphAdjCRTP<T>::operator()(typename BlockGraphBaseCRTP<BlockGraphAdjCRTP
 //}
 
 template<class T>
-void BlockGraphAdjCRTP<T>::find_neighbours(){
-  using IdxType = typename BlockGraphBaseCRTP<BlockGraphAdjCRTP,T>::IdxType;
+void BlockGraphAdj<T>::find_neighbours(){
+  using IdxType = typename BlockGraphBaseCRTP<BlockGraphAdj,T>::IdxType;
 
   for(IdxType i=0; i < this->get_complete_size(); ++i){
     //It is mandatory for my_nbd to be sorted and without repetitions. Element are indeed inserted in a set and the plug the set into the vector
@@ -839,7 +830,7 @@ void BlockGraphAdjCRTP<T>::find_neighbours(){
 }
 
 template<class T>
-void BlockGraphAdjCRTP<T>::compute_nlinks_nblocks(){
+void BlockGraphAdj<T>::compute_nlinks_nblocks(){
   this->n_links  = 0;
   this->n_blocks = 0;
       for(IdxType i = 0; i < this->get_size(); ++i){
@@ -860,13 +851,13 @@ void BlockGraphAdjCRTP<T>::compute_nlinks_nblocks(){
 // ---------------------------------------------------------------------------------------------------------------------------------------------------
 
 template<class T>
-class CompleteViewAdjCRTP{
+class CompleteViewAdj{
   public:
-    using value_type    = typename BlockGraphBaseCRTP<BlockGraphAdjCRTP<T>,T>::value_type;
-    using IdxType       = typename BlockGraphBaseCRTP<BlockGraphAdjCRTP<T>,T>::IdxType;
-    using Neighbourhood = typename BlockGraphBaseCRTP<BlockGraphAdjCRTP<T>,T>::Neighbourhood;
+    using value_type    = typename BlockGraphBaseCRTP<BlockGraphAdj<T>,T>::value_type;
+    using IdxType       = typename BlockGraphBaseCRTP<BlockGraphAdj<T>,T>::IdxType;
+    using Neighbourhood = typename BlockGraphBaseCRTP<BlockGraphAdj<T>,T>::Neighbourhood;
     //Constructor
-    CompleteViewAdjCRTP(BlockGraphAdjCRTP<T> & _G):G(_G){};
+    CompleteViewAdj(BlockGraphAdj<T> & _G):G(_G){};
 
     T operator()(typename BlockGraphBase<T>::IdxType const & i, typename BlockGraphBase<T>::IdxType const & j) const{
       if(i == j)
@@ -874,7 +865,7 @@ class CompleteViewAdjCRTP{
       else
         return G( G.find_group_idx(i), G.find_group_idx(j) );
     }
-    friend std::ostream & operator<<(std::ostream & str, CompleteViewAdjCRTP & _G){
+    friend std::ostream & operator<<(std::ostream & str, CompleteViewAdj & _G){
       for(IdxType i = 0; i < _G.G.get_complete_size(); ++i)
         for(IdxType j = i; j < _G.G.get_complete_size(); ++j)
           std::cout<<_G(i,j);
@@ -922,7 +913,7 @@ class CompleteViewAdjCRTP{
       return G.get_group_size(i);
     }
   private:
-    BlockGraphAdjCRTP<T> & G;
+    BlockGraphAdj<T> & G;
 };
 
 #endif
