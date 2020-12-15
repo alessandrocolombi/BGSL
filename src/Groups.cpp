@@ -16,6 +16,8 @@ Groups::Groups(unsigned int const & _N){
 Groups::Groups(unsigned int const & _M, unsigned int const & _p){
   if(_p < _M)
     throw std::runtime_error("Number of groups greater then number of nodes");
+  if(_M <= 1)
+    throw std::runtime_error("Number of groups has to be at least 2");
   this->resize(_M);
 
   unsigned int nel = _p/_M;

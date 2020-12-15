@@ -1,5 +1,5 @@
-#ifndef __GSBase_HPP__
-#define __GSBase_HPP__
+#ifndef __GSBASE_HPP__
+#define __GSBASE_HPP__
 
 #include "SamplerOptions.h"
 
@@ -21,9 +21,12 @@ class FGMsampler : public SamplerTraits
 				p(_init.Beta0.rows()), n(_init.Beta0.cols()), grid_pts(_params.Basemat.rows()), seed(_seed)
 	{
 	 	this->check();
-	 	if(seed == 0)
-	 		seed = (unsigned int)std::chrono::system_clock::now().time_since_epoch().count();	
+	 	if(seed==0){
+	 	  std::random_device rd;
+	 	  seed=rd();
+	 	}	
 	} 
+
 	RetType run();
 
 	private:
@@ -39,7 +42,6 @@ class FGMsampler : public SamplerTraits
 	unsigned int seed;
 	int total_accepted{0};
 	int visited{0};
-
 };
 
 
@@ -56,6 +58,7 @@ void FGMsampler<GraphStructure, T, RetGraph>::check() const{
 }
 
 
+//Potrebbe essere buggato. Avevo ancora lasiato la parametrizzazione sbagliata per la rgamma, paragona bene con GibbsSamplerDebug
 template<template <typename> class GraphStructure, typename T, class RetGraph >
 typename FGMsampler<GraphStructure, T, RetGraph>::RetType 
 FGMsampler<GraphStructure, T, RetGraph>::run()
@@ -70,7 +73,7 @@ FGMsampler<GraphStructure, T, RetGraph>::run()
 	const double&  b_tau_eps = this->hy_params.b_tau_eps;
 	const double&  sigma_mu  = this->hy_params.sigma_mu;
 	const double&  p_addrm   = this->hy_params.p_addrm; 
-	const auto &[niter, nburn, thin, thinG, MCiterPrior, MCiterPost,Basemat, ptr_groups, iter_to_store, iter_to_storeG] = this->params;
+	const auto &[niter, nburn, thin, thinG, MCiterPrior, MCiterPost,Basemat, ptr_groups, iter_to_store, iter_to_storeG, threshold] = this->params;
 	MatCol Beta = init.Beta0; //p x n
 	VecCol mu = init.mu0; // p
 	double tau_eps = init.tau_eps0; //scalar
@@ -144,7 +147,7 @@ FGMsampler<GraphStructure, T, RetGraph>::run()
 		}
 		//Precision tau
 		b_tau_eps_post /= 2.0;
-		tau_eps = rGamma(engine, a_tau_eps_post, b_tau_eps_post);
+		tau_eps = rGamma(engine, a_tau_eps_post, 1/b_tau_eps_post);
 		//Graphical Step
 		std::tie(K, accepted_mv) = GGM_method(U, n, G, p_addrm, 0); //G is modified inside the function.
 		total_accepted += accepted_mv;

@@ -41,7 +41,6 @@ class UniformPrior : public GraphPrior<GraphStructure, T>
 			return 0.0;
 		}
 		std::unique_ptr< GraphPrior<GraphStructure, T> > clone() const override{
-			std::cout<<"CLONED!"<<std::endl;
 			return std::make_unique< UniformPrior<GraphStructure, T> >(*this);
 		}
 };

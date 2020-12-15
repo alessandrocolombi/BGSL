@@ -77,7 +77,7 @@ FGMsamplerDegub<GraphStructure, T, RetGraph>::run()
 	const double&  b_tau_eps = this->hy_params.b_tau_eps;
 	const double&  sigma_mu  = this->hy_params.sigma_mu;
 	const double&  p_addrm   = this->hy_params.p_addrm; 
-	const auto &[niter, nburn, thin, thinG, MCiterPrior, MCiterPost,Basemat, ptr_groups, iter_to_store, iter_to_storeG] = this->params;
+	const auto &[niter, nburn, thin, thinG, MCiterPrior, MCiterPost,Basemat, ptr_groups, iter_to_store, iter_to_storeG, threshold] = this->params;
 	MatCol Beta = TBeta; //p x n
 	VecCol mu = Tmu; // p
 	double tau_eps = Ttau; //scalar

@@ -22,12 +22,12 @@ class ReversibleJumpsMH : public GGM<GraphStructure, T> {
 		using PrecisionType     = typename GGMTraits<GraphStructure, T>::PrecisionType;
 		using ReturnType 		= typename GGMTraits<GraphStructure, T>::ReturnType;
 		//Constructors
-		ReversibleJumpsMH(	PriorPtr& _ptr_prior,double const & _b , MatCol const & _D, double const & _sigma, 
+		ReversibleJumpsMH(	PriorPtr& _ptr_prior,double const & _b , MatCol const & _D, double const & _trGwishSampler, double const & _sigma, 
 						  	unsigned int const & _MCiterPrior = 100):
-						  		GGM<GraphStructure, T>(_ptr_prior, _b, _D), sigma(_sigma), MCiterPrior(_MCiterPrior) {}
-		ReversibleJumpsMH(	PriorPtr& _ptr_prior,unsigned int const & _p, double const & _sigma, 
+						  		GGM<GraphStructure, T>(_ptr_prior, _b, _D, _trGwishSampler), sigma(_sigma), MCiterPrior(_MCiterPrior) {}
+		ReversibleJumpsMH(	PriorPtr& _ptr_prior,unsigned int const & _p, double const & _trGwishSampler, double const & _sigma, 
 							unsigned int const & _MCiterPrior = 100 ):
-						  		GGM<GraphStructure, T>(_ptr_prior, _p), sigma(_sigma), MCiterPrior(_MCiterPrior) {}
+						  		GGM<GraphStructure, T>(_ptr_prior, _p, _trGwishSampler), sigma(_sigma), MCiterPrior(_MCiterPrior) {}
 		//Methods
 		std::tuple<PrecisionType, double, double> RJ(CompleteType const & Gnew_CompleteView, PrecisionType& Kold_prior, MoveType Move);
 	
@@ -58,12 +58,12 @@ class ReversibleJumpsMH<GraphType, T> : public GGM<GraphType, T> {
 		using PrecisionType     = typename GGMTraits<GraphType, T>::PrecisionType;
 		using ReturnType 		= typename GGMTraits<GraphType, T>::ReturnType;
 		//Constructors
-				ReversibleJumpsMH(	PriorPtr& _ptr_prior,double const & _b , MatCol const & _D, double const & _sigma, 
+				ReversibleJumpsMH(	PriorPtr& _ptr_prior,double const & _b , MatCol const & _D,  double const & _trGwishSampler, double const & _sigma, 
 								  	unsigned int const & _MCiterPrior = 100 ):
-								  		GGM<GraphType, T>(_ptr_prior, _b, _D), sigma(_sigma), MCiterPrior(_MCiterPrior) {}
-				ReversibleJumpsMH(	PriorPtr& _ptr_prior,unsigned int const & _p, double const & _sigma, 
+								  		GGM<GraphType, T>(_ptr_prior, _b, _D, _trGwishSampler), sigma(_sigma), MCiterPrior(_MCiterPrior) {}
+				ReversibleJumpsMH(	PriorPtr& _ptr_prior,unsigned int const & _p, double const & _trGwishSampler, double const & _sigma, 
 									unsigned int const & _MCiterPrior = 100 ):
-								  		GGM<GraphType, T>(_ptr_prior, _p), sigma(_sigma), MCiterPrior(_MCiterPrior){}
+								  		GGM<GraphType, T>(_ptr_prior, _p, _trGwishSampler), sigma(_sigma), MCiterPrior(_MCiterPrior){}
 		//Methods
 		//Create the proposed matrix K'						  
 		std::tuple<PrecisionType, double, double> RJ(CompleteType const & Gnew_CompleteView, PrecisionType& Kold_prior, MoveType Move);
@@ -95,12 +95,29 @@ ReversibleJumpsMH<GraphStructure, T>::RJ(typename ReversibleJumpsMH<GraphStructu
 				//std::cout<<"p = "<<p<<std::endl;
 	//2) Find all the links that are changing in Complete form 
 	const std::pair<unsigned int, unsigned int>& changed_link = this->selected_link; //For lighter notation
+	const std::vector<unsigned int> A_l0(Gnew_CompleteView.get_group(changed_link.first));
+	unsigned int pos_Al0{0};
+
+		//std::cout<<"A_l0"<<std::endl;
+		//for(auto __v : A_l0)
+			//std::cout<<__v<<", ";
+		//std::cout<<std::endl;
+
 	Container L(Gnew_CompleteView.map_to_complete(changed_link.first, changed_link.second));
 	Citerator it_L = L.cbegin();
-				std::cout<<"Link che cambiano (L):"<<std::endl;
-				for(auto __v : L)
-					std::cout<<"("<<__v.first<<", "<<__v.second<<")"<<" || ";
-				std::cout<<std::endl;
+
+				//std::cout<<"Link che cambiano (L):"<<std::endl;
+				//for(auto __v : L)
+					//std::cout<<"("<<__v.first<<", "<<__v.second<<")"<<" || ";
+				//std::cout<<std::endl;
+	//Not the best possibile choice in term of efficiency but i prefer to create a function for sake of clarity and possibile generalizations.
+	//In this way, if something has to be changed it is enough to change it here and not in the loop			
+	auto build_jacobian_esponent = [&changed_link, &A_l0, &Gnew_CompleteView](unsigned int const & pos){
+		if(changed_link.first != changed_link.second)
+			return Gnew_CompleteView.get_group_size(changed_link.second);
+		else
+			return (unsigned int)(A_l0.size() - 1 - pos);
+	};
 	//a) Fill new Phi
 	MatRow Phi_new(MatRow::Zero(p,p));
 	if(!Kold_prior.isFactorized){
@@ -111,16 +128,16 @@ ReversibleJumpsMH<GraphStructure, T>::RJ(typename ReversibleJumpsMH<GraphStructu
 
 	double log_element_proposal{0};
 	double log_jacobian{0};
+
 			//std::cout<<"Phi_old:"<<std::endl<<Phi_old<<std::endl;
 	//i = 0 case)
 	Phi_new(0,0) = Phi_old(0,0);
 	for(unsigned int j = 1; j < p; ++j){
-
 		if(Gnew_CompleteView(0,j) == false){ //There is no link. Is it one of the removed one?
 			Phi_new(0,j) = 0; 	//Even if it is, it is not a free element and has to be computed by completion operation
 			if(Move == MoveType::Remove && it_L != L.cend() && std::make_pair((unsigned int)0,j) == *it_L){
 				log_element_proposal +=  (Phi_new(0,j) - Phi_old(0,j))*(Phi_new(0,j) - Phi_old(0,j)) ;
-				log_jacobian += Phi_old(0,0);
+				//log_jacobian += Phi_old(0,0);
 				it_L++;
 			}
 		}
@@ -128,13 +145,18 @@ ReversibleJumpsMH<GraphStructure, T>::RJ(typename ReversibleJumpsMH<GraphStructu
 			if(Move == MoveType::Add && it_L != L.cend() && std::make_pair((unsigned int)0,j) == *it_L){
 				Phi_new(0,j) = sample::rnorm()(engine_gsl, Phi_old(0,j), this->sigma); //The new element is a free element
 				log_element_proposal += (Phi_new(0,j) - Phi_old(0,j))*(Phi_new(0,j) - Phi_old(0,j));
-				log_jacobian += Phi_old(0,0);
+				//log_jacobian += Phi_old(0,0);
 				it_L++;
 			}
 			else
 				Phi_new(0,j) = Phi_old(0,j);
 		}
 	}	
+	if(A_l0[pos_Al0] == 0){
+		log_jacobian += build_jacobian_esponent(pos_Al0) * std::log(Phi_new(0,0));
+		pos_Al0++;
+	}
+
 			//std::cout<<"Finito i = 0"<<std::endl;
 			//std::cout<<"Phi_new:"<<std::endl<<Phi_new<<std::endl;
 	//i = 1 case)
@@ -145,7 +167,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ(typename ReversibleJumpsMH<GraphStructu
 			Phi_new(1,j) = - ( Phi_new(0,1)*Phi_new(0,j) )/Phi_new(1,1); //Even if it is, it is not a free element and has to be computed by completion operation
 			if(Move == MoveType::Remove && it_L != L.cend() && std::make_pair((unsigned int)1,j) == *it_L){
 				log_element_proposal += (Phi_new(1,j) - Phi_old(1,j))*(Phi_new(1,j) - Phi_old(1,j));
-				log_jacobian += Phi_old(1,1);
+				//log_jacobian += Phi_old(1,1);
 				it_L++;
 			}
 
@@ -155,12 +177,16 @@ ReversibleJumpsMH<GraphStructure, T>::RJ(typename ReversibleJumpsMH<GraphStructu
 			if(Move == MoveType::Add && it_L != L.cend() && std::make_pair((unsigned int)1,j) == *it_L){
 				Phi_new(1,j) = sample::rnorm()(engine_gsl, Phi_old(1,j), this->sigma); //The new element is a free element
 				log_element_proposal +=	(Phi_new(1,j) - Phi_old(1,j))*(Phi_new(1,j) - Phi_old(1,j));
-				log_jacobian += Phi_old(1,1);
+				//log_jacobian += Phi_old(1,1);
 				it_L++;
 			}
 			else
 				Phi_new(1,j) = Phi_old(1,j);
 		}
+	}
+	if(A_l0[pos_Al0] == 1){
+		log_jacobian += build_jacobian_esponent(pos_Al0) * std::log(Phi_new(1,1));
+		pos_Al0++;
 	}
 			//std::cout<<"Finito i = 1"<<std::endl;
 			//std::cout<<"Phi_new:"<<std::endl<<Phi_new<<std::endl;
@@ -178,7 +204,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ(typename ReversibleJumpsMH<GraphStructu
 				Phi_new(i,j) = - ( Psi_i.dot(VecCol (Phi_new.block(0,j,i,1))) )/Phi_new(i,i);
 				if(Move == MoveType::Remove && it_L != L.cend() && std::make_pair(i,j) == *it_L){
 					log_element_proposal += (Phi_new(i,j) - Phi_old(i,j))*(Phi_new(i,j) - Phi_old(i,j));
-					log_jacobian += Phi_old(i,i);
+					//log_jacobian += Phi_old(i,i);
 					it_L++;
 				}
 
@@ -188,24 +214,33 @@ ReversibleJumpsMH<GraphStructure, T>::RJ(typename ReversibleJumpsMH<GraphStructu
 				if(Move == MoveType::Add && it_L != L.cend() && std::make_pair(i,j) == *it_L){ 
 					Phi_new(i,j) = sample::rnorm()(engine_gsl, Phi_old(i,j), this->sigma); //The new element is a free element
 					log_element_proposal += (Phi_new(i,j) - Phi_old(i,j))*(Phi_new(i,j) - Phi_old(i,j));
-					log_jacobian += Phi_old(i,i);
+					//log_jacobian += Phi_old(i,i);
 					it_L++;
 				}
 				else
 					Phi_new(i,j) = Phi_old(i,j);
 			}
 		}
+
+		if(A_l0[pos_Al0] == i){
+			log_jacobian += build_jacobian_esponent(pos_Al0) * std::log(Phi_new(i,i));
+			pos_Al0++;
+		}
 				//std::cout<<"Finito i = "<<i<<std::endl;
 				//std::cout<<"Phi_new:"<<std::endl<<Phi_new<<std::endl;
 	}
 	Phi_new(p-1,p-1) = Phi_old(p-1,p-1); //Last element
-			std::cout<<"Phi_new:"<<std::endl<<Phi_new<<std::endl;
-			std::cout<<"Phi_old:"<<std::endl<<Phi_old<<std::endl;
+	if(A_l0[pos_Al0] == p-1){
+		log_jacobian += build_jacobian_esponent(pos_Al0) * std::log(Phi_new(p-1,p-1));
+		pos_Al0++;
+	}
 
-
+			//std::cout<<"Phi_old:"<<std::endl<<Phi_old<<std::endl;
+			//std::cout<<"Phi_new:"<<std::endl<<Phi_new<<std::endl;
+			
+	//std::cout<<"log_element_proposal constant term = "<<static_cast<double>(L.size())*(0.5*utils::log_2pi + std::log(std::abs(this->sigma)))<<std::endl;
 	log_element_proposal /= 2*this->sigma*this->sigma;
 	log_element_proposal += static_cast<double>(L.size())*(0.5*utils::log_2pi + std::log(std::abs(this->sigma)));
-	log_jacobian 		 *= Gnew_CompleteView.get_group_size(changed_link.second);
 	return std::make_tuple( 
 			PrecisionType (Phi_new.template triangularView<Eigen::Upper>(), Kold_prior.get_shape(), Kold_prior.get_inv_scale(), Kold_prior.get_chol_invD() ),
 			log_element_proposal, log_jacobian );
@@ -228,56 +263,85 @@ ReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsigned i
 	std::default_random_engine engine(seed);
 	std::uniform_real_distribution< double > rand(0.,1.);
 	double log_acceptance_ratio{0}; 
+	bool isInf_new{false};
+	bool isInf_old{false};
+
 	//1) Propose new Graph
 	auto [Gnew, log_GraphMove_proposal, mv_type] = this->propose_new_graph(Gold, alpha, seed) ;
-				std::cout<<std::endl;
-				std::cout<<"Gold:"<<std::endl<<Gold<<std::endl;
-				std::cout<<"Gnew:"<<std::endl<<Gnew<<std::endl;
+				//std::cout<<std::endl;
+				//std::cout<<"Gold:"<<std::endl<<Gold<<std::endl;
+				//std::cout<<"Gnew:"<<std::endl<<Gnew<<std::endl;
 	//2) Perform RJ according to the proposed move and graph
 	auto [Knew_prior, log_rj_proposal, log_jacobian_mv ] = this->RJ(Gnew.completeview(), this->Kprior, mv_type) ;	
-				std::cout<<"Kold_prior.get_matrix():"<<std::endl<<this->Kprior.get_matrix()<<std::endl;
-				std::cout<<"Knew_prior.get_matrix():"<<std::endl<<Knew_prior.get_matrix()<<std::endl;
+				//std::cout<<"Kold_prior.get_matrix():"<<std::endl<<this->Kprior.get_matrix()<<std::endl;
+				//std::cout<<"Knew_prior.get_matrix():"<<std::endl<<Knew_prior.get_matrix()<<std::endl;
 	//3) Compute acceptance probability ratio
 	PrecisionType& Kold_prior = this->Kprior; //lighter notation to avoid this every time
 	double log_GraphPr_ratio(this->ptr_prior->log_ratio(Gnew, Gold));
+	/*
 	double log_GWishPrConst_ratio(Kold_prior.log_normalizing_constat(Gold.completeview(),MCiterPrior, seed) - 
 								  Knew_prior.log_normalizing_constat(Gnew.completeview(),MCiterPrior, seed) );
+	*/
+	double const_old = 	Kold_prior.log_normalizing_constat(Gold.completeview(),MCiterPrior, seed);						  
+	double const_new = 	Knew_prior.log_normalizing_constat(Gnew.completeview(),MCiterPrior, seed);	
+	if(const_new < std::numeric_limits<double>::min()){
+		isInf_new = true;
+		//std::cout<<std::endl<<"Inf in GWish const prior new"<<std::endl;
+	}
+	if(const_old < std::numeric_limits<double>::min()){
+		isInf_old = true;
+		//std::cout<<std::endl<<"Inf in GWish const prior old"<<std::endl;
+	}
+	double log_GWishPrConst_ratio(const_old - const_new);					  
+	auto TraceProd = [](MatRow const & A, MatCol const & B){
+		double res{0};
+		#pragma omp parallel for reduction(+:res)
+		for(unsigned int i = 0; i < A.rows(); ++i)
+			res += A.row(i)*B.col(i);
+		return( -0.5*res );
+	}; //This lambda function computes trace(A*B)
+
 	//double log_LL_GWishPr_ratio( -0.5 * ((Knew_prior.get_matrix() - Kold_prior.get_matrix())*(Kold_prior.get_inv_scale() + data)).trace()  ); //--> only the diagonal elements are needed in order to compute the diagonal elements. p elements and not p*p
-	double log_LL_GWishPr_ratio{0};
-	MatRow Knew_Kold(Knew_prior.get_matrix() - Kold_prior.get_matrix());
-	MatCol Ddata(Kold_prior.get_inv_scale() + data);
-	#pragma omp parallel for reduction(+:log_LL_GWishPr_ratio)
-	for(unsigned int i = 0; i < Knew_Kold.rows(); ++i)
-		log_LL_GWishPr_ratio += Knew_Kold.row(i)*Ddata.col(i);
-	log_LL_GWishPr_ratio /= -2.0;
-				std::cout<<"log_GWishPrConst_ratio = "<<log_GWishPrConst_ratio<<std::endl;
-				std::cout<<"GraphMove_proposal = "<<std::exp(log_GraphMove_proposal)<<std::endl;
-				std::cout<<"K'-K:"<<std::endl<<Knew_prior.get_matrix() - Kold_prior.get_matrix()<<std::endl;
-				std::cout<<"log_LL_GWishPr_ratio = "<<log_LL_GWishPr_ratio<<std::endl;
-				std::cout<<"log_rj_proposal = "<<log_rj_proposal<<std::endl;
-				std::cout<<"log_jacobian_mv = "<<log_jacobian_mv<<std::endl;
+	double log_LL_GWishPr_ratio(  TraceProd( Knew_prior.get_matrix() - Kold_prior.get_matrix() , Kold_prior.get_inv_scale() + data)  );
+				//std::cout<<"log_GWishPrConst_ratio = "<<log_GWishPrConst_ratio<<std::endl;
+				//std::cout<<"GraphMove_proposal = "<<std::exp(log_GraphMove_proposal)<<std::endl;
+				//std::cout<<"K'-K:"<<std::endl<<Knew_prior.get_matrix() - Kold_prior.get_matrix()<<std::endl;
+				//std::cout<<"log_LL_GWishPr_ratio = "<<log_LL_GWishPr_ratio<<std::endl;
+				//std::cout<<"log_rj_proposal = "<<log_rj_proposal<<std::endl;
+				//std::cout<<"log_jacobian_mv = "<<log_jacobian_mv<<std::endl;
 	if(mv_type == MoveType::Add)
 		log_acceptance_ratio = log_GWishPrConst_ratio + log_GraphPr_ratio + log_GraphMove_proposal + log_LL_GWishPr_ratio + log_rj_proposal + log_jacobian_mv;
 	else if(mv_type == MoveType::Remove)
 		log_acceptance_ratio = log_GWishPrConst_ratio + log_GraphPr_ratio + log_GraphMove_proposal + log_LL_GWishPr_ratio - log_rj_proposal - log_jacobian_mv;
 
 	double acceptance_ratio = std::min(1.0, std::exp(log_acceptance_ratio)); 
-				std::cout<<"acceptance_ratio = "<<acceptance_ratio<<std::endl;
+	if(isInf_old)
+		acceptance_ratio = 1.0;
+	else if(isInf_new)
+		acceptance_ratio = 0.0;
+
+				//std::cout<<"acceptance_ratio = "<<acceptance_ratio<<std::endl;
 	//4) Perform the move and return
 	int accepted;
 	if( rand(engine) < acceptance_ratio ){
-				std::cout<<"Accettato"<<std::endl;
-		Gold = Gnew;
-		//Gold = std::move(Gnew);
+		if(isInf_old || isInf_new){
+			//std::cout<<"Accettato"<<std::endl;
+		}
+				//std::cout<<"Accettato"<<std::endl;
+		//Gold = Gnew;
+		Gold = std::move(Gnew); //Move semantic is available
 		//this->Kprior = std::move(Knew_prior); //Questo non serve a niente perché tanto devo estrarre e aggiornare la nuova matrice
 		accepted = 1;
 	}
 	else{
-				std::cout<<"Rifiutato"<<std::endl;
+				//std::cout<<"Rifiutato"<<std::endl;
+		if(isInf_old || isInf_new){
+			//std::cout<<"Rifiutato"<<std::endl;
+		}
 		accepted = 0;
 	}
 	//MatRow newPrecisionMat = utils::rgwish(Gold.completeview(), Kold_prior.get_shape() + n, Kold_prior.get_inv_scale() + data , seed );
-	this->Kprior.set_matrix(Gold.completeview(), utils::rgwish(Gold.completeview(), Kold_prior.get_shape() + n, Kold_prior.get_inv_scale() + data , seed ) ); //Copia inutile, costruiscila qua dentro
+	this->Kprior.set_matrix(Gold.completeview(), utils::rgwish(Gold.completeview(), Kold_prior.get_shape() + n, Kold_prior.get_inv_scale() + data , this->trGwishSampler, seed ) ); //Copia inutile, costruiscila qua dentro
 	this->Kprior.compute_Chol();
 	return std::make_tuple(this->Kprior.get_matrix(), accepted);
 	//return std::make_tuple(utils::rgwish(Gold.completeview(), Kold_prior.get_shape() + n , Kold_prior.get_inv_scale() + data , seed ), accepted );
@@ -424,6 +488,8 @@ ReversibleJumpsMH<GraphType, T>::operator()(MatCol const & data, unsigned int co
 	std::default_random_engine engine(seed);
 	std::uniform_real_distribution< double > rand(0.,1.);
 	double log_acceptance_ratio{0};
+	bool isInf_new{false};
+	bool isInf_old{false};
 	//1) Propose new Graph
 	auto [Gnew, log_GraphMove_proposal, mv_type] = this->propose_new_graph(Gold, alpha, seed) ;
 			//std::cout<<std::endl;
@@ -436,23 +502,38 @@ ReversibleJumpsMH<GraphType, T>::operator()(MatCol const & data, unsigned int co
 	//3) Compute acceptance probability ratio
 	PrecisionType& Kold_prior 			 = this->Kprior; //lighter notation to avoid this every time
 	double log_GraphPr_ratio(this->ptr_prior->log_ratio(Gnew, Gold));
-	double log_GWishPrConst_ratio(Kold_prior.log_normalizing_constat(Gold.completeview(),MCiterPrior, seed) - 
-								  Knew_prior.log_normalizing_constat(Gnew.completeview(),MCiterPrior, seed) );
+	//double log_GWishPrConst_ratio(Kold_prior.log_normalizing_constat(Gold.completeview(),MCiterPrior, seed) - 
+								  //Knew_prior.log_normalizing_constat(Gnew.completeview(),MCiterPrior, seed) );
+	double const_old = 	Kold_prior.log_normalizing_constat(Gold.completeview(),MCiterPrior, seed);						  
+	double const_new = 	Knew_prior.log_normalizing_constat(Gnew.completeview(),MCiterPrior, seed);	
+	if(const_new < std::numeric_limits<double>::min()){
+		isInf_new = true;
+		//std::cout<<std::endl<<"Inf in GWish const prior new"<<std::endl;
+	}
+	if(const_old < std::numeric_limits<double>::min()){
+		isInf_old = true;
+		//std::cout<<std::endl<<"Inf in GWish const prior old"<<std::endl;
+	}
+	double log_GWishPrConst_ratio(const_old - const_new);
 	//double log_LL_GWishPr_ratio( -0.5 * ((Knew_prior.get_matrix() - Kold_prior.get_matrix())*(Kold_prior.get_inv_scale() + data)).trace()  ); //--> only the diagonal elements are needed in order to compute the diagonal elements. p elements and not p*p
-	double log_LL_GWishPr_ratio{0};
-	MatRow Knew_Kold(Knew_prior.get_matrix() - Kold_prior.get_matrix());
-	MatCol Ddata(Kold_prior.get_inv_scale() + data);
-	#pragma omp parallel for reduction(+:log_LL_GWishPr_ratio)
-	for(unsigned int i = 0; i < Knew_Kold.rows(); ++i)
-		log_LL_GWishPr_ratio += Knew_Kold.row(i)*Ddata.col(i);
-	log_LL_GWishPr_ratio /= -2.0;
-			//std::cout<<"log_GWishPrConst_ratio = "<<log_GWishPrConst_ratio<<std::endl;
-			//std::cout<<"GraphMove_proposal = "<<std::exp(log_GraphMove_proposal)<<std::endl;
-			//std::cout<<"K'-K:"<<std::endl<<Knew_prior.get_matrix() - Kold_prior.get_matrix()<<std::endl;
-			//std::cout<<"log_LL_GWishPr_ratio = "<<log_LL_GWishPr_ratio<<std::endl;
-			//std::cout<<"log_LL_GWishPr_ratio = "<<log_LL_GWishPr_ratio<<std::endl;
-			//std::cout<<"log_rj_proposal = "<<log_rj_proposal<<std::endl;
-			//std::cout<<"log_jacobian_mv = "<<log_jacobian_mv<<std::endl;
+	auto TraceProd = [](MatRow const & A, MatCol const & B){
+		double res{0};
+		#pragma omp parallel for reduction(+:res)
+		for(unsigned int i = 0; i < A.rows(); ++i)
+			res += A.row(i)*B.col(i);
+		return( -0.5*res );
+	}; //This lambda function computes trace(A*B)
+
+	//double log_LL_GWishPr_ratio( -0.5 * ((Knew_prior.get_matrix() - Kold_prior.get_matrix())*(Kold_prior.get_inv_scale() + data)).trace()  ); //--> only the diagonal elements are needed in order to compute the diagonal elements. p elements and not p*p
+	double log_LL_GWishPr_ratio(  TraceProd( Knew_prior.get_matrix() - Kold_prior.get_matrix() , Kold_prior.get_inv_scale() + data)  );
+	
+			std::cout<<"log_GWishPrConst_ratio = "<<log_GWishPrConst_ratio<<std::endl;
+			std::cout<<"GraphMove_proposal = "<<std::exp(log_GraphMove_proposal)<<std::endl;
+			std::cout<<"K'-K:"<<std::endl<<Knew_prior.get_matrix() - Kold_prior.get_matrix()<<std::endl;
+			std::cout<<"log_LL_GWishPr_ratio = "<<log_LL_GWishPr_ratio<<std::endl;
+			std::cout<<"log_LL_GWishPr_ratio = "<<log_LL_GWishPr_ratio<<std::endl;
+			std::cout<<"log_rj_proposal = "<<log_rj_proposal<<std::endl;
+			std::cout<<"log_jacobian_mv = "<<log_jacobian_mv<<std::endl;
 			
 	if(mv_type == MoveType::Add)
 		log_acceptance_ratio = log_GWishPrConst_ratio + log_GraphPr_ratio + log_GraphMove_proposal + log_LL_GWishPr_ratio + log_rj_proposal + log_jacobian_mv;
@@ -460,21 +541,32 @@ ReversibleJumpsMH<GraphType, T>::operator()(MatCol const & data, unsigned int co
 		log_acceptance_ratio = log_GWishPrConst_ratio + log_GraphPr_ratio + log_GraphMove_proposal + log_LL_GWishPr_ratio - log_rj_proposal - log_jacobian_mv;
 
 	double acceptance_ratio = std::min(1.0, std::exp(log_acceptance_ratio)); 
+	if(isInf_old)
+		acceptance_ratio = 1.0;
+	else if(isInf_new)
+		acceptance_ratio = 0.0;
 				//std::cout<<"acceptance_ratio = "<<acceptance_ratio<<std::endl;
 	//4) Perform the move and return
 	int accepted;
 	if( rand(engine) < acceptance_ratio ){
+		//if(isInf_old || isInf_new){
+			//std::cout<<"Accettato"<<std::endl;
+		//}
 				//std::cout<<"Accettato"<<std::endl;
 		Gold = Gnew;
 		//this->Kprior = std::move(Knew_prior); //Questo non serve a niente perché tanto devo estrarre e aggiornare la nuova matrice
 		accepted = 1;
 	}
 	else{
+		
+		//if(isInf_old || isInf_new){
+			//std::cout<<"Rifiutato"<<std::endl;
+		//}
 				//std::cout<<"Rifiutato"<<std::endl;
 		accepted = 0;
 	}
 	
-	this->Kprior.set_matrix(Gold.completeview(), utils::rgwish(Gold.completeview(), Kold_prior.get_shape() + n, Kold_prior.get_inv_scale() + data , seed ) ); 
+	this->Kprior.set_matrix(Gold.completeview(), utils::rgwish(Gold.completeview(), Kold_prior.get_shape() + n, Kold_prior.get_inv_scale() + data , this->trGwishSampler, seed ) ); 
 	this->Kprior.compute_Chol();
 	return std::make_tuple(this->Kprior.get_matrix(),accepted);
 	//It is easier to use the free function becuase the inv_scale matrix has to be factorized for sure.

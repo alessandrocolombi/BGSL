@@ -25,220 +25,220 @@ struct PrecisionTraits{
 // It is copy-constructable and move-constructable
 template<template <typename> class CompleteStructure = GraphType, typename T = unsigned int>
 class Precision : PrecisionTraits{
-public:
-	using Graph = CompleteStructure<T>;
-	//Constructors
-	Precision()=default;
-	//Parameters are defaulted
-	Precision(unsigned int const & p):b(3), D(InvScale::Identity(p, p)), chol_invD(D), isFactorized(false) {};
-	//Receive Parameters
-	Precision(Shape _b, InvScale const & _DD):b(_b), D(_DD), isFactorized(false) 
-	{
-		if(_b <= 2)
-			throw std::runtime_error("Shape parameter has to be larger than 2");
-		if(_DD != _DD.transpose()){
-			throw std::runtime_error("Inv_Scale matrix is not symetric");
-		}
-		CholTypeCol cholD(_DD);
-		if( cholD.info() != Eigen::Success)
-			throw std::runtime_error("Chol decomposition of Inv Scale matrix failed, probably the matrix is not sdp");
-		else
-			chol_invD = cholD.solve(InvScale::Identity(D.rows(), D.cols())).llt().matrixU();
-	};
-	//Receive Matrix and Parameters. Graph is not saved but it is needed to be sure that data satisfies a certain structure
-	Precision(Graph const & G, InnerData const & _data, Shape _b, InvScale const & _DD):
-			 data(_data.selfadjointView<Eigen::Upper>()), b(_b), D(_DD), isFactorized(false) 
-	{
-		//Check b
-		if(_b <= 2)
-			throw std::runtime_error("Shape parameter has to be larger than 2");
-		if(_DD != _DD.transpose()){
-			throw std::runtime_error("Inv_Scale matrix is not symetric");
-		}
-		//Check D
-		CholTypeCol cholD(_DD);
-		if( cholD.info() != Eigen::Success)
-			throw std::runtime_error("Chol decomposition of Inv Scale matrix failed, probably the matrix is not sdp");
-		else
-			chol_invD = cholD.solve(InvScale::Identity(G.get_size(),G.get_size())).llt().matrixU();
-		//Check structure
-		if(!this->check_structure(G)){
-			std::cout<<"Structures of matrix and graph are not compatible"<<std::endl;
-			//throw std::runtime_error("Structures of matrix and graph are not compatible");
-		}
-	};
-	//Receive Parameters and a lower triangular matrix representing chol(D^-1)
-	Precision(Shape _b, InvScale const & _DD, InvScale const & _chol_invD):b(_b), D(_DD), chol_invD(_chol_invD), isFactorized(false) 
-	{
-		if(_b <= 2)
-			throw std::runtime_error("Shape parameter has to be larger than 2");
-		if(_DD != _DD.transpose()){
-			throw std::runtime_error("Inv_Scale matrix is not symetric");
-		}
-	};
-	//Receive Matrix, Parameters and a lower triangular matrix representing chol(D^-1)
-	Precision(Graph const & G, InnerData const & _data, Shape _b, InvScale const & _DD, InvScale const & _chol_invD):
-			 data(_data.selfadjointView<Eigen::Upper>()), b(_b), D(_DD), chol_invD(_chol_invD), isFactorized(false)
-	{
-		//Check b
-		if(_b <= 2)
-			throw std::runtime_error("Shape parameter has to be larger than 2");
-		//Check D
-		if(_DD != _DD.transpose()){
-			throw std::runtime_error("Inv_Scale matrix is not symetric");
-		}
-		//Check structure
-		if(!this->check_structure(G)){
-			std::cout<<"Structures of matrix and graph are not compatible"<<std::endl;
-			//throw std::runtime_error("Structures of matrix and graph are not compatible");
-		}
-	};
+	public:
+		using Graph = CompleteStructure<T>;
+		//Constructors
+		Precision()=default;
+		//Parameters are defaulted
+		Precision(unsigned int const & p):b(3), D(InvScale::Identity(p, p)), chol_invD(D), isFactorized(false) {};
+		//Receive Parameters
+		Precision(Shape _b, InvScale const & _DD):b(_b), D(_DD), isFactorized(false) 
+		{
+			if(_b <= 2)
+				throw std::runtime_error("Shape parameter has to be larger than 2");
+			if(_DD != _DD.transpose()){
+				throw std::runtime_error("Inv_Scale matrix is not symetric");
+			}
+			CholTypeCol cholD(_DD);
+			if( cholD.info() != Eigen::Success)
+				throw std::runtime_error("Chol decomposition of Inv Scale matrix failed, probably the matrix is not sdp");
+			else
+				chol_invD = cholD.solve(InvScale::Identity(D.rows(), D.cols())).llt().matrixU();
+		};
+		//Receive Matrix and Parameters. Graph is not saved but it is needed to be sure that data satisfies a certain structure
+		Precision(Graph const & G, InnerData const & _data, Shape _b, InvScale const & _DD):
+				 data(_data.selfadjointView<Eigen::Upper>()), b(_b), D(_DD), isFactorized(false) 
+		{
+			//Check b
+			if(_b <= 2)
+				throw std::runtime_error("Shape parameter has to be larger than 2");
+			if(_DD != _DD.transpose()){
+				throw std::runtime_error("Inv_Scale matrix is not symetric");
+			}
+			//Check D
+			CholTypeCol cholD(_DD);
+			if( cholD.info() != Eigen::Success)
+				throw std::runtime_error("Chol decomposition of Inv Scale matrix failed, probably the matrix is not sdp");
+			else
+				chol_invD = cholD.solve(InvScale::Identity(G.get_size(),G.get_size())).llt().matrixU();
+			//Check structure
+			if(!this->check_structure(G)){
+				std::cout<<"Structures of matrix and graph are not compatible"<<std::endl;
+				//throw std::runtime_error("Structures of matrix and graph are not compatible");
+			}
+		};
+		//Receive Parameters and a lower triangular matrix representing chol(D^-1)
+		Precision(Shape _b, InvScale const & _DD, InvScale const & _chol_invD):b(_b), D(_DD), chol_invD(_chol_invD), isFactorized(false) 
+		{
+			if(_b <= 2)
+				throw std::runtime_error("Shape parameter has to be larger than 2");
+			if(_DD != _DD.transpose()){
+				throw std::runtime_error("Inv_Scale matrix is not symetric");
+			}
+		};
+		//Receive Matrix, Parameters and a lower triangular matrix representing chol(D^-1)
+		Precision(Graph const & G, InnerData const & _data, Shape _b, InvScale const & _DD, InvScale const & _chol_invD):
+				 data(_data.selfadjointView<Eigen::Upper>()), b(_b), D(_DD), chol_invD(_chol_invD), isFactorized(false)
+		{
+			//Check b
+			if(_b <= 2)
+				throw std::runtime_error("Shape parameter has to be larger than 2");
+			//Check D
+			if(_DD != _DD.transpose()){
+				throw std::runtime_error("Inv_Scale matrix is not symetric");
+			}
+			//Check structure
+			if(!this->check_structure(G)){
+				std::cout<<"Structures of matrix and graph are not compatible"<<std::endl;
+				//throw std::runtime_error("Structures of matrix and graph are not compatible");
+			}
+		};
 
-	Precision(UpperTri const & _U, Shape _b, InvScale const & _DD ):b(_b),D(_DD), U(_U), isFactorized(true)
-	{ 
-		if(_b <= 2)
-			throw std::runtime_error("Shape parameter has to be larger than 2");
-		data = U.transpose() * U;
-		if(_DD != _DD.transpose()){
-			throw std::runtime_error("Inv_Scale matrix is not symetric");
+		Precision(UpperTri const & _U, Shape _b, InvScale const & _DD ):b(_b),D(_DD), U(_U), isFactorized(true)
+		{ 
+			if(_b <= 2)
+				throw std::runtime_error("Shape parameter has to be larger than 2");
+			data = U.transpose() * U;
+			if(_DD != _DD.transpose()){
+				throw std::runtime_error("Inv_Scale matrix is not symetric");
+			}
+			CholTypeCol cholD(_DD);
+			if( cholD.info() != Eigen::Success)
+				throw std::runtime_error("Chol decomposition of Inv Scale matrix failed, probably the matrix is not sdp");
+			else
+				chol_invD = cholD.solve(InvScale::Identity(D.rows(),D.rows() )).llt().matrixU();
+		};//devo passargli (..., mat.triangularView<Eigen::Upper>())
+		
+		Precision(UpperTri const & _U, Shape _b, InvScale const & _DD, InvScale const & _chol_invD)
+				 :b(_b),D(_DD), chol_invD(_chol_invD), U(_U), isFactorized(true)
+		{ 
+			if(_b <= 2)
+				throw std::runtime_error("Shape parameter has to be larger than 2");
+			data = U.transpose() * U;
+		};//devo passargli (..., mat.triangularView<Eigen::Upper>())
+		//Getters
+		inline CholMatrix& get_upper_Chol(){
+			return U;
 		}
-		CholTypeCol cholD(_DD);
-		if( cholD.info() != Eigen::Success)
-			throw std::runtime_error("Chol decomposition of Inv Scale matrix failed, probably the matrix is not sdp");
-		else
-			chol_invD = cholD.solve(InvScale::Identity(D.rows(),D.rows() )).llt().matrixU();
-	};//devo passargli (..., mat.triangularView<Eigen::Upper>())
-	
-	Precision(UpperTri const & _U, Shape _b, InvScale const & _DD, InvScale const & _chol_invD)
-			 :b(_b),D(_DD), chol_invD(_chol_invD), U(_U), isFactorized(true)
-	{ 
-		if(_b <= 2)
-			throw std::runtime_error("Shape parameter has to be larger than 2");
-		data = U.transpose() * U;
-	};//devo passargli (..., mat.triangularView<Eigen::Upper>())
-	//Getters
-	inline CholMatrix& get_upper_Chol(){
-		return U;
-	}
-	inline CholMatrix get_upper_Chol()const{
-		return U;
-	}
-	inline CholMatrix get_lower_Chol()const{
-		return U.transpose();
-	}
-	inline ColType get_col(IdxType const & j) const{
-	  return data.row(j); //it's symetric
-	}
-	inline RowType get_row(IdxType const & i) const{
-	  return data.row(i);
-	}
-	inline InnerData& get_matrix(){
-		return data;
-	}
-	inline InnerData get_matrix() const{
-		return data;
-	}
-	inline Shape get_shape() const{
-		return b;
-	}
-	inline InvScale get_inv_scale()const{
-		return D;
-	}
-	inline InvScale get_chol_invD()const{
-		return chol_invD;
-	}
+		inline CholMatrix get_upper_Chol()const{
+			return U;
+		}
+		inline CholMatrix get_lower_Chol()const{
+			return U.transpose();
+		}
+		inline ColType get_col(IdxType const & j) const{
+		  return data.row(j); //it's symetric
+		}
+		inline RowType get_row(IdxType const & i) const{
+		  return data.row(i);
+		}
+		inline InnerData& get_matrix(){
+			return data;
+		}
+		inline InnerData get_matrix() const{
+			return data;
+		}
+		inline Shape get_shape() const{
+			return b;
+		}
+		inline InvScale get_inv_scale()const{
+			return D;
+		}
+		inline InvScale get_chol_invD()const{
+			return chol_invD;
+		}
 
-	/*
-	inline std::vector<unsigned int> get_nbd(IdxType const & i)const{
-		return G.get_nbd(i);
-	}
-	inline unsigned int get_nbd_size(IdxType const & i)const{
-		return G.get_nbd(i).size();
-	}
-	inline unsigned int get_graph_size()const{
-		return G.get_size();
-	}
-	*/
+		/*
+		inline std::vector<unsigned int> get_nbd(IdxType const & i)const{
+			return G.get_nbd(i);
+		}
+		inline unsigned int get_nbd_size(IdxType const & i)const{
+			return G.get_nbd(i).size();
+		}
+		inline unsigned int get_graph_size()const{
+			return G.get_size();
+		}
+		*/
 
-	//Setter
-	void set_matrix(Graph const & G, InnerData const & Mat){ 
-		if(Mat.cols() != Mat.rows())
-			throw std::runtime_error("Non squared matrix inserted");
-		data = Mat.selfadjointView<Eigen::Upper>();
-		//Check structure
-		if(!this->check_structure(G)){
-			std::cout<<"Setting a new matrix: Structures of matrix and graph are not compatible"<<std::endl;
-			//throw std::runtime_error("Structures of matrix and graph are not compatible");
+		//Setter
+		void set_matrix(Graph const & G, InnerData const & Mat){ 
+			if(Mat.cols() != Mat.rows())
+				throw std::runtime_error("Non squared matrix inserted");
+			data = Mat.selfadjointView<Eigen::Upper>();
+			//Check structure
+			if(!this->check_structure(G)){
+				std::cout<<"Setting a new matrix: Structures of matrix and graph are not compatible"<<std::endl;
+				//throw std::runtime_error("Structures of matrix and graph are not compatible");
+			}
+			//compute_Chol();
+			isFactorized = false;
 		}
-		//compute_Chol();
-		isFactorized = false;
-	}
-	void set_random(const Graph & G, unsigned int const & seed = 0){
-		data = utils::rgwish(G, b, D, seed); //Funziona con valori di default?
-		isFactorized = false;
-	}
-	template<typename NormType = utils::MeanNorm>
-	void rgwish(const Graph & G, unsigned int seed = 0);
-	
-	void set_shape(Shape const & _bb){
-		if(_bb <= 2)
-			throw std::runtime_error("Shape parameter has to be larger than 2");
-		b = _bb;
-	}
-	void set_inv_scale(InvScale const & _DD){
-		if(_DD != _DD.transpose()){
-			throw std::runtime_error("Inv_Scale matrix is not symetric");
+		void set_random(const Graph & G, double const threshold = 1e-8, unsigned int const & seed = 0){
+			data = utils::rgwish(G, b, D, threshold, seed); //Funziona con valori di default?
+			isFactorized = false;
 		}
-		CholTypeCol cholD(_DD);
-		if( cholD.info() != Eigen::Success)
-			throw std::runtime_error("Chol decomposition of Inv Scale matrix failed, probably the matrix is not sdp");
-		else{
-			D 	 		 = _DD;
-			chol_invD    = cholD.solve(InvScale::Identity(D.rows(),D.rows())).llt().matrixU();
+		template<typename NormType = utils::MeanNorm>
+		void rgwish(const Graph & G, double const threshold = 1e-8, unsigned int seed = 0);
+		
+		void set_shape(Shape const & _bb){
+			if(_bb <= 2)
+				throw std::runtime_error("Shape parameter has to be larger than 2");
+			b = _bb;
 		}
-	}
-	void set_chol_invD(InvScale const & _chol_invD){
-		chol_invD = _chol_invD;
-	}
-	//Cholesky operations
-	inline void compute_Chol(){
-		CholType chol(this->data);
-		if( chol.info() != Eigen::Success)
-			throw std::runtime_error("Chol decomposition failed, probably the matrix is not sdp");
-		U = chol.matrixU();
-		isFactorized = true;
-	}
-	CholMatrix Chol()const{ // QUESTA CHE È? A CHE SERVE?
-		CholType chol(this->data);
-		if( chol.info() != Eigen::Success)
-			throw std::runtime_error("Chol decomposition failed, probably the matrix is not sdp");
-		return chol.matrixU(); 
-	}
-	bool check_structure(const Graph & G)const{
-		if(data.rows() != G.get_size())
-			return false;
-		double threshold = 1e-6;
-		for(IdxType i = 1; i < data.rows()-1; ++i){
-			for(IdxType j = i+1; j < data.cols(); ++j){
-				if( ( G(i,j) == 0 && std::abs(data(i,j))>threshold ) || (G(i,j) == 1 && std::abs(data(i,j))<threshold)){
-					return false;	
-				}						
+		void set_inv_scale(InvScale const & _DD){
+			if(_DD != _DD.transpose()){
+				throw std::runtime_error("Inv_Scale matrix is not symetric");
+			}
+			CholTypeCol cholD(_DD);
+			if( cholD.info() != Eigen::Success)
+				throw std::runtime_error("Chol decomposition of Inv Scale matrix failed, probably the matrix is not sdp");
+			else{
+				D 	 		 = _DD;
+				chol_invD    = cholD.solve(InvScale::Identity(D.rows(),D.rows())).llt().matrixU();
 			}
 		}
-			
-		return true;	
-	}
+		void set_chol_invD(InvScale const & _chol_invD){
+			chol_invD = _chol_invD;
+		}
+		//Cholesky operations
+		inline void compute_Chol(){
+			CholType chol(this->data);
+			if( chol.info() != Eigen::Success)
+				throw std::runtime_error("Chol decomposition failed, probably the matrix is not sdp");
+			U = chol.matrixU();
+			isFactorized = true;
+		}
+		CholMatrix Chol()const{ // QUESTA CHE È? A CHE SERVE?
+			CholType chol(this->data);
+			if( chol.info() != Eigen::Success)
+				throw std::runtime_error("Chol decomposition failed, probably the matrix is not sdp");
+			return chol.matrixU(); 
+		}
+		bool check_structure(const Graph & G)const{
+			if(data.rows() != G.get_size())
+				return false;
+			double threshold = 1e-6;
+			for(IdxType i = 1; i < data.rows()-1; ++i){
+				for(IdxType j = i+1; j < data.cols(); ++j){
+					if( ( G(i,j) == 0 && std::abs(data(i,j))>threshold ) || (G(i,j) == 1 && std::abs(data(i,j))<threshold)){
+						return false;	
+					}						
+				}
+			}
+				
+			return true;	
+		}
 
-	long double log_normalizing_constat(const Graph & G, unsigned int const & MCiteration = 100, unsigned int seed=0); 
+		long double log_normalizing_constat(const Graph & G, unsigned int const & MCiteration = 100, unsigned int seed=0); 
 
-	//Public member stating if the matrix is factorized or not, i.e if U is such that data=U.transpose()*U
-	bool 		isFactorized;
-private:
-	Shape 		b;
-	InvScale 	D;
-	InvScale 	chol_invD;  //Upper triangular, chol(D^-1)
-	InnerData 	data;	
-	CholMatrix  U; // U = chol(K)^T, i.e, K = U^TU 
+		//Public member stating if the matrix is factorized or not, i.e if U is such that data=U.transpose()*U
+		bool 		isFactorized;
+	private:
+		Shape 		b;
+		InvScale 	D;
+		InvScale 	chol_invD;  //Upper triangular, chol(D^-1)
+		InnerData 	data;	
+		CholMatrix  U; // U = chol(K)^T, i.e, K = U^TU 
 
 };
 
@@ -261,10 +261,13 @@ long double Precision<CompleteStructure, Type>::log_normalizing_constat(const Co
 	const long double min_numeric_limits_ld = std::numeric_limits<long double>::min() * 1000;
 	long double result_MC{0};
 	unsigned int number_nan{0};
-	if(seed == 0)
-		seed = std::chrono::system_clock::now().time_since_epoch().count();	
+	if(seed == 0){
+		std::random_device rd;
+		seed=rd();
+	}
 	sample::GSL_RNG engine(seed);
 	sample::rnorm rnorm;
+	sample::rchisq rchisq;
 	//std::default_random_engine engine(seed);
 	//std::normal_distribution<> rnorm{0.0,1.0}; //For sampling from normal distribution
 	
@@ -283,6 +286,7 @@ long double Precision<CompleteStructure, Type>::log_normalizing_constat(const Co
 			//std::cout<<std::endl;
 
 	if(n_links == max_n_links){
+		//std::cout<<"Pieno"<<std::endl;
 		long double res_gamma{0};
 		for(IdxType i = 0; i < N; ++i){
 			res_gamma += std::lgammal( (long double)(0.5*(b + nu[i])) );
@@ -293,6 +297,7 @@ long double Precision<CompleteStructure, Type>::log_normalizing_constat(const Co
 	        	 	0.5*(b+N-1)*std::log(D.determinant())   );
 	}
 	else if(n_links == 0){
+		//std::cout<<"Vuoto"<<std::endl;
 		long double sum_log_diag{0};
 		for(IdxType i = 0; i < N; ++i){
 			sum_log_diag += std::log( D(i,i) );
@@ -317,200 +322,201 @@ long double Precision<CompleteStructure, Type>::log_normalizing_constat(const Co
 						//std::cout<<"Hello parallel"<<std::endl;
 					//}
 		int thread_id;
-		//Qui inizia il ciclo 
-		#pragma omp parallel for private(thread_id) reduction (+:result_MC)
-		for(IdxType iter = 0; iter < MCiteration; ++ iter){
+		std::vector<double> vec_ss_nonfree;
+		std::vector<double> vec_ss_nonfree_result; //useful for parallel case, does not harm in sequential case (no unuseful copies are done)
+		#pragma omp parallel private(thread_id),private(vec_ss_nonfree),shared(vec_ss_nonfree_result)
+		{
+			int n_threads{1};
 			#ifdef PARALLELEXEC
-			thread_id = omp_get_thread_num();
+				n_threads = omp_get_num_threads();
 			#endif
-			MatRow Psi(MatRow::Zero(N,N));
-			//In the end it has to be exp(-1/2 sum( psi_nonfree_ij^2 )). I accumulate the sum of non free elements squared every time they are generated
-			double sq_sum_nonfree{0}; 
-			//Step 2: Sampling the free elements
-			//- Sample the diagonal elements from chisq(b + nu_i) (or equivalently from a gamma((b+nu_i)/2, 1/2))
-			//- Sample the off-diagonal elements from N(0,1)
+			vec_ss_nonfree.reserve(MCiteration/n_threads);
+			//Start MC for loop
+			for(IdxType iter = 0; iter < MCiteration/n_threads; ++ iter){
+				#ifdef PARALLELEXEC
+				thread_id = omp_get_thread_num();
+				#endif
+				MatRow Psi(MatRow::Zero(N,N));
+				//In the end it has to be exp(-1/2 sum( psi_nonfree_ij^2 )). I accumulate the sum of non free elements squared every time they are generated
+				double sq_sum_nonfree{0};
+				//Step 2: Sampling the free elements
+				//- Sample the diagonal elements from chisq(b + nu_i) (or equivalently from a gamma((b+nu_i)/2, 1/2))
+				//- Sample the off-diagonal elements from N(0,1)
 
-			//I could avoid to compute the last element because it won't be used for sure but still this way is more clear
-			std::vector<double> vector_free_element(N_free_elements);
-			unsigned int time_to_diagonal{0};
-			citerator it_nu = nu.cbegin();
-			for(unsigned int i = 0; i < N_free_elements; ++i){
-				if(time_to_diagonal == 0){
-					//vector_free_element[i] = std::sqrt(std::gamma_distribution<> (0.5*(b+(*it_nu)),2.0)(engine));
-					vector_free_element[i] = std::sqrt(sample::rchisq()(engine, (double)(b+(*it_nu)) ));
-				}
-				else
-					vector_free_element[i] = rnorm(engine);
-
-				if(time_to_diagonal++ == *it_nu){
-					time_to_diagonal = 0;
-					it_nu++;
-				}
-			}
-			std::vector<double>::const_iterator it_fe = vector_free_element.cbegin();
-
-			if(H.isIdentity()){
-
-				//Step 3: Complete Psi (upper part)
-				//- If i==0 -> all null	
-				Psi(0,0) = *it_fe;
-				it_fe++;	
-				for(unsigned int j = 1; j < N; ++j){
-					if(G(0,j) == true){
-						Psi(0,j) = *it_fe;
-						it_fe++;
+				std::vector<double> vector_free_element(N_free_elements);
+				unsigned int time_to_diagonal{0};
+				citerator it_nu = nu.cbegin();
+				for(unsigned int i = 0; i < N_free_elements; ++i){
+					if(time_to_diagonal == 0){
+						//vector_free_element[i] = std::sqrt(std::gamma_distribution<> (0.5*(b+(*it_nu)),2.0)(engine));
+						vector_free_element[i] = std::sqrt(rchisq(engine, (double)(b+(*it_nu)) ));
+						//if(vector_free_element[i] < min_numeric_limits_ld)
+							//throw std::runtime_error("Impossibile, un elemento diagonale è nullo");
 					}
-				}
-						//std::cout<<"Psi dopo i = 0: "<<std::endl<<Psi<<std::endl;	
-
-				Psi(1,1) = *it_fe;
-				it_fe++;	
-				for(unsigned int j = 2; j < N; ++j){ //Counting also the diagonal element because they have to be updated too
-					if(G(1,j) == false){
-						Psi(1,j) = - Psi(0,1)*Psi(0,j)/Psi(1,1);
-						sq_sum_nonfree += Psi(1,j)*Psi(1,j);
-					}
-					else{
-						Psi(1,j) = *it_fe;
-						it_fe++;
-					}
-				}	
-			
-							//std::cout<<"Psi dopo i = 1: "<<std::endl<<Psi<<std::endl;
-				//- If i>1 -> formula 2
-				for(unsigned int i = 2; i < N-1; ++i){ // i = N is useless
-					Eigen::VectorXd S = Psi.block(0,i,i,1); 
-					for(unsigned int j = i; j < N; ++j){ //Counting also the diagonal element because they have to be updated too
-						if(G(i,j) == false){
-							Eigen::VectorXd S_star = Psi.block(0,j,i,1); 
-							Psi(i,j) = - S.dot(S_star)/Psi(i,i) ;
-							sq_sum_nonfree += Psi(i,j)*Psi(i,j);
-						}
-						else{
-							Psi(i,j) = *it_fe;
-							it_fe++;
-						}
-					}
-							//std::cout<<"Psi dopo i = "<<i<<": "<<std::endl<<Psi<<std::endl;
-				}
-
-			}
-			else{
-				auto CumSum = [&Psi, &H](unsigned int const & a, unsigned int const & b){ //Computes sum_(k in a:b-1)(Psi_ak*H_kb)
-								
-					if(a >= Psi.rows() || b >= H.rows())
-						throw std::runtime_error("Invalid index request");
-					if(a>=b)
-						throw std::runtime_error("Wrong dimension inserted");
-					else if(a == (b-1))
-						return Psi(a,b-1)*H(a,b);
 					else
-						return (Eigen::RowVectorXd(Psi.block(a,a,1,b-a)).dot(Eigen::VectorXd(H.block(a,b,b-a,1))));
-				};
-				//Step 3: Complete Psi (upper part)
-				//- If i==0 -> formula 1
-				// Sums is a NxN-1 matrix (probabilmente il numero di righe sarà N-1 ma vabbe) such that Sums(a,b) = CumSum(a,b+1), i.e CumSum(a,b) = Sums(a,b-1)
-				Psi(0,0) = *it_fe;
-				it_fe++;
-				MatRow Sums(MatRow::Zero(N,N-1)); 
-				for(unsigned int j = 1; j < N; ++j){
-					Sums(0,j-1) = CumSum(0,j); 
-					if(G(0,j) == false){
-						Psi(0,j) = -Sums(0,j-1);
-						sq_sum_nonfree += Psi(0,j)*Psi(0,j);
-					}
-					else{
-						Psi(0,j) = *it_fe;
-						it_fe++;
+						vector_free_element[i] = rnorm(engine);
+
+					if(time_to_diagonal++ == *it_nu){
+						time_to_diagonal = 0;
+						it_nu++;
 					}
 				}
-					//std::cout<<"Psi dopo i = 0: "<<std::endl<<Psi<<std::endl;
-					//std::cout<<"Sums dopo i = 0: "<<std::endl<<Sums<<std::endl;
-				//- If i==1 -> simplified case of formula 2
-				Psi(1,1) = *it_fe;
-				it_fe++;
-				for(unsigned int j = 2; j < N; ++j){
-					Sums(1,j-1) = CumSum(1,j); 
-					if(G(1,j) == false){
-						Psi(1,j) = - ( Sums(1,j-1) + (Psi(0,1) + Psi(0,0)*H(0,1))*(Psi(0,j) + Sums(0,j-1))/Psi(1,1) );
-						sq_sum_nonfree += Psi(1,j)*Psi(1,j);
-					}
-					else{
-						Psi(1,j) = *it_fe;
-						it_fe++;
-					}
-				}
-				//std::cout<<"Psi dopo i = 1: "<<std::endl<<Psi<<std::endl;
-				//std::cout<<"Sums dopo i = 1: "<<std::endl<<Sums<<std::endl;
-				//- If i>1 -> formula 2
-				Psi = Psi.template selfadjointView<Eigen::Upper>(); 
-				for(unsigned int i = 2; i < N-1; ++i){ // i = N-1 (last element) is useless
-					Eigen::RowVectorXd S = Psi.block(i,0,1,i);
-					for(unsigned int j = i; j < N; ++j){ //Counting also the diagonal element because they have to be updated too
-						if(G(i,j) == false){
-							Eigen::RowVectorXd S_star = Psi.block(j,0,1,i);
-							Psi(i,j) = - S.dot(S_star)/Psi(i,i) ;
-							/*
-							if( Psi(i,j) != Psi(i,j)){
-								std::cout<<"************ Psi("<<i<<","<<j<<") is nan? **************"<<std::endl;
-								//std::cout<<"G("<<i<<","<<j<<") = "<<G(i,j)<<std::endl;
-								//std::cout<<"Psi("<<i<<","<<i<<") = "<<Psi(i,i)<<std::endl;
-								//std::cout<<"Psi("<<i<<","<<j<<") = "<<Psi(i,j)<<std::endl;
-								//std::cout<<"S_star:"<<std::endl<<S_star<<std::endl;
-								//std::cout<<"S:"<<std::endl<<S<<std::endl;
-								//std::cout<<"Elementi diagonali"<<std::endl;
-								//for(unsigned int kk = 0; kk < i; ++kk){
-									//std::cout<<Psi(kk,kk)<<"  ";
-								//}
-								//std::cout<<std::endl;
-							}//Check for NaN
-							*/
-							sq_sum_nonfree += Psi(i,j)*Psi(i,j);
-						}
-						else{
-							Psi(i,j) = *it_fe;
+
+				std::vector<double>::const_iterator it_fe = vector_free_element.cbegin();
+
+				if(H.isIdentity()){ //Takes into account also the case D diagonal but not identity
+					//Step 3: Complete Psi (upper part)
+					//- If i==0 -> all null
+					Psi(0,0) = *it_fe;
+					it_fe++;
+					for(unsigned int j = 1; j < N; ++j){
+						if(G(0,j) == true){
+							Psi(0,j) = *it_fe;
 							it_fe++;
 						}
 					}
-					Psi.block(i+1,i,N-1-i,1) = Psi.block(i,i+1,1,N-1-i).transpose();
-							//std::cout<<"Psi dopo i = "<<i<<": "<<std::endl<<Psi<<std::endl;
+							//std::cout<<"Psi dopo i = 0: "<<std::endl<<Psi<<std::endl;
+
+					Psi(1,1) = *it_fe; //Counting also the diagonal element because they have to be updated too
+					it_fe++;
+					for(unsigned int j = 2; j < N; ++j){ 
+						if(G(1,j) == false){
+							Psi(1,j) = - Psi(0,1)*Psi(0,j)/Psi(1,1);
+							sq_sum_nonfree += Psi(1,j)*Psi(1,j);
+						}
+						else{
+							Psi(1,j) = *it_fe;
+							it_fe++;
+						}
+					}
+
+								//std::cout<<"Psi dopo i = 1: "<<std::endl<<Psi<<std::endl;
+					//- If i>1 -> formula 2
+					for(unsigned int i = 2; i < N-1; ++i){ // i = N-1 (last element) is useless
+						Eigen::VectorXd S = Psi.block(0,i,i,1); //Non cache friendly 
+						for(unsigned int j = i; j < N; ++j){ //Counting also the diagonal element because they have to be updated too
+							if(G(i,j) == false){
+								Eigen::VectorXd S_star = Psi.block(0,j,i,1);
+								Psi(i,j) = - S.dot(S_star)/Psi(i,i) ;
+								sq_sum_nonfree += Psi(i,j)*Psi(i,j);
+							}
+							else{
+								Psi(i,j) = *it_fe;
+								it_fe++;
+							}
+						}
+								//std::cout<<"Psi dopo i = "<<i<<": "<<std::endl<<Psi<<std::endl;
+					}
+
 				}
+				else{
+					auto CumSum = [&Psi, &H](unsigned int const & a, unsigned int const & b){ //Computes sum_(k in a:b-1)(Psi_ak*H_kb)
 
+						if(a >= Psi.rows() || b >= H.rows())
+							throw std::runtime_error("Cum Sum invalid index request");
+						if(a>=b)
+							throw std::runtime_error("Wrong dimension inserted");
+						else if(a == (b-1))
+							return Psi(a,b-1)*H(a,b);
+						else
+							return (Eigen::RowVectorXd(Psi.block(a,a,1,b-a)).dot(Eigen::VectorXd(H.block(a,b,b-a,1)))); //Cache friendly
+					};
+					//Step 3: Complete Psi (upper part)
+					//- If i==0 -> formula 1
+					// Sums is a NxN-1 matrix (probabilmente il numero di righe sarà N-1 ma vabbe) such that Sums(a,b) = CumSum(a,b+1), i.e CumSum(a,b) = Sums(a,b-1)
+					Psi(0,0) = *it_fe;
+					it_fe++;
+					MatRow Sums(MatRow::Zero(N,N-1));
+					for(unsigned int j = 1; j < N; ++j){
+						Sums(0,j-1) = CumSum(0,j);
+						if(G(0,j) == false){
+							Psi(0,j) = -Sums(0,j-1);
+							sq_sum_nonfree += Psi(0,j)*Psi(0,j);
+						}
+						else{
+							Psi(0,j) = *it_fe;
+							it_fe++;
+						}
+					}
+						//std::cout<<"Psi dopo i = 0: "<<std::endl<<Psi<<std::endl;
+						//std::cout<<"Sums dopo i = 0: "<<std::endl<<Sums<<std::endl;
+					//- If i==1 -> simplified case of formula 2
+					Psi(1,1) = *it_fe;
+					it_fe++;
+					for(unsigned int j = 2; j < N; ++j){
+						Sums(1,j-1) = CumSum(1,j);
+						if(G(1,j) == false){
+							Psi(1,j) = - ( Sums(1,j-1) + (Psi(0,1) + Psi(0,0)*H(0,1))*(Psi(0,j) + Sums(0,j-1))/Psi(1,1) );
+							sq_sum_nonfree += Psi(1,j)*Psi(1,j);
+						}
+						else{
+							Psi(1,j) = *it_fe;
+							it_fe++;
+						}
+					}
+							//std::cout<<"Psi dopo i = 1: "<<std::endl<<Psi<<std::endl;
+					//std::cout<<"Sums dopo i = 1: "<<std::endl<<Sums<<std::endl;
+					//- If i>1 -> formula 2
+					for(unsigned int i = 2; i < N-1; ++i){
+						Psi(i,i) = *it_fe;
+						it_fe++;
+						Eigen::VectorXd S = Psi.block(0,i,i,1) + Sums.block(0,i-1,i,1); //non cache friendly 
+						for(unsigned int j = i+1; j < N; ++j){
+							Sums(i,j-1) = CumSum(i,j);
+							if(G(i,j) == false){
+								Eigen::VectorXd S_star = Psi.block(0,j,i,1) + Sums.block(0,j-1,i,1); //non cache friendly 
+								Psi(i,j) = - ( Sums(i,j-1) + S.dot(S_star)/Psi(i,i) );
+								sq_sum_nonfree += Psi(i,j)*Psi(i,j);
+							}
+							else{
+								Psi(i,j) = *it_fe;
+								it_fe++;
+							}
+						}
+							//std::cout<<"Psi dopo i = "<<i<<": "<<std::endl<<Psi<<std::endl;
+					}
+				}
+				//Step 4: Compute exp( -0.5 * sum_NonFreeElements(Psi_ij)^2 )
+											//long double temp = std::exp((long double)(-0.5 * sq_sum_nonfree));
+												//if(temp < min_numeric_limits_ld)
+												//temp = min_numeric_limits_ld;
+				if( sq_sum_nonfree != sq_sum_nonfree){
+					//throw std::runtime_error("!!!!!!!!!!!!!!! Molto probabile che ci sia un nan !!!!!!!!!!!!!!!!!!!");
+					//std::cout<<"!!!!!!!!!!!!!!! Molto probabile che ci sia un nan !!!!!!!!!!!!!!!!!!!"<<std::endl;
+					number_nan++;
+				}
+				else{
+					vec_ss_nonfree.emplace_back(-0.5*sq_sum_nonfree);
+				}
 			}
-			//Step 4: Compute exp( -0.5 * sum_NonFreeElements(Psi_ij)^2 )
-			long double temp = std::exp((long double)(-0.5 * sq_sum_nonfree));
-			//if(temp < min_numeric_limits_ld)  
-				//temp = min_numeric_limits_ld;
-			if( sq_sum_nonfree != sq_sum_nonfree){
-				//throw std::runtime_error("!!!!!!!!!!!!!!! Molto probabile che ci sia un nan !!!!!!!!!!!!!!!!!!!");
-				//std::cout<<"!!!!!!!!!!!!!!! Molto probabile che ci sia un nan !!!!!!!!!!!!!!!!!!!"<<std::endl;
-				number_nan++;
-			}
-			else{
-				result_MC += std::exp((long double)(-0.5 * sq_sum_nonfree));
-				//result_MC += std::exp(-0.5 * sq_sum_nonfree);
-			}
-			
-
+									//std::cout<<"vec_ss_nonfree.size() = "<<vec_ss_nonfree.size()<<std::endl;
+			#ifdef PARALLELEXEC
+				#pragma omp barrier
+				#pragma omp critical
+				{
+					vec_ss_nonfree_result.insert(vec_ss_nonfree_result.end(), 
+												 std::make_move_iterator(vec_ss_nonfree.begin()), std::make_move_iterator(vec_ss_nonfree.end())
+												);
+				}	
+			#endif				
 		}
-
-		result_MC /= MCiteration;
-						//std::cout<<"result_MC prima del log = "<<result_MC<<std::endl;
-		result_MC = std::log(result_MC);
-						//std::cout<<"result_MC = "<<result_MC<<std::endl;
+		#ifndef PARALLELEXEC
+			std::swap(vec_ss_nonfree_result, vec_ss_nonfree);
+		#endif
+										//std::cout<<"vec_ss_nonfree_result.size() = "<<vec_ss_nonfree_result.size()<<std::endl;
+		result_MC = -std::log(vec_ss_nonfree_result.size()) + utils::logSumExp(vec_ss_nonfree_result);
+										//std::cout<<"result_MC = "<<result_MC<<std::endl;
 		//Step 5: Compute constant term and return
 		long double result_const_term{0};
-
-		
 		#pragma parallel for reduction(+:result_const_term)
 		for(IdxType i = 0; i < N; ++i){
-			result_const_term += (double)nu[i]/2.0*utils::log_2pi + 
-								 (double)(b+nu[i])/2.0*utils::log_2 +
-								 (double)(b+G.get_nbd(i).size())*std::log(T(i,i)) + //Se T è l'identità posso anche evitare di calcolare questo termine
+			result_const_term += (long double)nu[i]/2.0*utils::log_2pi +
+								 (long double)(b+nu[i])/2.0*utils::log_2 +
+								 (long double)(b+G.get_nbd(i).size())*std::log(T(i,i)) + //Se T è l'identità posso anche evitare di calcolare questo termine
 								 std::lgammal((long double)(0.5*(b + nu[i])));
 		}//This computation requires the best possible precision because il will generate a very large number
-						//std::cout<<"Constant term = "<<result_const_term<<std::endl;
-		return result_MC + result_const_term; 
+					//std::cout<<"Constant term = "<<result_const_term<<std::endl;
+		return result_MC + result_const_term;
 	}
 	
 }
@@ -518,7 +524,7 @@ long double Precision<CompleteStructure, Type>::log_normalizing_constat(const Co
 
 template<template <typename> class CompleteStructure, typename T>
 template< typename NormType >
-void Precision<CompleteStructure, T>::rgwish(const CompleteStructure<T> & G, unsigned int seed){
+void Precision<CompleteStructure, T>::rgwish(const CompleteStructure<T> & G, double const threshold, unsigned int seed){
 
 	//std::cout<<"Dentro ad rgwish"<<std::endl;
 	//Typedefs
@@ -529,25 +535,24 @@ void Precision<CompleteStructure, T>::rgwish(const CompleteStructure<T> & G, uns
 				//std::cout<<"N = "<<N<<std::endl;
 	unsigned int const n_links = G.get_n_links();
 	unsigned int const max_iter = 500;
-	double const threshold = 1e-8;
 	bool converged = false;
 	unsigned int it{0};
 	double norm_res{1.0};
 	if(seed == 0){
-		  std::random_device rd;
-		  seed=rd();
+		std::random_device rd;
+		seed=rd();
 		//seed = std::chrono::system_clock::now().time_since_epoch().count();	
 	}
 	sample::GSL_RNG engine(seed);
-
+	sample::rchisq rchisq;
 	if(n_links == 0){
 				//std::cout<<"Empty Graph"<<std::endl;
-		MatRow K_return(MatRow::Identity(N,N));
-		for(unsigned int i = 0; i < N; ++i) //Non cache friendly
-			K_return(i,i) = std::sqrt(  sample::rchisq()(engine, (double)(b + N - i - 1))  );
-
-				//std::cout<<"K_return:"<<std::endl<<K_return<<std::endl;
-		data = K_return;
+		Eigen::VectorXd diag(Eigen::VectorXd::Zero(N));
+		for(unsigned int i = 0; i < N; ++i){ 
+			diag(i) = std::sqrt(rchisq(engine, (double)(b + N - i - 1))  );
+			//K_return(i,i) = std::sqrt(  rchisq(engine, (double)(b + N - i - 1))  );
+		}
+		data = diag.asDiagonal();
 		return;
 	}
 
@@ -588,22 +593,40 @@ void Precision<CompleteStructure, T>::rgwish(const CompleteStructure<T> & G, uns
 				//do nothing
 			}
 			else if( nbd_i.size() == 1){
-				//I need Omega to be symmetric here. This is not the best possible way because a need to complete Omega.
-				//However i guess that this case would be pretty rare.
-				Omega = Omega.selfadjointView<Eigen::Upper>();
-						//std::cout<<"Omega quando nbd_i è single: "<<std::endl<<Omega<<std::endl;
-				unsigned int k = nbd_i[0];
+				//Non symetric version
+				//std::cout<<"Omega:"<<std::endl<<Omega<<std::endl;
+				const unsigned int &k = nbd_i[0];
 				double beta_star_i = Sigma(k,i) / Omega(k,k); //In this case it is not a linear system but a simple, scalar, equation
+						//std::cout<<"i = "<<i<<std::endl;
+						//std::cout<<"k = "<<k<<std::endl;
+						//std::cout<<"beta_star_i = "<<beta_star_i<<std::endl;
 				if(i == 0){
-					beta_i = Omega.block(1,k, N-1,1) * beta_star_i; //get k-th column except first row
+					//std::cout<<"Omega.block(1,k, k, 1):"<<std::endl<<Omega.block(1,k, k, 1)<<std::endl;
+					//std::cout<<"Omega.block(k,k+1,1,beta_i.size()-k):"<<std::endl<<Omega.block(k,k+1,1,beta_i.size()-k)<<std::endl;
+					beta_i.head(k) = Omega.block(1,k, k, 1) * beta_star_i;
+					beta_i.tail(beta_i.size()-k) = Omega.block(k,k+1,1,beta_i.size()-k).transpose() * beta_star_i;
 				}
 				else if(i == N-1){
-					beta_i = Omega.block(0,k, N-1,1) * beta_star_i; //get k-th column except last row
+					//std::cout<<"Omega.block(0,k, k, 1):"<<std::endl<<Omega.block(0,k, k, 1)<<std::endl;
+					//std::cout<<"Omega.block(k,k,1,beta_i.size()-k):"<<std::endl<<Omega.block(k,k,1,beta_i.size()-k)<<std::endl;
+					beta_i.head(k) = Omega.block(0,k, k, 1) * beta_star_i;
+					beta_i.tail(beta_i.size()-k) = Omega.block(k,k,1,beta_i.size()-k).transpose() * beta_star_i;
 				}
 				else{
-					//get k-th column except i-th row
-					beta_i.head(i) = Omega.block(0,k, i, 1) * beta_star_i;
-					beta_i.tail(beta_i.size()-i) = Omega.block(i+1,k, N-i-1,1) * beta_star_i;
+					if(i < k){
+						//std::cout<<"Omega.block(0,k, i, 1):"<<std::endl<<Omega.block(0,k, i, 1)<<std::endl;
+						//std::cout<<"Omega.block(i+1,k, k-i, 1):"<<std::endl<<Omega.block(i+1,k, k-i, 1)<<std::endl;
+						//std::cout<<"Omega.block(k,k+1,1,beta_i.size()-k):"<<std::endl<<Omega.block(k,k+1,1,beta_i.size()-k)<<std::endl;
+						beta_i.head(i) = Omega.block(0,k, i, 1) * beta_star_i;
+						beta_i.segment(i,k-i) = Omega.block(i+1,k, k-i, 1) * beta_star_i;
+						beta_i.tail(beta_i.size()-k) = Omega.block(k,k+1,1,beta_i.size()-k).transpose() * beta_star_i;
+					}
+					else{ // k < i
+						beta_i.head(k) = Omega.block(0,k,k,1) * beta_star_i;
+						beta_i.segment(k,i-k) = Omega.block(k,k,1,i-k).transpose() * beta_star_i;
+						beta_i.tail(beta_i.size()-i) = Omega.block(k,i+1,1,beta_i.size()-i).transpose() * beta_star_i;
+					}
+					//get k-th row except i-th column	
 				}
 							//std::cout<<"beta_i: "<<std::endl<<beta_i<<std::endl;
 			}
@@ -666,8 +689,6 @@ void Precision<CompleteStructure, T>::rgwish(const CompleteStructure<T> & G, uns
 	//Omega = Omega.selfadjointView<Eigen::Upper>();
 	//return Omega.inverse();
 }
-
-
 
 
 #endif

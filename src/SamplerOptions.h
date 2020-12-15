@@ -30,8 +30,8 @@ struct SamplerTraits{
 	using IteratorRetMu		= std::vector<VecCol>::iterator;
 	using IteratorRetK	 	= std::vector<MatRow>::iterator; 
 	using IteratorRetTaueps	= std::vector<double>::iterator;
-
 };
+
 
 
 class Hyperparameters : public SamplerTraits{
@@ -73,36 +73,36 @@ class Parameters : public SamplerTraits{
 	Parameters()=default;
 	Parameters(int const & _niter, int const & _nburn, double const & _thin, double const & _thinG, 
 				unsigned int const & _MCiterPr, unsigned int const & _MCiterPost , MatCol const & _PHI, GroupsPtr const & _ptrGr = nullptr):
-				niter(_niter), nburn(_nburn), thin(_thin), thinG(_thinG), MCiterPrior(_MCiterPr), MCiterPost(_MCiterPost) ,Basemat(_PHI), ptr_groups(_ptrGr)
+				niter(_niter), nburn(_nburn), thin(_thin), thinG(_thinG), MCiterPrior(_MCiterPr), MCiterPost(_MCiterPost) ,Basemat(_PHI), ptr_groups(_ptrGr), trGwishSampler(1e-8)
 	{
 					iter_to_store  = static_cast<unsigned int>((niter - nburn)/thin );
 					iter_to_storeG = static_cast<unsigned int>((niter - nburn)/thinG);
 	}
 	Parameters(int const & _niter, int const & _nburn, double const & _thin, double const & _thinG, 
 				unsigned int const & _MCiterPr, MatCol const & _PHI, GroupsPtr const & _ptrGr):
-				niter(_niter), nburn(_nburn), thin(_thin), thinG(_thinG), MCiterPrior(_MCiterPr), MCiterPost(_MCiterPr), Basemat(_PHI), ptr_groups(_ptrGr)
+				niter(_niter), nburn(_nburn), thin(_thin), thinG(_thinG), MCiterPrior(_MCiterPr), MCiterPost(_MCiterPr), Basemat(_PHI), ptr_groups(_ptrGr), trGwishSampler(1e-8)
 	{
 					iter_to_store  = static_cast<unsigned int>((niter - nburn)/thin );
 					iter_to_storeG = static_cast<unsigned int>((niter - nburn)/thinG);
 	}		
-	Parameters(int const & _niter, int const & _nburn, double const & _thin, unsigned int const & _MCiterPr, unsigned int const & _MCiterPost):
-				niter(_niter), nburn(_nburn), thin(_thin), thinG(_thin), MCiterPrior(_MCiterPr), MCiterPost(_MCiterPost), ptr_groups(nullptr)
+	Parameters(int const & _niter, int const & _nburn, double const & _thin, unsigned int const & _MCiterPr, unsigned int const & _MCiterPost, double const & _trGwishSampler):
+				niter(_niter), nburn(_nburn), thin(_thin), thinG(_thin), MCiterPrior(_MCiterPr), MCiterPost(_MCiterPost), ptr_groups(nullptr), trGwishSampler(_trGwishSampler)
 	{
 					iter_to_store  = static_cast<unsigned int>((niter - nburn)/thin );
 					iter_to_storeG = static_cast<unsigned int>((niter - nburn)/thinG);
 	}		
 	Parameters(int const & _niter, int const & _nburn, double const & _thin, double const & _thinG, MatCol const & _PHI, GroupsPtr const & _ptrGr):
-				niter(_niter), nburn(_nburn), thin(_thin), thinG(_thinG), Basemat(_PHI), ptr_groups(_ptrGr)
+				niter(_niter), nburn(_nburn), thin(_thin), thinG(_thinG), Basemat(_PHI), ptr_groups(_ptrGr), trGwishSampler(1e-8)
 	{
 					iter_to_store  = static_cast<unsigned int>((niter - nburn)/thin );
 					iter_to_storeG = static_cast<unsigned int>((niter - nburn)/thinG);
 	}							
-	Parameters(MatCol const & _PHI):niter(3), nburn(1), thin(1), thinG(1), MCiterPrior(100), MCiterPost(100), Basemat(_PHI), ptr_groups(nullptr)
+	Parameters(MatCol const & _PHI):niter(3), nburn(1), thin(1), thinG(1), MCiterPrior(100), MCiterPost(100), Basemat(_PHI), ptr_groups(nullptr), trGwishSampler(1e-8)
 	{
 	 	iter_to_store  = static_cast<unsigned int>((niter - nburn)/thin );
 	 	iter_to_storeG = static_cast<unsigned int>((niter - nburn)/thinG);
 	} 
-	Parameters(MatCol const & _PHI, GroupsPtr const & _ptrGr):niter(3), nburn(1), thin(1), thinG(1), MCiterPrior(100), MCiterPost(100), Basemat(_PHI), ptr_groups(_ptrGr)
+	Parameters(MatCol const & _PHI, GroupsPtr const & _ptrGr):niter(3), nburn(1), thin(1), thinG(1), MCiterPrior(100), MCiterPost(100), Basemat(_PHI), ptr_groups(_ptrGr), trGwishSampler(1e-8)
 	{
 	 	iter_to_store  = static_cast<unsigned int>((niter - nburn)/thin );
 	 	iter_to_storeG = static_cast<unsigned int>((niter - nburn)/thinG);
@@ -122,6 +122,7 @@ class Parameters : public SamplerTraits{
 	GroupsPtr ptr_groups;
 	unsigned int iter_to_store;
 	unsigned int iter_to_storeG;
+	double trGwishSampler;
 	friend std::ostream & operator<<(std::ostream &str, Parameters & pm){
 		str<<"niter = "<<pm.niter<<std::endl;
 		str<<"nburn = "<<pm.nburn<<std::endl;
@@ -132,6 +133,7 @@ class Parameters : public SamplerTraits{
 		str<<"MCiterPost  = "<<pm.MCiterPost<<std::endl;
 		str<<"iter_to_store  = "<<pm.iter_to_store<<std::endl;
 		str<<"iter_to_storeG = "<<pm.iter_to_storeG<<std::endl;
+		str<<"trGwishSampler = "<<pm.trGwishSampler<<std::endl;
 		if(pm.ptr_groups == nullptr)
 			str<<"groups = "<<"Not defined"<<std::endl;
 		return str;
@@ -142,19 +144,19 @@ class Parameters : public SamplerTraits{
 template<template <typename> class GraphStructure = GraphType, typename T = unsigned int >
 class Init : public SamplerTraits{
 	using Graph = GraphStructure<T>;
-public:
+	public:
 	//Those constructors may lead to errors if uncorrectly set. Every block graph has to be constructed with its groups	
 
 		//This is for complete graphs
 	//Init()=default;	
 	Init(unsigned int const & _n, unsigned int const & _p):
-			Beta0(MatCol::Zero(_p,_n)), mu0(VecCol::Zero(_p)), tau_eps0(0.0), K0(MatRow::Identity(_p,_p)), G0(_p)
+			Beta0(MatCol::Zero(_p,_n)), mu0(VecCol::Zero(_p)), tau_eps0(1.0), K0(MatRow::Identity(_p,_p)), G0(_p)
 	{
 		   	G0.set_empty_graph();
 	};
 		//This is for block graphs															   
 	Init(unsigned int const & _n, unsigned int const & _p, GroupsPtr const & _ptrGr)
-		:Beta0(MatCol::Zero(_p,_n)), mu0(VecCol::Zero(_p)), tau_eps0(0.0), K0(MatRow::Identity(_p,_p)), G0(_ptrGr){
+		:Beta0(MatCol::Zero(_p,_n)), mu0(VecCol::Zero(_p)), tau_eps0(1.0), K0(MatRow::Identity(_p,_p)), G0(_ptrGr){
 			G0.set_empty_graph();
 		};
 		
@@ -172,6 +174,7 @@ public:
 	Graph  G0;
 };
 
+
 // -----------------------------------------------------------------------------------------------------------------------------------------------
 
 //For Complete Graphs (GraphType)
@@ -187,11 +190,11 @@ SelectMethod_GraphType(std::string const & namePr, std::string const & nameGGM, 
 		throw std::runtime_error("Error, the only possible priors right now are: Uniform and Bernoulli");
 	//2) Select algorithm
 	if(nameGGM == "MH")
-		return Create_GGM<GGMAlgorithm::MH, GraphType, unsigned int >(prior, hy.b_K, hy.D_K , param.MCiterPrior, param.MCiterPost);
+		return Create_GGM<GGMAlgorithm::MH, GraphType, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler , param.MCiterPrior, param.MCiterPost);
 	else if(nameGGM == "RJ")
-		return Create_GGM<GGMAlgorithm::RJ, GraphType, unsigned int >(prior, hy.b_K, hy.D_K, hy.sigmaG, param.MCiterPrior);
+		return Create_GGM<GGMAlgorithm::RJ, GraphType, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler, hy.sigmaG, param.MCiterPrior);
 	else if(nameGGM == "DRJ")
-		return Create_GGM<GGMAlgorithm::DRJ,GraphType, unsigned int >(prior, hy.b_K, hy.D_K, hy.sigmaG);
+		return Create_GGM<GGMAlgorithm::DRJ,GraphType, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler, hy.sigmaG);
 	else
 		throw std::runtime_error("Error, the only possible GGM algorithm right now are: MH, RJ, DRJ");
 }
@@ -213,11 +216,11 @@ SelectMethod_BlockGraph(std::string const & namePr, std::string const & nameGGM,
 		throw std::runtime_error("Error, the only possible priors right now are: Uniform, TruncatedUniform, Bernoulli, TruncatedBernoulli ");
 	//2) Select algorithm
 	if(nameGGM == "MH")
-		return Create_GGM<GGMAlgorithm::MH, BlockGraph, unsigned int >(prior, hy.b_K, hy.D_K , param.MCiterPrior, param.MCiterPost);
+		return Create_GGM<GGMAlgorithm::MH, BlockGraph, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler , param.MCiterPrior, param.MCiterPost);
 	else if(nameGGM == "RJ")
-		return Create_GGM<GGMAlgorithm::RJ, BlockGraph, unsigned int >(prior, hy.b_K, hy.D_K, hy.sigmaG, param.MCiterPrior);
+		return Create_GGM<GGMAlgorithm::RJ, BlockGraph, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler, hy.sigmaG, param.MCiterPrior);
 	else if(nameGGM == "DRJ")
-		return Create_GGM<GGMAlgorithm::DRJ,BlockGraph, unsigned int >(prior, hy.b_K, hy.D_K, hy.sigmaG);
+		return Create_GGM<GGMAlgorithm::DRJ,BlockGraph, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler, hy.sigmaG);
 	else
 		throw std::runtime_error("Error, the only possible GGM algorithm right now are: MH, RJ, DRJ");
 }
@@ -239,11 +242,11 @@ SelectMethod_BlockGraphAdj(std::string const & namePr, std::string const & nameG
 		throw std::runtime_error("Error, the only possible priors right now are: Uniform, TruncatedUniform, Bernoulli, TruncatedBernoulli ");
 	//2) Select algorithm
 	if(nameGGM == "MH")
-		return Create_GGM<GGMAlgorithm::MH, BlockGraphAdj, unsigned int >(prior, hy.b_K, hy.D_K , param.MCiterPrior, param.MCiterPost);
+		return Create_GGM<GGMAlgorithm::MH, BlockGraphAdj, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler , param.MCiterPrior, param.MCiterPost);
 	else if(nameGGM == "RJ")
-		return Create_GGM<GGMAlgorithm::RJ, BlockGraphAdj, unsigned int >(prior, hy.b_K, hy.D_K, hy.sigmaG, param.MCiterPrior);
+		return Create_GGM<GGMAlgorithm::RJ, BlockGraphAdj, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler, hy.sigmaG, param.MCiterPrior);
 	else if(nameGGM == "DRJ")
-		return Create_GGM<GGMAlgorithm::DRJ,BlockGraphAdj, unsigned int >(prior, hy.b_K, hy.D_K, hy.sigmaG);
+		return Create_GGM<GGMAlgorithm::DRJ,BlockGraphAdj, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler, hy.sigmaG);
 	else
 		throw std::runtime_error("Error, the only possible GGM algorithm right now are: MH, RJ, DRJ");
 }

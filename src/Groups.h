@@ -3,7 +3,7 @@
 
 #ifndef NORCPP
   #define STRICT_R_HEADERS
-  //#include <Rcpp.h>
+  #include <Rcpp.h>
 #endif
 
 #include "include_headers.h"

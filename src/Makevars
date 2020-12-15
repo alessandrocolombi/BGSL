@@ -4,5 +4,5 @@ NOCRANFLAGS = -Wno-ignored-attributes -Wno-deprecated-declarations
 GSL_CFLAGS = $(shell gsl-config --cflags)
 GSL_LIBS = $(shell gsl-config --libs)
 
-PKG_CXXFLAGS +=  $(GSL_CFLAGS) -fopenmp $(NOCRANFLAGS)
+PKG_CXXFLAGS += -DPARALLELEXEC $(GSL_CFLAGS) -fopenmp $(NOCRANFLAGS)
 PKG_LIBS +=  $(GSL_LIBS) -fopenmp

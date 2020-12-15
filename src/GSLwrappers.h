@@ -45,7 +45,8 @@ namespace sample{
 			GSL_RNG(){
 				gsl_rng_env_setup();
 				r = gsl_rng_alloc(gsl_rng_default);
-				seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+				std::random_device rd;
+				seed=rd();
 				gsl_rng_set(r,seed);
 			}
 			~GSL_RNG(){
@@ -80,6 +81,9 @@ namespace sample{
 		}	
 		double operator()(GSL_RNG const & engine)const{
 			return gsl_ran_gaussian_ziggurat(engine(), 1.0);
+		}
+		double operator()(double const & mean, double const & sd)const{
+			return rnorm()(GSL_RNG (), mean, sd);
 		}
 		double operator()()const{
 			return gsl_ran_gaussian_ziggurat(GSL_RNG ()(),1.0); //the first () is for the constructor, the second il for the call operator
@@ -155,7 +159,7 @@ namespace sample{
 			
 
 			VecCol z(VecCol::Zero(Prec.cols()));
-			#pragma omp parallel for shared(z) // non sta andando
+			//#pragma omp parallel for shared(z) // non sta andando
 			for(unsigned int i = 0; i < Prec.cols(); ++i)
 				z(i) = rnorm()(engine);
 
@@ -168,7 +172,7 @@ namespace sample{
 		}
 	};
 
-	struct rmvnorm{
+	struct rmvnorm_old{
 		template<typename EigenType>
 		VecCol operator()(GSL_RNG const & engine, VecCol & mean, EigenType & Cov)
 		{
@@ -211,10 +215,82 @@ namespace sample{
 		template<typename EigenType>
 		VecCol operator()(VecCol & mean, EigenType & Cov)
 		{
-			return rmvnorm()(GSL_RNG (), mean, Cov);
+			return rmvnorm_old()(GSL_RNG (), mean, Cov);
 		}
 	};
 
+	template<isChol isCholType = isChol::False>
+	struct rmvnorm{
+		template<typename EigenType>
+		VecCol operator()(GSL_RNG const & engine, VecCol & mean, EigenType & Cov)
+		{
+			static_assert(isCholType == isChol::False || 
+						  isCholType == isChol::Upper ||
+						  isCholType == isChol::Lower ,
+						  "Error, invalid sample::isChol field inserted. It has to be equal to Upper, Lower or False");
+			if(Cov.rows() != Cov.cols())
+				throw std::runtime_error("Non squared matrix inserted");
+
+			//Declaration of gsl objects
+				gsl_matrix *cholMat = gsl_matrix_alloc (Cov.rows(), Cov.rows());
+				gsl_vector *result  = gsl_vector_alloc (Cov.rows());
+				gsl_vector *mu  	= gsl_vector_alloc (Cov.rows());
+				mu->data = mean.data();
+			//auto start = std::chrono::high_resolution_clock::now();
+			if(Cov.isIdentity()){
+				gsl_matrix_set_identity(cholMat);
+			}
+			else {
+				if constexpr( isCholType == isChol::False){
+				//Map in GSL matrix
+				gsl_matrix * V 	= gsl_matrix_calloc(Cov.rows(), Cov.rows());
+				V->data = Cov.data();
+				//Chol decomposition
+				gsl_matrix_memcpy(cholMat, V);
+				gsl_linalg_cholesky_decomp1(cholMat);
+				gsl_matrix_free(V); //Free V
+				}
+				else if constexpr(isCholType == isChol::Upper){
+					//Cov has to be ColMajor
+					if constexpr( std::is_same_v< EigenType, MatRow> ){
+					MatCol CovCol(Cov);
+					for(int i = 0; i < Cov.rows()*Cov.rows(); ++i)
+						cholMat->data[i] = CovCol.data()[i];
+					}
+					else{
+						cholMat->data = Cov.data();
+					}
+				}
+				else if constexpr(isCholType == isChol::Lower){ 
+				//Cov has to be RowMajor
+				if constexpr( std::is_same_v< EigenType, MatCol> ){
+					MatRow CovRow(Cov);
+					for(int i = 0; i < Cov.rows()*Cov.rows(); ++i) //In questo caso devo essere esplicito. buffer rovinato?? non so ma mi salta la prima riga altrimenti
+						cholMat->data[i] = CovRow.data()[i];
+					}
+					else{
+						cholMat->data = Cov.data();
+					}
+				} 		
+			}
+			gsl_ran_multivariate_gaussian(engine(), mu, cholMat, result);
+			//Map back in Eigen form
+			Eigen::Map<VecCol> temp(&(result->data[0]), Cov.rows()); 
+			//Qua si crea una situazione un po' paradossale. result viene messa dentro temp nel modo corretto MA quando libero result poi non posso ritornare la matrice
+			//perché alcuni valori si perdono. sono costretto a fare una copia e dare quella.
+			VecCol ReturnVect = temp;
+			//Free and return
+			gsl_matrix_free(cholMat);
+			gsl_vector_free(result);
+			gsl_vector_free(mu);
+			return ReturnVect;	 
+		}
+		template<typename EigenType>
+		VecCol operator()(VecCol & mean, EigenType & Cov)
+		{
+			return rmvnorm()(GSL_RNG (), mean, Cov);
+		}
+	};
 
 	template<typename RetType = MatCol>
 	struct rwish_old{
@@ -392,16 +468,20 @@ namespace spline{
 	// grid_points.size() x n_basis. This means that r-th rows contains all the spline computed in grid_points[r] and j-th column
 	// contains the j-th spline evaluated in all points
 
-	MatType generate_design_matrix(unsigned int const & order, unsigned int const & n_basis, double const & a, double const & b, 
-								  std::vector<double> const & grid_points);
+	std::tuple<MatType, std::vector<double> >
+	generate_design_matrix(unsigned int const & order, unsigned int const & n_basis, double const & a, double const & b, 
+							std::vector<double> const & grid_points);
 	//Same as before but assumes that the grid points are r uniformly space points in [a,b], assuming the first to be equal to a and the last equal to b
-	MatType generate_design_matrix(unsigned int const & order, unsigned int const & n_basis, double const & a, double const & b, 
-								  unsigned int const & r);
+	std::tuple<MatType, std::vector<double> >
+	generate_design_matrix(unsigned int const & order, unsigned int const & n_basis, double const & a, double const & b, 
+							unsigned int const & r);
 	// It returns a vector of length nderiv+1, each element is a grid_points.size() x n_basis matrix, the k-th element is the evaluation of 
 	// all the k-th derivatives of all the splines in all the grid points. 
 	// The first elemenst is the design matrix
 	std::vector<MatType> evaluate_spline_derivative(unsigned int const & order, unsigned int const & n_basis, double const & a, double const & b, 
-								  				   std::vector<double> const & grid_points, unsigned int const & nderiv);
+								  				     std::vector<double> const & grid_points, unsigned int const & nderiv);
+	std::vector<MatType> evaluate_spline_derivative(unsigned int const & order, unsigned int const & n_basis, double const & a, double const & b, 
+								  				     unsigned int const & r, unsigned int const & nderiv);
 }
 
 
