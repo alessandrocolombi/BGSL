@@ -16,12 +16,12 @@ Create_RandomGraph(
 \arguments{
 \item{p}{int, the dimension of the graph in its complete form.}
 
-\item{n_groups}{int, the number of desired groups. Not used if form is Complete or if the groups are directly insered as group parameter.}
+\item{n_groups}{int, the number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter.}
 
-\item{form}{Rcpp::String, the only possibilities are Complete and Block.}
+\item{form}{String, the only possibilities are \code{"Complete"} and \code{"Block"}.}
 
-\item{groups}{a Rcpp list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
-i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave NULL if the graph is not in block form.}
+\item{groups}{List representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
+i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave \code{NULL} if the graph is not in block form.}
 
 \item{sparsity}{double, the desired sparsity of the randomly generated graph. It has to be striclty positive and striclty less than one. It is set to 0.5 otherwise.}
 
@@ -31,5 +31,5 @@ i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. L
 the adjacency matrix of the randomly generated graph.
 }
 \description{
-This function genrates random graph both in Complete or Block form
+This function genrates random graph both in \code{"Complete"} or \code{"Block"} form
 }

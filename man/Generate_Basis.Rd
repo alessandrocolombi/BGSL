@@ -17,17 +17,17 @@ Generate_Basis(
 
 \item{range}{vector of two elements containing first the lower and then the upper bound of the interval.}
 
-\item{grid_points}{vector of points where the basis has to be evaluated. If defaulted, then n_points are uniformly generated in the interval.}
+\item{grid_points}{vector of points where the basis has to be evaluated. If defaulted, then \code{n_points} are uniformly generated in the interval.}
 
-\item{order}{order of the Bsplines. Set four for cubic splines.}
+\item{order}{integer, order of the Bsplines. Set four for cubic splines.}
 
-\item{points}{number of grid points where the basis has to be evaluated. It is not used if the points are directly passed in the grid_points parameter.}
+\item{points}{number of grid points where the basis has to be evaluated. It is not used if the points are directly passed in the \code{grid_points} parameter.}
 }
 \value{
 a List with a matrix of dimension grid_points.size() x n_basis such that r-th rows contains all the spline computed in grid_points\link{r} and j-th column
 contains the j-th spline evaluated in all points. It also returns a vector of size n_basis + 2 - order containing the internal knots used to create the spline
 }
 \description{
-This function creates a truncated Bspline basis in the interval \link{range(1),range(2)} and evaluate them over a grid of points.
-It assumes uniformly spaced breakpoints and constructs the corresponding knot vector using a number of breaks equal to n_basis + 2 - order.
+This function creates a truncated Bspline basis in the interval \eqn{[range(1),range(2)]} and evaluate them over a grid of points.
+It assumes uniformly spaced breakpoints and constructs the corresponding knot vector using a number of breaks equal to \eqn{n_basis + 2 - order}.
 }

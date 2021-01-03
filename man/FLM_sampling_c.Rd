@@ -12,7 +12,8 @@ FLM_sampling_c(
   BaseMat,
   G,
   diagonal_graph = TRUE,
-  threshold_GWish = 1e-08
+  threshold_GWish = 1e-08,
+  print_info = TRUE
 )
 }
 \arguments{

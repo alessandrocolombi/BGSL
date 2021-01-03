@@ -2,10 +2,10 @@
 % Please edit documentation in R/RcppExports.R
 \name{Compute_QuantileBeta}
 \alias{Compute_QuantileBeta}
-\title{Generate Bspine basis and its derivatives}
+\title{Compute quantiles of sampled values}
 \usage{
 Compute_QuantileBeta(SaveBeta, lower_qtl = 0.05, upper_qtl = 0.95)
 }
 \description{
-Generate Bspine basis and its derivatives
+Compute quantiles of sampled values
 }

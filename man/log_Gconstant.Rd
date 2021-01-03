@@ -8,7 +8,7 @@ log_Gconstant(G, b, D, MCiteration = 100L, groups = NULL, seed = 0L)
 }
 \arguments{
 \item{G}{Eigen Matrix of unsigned int stored columnwise. If a standard R matrix is provided, it is automaticaly converted. The lower part
-is not used, the elements is taken in consideration only if the graph is in block form, i.e if groups is non null.}
+is not used, the elements is taken in consideration only if the graph is in block form, i.e if \code{groups} is non null.}
 
 \item{b}{double, it is shape parameter. It has to be larger than 2 in order to have a well defined distribution.}
 
@@ -17,7 +17,7 @@ is not used, the elements is taken in consideration only if the graph is in bloc
 \item{MCiteration}{unsigned int, the number of iteration for the MonteCarlo approximation.}
 
 \item{groups}{a Rcpp list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
-i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave NULL if the graph is not in block form.}
+i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave \code{NULL} if the graph is not in block form.}
 
 \item{seed}{int, the value of the seed. Default value is 0 that implies that a random seed is drawn.}
 }

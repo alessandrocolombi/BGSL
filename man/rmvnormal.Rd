@@ -7,18 +7,18 @@
 rmvnormal(mean, Mat, isPrec = FALSE, isChol = FALSE, isUpper = FALSE)
 }
 \arguments{
-\item{mean}{Eigen column vector of size p representig the mean of the Gaussian distribution.}
+\item{mean}{vector of size \code{p} representig the mean of the Gaussian distribution.}
 
-\item{Mat}{Eigen p x p column major matrix reprenting the covariance or the precision or their Cholesky decompositions.}
+\item{Mat}{matrix of size \eqn{p \times p} reprenting the covariance or the precision matrix or their Cholesky decompositions.}
 
-\item{isPrec}{bool, set true if Mat parameter is a precision, false if it is a covariance.}
+\item{isPrec}{boolean, set \code{TRUE} if Mat parameter is a precision, \code{FALSE} if it is a covariance.}
 
-\item{isChol}{bool, set true if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance}
+\item{isChol}{boolean, set \code{TRUE} if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance matrix.}
 
-\item{isUpper}{bool, used only if isChol is true. Set true if Mat is upper triangular, false if lower.}
+\item{isUpper}{boolean, used only if \code{isChol} is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.}
 }
 \value{
-It returns a p dimensional vector with the sampled values.
+It returns a \code{p} dimensional vector with the sampled values.
 }
 \description{
 This function draws random samples from Multivariate Gaussian distribution. It implements both covariance and precision parametrization.

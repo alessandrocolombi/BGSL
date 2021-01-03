@@ -21,20 +21,22 @@ plot_curves(
 )
 }
 \arguments{
-\item{data1}{matrix of dimension n_curves x n_grid_points representing the first dataset to be plotted.}
+\item{data1}{matrix of dimension \eqn{n_curves \times n_grid_points} representing the first dataset to be plotted.}
 
-\item{data2}{matrix of dimension n_curves x n_grid_points representing the secondo dataset to be plotted, if needed.}
+\item{data2}{matrix of dimension \eqn{n_curves \times n_grid_points} representing the second dataset to be plotted, if needed.}
 
-\item{range}{the range where the curves has to be plotted. Not needed if n_plot is 0.}
+\item{range}{the range where the curves has to be plotted. Not needed if\code{n_plot} is 0.}
 
 \item{n_plot}{the number of curves to be plotted. Set 0 for no plot.}
 
-\item{grid_points}{vector of size n_grid_points with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if n_plot is 0.}
+\item{grid_points}{vector of size n_grid_points with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.}
 
-\item{internal_knots}{vector with the internal knots used to construct the splines. Can be obtained as return value of function Generate_Basis. Default is null.
-but if provided, n_basis are displayed in the plot. The k-th interval represents the segment where the k-th spline dominates the others.}
+\item{internal_knots}{vector with the internal knots used to construct the splines. Can be obtained as return value of function \code{\link{Generate_Basis.}}. Default is null.
+but if provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval represents the segment where the \code{k}-th spline dominates the others.}
 
-\item{highlight_band1}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \link{1,n_basis}}
+\item{highlight_band1}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \eqn{[1,n_basis]}.}
+
+\item{highlight_band2}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \eqn{[1,n_basis]}.}
 
 \item{title_plot}{the title of the plot.}
 
@@ -42,11 +44,11 @@ but if provided, n_basis are displayed in the plot. The k-th interval represents
 
 \item{ytitle}{the title of the x-axis.}
 
-\item{legend_name1}{the name for data1 to be printed in the legend. Used only is two datasets are actually plotted.}
+\item{legend_name1}{the name for \code{data1} to be printed in the legend. Used only is two datasets are actually plotted.}
 
-\item{legend_name2}{the name for data2 to be printed in the legend.}
+\item{legend_name2}{the name for \code{data2} to be printed in the legend.}
 }
 \description{
 This functions gets one or two dataset representig functional data and plot them. It does not smooth the curves, indeed it requires as input the data, not
-the regression coefficients. Use smooth_curves function for that.
+the regression coefficients. Use \code{\link{smooth_curves}} function for that.
 }

@@ -12,23 +12,28 @@ FLM_sampling(
   BaseMat,
   diagonal_graph = T,
   G = NULL,
-  threshold_GWish = 1e-08
+  threshold_GWish = 1e-08,
+  progressBar = TRUE
 )
 }
 \arguments{
-\item{data}{matrix of dimension r x n containing the evaluation of n functional data over a grid of r nodes.}
+\item{data}{matrix of dimension \code{n_grid_points \times n} containing the evaluation of \code{n} functional data over a grid of \code{n_grid_points} nodes.}
 
-\item{niter}{the number of total iterations to be performed in the sampling. The number of saved iteration will be (niter - burnin)/thin.}
+\item{niter}{the number of total iterations to be performed in the sampling. The number of saved iteration will be \code{(niter - burnin)/thin}.}
 
 \item{burnin}{the number of discarded iterations.}
 
-\item{thin}{the thining value, it means that only one out of thin itarations is saved.}
+\item{thin}{the thining value, it means that only one out of \code{thin} itarations is saved.}
 
-\item{BaseMat}{matrix of dimension r x p containing the evalutation of p Bspline basis over a grid of r nodes}
+\item{BaseMat}{matrix of dimension \code{n_grid_points \times p} containing the evalutation of \code{p} Bspline basis over a grid of \code{n_grid_points} nodes.}
 
-\item{diagonal_graph}{boolean, set true if the graph has to be diagonal. Set false otherwise and pass as input the desired graph through the G parameter.}
+\item{diagonal_graph}{boolean, set true if the graph has to be diagonal. Set false otherwise and pass as input the desired graph through the \code{G} parameter.}
 
-\item{threshold_GWish}{double, stop algorithm for GWishart samling if the difference between two subsequent iterations is less than threshold_conv. Used only if diagonal_graph is set to false.}
+\item{G}{matrix of size \code{p \times p} representing the graphical part of the model that would remain fixed through out the sampling. Needed only if \code{diagonal_graph} is set to \code{FALSE}.}
+
+\item{threshold_GWish}{double, stop algorithm for GWishart samling if the difference between two subsequent iterations is less than \code{threshold_conv.} Used only if \code{diagonal_graph} is set to \code{FALSE}.}
+
+\item{progressBar}{boolean, set \code{TRUE} to display the progress bar.}
 }
 \value{
 Two lists are returned, one with all the sampler values and the other with the posterior means.

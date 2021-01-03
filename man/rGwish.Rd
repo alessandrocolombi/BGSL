@@ -9,7 +9,9 @@ rGwish(
   b,
   D,
   norm = "Mean",
+  form = "InvScale",
   groups = NULL,
+  check_structure = FALSE,
   max_iter = 500L,
   threshold_check = 1e-05,
   threshold_conv = 1e-08,
@@ -17,33 +19,39 @@ rGwish(
 )
 }
 \arguments{
-\item{G}{Eigen Matrix of unsigned int stored columnwise. If a standard R matrix is provided, it is automaticaly converted. The lower part
+\item{G}{Matrix of int stored columnwise. If a standard R matrix is provided, it is automaticaly converted. The lower part
 is not used, the elements is taken in consideration only if the graph is in block form, i.e if groups is non null.}
 
 \item{b}{double, it is shape parameter. It has to be larger than 2 in order to have a well defined distribution.}
 
-\item{D}{Eigen Matrix of double stored columnwise. It has to be symmetric and positive definite.}
+\item{D}{Matrix of double stored columnwise. It represents the Scale or Inverse Scale parameter for a GWishart distribution. It is also possibile to provide a lower or upper triangular matrix representing the Cholesky decomposition of Inverse Scale matrix.}
 
-\item{norm}{Rcpp::String to choose the matrix norm with respect to whom convergence takes place. The available choices are Mean, Inf, One and Squared. Mean is the default value}
+\item{norm}{String to choose the matrix norm with respect to whom convergence takes place. The available choices are \code{"Mean"}, \code{"Inf"}, \code{"One"} and \code{"Squared"}.
+\code{"Mean"} is the default value and it is also used when a wrong input is provided.}
 
-\item{groups}{a Rcpp list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
+\item{form}{String, states what type of parameter is represented by \code{D}. Possible values are \code{"Scale"}, \code{"InvScale"}, \code{"CholLower_InvScale"}, \code{"CholUpper_InvScale"}.
+Usually GWishart distributions are parametrized with respect to Inverse Scale matrix. However the first step of the sampling requires the Scale matrix parameter or, even better, its Cholesky decomposition.}
+
+\item{groups}{List representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
 i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave NULL if the graph is not in block form.}
+
+\item{check_structure}{bool, if \code{TRUE} it is checked if the sampled matrix actually respects the structure of the graph.}
 
 \item{max_iter}{unsigned int, the maximum number of iteration.}
 
 \item{threshold_check}{double, the accurancy for checking if the sampled matrix respects the structure of the graph.}
 
-\item{threshold_conv}{double, stop algorithm if the difference between two subsequent iterations is less than threshold_conv.}
+\item{threshold_conv}{double,  the threshold value for the convergence of sampling algorithm from GWishart. Algorithm stops if the difference between two subsequent iterations is less than \code{threshold_conv}.}
 
 \item{seed}{int, the value of the seed. Default value is 0 that implies that a random seed is drawn.}
 }
 \value{
 Rcpp::List containing the sampled matrix as an Eigen RowMajor matrix, a bool that states if the convergence was reached or not and finally an int with the number of performed iterations.
-If the graph is empty or complete, no iterations are performed. It is automatically converted in standard R list.
+If the graph is empty or complete, no iterations are performed. If check_structure is \code{TRUE}, then the result of that check is also returned.
 }
 \description{
-This function draws a random matrices, distributed according to the G-Wishart distribution with shape parameter b and inverse scale D,
-with respect to the graph structure G. METTERE LA FORMULA DELLA DISTRIBUZIONE
+This function draws a random matrices, distributed according to the GWishart distribution with shape parameter \code{b} and inverse scale \code{D},
+with respect to the graph structure \code{G}. METTERE LA FORMULA DELLA DISTRIBUZIONE
 It implements the algorithm described by METTERE CITAZIONI LENKOSKI. It works with both decomposable and non decomposable graphs.
 In particular it is possible to provide a graph in block form.
 }

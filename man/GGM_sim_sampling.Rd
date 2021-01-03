@@ -23,7 +23,8 @@ GGM_sim_sampling(
   sparsity = 0.5,
   Gprior = 0.5,
   sigmaG = 0.1,
-  paddrm = 0.5
+  paddrm = 0.5,
+  print_info = TRUE
 )
 }
 \arguments{

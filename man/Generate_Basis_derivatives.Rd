@@ -20,17 +20,17 @@ Generate_Basis_derivatives(
 
 \item{range}{vector of two elements containing first the lower and then the upper bound of the interval.}
 
-\item{grid_points}{vector of points where the basis has to be evaluated. If defaulted, then n_points are uniformly generated in the interval.}
+\item{grid_points}{vector of points where the basis has to be evaluated. If defaulted, then \code{n_points} are uniformly generated in the interval.}
 
-\item{order}{order of the Bsplines. Set four for cubic splines.}
+\item{order}{integer, order of the Bsplines. Set four for cubic splines.}
 
-\item{points}{number of grid points where the basis has to be evaluated. It is not used if the points are directly passed in the grid_points parameter.}
+\item{points}{number of grid points where the basis has to be evaluated. It is not used if the points are directly passed in the \code{grid_points} parameter.}
 }
 \value{
 a List of length nderiv+1 such that each element is a grid_points.size() x n_basis matrix representing the evaluation of
 all the k-th derivative of all the splines in all the grid points.
 }
 \description{
-This function creates a truncated Bspline basis in the interval \link{range(1),range(2)} and evaluate them over a grid of points up to derivative of order nderiv.
-For convention, derivatives of order 0 are the splines themselves. This implimes that the first returned element is always equal to the output of the function Generate_Basis.
+This function creates a truncated Bspline basis in the interval \eqn{[range(1),range(2)]} and evaluate them over a grid of points up to derivative of order \code{nderiv}.
+For convention, derivatives of order 0 are the splines themselves. This implimes that the first returned element is always equal to the output of the function \code{\link{Generate_Basis}}.
 }
