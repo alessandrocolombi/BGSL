@@ -229,6 +229,7 @@ namespace utils{
 	} //Passing cols to be exctracted and row index to be extracted.
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
+	// ---> No longer used
 	//This class provides a View of a SubMatrix, i.e no copies are performed. The drawback is that it is no longer an Eigen matrix, so operations are not as
 	//optimizes as Eigen
 	template<Symmetric Sym = Symmetric::False>
@@ -324,6 +325,65 @@ namespace utils{
 		res(p-1) += A(p-1,p-1)*b(p-1);
 		return res;
 	}
+	//------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	//Optimized Eigen operation. Takes matrix A of size (p+1 x p+1), exclude x-th row and x-th column and multiply the resulting matrix for vector b of size p.
+	//It is optimized because matrix A is never copied and only the upper triangular part of the matrix is used. It is not needed to have a pass a symmetric 
+	//matrix.
+	//Remark -> correctness of parameters dimension is not checked.
+	
+	template<class MatType, Symmetric Sym = Symmetric::True>
+	VecCol View_ExcMult(unsigned int const & x, MatType const & A, VecCol const & b)
+	{
+		static_assert(Sym == Symmetric::True || Sym == Symmetric::False, "Error, only possibilities for Symmetric template parameter are utils::Symmetric::True and Symmetric::False");
+		unsigned int p = b.size();
+		VecCol res(VecCol::Zero(p));
+		if(x == 0){
+			if constexpr(Sym == Symmetric::True)
+			{
+				res = A.bottomRightCorner(p,p). template selfadjointView<Eigen::Upper>() * b;
+			}
+			else
+			{
+				res = A.bottomRightCorner(p,p) * b;
+			}
+			return res;
+		}
+		else if(x == p){
+			if constexpr(Sym == Symmetric::True)
+			{
+				res = A.topLeftCorner(p,p).template selfadjointView<Eigen::Upper>() * b;
+			}
+			else
+			{
+				res = A.topLeftCorner(p,p) * b;
+			}
+			
+			return res;
+		}
+		else{
+			if constexpr(Sym == Symmetric::True)
+			{
+				res.head(x)    = A.topLeftCorner(x,x).template selfadjointView<Eigen::Upper>() * b.head(x);
+				res.head(x)   += A.block(0,x+1,x,p-x) * b.tail(p-x);
+				res.tail(p-x)  = A.bottomRightCorner(p-x,p-x).template selfadjointView<Eigen::Upper>() * b.tail(p-x);
+				res.tail(p-x) += A.block(0,x+1,x,p-x).transpose() * b.head(x);
+			}
+			else
+			{
+				res.head(x)    = A.topLeftCorner(x,x) * b.head(x);
+				res.head(x)   += A.block(0,x+1,x,p-x) * b.tail(p-x);
+				res.tail(p-x)  = A.bottomRightCorner(p-x,p-x) * b.tail(p-x);
+				res.tail(p-x) += A.block(x+1,0,p-x,x) * b.head(x);
+			}
+			
+			return res;
+		}
+		return res;
+	}
+	//Checked and it is much faster than SymMatMult. The reason is that Eigen operations are actually used.
+	
+
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 		//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
 	template<template <typename> class Graph, typename T = unsigned int >
@@ -1003,7 +1063,7 @@ namespace utils{
 		while(!converged && it < max_iter){
 			it++;
 			//For every node. 
-			for(IdxType i = 0; i < N; ++i){
+			for(/*IdxType*/unsigned int i = 0; i < N; ++i){
 					//std::cout<<"i = "<<i<<std::endl;
 					//std::cout<<"Stampo il nbd:"<<std::endl;
 									//auto start = std::chrono::high_resolution_clock::now();
@@ -1068,6 +1128,14 @@ namespace utils{
 							//std::cout<<"Sigma_Ni_i: "<<std::endl<<Sigma_Ni_i<<std::endl;
 						Eigen::VectorXd beta_star_i = Omega_Ni_Ni.llt().solve(Sigma_Ni_i);
 							//std::cout<<"beta_star_i: "<<std::endl<<beta_star_i<<std::endl;
+						/*
+						Eigen::VectorXd beta_star_i = 
+						indexing(Omega, Eigen::Map<const ArrInt> (&(nbd_i[0]), nbd_i.size()), Eigen::Map<const ArrInt> (&(nbd_i[0]), nbd_i.size())). template selfadjointView<Eigen::Upper>()
+						.llt()
+						.solve(
+								indexing( Sigma, Eigen::Map<const ArrInt> (&(nbd_i[0]), nbd_i.size()),  Eigen::Map<const ArrInt> (&i, 1))
+							  );	
+						---> unclear and not faster */	  
 					//Step 4: Define beta_hat_i in R^N-1 such that:
 					//- Entries not associated to elements in Ni are 0
 					//- Entries associated to elements in Ni are given by beta_star_i
@@ -1082,12 +1150,14 @@ namespace utils{
 						}
 								//std::cout<<"beta_hat_i: "<<std::endl<<beta_hat_i<<std::endl;
 					//Step 5: Set i-th row and col of Omega equal to Omega_noti_noti*beta_hat_i
-						//MatRow Omega_noti_noti( SubMatrix<Symmetric::True>(i , Omega) );
+								//MatRow Omega_noti_noti( SubMatrix<Symmetric::True>(i , Omega) );
 								SubMatrixView<Symmetric::True> Omega_noti_noti(i, Omega);
 								//std::cout<<"Omega_noti_noti: "<<std::endl<<Omega_noti_noti<<std::endl;
 						//beta_i = Omega_noti_noti * beta_hat_i;
-								beta_i = SymMatMult(Omega_noti_noti, beta_hat_i);
-								//std::cout<<"beta_i: "<<std::endl<<beta_i<<std::endl;
+								//beta_i = SymMatMult(Omega_noti_noti, beta_hat_i);
+								//std::cout<<"beta_i (old) : "<<std::endl<<beta_i<<std::endl;
+						beta_i = View_ExcMult(i, Omega, beta_hat_i);
+								//std::cout<<"beta_i (new): "<<std::endl<<beta_i<<std::endl;
 				}
 				//Plug beta_i into the i-th row / col except from diagonal element
 				if(i == 0)//plug in first row (no first element)
