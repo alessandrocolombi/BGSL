@@ -1,0 +1,400 @@
+\hypertarget{namespaceutils}{}\doxysection{utils Namespace Reference}
+\label{namespaceutils}\index{utils@{utils}}
+\doxysubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+ \mbox{\hyperlink{namespaceutils_1_1Symmetric}{Symmetric}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structutils_1_1MeanNorm}{Mean\+Norm}}
+\item 
+struct \mbox{\hyperlink{structutils_1_1Norm1}{Norm1}}
+\item 
+struct \mbox{\hyperlink{structutils_1_1NormInf}{Norm\+Inf}}
+\item 
+struct \mbox{\hyperlink{structutils_1_1NormSq}{Norm\+Sq}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} = Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major $>$
+\item 
+using \mbox{\hyperlink{namespaceutils_ad5a41697691b610156e2845b4e8cc93c}{Idx\+Type}} = std\+::size\+\_\+t
+\item 
+using \mbox{\hyperlink{namespaceutils_abcd3a4d23f1e41abeb088b193162a670}{Container}} = std\+::vector$<$ unsigned int $>$
+\item 
+using \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}} = Eigen\+::\+Matrix\+Xd
+\item 
+using \mbox{\hyperlink{namespaceutils_ade196078c6baed92727915d72d964873}{Vec\+Col}} = Eigen\+::\+Vector\+Xd
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+{\footnotesize template$<$class T  = unsigned int$>$ }\\std\+::vector$<$ std\+::pair$<$ T, T $>$ $>$ \mbox{\hyperlink{namespaceutils_a2b90bc74d7ece5fd5270f7118e5c0a89}{cartesian\+\_\+product}} (std\+::vector$<$ T $>$ const \&v1, std\+::vector$<$ T $>$ const \&v2)
+\item 
+{\footnotesize template$<$typename Sym  = Symmetric\+::\+False$>$ }\\\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} \mbox{\hyperlink{namespaceutils_a28148ab555d0608ad7bca705a19cd64f}{Sub\+Matrix}} (\mbox{\hyperlink{namespaceutils_abcd3a4d23f1e41abeb088b193162a670}{Container}} const \&nbd, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} const \&M)
+\item 
+{\footnotesize template$<$typename Sym  = Symmetric\+::\+False$>$ }\\\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} \mbox{\hyperlink{namespaceutils_a779f9d60ffe5c9f45be4c3bd152b5996}{Sub\+Matrix}} (unsigned int const \&exclude, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} const \&M)
+\item 
+\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} \mbox{\hyperlink{namespaceutils_ab76e0fd78b71f65443ffdd40bc4d6214}{Sub\+Matrix}} (\mbox{\hyperlink{namespaceutils_abcd3a4d23f1e41abeb088b193162a670}{Container}} const \&nbd\+\_\+rows, \mbox{\hyperlink{namespaceutils_abcd3a4d23f1e41abeb088b193162a670}{Container}} const \&nbd\+\_\+cols, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} const \&M)
+\item 
+\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} \mbox{\hyperlink{namespaceutils_a9d377cf1befed6107ea84325267eed68}{Sub\+Matrix}} (\mbox{\hyperlink{namespaceutils_abcd3a4d23f1e41abeb088b193162a670}{Container}} const \&nbd\+\_\+rows, unsigned int const \&idx, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} const \&M)
+\item 
+\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} \mbox{\hyperlink{namespaceutils_a07197aa47bdbbc5800aa09316c80d0a9}{Sub\+Matrix}} (unsigned int const \&idx, \mbox{\hyperlink{namespaceutils_abcd3a4d23f1e41abeb088b193162a670}{Container}} const \&nbd\+\_\+cols, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} const \&M)
+\item 
+{\footnotesize template$<$template$<$ typename $>$ class Graph, typename T  = unsigned int$>$ }\\bool \mbox{\hyperlink{namespaceutils_abb06cf5dc19c550be052d441e1b9d52b}{check\+\_\+structure}} (Graph$<$ T $>$ const \&G, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} const \&data, \mbox{\hyperlink{classdouble}{double}} threshold=1e-\/5)
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_aa4dc6f0c9700437583c3ce25ef0066b3}{power}} (\mbox{\hyperlink{classdouble}{double}} const \&x, int const \&esp)
+\item 
+{\footnotesize template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int, typename Norm\+Type  = Mean\+Norm$>$ }\\\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} \mbox{\hyperlink{namespaceutils_a36a436bc1dc1f312d948c0e8989faa2c}{rgwish}} (Graph\+Structure$<$ T $>$ const \&G, \mbox{\hyperlink{classdouble}{double}} const \&b, Eigen\+::\+Matrix\+Xd const \&D, \mbox{\hyperlink{classdouble}{double}} const \&threshold=1e-\/8, unsigned int seed=0)
+\item 
+{\footnotesize template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int, typename Norm\+Type  = Mean\+Norm$>$ }\\\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} \mbox{\hyperlink{namespaceutils_a079c3059a04393c2c225bc1c30124b54}{rgwish2}} (Graph\+Structure$<$ T $>$ const \&G, \mbox{\hyperlink{classdouble}{double}} const \&b, Eigen\+::\+Matrix\+Xd const \&D, \mbox{\hyperlink{classdouble}{double}} const \&threshold=1e-\/8, unsigned int seed=0)
+\item 
+{\footnotesize template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int, typename Norm\+Type  = Mean\+Norm$>$ }\\std\+::tuple$<$ \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, bool, int $>$ \mbox{\hyperlink{namespaceutils_a397664e8a3e517d40dd6385a7405df76}{rgwish\+\_\+verbose}} (Graph\+Structure$<$ T $>$ const \&G, \mbox{\hyperlink{classdouble}{double}} const \&b, Eigen\+::\+Matrix\+Xd const \&D, unsigned int const \&max\+\_\+iter=500, \mbox{\hyperlink{classdouble}{double}} const \&threshold=1e-\/8, unsigned int seed=0)
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_afea31383ba0a378a10d37acee163d9f0}{log\+Sum\+Exp}} (\mbox{\hyperlink{classdouble}{double}} x, \mbox{\hyperlink{classdouble}{double}} y)
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_ac2d4fe62901d3e3576614195939b8785}{log\+Sum\+Exp}} (std\+::vector$<$ \mbox{\hyperlink{classdouble}{double}} $>$ const \&v)
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_af3c16412909d3822b9b92368f4a29920}{log\+Sum\+Exp}} (std\+::vector$<$ \mbox{\hyperlink{classdouble}{double}} $>$ const \&v, \mbox{\hyperlink{classdouble}{double}} const \&max)
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_a71ece624a0f4a1f91b5a8004dfe641ed}{log\+\_\+mean}} (std\+::vector$<$ \mbox{\hyperlink{classdouble}{double}} $>$ const \&v)
+\item 
+{\footnotesize template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename Type  = unsigned int$>$ }\\long \mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_ad6e774063a2e8ddb9f7b7f3d6daf75d5}{log\+\_\+normalizing\+\_\+constat}} (Graph\+Structure$<$ Type $>$ const \&G, \mbox{\hyperlink{classdouble}{double}} const \&b, Eigen\+::\+Matrix\+Xd const \&D, unsigned int const \&M\+Citeration, unsigned int seed=0)
+\item 
+{\footnotesize template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename Type  = unsigned int$>$ }\\long \mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_af28bcfa6dd0171ec0bd6c1a0b3095e1f}{log\+\_\+normalizing\+\_\+constat2}} (Graph\+Structure$<$ Type $>$ const \&G, \mbox{\hyperlink{classdouble}{double}} const \&b, Eigen\+::\+Matrix\+Xd const \&D, unsigned int const \&M\+Citeration, unsigned int seed=0)
+\item 
+std\+::tuple$<$ \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_ade196078c6baed92727915d72d964873}{Vec\+Col}}, \mbox{\hyperlink{classdouble}{double}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$ bool $>$ $>$ \mbox{\hyperlink{namespaceutils_a34c7ec3dd3e3d768dc2a1ccc5f3f9595}{Simulate\+Data\+\_\+\+Block}} (unsigned int const \&p, unsigned int const \&n, unsigned int const \&r, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}} const \&Base\+Mat, \mbox{\hyperlink{classBlockGraph}{Block\+Graph}}$<$ bool $>$ \&G, unsigned int seed=0)
+\item 
+std\+::tuple$<$ \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_ade196078c6baed92727915d72d964873}{Vec\+Col}}, \mbox{\hyperlink{classdouble}{double}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$ bool $>$ $>$ \mbox{\hyperlink{namespaceutils_af3d512d4bf558657512ca03895997bc3}{Simulate\+Data\+\_\+\+Block}} (unsigned int const \&p, unsigned int const \&n, unsigned int const \&r, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}} const \&Base\+Mat, std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classGroups}{Groups}} $>$ const \&Gr, unsigned int seed=0, \mbox{\hyperlink{classdouble}{double}} const \&sparsity=0.\+3)
+\item 
+std\+::tuple$<$ \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_ade196078c6baed92727915d72d964873}{Vec\+Col}}, \mbox{\hyperlink{classdouble}{double}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$ bool $>$ $>$ \mbox{\hyperlink{namespaceutils_a6ed983a8ffd68d2b317d57778e68aaa5}{Simulate\+Data\+\_\+\+Block}} (unsigned int const \&p, unsigned int const \&n, unsigned int const \&r, unsigned int const \&M, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}} const \&Base\+Mat, unsigned int seed=0, \mbox{\hyperlink{classdouble}{double}} const \&sparsity=0.\+3)
+\item 
+std\+::tuple$<$ \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_ade196078c6baed92727915d72d964873}{Vec\+Col}}, \mbox{\hyperlink{classdouble}{double}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$ bool $>$ $>$ \mbox{\hyperlink{namespaceutils_a08ff0617390904360e159f81e8fe0efc}{Simulate\+Data\+\_\+\+Complete}} (unsigned int const \&p, unsigned int const \&n, unsigned int const \&r, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}} const \&Base\+Mat, \mbox{\hyperlink{classGraphType}{Graph\+Type}}$<$ bool $>$ \&G, unsigned int seed=0)
+\item 
+std\+::tuple$<$ \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_ade196078c6baed92727915d72d964873}{Vec\+Col}}, \mbox{\hyperlink{classdouble}{double}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$ bool $>$ $>$ \mbox{\hyperlink{namespaceutils_adaee3fedb382ae6ce0d99e453c8f10ad}{Simulate\+Data\+\_\+\+Complete}} (unsigned int const \&p, unsigned int const \&n, unsigned int const \&r, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}} const \&Base\+Mat, unsigned int seed=0, \mbox{\hyperlink{classdouble}{double}} const \&sparsity=0.\+3)
+\item 
+std\+::tuple$<$ \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$ bool $>$ $>$ \mbox{\hyperlink{namespaceutils_a185b50884db0a80e807ca53fff437d37}{Simulate\+Data\+G\+G\+M\+\_\+\+Block}} (unsigned int const \&p, unsigned int const \&n, \mbox{\hyperlink{classBlockGraph}{Block\+Graph}}$<$ bool $>$ \&G, unsigned int seed=0, bool mean\+\_\+null=true)
+\item 
+std\+::tuple$<$ \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$ bool $>$ $>$ \mbox{\hyperlink{namespaceutils_ac482ce3cad7a3ed259ab0e1a18704d57}{Simulate\+Data\+G\+G\+M\+\_\+\+Block}} (unsigned int const \&p, unsigned int const \&n, std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classGroups}{Groups}} $>$ const \&Gr, unsigned int seed=0, bool mean\+\_\+null=true, \mbox{\hyperlink{classdouble}{double}} const \&sparsity=0.\+3)
+\item 
+std\+::tuple$<$ \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$ bool $>$ $>$ \mbox{\hyperlink{namespaceutils_a94e9a6efba51d3978774bb193705c5dc}{Simulate\+Data\+G\+G\+M\+\_\+\+Block}} (unsigned int const \&p, unsigned int const \&n, unsigned int const \&M, unsigned int seed=0, bool mean\+\_\+null=true, \mbox{\hyperlink{classdouble}{double}} const \&sparsity=0.\+3)
+\item 
+std\+::tuple$<$ \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$ bool $>$ $>$ \mbox{\hyperlink{namespaceutils_a823d2b0428762744742cd86fb3b7d9ca}{Simulate\+Data\+G\+G\+M\+\_\+\+Complete}} (unsigned int const \&p, unsigned int const \&n, \mbox{\hyperlink{classGraphType}{Graph\+Type}}$<$ bool $>$ \&G, unsigned int seed=0, bool mean\+\_\+null=true)
+\item 
+std\+::tuple$<$ \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$ bool $>$ $>$ \mbox{\hyperlink{namespaceutils_a64ac8216d5f6f2c6369d9ba8939ae865}{Simulate\+Data\+G\+G\+M\+\_\+\+Complete}} (unsigned int const \&p, unsigned int const \&n, unsigned int seed=0, bool mean\+\_\+null=true, \mbox{\hyperlink{classdouble}{double}} const \&sparsity=0.\+3)
+\item 
+{\footnotesize template$<$class T  = unsigned int$>$ }\\void \mbox{\hyperlink{namespaceutils_a93690e6c9c9c3c550df04849d86bc8b7}{build\+\_\+adjs}} (std\+::vector$<$ std\+::vector$<$ T $>$ $>$ \&all\+\_\+G, std\+::vector$<$ T $>$ g, unsigned int const \&n\+\_\+el)
+\item 
+{\footnotesize template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ }\\std\+::vector$<$ Graph\+Structure$<$ T $>$ $>$ \mbox{\hyperlink{namespaceutils_a7083ab9939678545806dcf196c4ed1d4}{list\+\_\+all\+\_\+graphs}} (unsigned int p=0, std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classGroups}{Groups}} $>$ const \&ptr\+\_\+groups=nullptr, bool print=false)
+\item 
+{\footnotesize template$<$template$<$ typename $>$ class Graph\+Structure = Block\+Graph, typename T  = unsigned int$>$ }\\std\+::vector$<$ Graph\+Structure$<$ T $>$ $>$ \mbox{\hyperlink{namespaceutils_af3b3ca7fba6cc156cc0feb68ce1f8ad6}{list\+\_\+all\+\_\+graphs}} (std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classGroups}{Groups}} $>$ const \&ptr\+\_\+groups, bool print=false)
+\end{DoxyCompactItemize}
+\doxysubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+constexpr \mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_afe9c98ccfe2793d1bd48916f73549a05}{pi}} = M\+\_\+\+PI
+\item 
+constexpr \mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_a9b421a03d455ffd6ce5d0ebcd91c1ec0}{pi\+\_\+2}} = M\+\_\+\+P\+I\+\_\+2
+\item 
+constexpr \mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_ac7e7e2ec945980aca0b103b0182eb579}{sqrt\+\_\+2}} = M\+\_\+\+S\+Q\+R\+T2
+\item 
+constexpr \mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_ad10c597c7e297dc6ea28177bcc54fe33}{two\+\_\+over\+\_\+sqrtpi}} = M\+\_\+2\+\_\+\+S\+Q\+R\+T\+PI
+\item 
+constexpr long \mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_a363a44cd208d280e8fdd87b0f9c9f635}{log\+\_\+2}} = M\+\_\+\+L\+N2
+\item 
+constexpr \mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_a58136c440faae8dd47bbb6505fc8e503}{sqrt\+\_\+pi}} = \mbox{\hyperlink{namespaceutils_ad10c597c7e297dc6ea28177bcc54fe33}{two\+\_\+over\+\_\+sqrtpi}}$\ast$\mbox{\hyperlink{namespaceutils_a9b421a03d455ffd6ce5d0ebcd91c1ec0}{pi\+\_\+2}}
+\item 
+constexpr long \mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_a30d4d8cd794a603cad418e5f19dec09f}{sqrt\+\_\+2pi}} = \mbox{\hyperlink{namespaceutils_a58136c440faae8dd47bbb6505fc8e503}{sqrt\+\_\+pi}}$\ast$\mbox{\hyperlink{namespaceutils_ac7e7e2ec945980aca0b103b0182eb579}{sqrt\+\_\+2}}
+\item 
+constexpr long \mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_a703d1184b73a6b8a31f6d1354a03bbfd}{log\+\_\+2pi}} = std\+::log(2$\ast$\mbox{\hyperlink{namespaceutils_afe9c98ccfe2793d1bd48916f73549a05}{pi}})
+\item 
+constexpr long \mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{namespaceutils_a10db3e70370c259853fcca12b0e9c376}{log\+\_\+pi}} = std\+::log(\mbox{\hyperlink{namespaceutils_afe9c98ccfe2793d1bd48916f73549a05}{pi}})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{namespaceutils_abcd3a4d23f1e41abeb088b193162a670}\label{namespaceutils_abcd3a4d23f1e41abeb088b193162a670}} 
+\index{utils@{utils}!Container@{Container}}
+\index{Container@{Container}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{Container}{Container}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{namespaceutils_abcd3a4d23f1e41abeb088b193162a670}{utils\+::\+Container}} = typedef std\+::vector$<$unsigned int$>$}
+
+\mbox{\Hypertarget{namespaceutils_ad5a41697691b610156e2845b4e8cc93c}\label{namespaceutils_ad5a41697691b610156e2845b4e8cc93c}} 
+\index{utils@{utils}!IdxType@{IdxType}}
+\index{IdxType@{IdxType}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{IdxType}{IdxType}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{namespaceutils_ad5a41697691b610156e2845b4e8cc93c}{utils\+::\+Idx\+Type}} = typedef std\+::size\+\_\+t}
+
+\mbox{\Hypertarget{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}\label{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}} 
+\index{utils@{utils}!MatCol@{MatCol}}
+\index{MatCol@{MatCol}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{MatCol}{MatCol}}
+{\footnotesize\ttfamily typedef Eigen\+::\+Matrix\+Xd \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{utils\+::\+Mat\+Col}}}
+
+\mbox{\Hypertarget{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}\label{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}} 
+\index{utils@{utils}!MatRow@{MatRow}}
+\index{MatRow@{MatRow}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{MatRow}{MatRow}}
+{\footnotesize\ttfamily typedef Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major $>$ \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{utils\+::\+Mat\+Row}}}
+
+\mbox{\Hypertarget{namespaceutils_ade196078c6baed92727915d72d964873}\label{namespaceutils_ade196078c6baed92727915d72d964873}} 
+\index{utils@{utils}!VecCol@{VecCol}}
+\index{VecCol@{VecCol}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{VecCol}{VecCol}}
+{\footnotesize\ttfamily typedef Eigen\+::\+Vector\+Xd \mbox{\hyperlink{namespaceutils_ade196078c6baed92727915d72d964873}{utils\+::\+Vec\+Col}}}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespaceutils_a93690e6c9c9c3c550df04849d86bc8b7}\label{namespaceutils_a93690e6c9c9c3c550df04849d86bc8b7}} 
+\index{utils@{utils}!build\_adjs@{build\_adjs}}
+\index{build\_adjs@{build\_adjs}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{build\_adjs()}{build\_adjs()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+void utils\+::build\+\_\+adjs (\begin{DoxyParamCaption}\item[{std\+::vector$<$ std\+::vector$<$ T $>$ $>$ \&}]{all\+\_\+G,  }\item[{std\+::vector$<$ T $>$}]{g,  }\item[{unsigned int const \&}]{n\+\_\+el }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a2b90bc74d7ece5fd5270f7118e5c0a89}\label{namespaceutils_a2b90bc74d7ece5fd5270f7118e5c0a89}} 
+\index{utils@{utils}!cartesian\_product@{cartesian\_product}}
+\index{cartesian\_product@{cartesian\_product}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{cartesian\_product()}{cartesian\_product()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+std\+::vector$<$ std\+::pair$<$T,T$>$ $>$ utils\+::cartesian\+\_\+product (\begin{DoxyParamCaption}\item[{std\+::vector$<$ T $>$ const \&}]{v1,  }\item[{std\+::vector$<$ T $>$ const \&}]{v2 }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_abb06cf5dc19c550be052d441e1b9d52b}\label{namespaceutils_abb06cf5dc19c550be052d441e1b9d52b}} 
+\index{utils@{utils}!check\_structure@{check\_structure}}
+\index{check\_structure@{check\_structure}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{check\_structure()}{check\_structure()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph, typename T  = unsigned int$>$ \\
+bool utils\+::check\+\_\+structure (\begin{DoxyParamCaption}\item[{Graph$<$ T $>$ const \&}]{G,  }\item[{\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} const \&}]{data,  }\item[{\mbox{\hyperlink{classdouble}{double}}}]{threshold = {\ttfamily 1e-\/5} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_af3b3ca7fba6cc156cc0feb68ce1f8ad6}\label{namespaceutils_af3b3ca7fba6cc156cc0feb68ce1f8ad6}} 
+\index{utils@{utils}!list\_all\_graphs@{list\_all\_graphs}}
+\index{list\_all\_graphs@{list\_all\_graphs}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{list\_all\_graphs()}{list\_all\_graphs()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Block\+Graph, typename T  = unsigned int$>$ \\
+std\+::vector$<$ Graph\+Structure$<$T$>$ $>$ utils\+::list\+\_\+all\+\_\+graphs (\begin{DoxyParamCaption}\item[{std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classGroups}{Groups}} $>$ const \&}]{ptr\+\_\+groups,  }\item[{bool}]{print = {\ttfamily false} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a7083ab9939678545806dcf196c4ed1d4}\label{namespaceutils_a7083ab9939678545806dcf196c4ed1d4}} 
+\index{utils@{utils}!list\_all\_graphs@{list\_all\_graphs}}
+\index{list\_all\_graphs@{list\_all\_graphs}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{list\_all\_graphs()}{list\_all\_graphs()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+std\+::vector$<$ Graph\+Structure$<$T$>$ $>$ utils\+::list\+\_\+all\+\_\+graphs (\begin{DoxyParamCaption}\item[{unsigned int}]{p = {\ttfamily 0},  }\item[{std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classGroups}{Groups}} $>$ const \&}]{ptr\+\_\+groups = {\ttfamily nullptr},  }\item[{bool}]{print = {\ttfamily false} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a71ece624a0f4a1f91b5a8004dfe641ed}\label{namespaceutils_a71ece624a0f4a1f91b5a8004dfe641ed}} 
+\index{utils@{utils}!log\_mean@{log\_mean}}
+\index{log\_mean@{log\_mean}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{log\_mean()}{log\_mean()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classdouble}{double}} utils\+::log\+\_\+mean (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \mbox{\hyperlink{classdouble}{double}} $>$ const \&}]{v }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_ad6e774063a2e8ddb9f7b7f3d6daf75d5}\label{namespaceutils_ad6e774063a2e8ddb9f7b7f3d6daf75d5}} 
+\index{utils@{utils}!log\_normalizing\_constat@{log\_normalizing\_constat}}
+\index{log\_normalizing\_constat@{log\_normalizing\_constat}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{log\_normalizing\_constat()}{log\_normalizing\_constat()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename Type  = unsigned int$>$ \\
+long \mbox{\hyperlink{classdouble}{double}} utils\+::log\+\_\+normalizing\+\_\+constat (\begin{DoxyParamCaption}\item[{Graph\+Structure$<$ Type $>$ const \&}]{G,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{b,  }\item[{Eigen\+::\+Matrix\+Xd const \&}]{D,  }\item[{unsigned int const \&}]{M\+Citeration,  }\item[{unsigned int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_af28bcfa6dd0171ec0bd6c1a0b3095e1f}\label{namespaceutils_af28bcfa6dd0171ec0bd6c1a0b3095e1f}} 
+\index{utils@{utils}!log\_normalizing\_constat2@{log\_normalizing\_constat2}}
+\index{log\_normalizing\_constat2@{log\_normalizing\_constat2}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{log\_normalizing\_constat2()}{log\_normalizing\_constat2()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename Type  = unsigned int$>$ \\
+long \mbox{\hyperlink{classdouble}{double}} utils\+::log\+\_\+normalizing\+\_\+constat2 (\begin{DoxyParamCaption}\item[{Graph\+Structure$<$ Type $>$ const \&}]{G,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{b,  }\item[{Eigen\+::\+Matrix\+Xd const \&}]{D,  }\item[{unsigned int const \&}]{M\+Citeration,  }\item[{unsigned int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_afea31383ba0a378a10d37acee163d9f0}\label{namespaceutils_afea31383ba0a378a10d37acee163d9f0}} 
+\index{utils@{utils}!logSumExp@{logSumExp}}
+\index{logSumExp@{logSumExp}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{logSumExp()}{logSumExp()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classdouble}{double}} utils\+::log\+Sum\+Exp (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classdouble}{double}}}]{x,  }\item[{\mbox{\hyperlink{classdouble}{double}}}]{y }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_ac2d4fe62901d3e3576614195939b8785}\label{namespaceutils_ac2d4fe62901d3e3576614195939b8785}} 
+\index{utils@{utils}!logSumExp@{logSumExp}}
+\index{logSumExp@{logSumExp}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{logSumExp()}{logSumExp()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classdouble}{double}} utils\+::log\+Sum\+Exp (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \mbox{\hyperlink{classdouble}{double}} $>$ const \&}]{v }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_af3c16412909d3822b9b92368f4a29920}\label{namespaceutils_af3c16412909d3822b9b92368f4a29920}} 
+\index{utils@{utils}!logSumExp@{logSumExp}}
+\index{logSumExp@{logSumExp}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{logSumExp()}{logSumExp()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classdouble}{double}} utils\+::log\+Sum\+Exp (\begin{DoxyParamCaption}\item[{std\+::vector$<$ \mbox{\hyperlink{classdouble}{double}} $>$ const \&}]{v,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{max }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_aa4dc6f0c9700437583c3ce25ef0066b3}\label{namespaceutils_aa4dc6f0c9700437583c3ce25ef0066b3}} 
+\index{utils@{utils}!power@{power}}
+\index{power@{power}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{power()}{power()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classdouble}{double}} utils\+::power (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{x,  }\item[{int const \&}]{esp }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a36a436bc1dc1f312d948c0e8989faa2c}\label{namespaceutils_a36a436bc1dc1f312d948c0e8989faa2c}} 
+\index{utils@{utils}!rgwish@{rgwish}}
+\index{rgwish@{rgwish}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{rgwish()}{rgwish()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int, typename Norm\+Type  = Mean\+Norm$>$ \\
+\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} utils\+::rgwish (\begin{DoxyParamCaption}\item[{Graph\+Structure$<$ T $>$ const \&}]{G,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{b,  }\item[{Eigen\+::\+Matrix\+Xd const \&}]{D,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{threshold = {\ttfamily 1e-\/8},  }\item[{unsigned int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a079c3059a04393c2c225bc1c30124b54}\label{namespaceutils_a079c3059a04393c2c225bc1c30124b54}} 
+\index{utils@{utils}!rgwish2@{rgwish2}}
+\index{rgwish2@{rgwish2}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{rgwish2()}{rgwish2()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int, typename Norm\+Type  = Mean\+Norm$>$ \\
+\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} utils\+::rgwish2 (\begin{DoxyParamCaption}\item[{Graph\+Structure$<$ T $>$ const \&}]{G,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{b,  }\item[{Eigen\+::\+Matrix\+Xd const \&}]{D,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{threshold = {\ttfamily 1e-\/8},  }\item[{unsigned int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a397664e8a3e517d40dd6385a7405df76}\label{namespaceutils_a397664e8a3e517d40dd6385a7405df76}} 
+\index{utils@{utils}!rgwish\_verbose@{rgwish\_verbose}}
+\index{rgwish\_verbose@{rgwish\_verbose}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{rgwish\_verbose()}{rgwish\_verbose()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int, typename Norm\+Type  = Mean\+Norm$>$ \\
+std\+::tuple$<$ \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, bool, int$>$ utils\+::rgwish\+\_\+verbose (\begin{DoxyParamCaption}\item[{Graph\+Structure$<$ T $>$ const \&}]{G,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{b,  }\item[{Eigen\+::\+Matrix\+Xd const \&}]{D,  }\item[{unsigned int const \&}]{max\+\_\+iter = {\ttfamily 500},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{threshold = {\ttfamily 1e-\/8},  }\item[{unsigned int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a34c7ec3dd3e3d768dc2a1ccc5f3f9595}\label{namespaceutils_a34c7ec3dd3e3d768dc2a1ccc5f3f9595}} 
+\index{utils@{utils}!SimulateData\_Block@{SimulateData\_Block}}
+\index{SimulateData\_Block@{SimulateData\_Block}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SimulateData\_Block()}{SimulateData\_Block()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily std\+::tuple$<$\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_ade196078c6baed92727915d72d964873}{Vec\+Col}}, \mbox{\hyperlink{classdouble}{double}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$bool$>$ $>$ utils\+::\+Simulate\+Data\+\_\+\+Block (\begin{DoxyParamCaption}\item[{unsigned int const \&}]{p,  }\item[{unsigned int const \&}]{n,  }\item[{unsigned int const \&}]{r,  }\item[{\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}} const \&}]{Base\+Mat,  }\item[{\mbox{\hyperlink{classBlockGraph}{Block\+Graph}}$<$ bool $>$ \&}]{G,  }\item[{unsigned int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_af3d512d4bf558657512ca03895997bc3}\label{namespaceutils_af3d512d4bf558657512ca03895997bc3}} 
+\index{utils@{utils}!SimulateData\_Block@{SimulateData\_Block}}
+\index{SimulateData\_Block@{SimulateData\_Block}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SimulateData\_Block()}{SimulateData\_Block()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily std\+::tuple$<$\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_ade196078c6baed92727915d72d964873}{Vec\+Col}}, \mbox{\hyperlink{classdouble}{double}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$bool$>$ $>$ utils\+::\+Simulate\+Data\+\_\+\+Block (\begin{DoxyParamCaption}\item[{unsigned int const \&}]{p,  }\item[{unsigned int const \&}]{n,  }\item[{unsigned int const \&}]{r,  }\item[{\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}} const \&}]{Base\+Mat,  }\item[{std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classGroups}{Groups}} $>$ const \&}]{Gr,  }\item[{unsigned int}]{seed = {\ttfamily 0},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{sparsity = {\ttfamily 0.3} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a6ed983a8ffd68d2b317d57778e68aaa5}\label{namespaceutils_a6ed983a8ffd68d2b317d57778e68aaa5}} 
+\index{utils@{utils}!SimulateData\_Block@{SimulateData\_Block}}
+\index{SimulateData\_Block@{SimulateData\_Block}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SimulateData\_Block()}{SimulateData\_Block()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily std\+::tuple$<$\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_ade196078c6baed92727915d72d964873}{Vec\+Col}}, \mbox{\hyperlink{classdouble}{double}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$bool$>$ $>$ utils\+::\+Simulate\+Data\+\_\+\+Block (\begin{DoxyParamCaption}\item[{unsigned int const \&}]{p,  }\item[{unsigned int const \&}]{n,  }\item[{unsigned int const \&}]{r,  }\item[{unsigned int const \&}]{M,  }\item[{\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}} const \&}]{Base\+Mat,  }\item[{unsigned int}]{seed = {\ttfamily 0},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{sparsity = {\ttfamily 0.3} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a08ff0617390904360e159f81e8fe0efc}\label{namespaceutils_a08ff0617390904360e159f81e8fe0efc}} 
+\index{utils@{utils}!SimulateData\_Complete@{SimulateData\_Complete}}
+\index{SimulateData\_Complete@{SimulateData\_Complete}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SimulateData\_Complete()}{SimulateData\_Complete()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily std\+::tuple$<$\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_ade196078c6baed92727915d72d964873}{Vec\+Col}}, \mbox{\hyperlink{classdouble}{double}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$bool$>$ $>$ utils\+::\+Simulate\+Data\+\_\+\+Complete (\begin{DoxyParamCaption}\item[{unsigned int const \&}]{p,  }\item[{unsigned int const \&}]{n,  }\item[{unsigned int const \&}]{r,  }\item[{\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}} const \&}]{Base\+Mat,  }\item[{\mbox{\hyperlink{classGraphType}{Graph\+Type}}$<$ bool $>$ \&}]{G,  }\item[{unsigned int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_adaee3fedb382ae6ce0d99e453c8f10ad}\label{namespaceutils_adaee3fedb382ae6ce0d99e453c8f10ad}} 
+\index{utils@{utils}!SimulateData\_Complete@{SimulateData\_Complete}}
+\index{SimulateData\_Complete@{SimulateData\_Complete}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SimulateData\_Complete()}{SimulateData\_Complete()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily std\+::tuple$<$\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_ade196078c6baed92727915d72d964873}{Vec\+Col}}, \mbox{\hyperlink{classdouble}{double}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$bool$>$ $>$ utils\+::\+Simulate\+Data\+\_\+\+Complete (\begin{DoxyParamCaption}\item[{unsigned int const \&}]{p,  }\item[{unsigned int const \&}]{n,  }\item[{unsigned int const \&}]{r,  }\item[{\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}} const \&}]{Base\+Mat,  }\item[{unsigned int}]{seed = {\ttfamily 0},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{sparsity = {\ttfamily 0.3} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a185b50884db0a80e807ca53fff437d37}\label{namespaceutils_a185b50884db0a80e807ca53fff437d37}} 
+\index{utils@{utils}!SimulateDataGGM\_Block@{SimulateDataGGM\_Block}}
+\index{SimulateDataGGM\_Block@{SimulateDataGGM\_Block}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SimulateDataGGM\_Block()}{SimulateDataGGM\_Block()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily std\+::tuple$<$\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$bool$>$ $>$ utils\+::\+Simulate\+Data\+G\+G\+M\+\_\+\+Block (\begin{DoxyParamCaption}\item[{unsigned int const \&}]{p,  }\item[{unsigned int const \&}]{n,  }\item[{\mbox{\hyperlink{classBlockGraph}{Block\+Graph}}$<$ bool $>$ \&}]{G,  }\item[{unsigned int}]{seed = {\ttfamily 0},  }\item[{bool}]{mean\+\_\+null = {\ttfamily true} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_ac482ce3cad7a3ed259ab0e1a18704d57}\label{namespaceutils_ac482ce3cad7a3ed259ab0e1a18704d57}} 
+\index{utils@{utils}!SimulateDataGGM\_Block@{SimulateDataGGM\_Block}}
+\index{SimulateDataGGM\_Block@{SimulateDataGGM\_Block}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SimulateDataGGM\_Block()}{SimulateDataGGM\_Block()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily std\+::tuple$<$\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$bool$>$ $>$ utils\+::\+Simulate\+Data\+G\+G\+M\+\_\+\+Block (\begin{DoxyParamCaption}\item[{unsigned int const \&}]{p,  }\item[{unsigned int const \&}]{n,  }\item[{std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classGroups}{Groups}} $>$ const \&}]{Gr,  }\item[{unsigned int}]{seed = {\ttfamily 0},  }\item[{bool}]{mean\+\_\+null = {\ttfamily true},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{sparsity = {\ttfamily 0.3} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a94e9a6efba51d3978774bb193705c5dc}\label{namespaceutils_a94e9a6efba51d3978774bb193705c5dc}} 
+\index{utils@{utils}!SimulateDataGGM\_Block@{SimulateDataGGM\_Block}}
+\index{SimulateDataGGM\_Block@{SimulateDataGGM\_Block}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SimulateDataGGM\_Block()}{SimulateDataGGM\_Block()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily std\+::tuple$<$\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$bool$>$ $>$ utils\+::\+Simulate\+Data\+G\+G\+M\+\_\+\+Block (\begin{DoxyParamCaption}\item[{unsigned int const \&}]{p,  }\item[{unsigned int const \&}]{n,  }\item[{unsigned int const \&}]{M,  }\item[{unsigned int}]{seed = {\ttfamily 0},  }\item[{bool}]{mean\+\_\+null = {\ttfamily true},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{sparsity = {\ttfamily 0.3} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a823d2b0428762744742cd86fb3b7d9ca}\label{namespaceutils_a823d2b0428762744742cd86fb3b7d9ca}} 
+\index{utils@{utils}!SimulateDataGGM\_Complete@{SimulateDataGGM\_Complete}}
+\index{SimulateDataGGM\_Complete@{SimulateDataGGM\_Complete}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SimulateDataGGM\_Complete()}{SimulateDataGGM\_Complete()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily std\+::tuple$<$\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$bool$>$ $>$ utils\+::\+Simulate\+Data\+G\+G\+M\+\_\+\+Complete (\begin{DoxyParamCaption}\item[{unsigned int const \&}]{p,  }\item[{unsigned int const \&}]{n,  }\item[{\mbox{\hyperlink{classGraphType}{Graph\+Type}}$<$ bool $>$ \&}]{G,  }\item[{unsigned int}]{seed = {\ttfamily 0},  }\item[{bool}]{mean\+\_\+null = {\ttfamily true} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a64ac8216d5f6f2c6369d9ba8939ae865}\label{namespaceutils_a64ac8216d5f6f2c6369d9ba8939ae865}} 
+\index{utils@{utils}!SimulateDataGGM\_Complete@{SimulateDataGGM\_Complete}}
+\index{SimulateDataGGM\_Complete@{SimulateDataGGM\_Complete}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SimulateDataGGM\_Complete()}{SimulateDataGGM\_Complete()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily std\+::tuple$<$\mbox{\hyperlink{namespaceutils_a96fbf6486fd9e25be160cc56e94c24f2}{Mat\+Col}}, \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}}, std\+::vector$<$bool$>$ $>$ utils\+::\+Simulate\+Data\+G\+G\+M\+\_\+\+Complete (\begin{DoxyParamCaption}\item[{unsigned int const \&}]{p,  }\item[{unsigned int const \&}]{n,  }\item[{unsigned int}]{seed = {\ttfamily 0},  }\item[{bool}]{mean\+\_\+null = {\ttfamily true},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{sparsity = {\ttfamily 0.3} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a28148ab555d0608ad7bca705a19cd64f}\label{namespaceutils_a28148ab555d0608ad7bca705a19cd64f}} 
+\index{utils@{utils}!SubMatrix@{SubMatrix}}
+\index{SubMatrix@{SubMatrix}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SubMatrix()}{SubMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [1/5]}}
+{\footnotesize\ttfamily template$<$typename Sym  = Symmetric\+::\+False$>$ \\
+\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} utils\+::\+Sub\+Matrix (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceutils_abcd3a4d23f1e41abeb088b193162a670}{Container}} const \&}]{nbd,  }\item[{\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} const \&}]{M }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_ab76e0fd78b71f65443ffdd40bc4d6214}\label{namespaceutils_ab76e0fd78b71f65443ffdd40bc4d6214}} 
+\index{utils@{utils}!SubMatrix@{SubMatrix}}
+\index{SubMatrix@{SubMatrix}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SubMatrix()}{SubMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [2/5]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} utils\+::\+Sub\+Matrix (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceutils_abcd3a4d23f1e41abeb088b193162a670}{Container}} const \&}]{nbd\+\_\+rows,  }\item[{\mbox{\hyperlink{namespaceutils_abcd3a4d23f1e41abeb088b193162a670}{Container}} const \&}]{nbd\+\_\+cols,  }\item[{\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} const \&}]{M }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a9d377cf1befed6107ea84325267eed68}\label{namespaceutils_a9d377cf1befed6107ea84325267eed68}} 
+\index{utils@{utils}!SubMatrix@{SubMatrix}}
+\index{SubMatrix@{SubMatrix}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SubMatrix()}{SubMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [3/5]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} utils\+::\+Sub\+Matrix (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{namespaceutils_abcd3a4d23f1e41abeb088b193162a670}{Container}} const \&}]{nbd\+\_\+rows,  }\item[{unsigned int const \&}]{idx,  }\item[{\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} const \&}]{M }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a779f9d60ffe5c9f45be4c3bd152b5996}\label{namespaceutils_a779f9d60ffe5c9f45be4c3bd152b5996}} 
+\index{utils@{utils}!SubMatrix@{SubMatrix}}
+\index{SubMatrix@{SubMatrix}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SubMatrix()}{SubMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [4/5]}}
+{\footnotesize\ttfamily template$<$typename Sym  = Symmetric\+::\+False$>$ \\
+\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} utils\+::\+Sub\+Matrix (\begin{DoxyParamCaption}\item[{unsigned int const \&}]{exclude,  }\item[{\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} const \&}]{M }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{namespaceutils_a07197aa47bdbbc5800aa09316c80d0a9}\label{namespaceutils_a07197aa47bdbbc5800aa09316c80d0a9}} 
+\index{utils@{utils}!SubMatrix@{SubMatrix}}
+\index{SubMatrix@{SubMatrix}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{SubMatrix()}{SubMatrix()}\hspace{0.1cm}{\footnotesize\ttfamily [5/5]}}
+{\footnotesize\ttfamily \mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} utils\+::\+Sub\+Matrix (\begin{DoxyParamCaption}\item[{unsigned int const \&}]{idx,  }\item[{\mbox{\hyperlink{namespaceutils_abcd3a4d23f1e41abeb088b193162a670}{Container}} const \&}]{nbd\+\_\+cols,  }\item[{\mbox{\hyperlink{namespaceutils_a909c510f76e6cf5c1045627bbdbd3d32}{Mat\+Row}} const \&}]{M }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Variable Documentation}
+\mbox{\Hypertarget{namespaceutils_a363a44cd208d280e8fdd87b0f9c9f635}\label{namespaceutils_a363a44cd208d280e8fdd87b0f9c9f635}} 
+\index{utils@{utils}!log\_2@{log\_2}}
+\index{log\_2@{log\_2}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{log\_2}{log\_2}}
+{\footnotesize\ttfamily constexpr long \mbox{\hyperlink{classdouble}{double}} utils\+::log\+\_\+2 = M\+\_\+\+L\+N2\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{namespaceutils_a703d1184b73a6b8a31f6d1354a03bbfd}\label{namespaceutils_a703d1184b73a6b8a31f6d1354a03bbfd}} 
+\index{utils@{utils}!log\_2pi@{log\_2pi}}
+\index{log\_2pi@{log\_2pi}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{log\_2pi}{log\_2pi}}
+{\footnotesize\ttfamily constexpr long \mbox{\hyperlink{classdouble}{double}} utils\+::log\+\_\+2pi = std\+::log(2$\ast$\mbox{\hyperlink{namespaceutils_afe9c98ccfe2793d1bd48916f73549a05}{pi}})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{namespaceutils_a10db3e70370c259853fcca12b0e9c376}\label{namespaceutils_a10db3e70370c259853fcca12b0e9c376}} 
+\index{utils@{utils}!log\_pi@{log\_pi}}
+\index{log\_pi@{log\_pi}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{log\_pi}{log\_pi}}
+{\footnotesize\ttfamily constexpr long \mbox{\hyperlink{classdouble}{double}} utils\+::log\+\_\+pi = std\+::log(\mbox{\hyperlink{namespaceutils_afe9c98ccfe2793d1bd48916f73549a05}{pi}})\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{namespaceutils_afe9c98ccfe2793d1bd48916f73549a05}\label{namespaceutils_afe9c98ccfe2793d1bd48916f73549a05}} 
+\index{utils@{utils}!pi@{pi}}
+\index{pi@{pi}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{pi}{pi}}
+{\footnotesize\ttfamily constexpr \mbox{\hyperlink{classdouble}{double}} utils\+::pi = M\+\_\+\+PI\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{namespaceutils_a9b421a03d455ffd6ce5d0ebcd91c1ec0}\label{namespaceutils_a9b421a03d455ffd6ce5d0ebcd91c1ec0}} 
+\index{utils@{utils}!pi\_2@{pi\_2}}
+\index{pi\_2@{pi\_2}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{pi\_2}{pi\_2}}
+{\footnotesize\ttfamily constexpr \mbox{\hyperlink{classdouble}{double}} utils\+::pi\+\_\+2 = M\+\_\+\+P\+I\+\_\+2\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{namespaceutils_ac7e7e2ec945980aca0b103b0182eb579}\label{namespaceutils_ac7e7e2ec945980aca0b103b0182eb579}} 
+\index{utils@{utils}!sqrt\_2@{sqrt\_2}}
+\index{sqrt\_2@{sqrt\_2}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{sqrt\_2}{sqrt\_2}}
+{\footnotesize\ttfamily constexpr \mbox{\hyperlink{classdouble}{double}} utils\+::sqrt\+\_\+2 = M\+\_\+\+S\+Q\+R\+T2\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{namespaceutils_a30d4d8cd794a603cad418e5f19dec09f}\label{namespaceutils_a30d4d8cd794a603cad418e5f19dec09f}} 
+\index{utils@{utils}!sqrt\_2pi@{sqrt\_2pi}}
+\index{sqrt\_2pi@{sqrt\_2pi}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{sqrt\_2pi}{sqrt\_2pi}}
+{\footnotesize\ttfamily constexpr long \mbox{\hyperlink{classdouble}{double}} utils\+::sqrt\+\_\+2pi = \mbox{\hyperlink{namespaceutils_a58136c440faae8dd47bbb6505fc8e503}{sqrt\+\_\+pi}}$\ast$\mbox{\hyperlink{namespaceutils_ac7e7e2ec945980aca0b103b0182eb579}{sqrt\+\_\+2}}\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{namespaceutils_a58136c440faae8dd47bbb6505fc8e503}\label{namespaceutils_a58136c440faae8dd47bbb6505fc8e503}} 
+\index{utils@{utils}!sqrt\_pi@{sqrt\_pi}}
+\index{sqrt\_pi@{sqrt\_pi}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{sqrt\_pi}{sqrt\_pi}}
+{\footnotesize\ttfamily constexpr \mbox{\hyperlink{classdouble}{double}} utils\+::sqrt\+\_\+pi = \mbox{\hyperlink{namespaceutils_ad10c597c7e297dc6ea28177bcc54fe33}{two\+\_\+over\+\_\+sqrtpi}}$\ast$\mbox{\hyperlink{namespaceutils_a9b421a03d455ffd6ce5d0ebcd91c1ec0}{pi\+\_\+2}}\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+
+\mbox{\Hypertarget{namespaceutils_ad10c597c7e297dc6ea28177bcc54fe33}\label{namespaceutils_ad10c597c7e297dc6ea28177bcc54fe33}} 
+\index{utils@{utils}!two\_over\_sqrtpi@{two\_over\_sqrtpi}}
+\index{two\_over\_sqrtpi@{two\_over\_sqrtpi}!utils@{utils}}
+\doxysubsubsection{\texorpdfstring{two\_over\_sqrtpi}{two\_over\_sqrtpi}}
+{\footnotesize\ttfamily constexpr \mbox{\hyperlink{classdouble}{double}} utils\+::two\+\_\+over\+\_\+sqrtpi = M\+\_\+2\+\_\+\+S\+Q\+R\+T\+PI\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [constexpr]}}
+

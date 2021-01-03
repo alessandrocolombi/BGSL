@@ -1,0 +1,83 @@
+\hypertarget{classBernoulliPrior}{}\doxysection{Bernoulli\+Prior$<$ Graph\+Structure, T $>$ Class Template Reference}
+\label{classBernoulliPrior}\index{BernoulliPrior$<$ GraphStructure, T $>$@{BernoulliPrior$<$ GraphStructure, T $>$}}
+
+
+{\ttfamily \#include $<$Graph\+Prior.\+h$>$}
+
+
+
+Inheritance diagram for Bernoulli\+Prior$<$ Graph\+Structure, T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=293pt]{classBernoulliPrior__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Bernoulli\+Prior$<$ Graph\+Structure, T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=293pt]{classBernoulliPrior__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classBernoulliPrior_a7a2fe47046ad3d4ad4a78d6f89fe1812}{Bernoulli\+Prior}} (\mbox{\hyperlink{classdouble}{double}} const \&\+\_\+theta)
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classBernoulliPrior_abb9d1488963135e2ad9bdabb131606cc}{Prob}} (Graph const \&G) const override
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classBernoulliPrior_a1edbfd66355709c1c8d9896ada7265af}{ratio}} (Graph const \&G\+\_\+num, Graph const \&G\+\_\+den) const override
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classBernoulliPrior_a58e984bec5358fe8f8f90156f156b6fe}{log\+\_\+ratio}} (Graph const \&G\+\_\+num, Graph const \&G\+\_\+den) const override
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGraphPrior}{Graph\+Prior}}$<$ Graph\+Structure, T $>$ $>$ \mbox{\hyperlink{classBernoulliPrior_a750aab678962fdeb41cf0bdd658fcb28}{clone}} () const override
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classBernoulliPrior_a7a2fe47046ad3d4ad4a78d6f89fe1812}\label{classBernoulliPrior_a7a2fe47046ad3d4ad4a78d6f89fe1812}} 
+\index{BernoulliPrior$<$ GraphStructure, T $>$@{BernoulliPrior$<$ GraphStructure, T $>$}!BernoulliPrior@{BernoulliPrior}}
+\index{BernoulliPrior@{BernoulliPrior}!BernoulliPrior$<$ GraphStructure, T $>$@{BernoulliPrior$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{BernoulliPrior()}{BernoulliPrior()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classBernoulliPrior}{Bernoulli\+Prior}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classBernoulliPrior}{Bernoulli\+Prior}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{\+\_\+theta }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classBernoulliPrior_a750aab678962fdeb41cf0bdd658fcb28}\label{classBernoulliPrior_a750aab678962fdeb41cf0bdd658fcb28}} 
+\index{BernoulliPrior$<$ GraphStructure, T $>$@{BernoulliPrior$<$ GraphStructure, T $>$}!clone@{clone}}
+\index{clone@{clone}!BernoulliPrior$<$ GraphStructure, T $>$@{BernoulliPrior$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{clone()}{clone()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGraphPrior}{Graph\+Prior}}$<$Graph\+Structure, T$>$ $>$ \mbox{\hyperlink{classBernoulliPrior}{Bernoulli\+Prior}}$<$ Graph\+Structure, T $>$\+::clone (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+\mbox{\Hypertarget{classBernoulliPrior_a58e984bec5358fe8f8f90156f156b6fe}\label{classBernoulliPrior_a58e984bec5358fe8f8f90156f156b6fe}} 
+\index{BernoulliPrior$<$ GraphStructure, T $>$@{BernoulliPrior$<$ GraphStructure, T $>$}!log\_ratio@{log\_ratio}}
+\index{log\_ratio@{log\_ratio}!BernoulliPrior$<$ GraphStructure, T $>$@{BernoulliPrior$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{log\_ratio()}{log\_ratio()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classBernoulliPrior}{Bernoulli\+Prior}}$<$ Graph\+Structure, T $>$\+::log\+\_\+ratio (\begin{DoxyParamCaption}\item[{Graph const \&}]{G\+\_\+num,  }\item[{Graph const \&}]{G\+\_\+den }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+\mbox{\Hypertarget{classBernoulliPrior_abb9d1488963135e2ad9bdabb131606cc}\label{classBernoulliPrior_abb9d1488963135e2ad9bdabb131606cc}} 
+\index{BernoulliPrior$<$ GraphStructure, T $>$@{BernoulliPrior$<$ GraphStructure, T $>$}!Prob@{Prob}}
+\index{Prob@{Prob}!BernoulliPrior$<$ GraphStructure, T $>$@{BernoulliPrior$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{Prob()}{Prob()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classBernoulliPrior}{Bernoulli\+Prior}}$<$ Graph\+Structure, T $>$\+::Prob (\begin{DoxyParamCaption}\item[{Graph const \&}]{G }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+\mbox{\Hypertarget{classBernoulliPrior_a1edbfd66355709c1c8d9896ada7265af}\label{classBernoulliPrior_a1edbfd66355709c1c8d9896ada7265af}} 
+\index{BernoulliPrior$<$ GraphStructure, T $>$@{BernoulliPrior$<$ GraphStructure, T $>$}!ratio@{ratio}}
+\index{ratio@{ratio}!BernoulliPrior$<$ GraphStructure, T $>$@{BernoulliPrior$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{ratio()}{ratio()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classBernoulliPrior}{Bernoulli\+Prior}}$<$ Graph\+Structure, T $>$\+::ratio (\begin{DoxyParamCaption}\item[{Graph const \&}]{G\+\_\+num,  }\item[{Graph const \&}]{G\+\_\+den }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{GraphPrior_8h}{Graph\+Prior.\+h}}\end{DoxyCompactItemize}

@@ -1,0 +1,63 @@
+\hypertarget{SamplerOptions_8h}{}\doxysection{Sampler\+Options.\+h File Reference}
+\label{SamplerOptions_8h}\index{SamplerOptions.h@{SamplerOptions.h}}
+{\ttfamily \#include \char`\"{}include\+\_\+headers.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}include\+\_\+graphs.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}include\+\_\+helpers.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Graph\+Prior.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}G\+G\+M\+Factory.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Progress\+Bar.\+h\char`\"{}}\newline
+Include dependency graph for Sampler\+Options.\+h\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{SamplerOptions_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{SamplerOptions_8h__dep__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{structSamplerTraits}{Sampler\+Traits}}
+\item 
+class \mbox{\hyperlink{classHyperparameters}{Hyperparameters}}
+\item 
+class \mbox{\hyperlink{classParameters}{Parameters}}
+\item 
+class \mbox{\hyperlink{classInit}{Init$<$ Graph\+Structure, T $>$}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGGM}{G\+GM}}$<$ \mbox{\hyperlink{classGraphType}{Graph\+Type}}, unsigned int $>$ $>$ \mbox{\hyperlink{SamplerOptions_8h_a6e8f2553c1787add3c2ebc9862a33f92}{Select\+Method\+\_\+\+Graph\+Type}} (std\+::string const \&name\+Pr, std\+::string const \&name\+G\+GM, \mbox{\hyperlink{classHyperparameters}{Hyperparameters}} const \&hy, \mbox{\hyperlink{classParameters}{Parameters}} const \&param)
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGGM}{G\+GM}}$<$ \mbox{\hyperlink{classBlockGraph}{Block\+Graph}}, unsigned int $>$ $>$ \mbox{\hyperlink{SamplerOptions_8h_a5099036175aa840ddba4e8fd79e91573}{Select\+Method\+\_\+\+Block\+Graph}} (std\+::string const \&name\+Pr, std\+::string const \&name\+G\+GM, \mbox{\hyperlink{classHyperparameters}{Hyperparameters}} const \&hy, \mbox{\hyperlink{classParameters}{Parameters}} const \&param)
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGGM}{G\+GM}}$<$ \mbox{\hyperlink{classBlockGraphAdj}{Block\+Graph\+Adj}}, unsigned int $>$ $>$ \mbox{\hyperlink{SamplerOptions_8h_ab2f9cfcd401da6db61cbc966995549cc}{Select\+Method\+\_\+\+Block\+Graph\+Adj}} (std\+::string const \&name\+Pr, std\+::string const \&name\+G\+GM, \mbox{\hyperlink{classHyperparameters}{Hyperparameters}} const \&hy, \mbox{\hyperlink{classParameters}{Parameters}} const \&param)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{SamplerOptions_8h_a5099036175aa840ddba4e8fd79e91573}\label{SamplerOptions_8h_a5099036175aa840ddba4e8fd79e91573}} 
+\index{SamplerOptions.h@{SamplerOptions.h}!SelectMethod\_BlockGraph@{SelectMethod\_BlockGraph}}
+\index{SelectMethod\_BlockGraph@{SelectMethod\_BlockGraph}!SamplerOptions.h@{SamplerOptions.h}}
+\doxysubsubsection{\texorpdfstring{SelectMethod\_BlockGraph()}{SelectMethod\_BlockGraph()}}
+{\footnotesize\ttfamily std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGGM}{G\+GM}}$<$\mbox{\hyperlink{classBlockGraph}{Block\+Graph}}, unsigned int$>$ $>$ Select\+Method\+\_\+\+Block\+Graph (\begin{DoxyParamCaption}\item[{std\+::string const \&}]{name\+Pr,  }\item[{std\+::string const \&}]{name\+G\+GM,  }\item[{\mbox{\hyperlink{classHyperparameters}{Hyperparameters}} const \&}]{hy,  }\item[{\mbox{\hyperlink{classParameters}{Parameters}} const \&}]{param }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{SamplerOptions_8h_ab2f9cfcd401da6db61cbc966995549cc}\label{SamplerOptions_8h_ab2f9cfcd401da6db61cbc966995549cc}} 
+\index{SamplerOptions.h@{SamplerOptions.h}!SelectMethod\_BlockGraphAdj@{SelectMethod\_BlockGraphAdj}}
+\index{SelectMethod\_BlockGraphAdj@{SelectMethod\_BlockGraphAdj}!SamplerOptions.h@{SamplerOptions.h}}
+\doxysubsubsection{\texorpdfstring{SelectMethod\_BlockGraphAdj()}{SelectMethod\_BlockGraphAdj()}}
+{\footnotesize\ttfamily std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGGM}{G\+GM}}$<$\mbox{\hyperlink{classBlockGraphAdj}{Block\+Graph\+Adj}}, unsigned int$>$ $>$ Select\+Method\+\_\+\+Block\+Graph\+Adj (\begin{DoxyParamCaption}\item[{std\+::string const \&}]{name\+Pr,  }\item[{std\+::string const \&}]{name\+G\+GM,  }\item[{\mbox{\hyperlink{classHyperparameters}{Hyperparameters}} const \&}]{hy,  }\item[{\mbox{\hyperlink{classParameters}{Parameters}} const \&}]{param }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{SamplerOptions_8h_a6e8f2553c1787add3c2ebc9862a33f92}\label{SamplerOptions_8h_a6e8f2553c1787add3c2ebc9862a33f92}} 
+\index{SamplerOptions.h@{SamplerOptions.h}!SelectMethod\_GraphType@{SelectMethod\_GraphType}}
+\index{SelectMethod\_GraphType@{SelectMethod\_GraphType}!SamplerOptions.h@{SamplerOptions.h}}
+\doxysubsubsection{\texorpdfstring{SelectMethod\_GraphType()}{SelectMethod\_GraphType()}}
+{\footnotesize\ttfamily std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGGM}{G\+GM}}$<$\mbox{\hyperlink{classGraphType}{Graph\+Type}}, unsigned int$>$ $>$ Select\+Method\+\_\+\+Graph\+Type (\begin{DoxyParamCaption}\item[{std\+::string const \&}]{name\+Pr,  }\item[{std\+::string const \&}]{name\+G\+GM,  }\item[{\mbox{\hyperlink{classHyperparameters}{Hyperparameters}} const \&}]{hy,  }\item[{\mbox{\hyperlink{classParameters}{Parameters}} const \&}]{param }\end{DoxyParamCaption})}
+

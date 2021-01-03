@@ -58,7 +58,12 @@ AddRemoveMH<GraphStructure, T>::operator()(MatCol const & data, unsigned int con
 			//std::cout<<"Gnew:"<<std::endl<<Gnew<<std::endl;
 
 	//2) Create GWishart wrt Gnew and wrt posterior parameters
-	PrecisionType Kpost(this->Kprior.get_shape() + n , this->Kprior.get_inv_scale() + data );
+	if(!this->data_factorized){
+		this->D_plus_U = this->Kprior.get_inv_scale() + data;	
+		this->chol_inv_DplusU = this->D_plus_U.llt().solve(MatCol::Identity(data.rows(),data.rows())).llt().matrixU();
+		this->data_factorized = true;
+	}
+	PrecisionType Kpost(this->Kprior.get_shape() + n , this->D_plus_U, this->chol_inv_DplusU );
 	//3) Compute log acceptance ratio
 	//std::cout<<"Simulo dalla free function"<<std::endl;
 	//double old_prior = utils::log_normalizing_constat(Gold.completeview(), this->Kprior.get_shape(), this->Kprior.get_inv_scale(), MCiterPrior);

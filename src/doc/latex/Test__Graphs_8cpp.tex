@@ -1,0 +1,112 @@
+\hypertarget{Test__Graphs_8cpp}{}\doxysection{Test\+\_\+\+Graphs.\+cpp File Reference}
+\label{Test__Graphs_8cpp}\index{Test\_Graphs.cpp@{Test\_Graphs.cpp}}
+{\ttfamily \#include $<$Rcpp.\+h$>$}\newline
+{\ttfamily \#include $<$Rcpp\+Eigen.\+h$>$}\newline
+{\ttfamily \#include $<$Rcpp\+Parallel.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}include\+\_\+headers.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}include\+\_\+graphs.\+h\char`\"{}}\newline
+Include dependency graph for Test\+\_\+\+Graphs.\+cpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{Test__Graphs_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{Test__Graphs_8cpp_a59b19a343614bdd8ea7b8190489d2ed3}{\+\_\+\+\_\+\+T\+E\+S\+T\+G\+R\+A\+P\+H\+\_\+\+H\+P\+P\+\_\+\+\_\+}}
+\item 
+\#define \mbox{\hyperlink{Test__Graphs_8cpp_a966911373aee5e58ed268f7df5539784}{S\+T\+R\+I\+C\+T\+\_\+\+R\+\_\+\+H\+E\+A\+D\+E\+RS}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{Test__Graphs_8cpp_ae87d66dcc34f9a0ade04538cfa2d44c4}{My\+Eigen\+Mat}} = Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major $>$
+\item 
+using \mbox{\hyperlink{Test__Graphs_8cpp_a66d21dfc68d67f5d1391f43f24e55b4a}{Mat\+Row}} = Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major $>$
+\item 
+using \mbox{\hyperlink{Test__Graphs_8cpp_a8cac83228a6b8718a3e6d93a47aa8840}{Mat\+Col}} = Eigen\+::\+Matrix\+Xd
+\item 
+using \mbox{\hyperlink{Test__Graphs_8cpp_a763c53323e1a1dd5be2d3828db278f77}{Neighbourhood}} = \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ bool $>$\+::\mbox{\hyperlink{Test__Graphs_8cpp_a763c53323e1a1dd5be2d3828db278f77}{Neighbourhood}}
+\item 
+using \mbox{\hyperlink{Test__Graphs_8cpp_a7c960b964383ef24f9f3aa5d44297ff4}{Col\+Type}} = Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, 1 $>$
+\item 
+using \mbox{\hyperlink{Test__Graphs_8cpp_a20b47ea878cb832ae953de6a1b1dc4b3}{Row\+Type}} = Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, 1, Eigen\+::\+Dynamic $>$
+\item 
+using \mbox{\hyperlink{Test__Graphs_8cpp_abc01136ed566000f778ac41c5d58e230}{Vec\+ColB}} = Eigen\+::\+Matrix$<$ unsigned int, Eigen\+::\+Dynamic, 1 $>$
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{Test__Graphs_8cpp_a16bd91efd433bb355717b6091e15a502}{Graph\+Test}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{Test__Graphs_8cpp_a59b19a343614bdd8ea7b8190489d2ed3}\label{Test__Graphs_8cpp_a59b19a343614bdd8ea7b8190489d2ed3}} 
+\index{Test\_Graphs.cpp@{Test\_Graphs.cpp}!\_\_TESTGRAPH\_HPP\_\_@{\_\_TESTGRAPH\_HPP\_\_}}
+\index{\_\_TESTGRAPH\_HPP\_\_@{\_\_TESTGRAPH\_HPP\_\_}!Test\_Graphs.cpp@{Test\_Graphs.cpp}}
+\doxysubsubsection{\texorpdfstring{\_\_TESTGRAPH\_HPP\_\_}{\_\_TESTGRAPH\_HPP\_\_}}
+{\footnotesize\ttfamily \#define \+\_\+\+\_\+\+T\+E\+S\+T\+G\+R\+A\+P\+H\+\_\+\+H\+P\+P\+\_\+\+\_\+}
+
+\mbox{\Hypertarget{Test__Graphs_8cpp_a966911373aee5e58ed268f7df5539784}\label{Test__Graphs_8cpp_a966911373aee5e58ed268f7df5539784}} 
+\index{Test\_Graphs.cpp@{Test\_Graphs.cpp}!STRICT\_R\_HEADERS@{STRICT\_R\_HEADERS}}
+\index{STRICT\_R\_HEADERS@{STRICT\_R\_HEADERS}!Test\_Graphs.cpp@{Test\_Graphs.cpp}}
+\doxysubsubsection{\texorpdfstring{STRICT\_R\_HEADERS}{STRICT\_R\_HEADERS}}
+{\footnotesize\ttfamily \#define S\+T\+R\+I\+C\+T\+\_\+\+R\+\_\+\+H\+E\+A\+D\+E\+RS}
+
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{Test__Graphs_8cpp_a7c960b964383ef24f9f3aa5d44297ff4}\label{Test__Graphs_8cpp_a7c960b964383ef24f9f3aa5d44297ff4}} 
+\index{Test\_Graphs.cpp@{Test\_Graphs.cpp}!ColType@{ColType}}
+\index{ColType@{ColType}!Test\_Graphs.cpp@{Test\_Graphs.cpp}}
+\doxysubsubsection{\texorpdfstring{ColType}{ColType}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{Test__Graphs_8cpp_a7c960b964383ef24f9f3aa5d44297ff4}{Col\+Type}} =  Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, 1$>$}
+
+\mbox{\Hypertarget{Test__Graphs_8cpp_a8cac83228a6b8718a3e6d93a47aa8840}\label{Test__Graphs_8cpp_a8cac83228a6b8718a3e6d93a47aa8840}} 
+\index{Test\_Graphs.cpp@{Test\_Graphs.cpp}!MatCol@{MatCol}}
+\index{MatCol@{MatCol}!Test\_Graphs.cpp@{Test\_Graphs.cpp}}
+\doxysubsubsection{\texorpdfstring{MatCol}{MatCol}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{BGSL__export_8cpp_a8cac83228a6b8718a3e6d93a47aa8840}{Mat\+Col}} =  Eigen\+::\+Matrix\+Xd}
+
+\mbox{\Hypertarget{Test__Graphs_8cpp_a66d21dfc68d67f5d1391f43f24e55b4a}\label{Test__Graphs_8cpp_a66d21dfc68d67f5d1391f43f24e55b4a}} 
+\index{Test\_Graphs.cpp@{Test\_Graphs.cpp}!MatRow@{MatRow}}
+\index{MatRow@{MatRow}!Test\_Graphs.cpp@{Test\_Graphs.cpp}}
+\doxysubsubsection{\texorpdfstring{MatRow}{MatRow}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{BGSL__export_8cpp_a66d21dfc68d67f5d1391f43f24e55b4a}{Mat\+Row}} =  Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major$>$}
+
+\mbox{\Hypertarget{Test__Graphs_8cpp_ae87d66dcc34f9a0ade04538cfa2d44c4}\label{Test__Graphs_8cpp_ae87d66dcc34f9a0ade04538cfa2d44c4}} 
+\index{Test\_Graphs.cpp@{Test\_Graphs.cpp}!MyEigenMat@{MyEigenMat}}
+\index{MyEigenMat@{MyEigenMat}!Test\_Graphs.cpp@{Test\_Graphs.cpp}}
+\doxysubsubsection{\texorpdfstring{MyEigenMat}{MyEigenMat}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{Test__Graphs_8cpp_ae87d66dcc34f9a0ade04538cfa2d44c4}{My\+Eigen\+Mat}} =  Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major$>$}
+
+\mbox{\Hypertarget{Test__Graphs_8cpp_a763c53323e1a1dd5be2d3828db278f77}\label{Test__Graphs_8cpp_a763c53323e1a1dd5be2d3828db278f77}} 
+\index{Test\_Graphs.cpp@{Test\_Graphs.cpp}!Neighbourhood@{Neighbourhood}}
+\index{Neighbourhood@{Neighbourhood}!Test\_Graphs.cpp@{Test\_Graphs.cpp}}
+\doxysubsubsection{\texorpdfstring{Neighbourhood}{Neighbourhood}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{Test__Graphs_8cpp_a763c53323e1a1dd5be2d3828db278f77}{Neighbourhood}} =  \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$bool$>$\+::\mbox{\hyperlink{Test__Graphs_8cpp_a763c53323e1a1dd5be2d3828db278f77}{Neighbourhood}}}
+
+\mbox{\Hypertarget{Test__Graphs_8cpp_a20b47ea878cb832ae953de6a1b1dc4b3}\label{Test__Graphs_8cpp_a20b47ea878cb832ae953de6a1b1dc4b3}} 
+\index{Test\_Graphs.cpp@{Test\_Graphs.cpp}!RowType@{RowType}}
+\index{RowType@{RowType}!Test\_Graphs.cpp@{Test\_Graphs.cpp}}
+\doxysubsubsection{\texorpdfstring{RowType}{RowType}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{Test__Graphs_8cpp_a20b47ea878cb832ae953de6a1b1dc4b3}{Row\+Type}} =  Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, 1, Eigen\+::\+Dynamic$>$}
+
+\mbox{\Hypertarget{Test__Graphs_8cpp_abc01136ed566000f778ac41c5d58e230}\label{Test__Graphs_8cpp_abc01136ed566000f778ac41c5d58e230}} 
+\index{Test\_Graphs.cpp@{Test\_Graphs.cpp}!VecColB@{VecColB}}
+\index{VecColB@{VecColB}!Test\_Graphs.cpp@{Test\_Graphs.cpp}}
+\doxysubsubsection{\texorpdfstring{VecColB}{VecColB}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{Test__Graphs_8cpp_abc01136ed566000f778ac41c5d58e230}{Vec\+ColB}} =  Eigen\+::\+Matrix$<$unsigned int, Eigen\+::\+Dynamic, 1$>$}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{Test__Graphs_8cpp_a16bd91efd433bb355717b6091e15a502}\label{Test__Graphs_8cpp_a16bd91efd433bb355717b6091e15a502}} 
+\index{Test\_Graphs.cpp@{Test\_Graphs.cpp}!GraphTest@{GraphTest}}
+\index{GraphTest@{GraphTest}!Test\_Graphs.cpp@{Test\_Graphs.cpp}}
+\doxysubsubsection{\texorpdfstring{GraphTest()}{GraphTest()}}
+{\footnotesize\ttfamily void Graph\+Test (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+

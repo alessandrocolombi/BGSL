@@ -16,9 +16,9 @@ class FGMsampler : public SamplerTraits
 	using RetType 	    = std::tuple<RetBeta, RetMu, RetK, RetGraph, RetTaueps>;
 
 	FGMsampler( MatCol const & _data, Parameters const & _params, Hyperparameters const & _hy_params, 
-			    Init<GraphStructure, T> const & _init, GGMType & _GGM_method, unsigned int _seed = 0):
+			    Init<GraphStructure, T> const & _init, GGMType & _GGM_method, unsigned int _seed = 0, bool _print_pb = true):
 			    data(_data), params(_params), hy_params(_hy_params), ptr_GGM_method(std::move(_GGM_method)) ,init(_init),
-				p(_init.Beta0.rows()), n(_init.Beta0.cols()), grid_pts(_params.Basemat.rows()), seed(_seed)
+				p(_init.Beta0.rows()), n(_init.Beta0.cols()), grid_pts(_params.Basemat.rows()), seed(_seed), print_pb(_print_pb)
 	{
 	 	this->check();
 	 	if(seed==0){
@@ -42,6 +42,7 @@ class FGMsampler : public SamplerTraits
 	unsigned int seed;
 	int total_accepted{0};
 	int visited{0};
+	bool print_pb;
 };
 
 
@@ -63,7 +64,11 @@ template<template <typename> class GraphStructure, typename T, class RetGraph >
 typename FGMsampler<GraphStructure, T, RetGraph>::RetType 
 FGMsampler<GraphStructure, T, RetGraph>::run()
 {
-	std::cout<<"FGM sampler started"<<std::endl;
+
+	if(print_pb){
+		std::cout<<"FGM sampler started"<<std::endl;
+	}
+	
 	//Typedefs
 	GGM<GraphStructure, T> & GGM_method= *ptr_GGM_method;
 
@@ -115,8 +120,9 @@ FGMsampler<GraphStructure, T, RetGraph>::run()
 		
 		//Show progress bar
 		bar.update(1);
-		//bar.print(); 
-
+		if(print_pb){
+			bar.print(); 	
+		}
 		int accepted_mv{0};
 		//mu
 		//Lo anticipo così posso evitare un for e costruire la matrice U quando estraggo i Beta
@@ -149,8 +155,10 @@ FGMsampler<GraphStructure, T, RetGraph>::run()
 		b_tau_eps_post /= 2.0;
 		tau_eps = rGamma(engine, a_tau_eps_post, 1/b_tau_eps_post);
 		//Graphical Step
+		GGM_method.data_factorized = false; //Need to tell it that matrix U is changing at every iteration and that has to be factorized everytime
 		std::tie(K, accepted_mv) = GGM_method(U, n, G, p_addrm, 0); //G is modified inside the function.
 		total_accepted += accepted_mv;
+
 
 		
 		//Save
@@ -161,7 +169,7 @@ FGMsampler<GraphStructure, T, RetGraph>::run()
 				SaveTaueps.emplace_back(tau_eps);
 			}
 			if((iter - nburn)%thinG == 0){
-				SaveK.emplace_back(K);
+				SaveK.emplace_back(utils::get_upper_part(K));
 				std::vector<bool> adj;
 				if constexpr( ! std::is_same_v<T, bool>){
 					std::vector<T> adj_nobool(G.get_adj_list());

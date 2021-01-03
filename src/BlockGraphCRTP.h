@@ -511,8 +511,17 @@ class CompleteView{
     using value_type    = typename BlockGraphBaseCRTP<BlockGraph<T>,T>::value_type;
     using IdxType       = typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType;
     using Neighbourhood = typename BlockGraphBaseCRTP<BlockGraph<T>,T>::Neighbourhood;
+    using InnerData     = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
     //Constructor
-    CompleteView(BlockGraph<T> & _G):G(_G){};
+    CompleteView(BlockGraph<T>const & _G):G(_G), data( InnerData::Identity(G.get_complete_size(),G.get_complete_size()) ){
+
+      for(unsigned int i = 0; i < data.rows()-1; ++i){
+        for(unsigned int j = i+1; j < data.cols(); ++j){
+          data(i,j) = G( G.find_group_idx(i), G.find_group_idx(j) );
+        }
+      }
+
+    };
 
     T operator()( typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & i, 
                   typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & j) const
@@ -522,6 +531,13 @@ class CompleteView{
       else
         return G( G.find_group_idx(i), G.find_group_idx(j) ); 
     }
+
+    //T operator()( typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & i, 
+                  //typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & j) const
+    //{
+      //return (i <= j) ? data(i,j) : data(j,i);
+    //}
+
     //Getters
     inline unsigned int get_size() const{
       return G.get_complete_size();
@@ -574,7 +590,8 @@ class CompleteView{
     }
 
   private:
-    BlockGraph<T>&  G;
+    const BlockGraph<T>&  G;
+    InnerData data;
 };
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -857,7 +874,7 @@ class CompleteViewAdj{
     using IdxType       = typename BlockGraphBaseCRTP<BlockGraphAdj<T>,T>::IdxType;
     using Neighbourhood = typename BlockGraphBaseCRTP<BlockGraphAdj<T>,T>::Neighbourhood;
     //Constructor
-    CompleteViewAdj(BlockGraphAdj<T> & _G):G(_G){};
+    CompleteViewAdj(BlockGraphAdj<T> const & _G):G(_G){};
 
     T operator()(typename BlockGraphBase<T>::IdxType const & i, typename BlockGraphBase<T>::IdxType const & j) const{
       if(i == j)
@@ -913,7 +930,7 @@ class CompleteViewAdj{
       return G.get_group_size(i);
     }
   private:
-    BlockGraphAdj<T> & G;
+    const BlockGraphAdj<T> & G;
 };
 
 #endif

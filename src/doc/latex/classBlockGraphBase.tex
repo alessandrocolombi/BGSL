@@ -1,0 +1,425 @@
+\hypertarget{classBlockGraphBase}{}\doxysection{Block\+Graph\+Base$<$ T $>$ Class Template Reference}
+\label{classBlockGraphBase}\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+
+
+{\ttfamily \#include $<$Block\+Graph.\+h$>$}
+
+
+
+Inheritance diagram for Block\+Graph\+Base$<$ T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{classBlockGraphBase__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Block\+Graph\+Base$<$ T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=320pt]{classBlockGraphBase__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classBlockGraphBase_a4ff7c6ab3cf4e01e3522a9a139c3f8da}{value\+\_\+type}} = T
+\item 
+using \mbox{\hyperlink{classBlockGraphBase_acafd492c219f101be8eef9d4fb5b4d9b}{Adj}} = std\+::vector$<$ T $>$
+\item 
+using \mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} = std\+::size\+\_\+t
+\item 
+using \mbox{\hyperlink{classBlockGraphBase_ad58375909ecd88e283ce4ae6b4f6abfe}{Groups\+Ptr}} = std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classGroups}{Groups}} $>$
+\item 
+using \mbox{\hyperlink{classBlockGraphBase_a70efb201a597b619f6bf9877e238370a}{Neighbourhood}} = std\+::map$<$ unsigned int, std\+::vector$<$ unsigned int $>$ $>$
+\item 
+using \mbox{\hyperlink{classBlockGraphBase_a8207584f17b9c6964a8c76f13d3c5cce}{Singleton}} = \mbox{\hyperlink{structGroupsTraits_aa1ec7cd3d37ae64720835ff638c11b09}{Groups\+Traits\+::\+Inner\+Container}}
+\item 
+using \mbox{\hyperlink{classBlockGraphBase_ae9a52ad1c58cd42f3ba91ed551987b25}{Singleton\+Eig}} = Eigen\+::\+Matrix$<$ unsigned int, Eigen\+::\+Dynamic, 1 $>$
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classBlockGraphBase_a83f9595a921431548a3a2ce352f617cd}{Block\+Graph\+Base}} (\mbox{\hyperlink{classBlockGraphBase_ad58375909ecd88e283ce4ae6b4f6abfe}{Groups\+Ptr}} const \&\+\_\+\+Gr)
+\item 
+\mbox{\hyperlink{classGroups}{Groups}} \mbox{\hyperlink{classBlockGraphBase_a0c5443764999f1b09cddfeb8be60a756}{get\+\_\+groups}} () const
+\item 
+\mbox{\hyperlink{classBlockGraphBase_ad58375909ecd88e283ce4ae6b4f6abfe}{Groups\+Ptr}} \mbox{\hyperlink{classBlockGraphBase_a644c77d53c184e26294a9894597df379}{get\+\_\+ptr\+\_\+groups}} () const
+\item 
+unsigned int \mbox{\hyperlink{classBlockGraphBase_ab54c38d345b8657af6fd1133b399ab58}{get\+\_\+size}} () const
+\item 
+unsigned int \mbox{\hyperlink{classBlockGraphBase_aea6d992e9dae57e697d7c6b9b77480c5}{get\+\_\+number\+\_\+singleton}} () const
+\item 
+\mbox{\hyperlink{classBlockGraphBase_a8207584f17b9c6964a8c76f13d3c5cce}{Singleton}} \mbox{\hyperlink{classBlockGraphBase_ae30259ecbdbab4479d55f2171e42e96c}{get\+\_\+pos\+\_\+singleton}} () const
+\item 
+\mbox{\hyperlink{classBlockGraphBase_ae9a52ad1c58cd42f3ba91ed551987b25}{Singleton\+Eig}} \mbox{\hyperlink{classBlockGraphBase_a53af1ba280f09344b2a0923baec48e42}{get\+\_\+row\+\_\+with\+\_\+singleton}} () const
+\item 
+unsigned int \mbox{\hyperlink{classBlockGraphBase_af7cf9df82450e9e6af7104f20ade189c}{get\+\_\+complete\+\_\+size}} () const
+\item 
+unsigned int \mbox{\hyperlink{classBlockGraphBase_ab56eb5e0d23fe7bc1dda89ed40aed1d8}{get\+\_\+group\+\_\+size}} (\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&i) const
+\item 
+virtual unsigned int \mbox{\hyperlink{classBlockGraphBase_a74d5925fdaf3d37e104b9228ed22a88a}{get\+\_\+n\+\_\+links}} () const =0
+\item 
+virtual unsigned int \mbox{\hyperlink{classBlockGraphBase_ab3d28d9ea5874796a2e790e96c4b968d}{get\+\_\+n\+\_\+block\+\_\+links}} () const =0
+\item 
+virtual unsigned int \mbox{\hyperlink{classBlockGraphBase_ab1502f95b9e896eefa38b33ffb83f86b}{get\+\_\+possible\+\_\+links}} () const =0
+\item 
+virtual unsigned int \mbox{\hyperlink{classBlockGraphBase_a3917649fe17909e23c9a46c07ec83460}{get\+\_\+possible\+\_\+block\+\_\+links}} () const =0
+\item 
+unsigned int \mbox{\hyperlink{classBlockGraphBase_aec1252d018b08fd2986bf670baadb9eb}{find\+\_\+group\+\_\+idx}} (\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&i) const
+\item 
+std\+::vector$<$ unsigned int $>$ \mbox{\hyperlink{classBlockGraphBase_a7acd56f94fff4c42b7c20769b95743b1}{find\+\_\+and\+\_\+get\+\_\+group}} (\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&i) const
+\item 
+virtual void \mbox{\hyperlink{classBlockGraphBase_a39421bdae66d89f881b051114ae899fa}{set\+\_\+graph}} (\mbox{\hyperlink{classBlockGraphBase_acafd492c219f101be8eef9d4fb5b4d9b}{Adj}} const \&A)=0
+\item 
+virtual void \mbox{\hyperlink{classBlockGraphBase_a504ebfe43a1fddd9f55fc21c6a229707}{set\+\_\+graph}} (\mbox{\hyperlink{classBlockGraphBase_acafd492c219f101be8eef9d4fb5b4d9b}{Adj}} \&\&A)=0
+\item 
+virtual void \mbox{\hyperlink{classBlockGraphBase_ac1276e1b18989151b8492f3947d18392}{set\+\_\+empty\+\_\+graph}} ()=0
+\item 
+virtual void \mbox{\hyperlink{classBlockGraphBase_a01fc255cdaf20c1315f2c1d02b376160}{fill\+Random}} (\mbox{\hyperlink{classdouble}{double}} sparsity=0.\+5, unsigned int seed=0)=0
+\item 
+virtual void \mbox{\hyperlink{classBlockGraphBase_a499e1ac7b52aac4d77bd28394c88ec38}{add\+\_\+link}} (\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&i, \mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&j)=0
+\item 
+virtual void \mbox{\hyperlink{classBlockGraphBase_ac4c1abf91c476ccdbf4bc76899d1b28d}{remove\+\_\+link}} (\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&i, \mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&j)=0
+\item 
+std\+::pair$<$ unsigned int, unsigned int $>$ \mbox{\hyperlink{classBlockGraphBase_a6914a6b12c88d0e7c4175c050e467703}{pos\+\_\+to\+\_\+ij}} (\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&pos) const
+\item 
+std\+::vector$<$ std\+::pair$<$ unsigned int, unsigned int $>$ $>$ \mbox{\hyperlink{classBlockGraphBase_a308f2c4b514108a98e4da67bf44da93e}{map\+\_\+to\+\_\+complete}} (\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} i, \mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} j) const
+\item 
+virtual T \mbox{\hyperlink{classBlockGraphBase_a75a8f726a723ca3d54b70b5f9c059377}{operator()}} (\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&i, \mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&j) const =0
+\item 
+virtual std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$ $>$ \mbox{\hyperlink{classBlockGraphBase_a50b4f6161f1260e9c4b1d99fb9d4315a}{clone}} () const =0
+\item 
+virtual \mbox{\hyperlink{classBlockGraphBase_aeb9edf47e23eeb032f900702d20d388f}{$\sim$\+Block\+Graph\+Base}} ()=default
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+virtual void \mbox{\hyperlink{classBlockGraphBase_a5c5da66dcfb260aed327b194c86fcb09}{find\+\_\+neighbours}} ()=0
+\item 
+virtual void \mbox{\hyperlink{classBlockGraphBase_acd5e925257dd02c88de15d10dccd7286}{compute\+\_\+nlinks\+\_\+nblocks}} ()=0
+\item 
+\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} \mbox{\hyperlink{classBlockGraphBase_a55b2c270eda4b299b605a9f6b1bd8537}{compute\+\_\+diagonal\+\_\+position}} (\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&i) const
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classBlockGraphBase_ad58375909ecd88e283ce4ae6b4f6abfe}{Groups\+Ptr}} \mbox{\hyperlink{classBlockGraphBase_a53d5aa7b72f7519eb4682b1fdc72e399}{ptr\+\_\+groups}}
+\item 
+unsigned int \mbox{\hyperlink{classBlockGraphBase_a9b2a7a7b7c4bd503e834a7af9ca0eb6e}{n\+\_\+singleton}}
+\item 
+unsigned int \mbox{\hyperlink{classBlockGraphBase_a52268a882f901aba3aab8983920c6e0a}{n\+\_\+links}}
+\item 
+unsigned int \mbox{\hyperlink{classBlockGraphBase_ae8ffbe28313a09c7b2c2ff9087bc62b6}{n\+\_\+blocks}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classBlockGraphBase_acafd492c219f101be8eef9d4fb5b4d9b}\label{classBlockGraphBase_acafd492c219f101be8eef9d4fb5b4d9b}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!Adj@{Adj}}
+\index{Adj@{Adj}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{Adj}{Adj}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classBlockGraphBase_acafd492c219f101be8eef9d4fb5b4d9b}{Adj}} =  std\+::vector$<$T$>$}
+
+\mbox{\Hypertarget{classBlockGraphBase_ad58375909ecd88e283ce4ae6b4f6abfe}\label{classBlockGraphBase_ad58375909ecd88e283ce4ae6b4f6abfe}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!GroupsPtr@{GroupsPtr}}
+\index{GroupsPtr@{GroupsPtr}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{GroupsPtr}{GroupsPtr}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classBlockGraphBase_ad58375909ecd88e283ce4ae6b4f6abfe}{Groups\+Ptr}} =  std\+::shared\+\_\+ptr$<$const \mbox{\hyperlink{classGroups}{Groups}}$>$}
+
+\mbox{\Hypertarget{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}\label{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!IdxType@{IdxType}}
+\index{IdxType@{IdxType}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{IdxType}{IdxType}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} =  std\+::size\+\_\+t}
+
+\mbox{\Hypertarget{classBlockGraphBase_a70efb201a597b619f6bf9877e238370a}\label{classBlockGraphBase_a70efb201a597b619f6bf9877e238370a}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!Neighbourhood@{Neighbourhood}}
+\index{Neighbourhood@{Neighbourhood}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{Neighbourhood}{Neighbourhood}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classBlockGraphBase_a70efb201a597b619f6bf9877e238370a}{Neighbourhood}} =  std\+::map$<$unsigned int, std\+::vector$<$unsigned int$>$ $>$}
+
+\mbox{\Hypertarget{classBlockGraphBase_a8207584f17b9c6964a8c76f13d3c5cce}\label{classBlockGraphBase_a8207584f17b9c6964a8c76f13d3c5cce}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!Singleton@{Singleton}}
+\index{Singleton@{Singleton}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{Singleton}{Singleton}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classBlockGraphBase_a8207584f17b9c6964a8c76f13d3c5cce}{Singleton}} =  \mbox{\hyperlink{structGroupsTraits_aa1ec7cd3d37ae64720835ff638c11b09}{Groups\+Traits\+::\+Inner\+Container}}}
+
+\mbox{\Hypertarget{classBlockGraphBase_ae9a52ad1c58cd42f3ba91ed551987b25}\label{classBlockGraphBase_ae9a52ad1c58cd42f3ba91ed551987b25}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!SingletonEig@{SingletonEig}}
+\index{SingletonEig@{SingletonEig}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{SingletonEig}{SingletonEig}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classBlockGraphBase_ae9a52ad1c58cd42f3ba91ed551987b25}{Singleton\+Eig}} =  Eigen\+::\+Matrix$<$unsigned int, Eigen\+::\+Dynamic, 1$>$}
+
+\mbox{\Hypertarget{classBlockGraphBase_a4ff7c6ab3cf4e01e3522a9a139c3f8da}\label{classBlockGraphBase_a4ff7c6ab3cf4e01e3522a9a139c3f8da}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!value\_type@{value\_type}}
+\index{value\_type@{value\_type}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{value\_type}{value\_type}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classBlockGraphBase_a4ff7c6ab3cf4e01e3522a9a139c3f8da}{value\+\_\+type}} =  T}
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classBlockGraphBase_a83f9595a921431548a3a2ce352f617cd}\label{classBlockGraphBase_a83f9595a921431548a3a2ce352f617cd}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!BlockGraphBase@{BlockGraphBase}}
+\index{BlockGraphBase@{BlockGraphBase}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{BlockGraphBase()}{BlockGraphBase()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+\mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classBlockGraphBase_ad58375909ecd88e283ce4ae6b4f6abfe}{Groups\+Ptr}} const \&}]{\+\_\+\+Gr }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_aeb9edf47e23eeb032f900702d20d388f}\label{classBlockGraphBase_aeb9edf47e23eeb032f900702d20d388f}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!````~BlockGraphBase@{$\sim$BlockGraphBase}}
+\index{````~BlockGraphBase@{$\sim$BlockGraphBase}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{$\sim$BlockGraphBase()}{~BlockGraphBase()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::$\sim$\mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}} (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}, {\ttfamily [default]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classBlockGraphBase_a499e1ac7b52aac4d77bd28394c88ec38}\label{classBlockGraphBase_a499e1ac7b52aac4d77bd28394c88ec38}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!add\_link@{add\_link}}
+\index{add\_link@{add\_link}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{add\_link()}{add\_link()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual void \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::add\+\_\+link (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&}]{i,  }\item[{\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&}]{j }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a50b4f6161f1260e9c4b1d99fb9d4315a}\label{classBlockGraphBase_a50b4f6161f1260e9c4b1d99fb9d4315a}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!clone@{clone}}
+\index{clone@{clone}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{clone()}{clone()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$T$>$ $>$ \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::clone (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a55b2c270eda4b299b605a9f6b1bd8537}\label{classBlockGraphBase_a55b2c270eda4b299b605a9f6b1bd8537}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!compute\_diagonal\_position@{compute\_diagonal\_position}}
+\index{compute\_diagonal\_position@{compute\_diagonal\_position}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{compute\_diagonal\_position()}{compute\_diagonal\_position()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+\mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::compute\+\_\+diagonal\+\_\+position (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&}]{i }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_acd5e925257dd02c88de15d10dccd7286}\label{classBlockGraphBase_acd5e925257dd02c88de15d10dccd7286}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!compute\_nlinks\_nblocks@{compute\_nlinks\_nblocks}}
+\index{compute\_nlinks\_nblocks@{compute\_nlinks\_nblocks}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{compute\_nlinks\_nblocks()}{compute\_nlinks\_nblocks()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual void \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::compute\+\_\+nlinks\+\_\+nblocks (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [pure virtual]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a01fc255cdaf20c1315f2c1d02b376160}\label{classBlockGraphBase_a01fc255cdaf20c1315f2c1d02b376160}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!fillRandom@{fillRandom}}
+\index{fillRandom@{fillRandom}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{fillRandom()}{fillRandom()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual void \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::fill\+Random (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classdouble}{double}}}]{sparsity = {\ttfamily 0.5},  }\item[{unsigned int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \mbox{\hyperlink{classBlockGraphDyn_aaf94e3a53c7b2339dacde1eec2ae556e}{Block\+Graph\+Dyn$<$ T $>$}}, and \mbox{\hyperlink{classBlockGraphAdjDyn_a0116f4c9d31700ed8d5b7bea948725c4}{Block\+Graph\+Adj\+Dyn$<$ T $>$}}.
+
+\mbox{\Hypertarget{classBlockGraphBase_a7acd56f94fff4c42b7c20769b95743b1}\label{classBlockGraphBase_a7acd56f94fff4c42b7c20769b95743b1}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!find\_and\_get\_group@{find\_and\_get\_group}}
+\index{find\_and\_get\_group@{find\_and\_get\_group}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{find\_and\_get\_group()}{find\_and\_get\_group()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+std\+::vector$<$unsigned int$>$ \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::find\+\_\+and\+\_\+get\+\_\+group (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&}]{i }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_aec1252d018b08fd2986bf670baadb9eb}\label{classBlockGraphBase_aec1252d018b08fd2986bf670baadb9eb}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!find\_group\_idx@{find\_group\_idx}}
+\index{find\_group\_idx@{find\_group\_idx}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{find\_group\_idx()}{find\_group\_idx()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+unsigned int \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::find\+\_\+group\+\_\+idx (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&}]{i }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a5c5da66dcfb260aed327b194c86fcb09}\label{classBlockGraphBase_a5c5da66dcfb260aed327b194c86fcb09}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!find\_neighbours@{find\_neighbours}}
+\index{find\_neighbours@{find\_neighbours}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{find\_neighbours()}{find\_neighbours()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual void \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::find\+\_\+neighbours (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}, {\ttfamily [pure virtual]}}
+
+
+
+Implemented in \mbox{\hyperlink{classBlockGraphDyn_ab0c148dee7ce82e54b02ada0574dbc96}{Block\+Graph\+Dyn$<$ T $>$}}.
+
+\mbox{\Hypertarget{classBlockGraphBase_af7cf9df82450e9e6af7104f20ade189c}\label{classBlockGraphBase_af7cf9df82450e9e6af7104f20ade189c}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!get\_complete\_size@{get\_complete\_size}}
+\index{get\_complete\_size@{get\_complete\_size}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_complete\_size()}{get\_complete\_size()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+unsigned int \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::get\+\_\+complete\+\_\+size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_ab56eb5e0d23fe7bc1dda89ed40aed1d8}\label{classBlockGraphBase_ab56eb5e0d23fe7bc1dda89ed40aed1d8}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!get\_group\_size@{get\_group\_size}}
+\index{get\_group\_size@{get\_group\_size}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_group\_size()}{get\_group\_size()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+unsigned int \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::get\+\_\+group\+\_\+size (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&}]{i }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a0c5443764999f1b09cddfeb8be60a756}\label{classBlockGraphBase_a0c5443764999f1b09cddfeb8be60a756}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!get\_groups@{get\_groups}}
+\index{get\_groups@{get\_groups}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_groups()}{get\_groups()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+\mbox{\hyperlink{classGroups}{Groups}} \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::get\+\_\+groups (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_ab3d28d9ea5874796a2e790e96c4b968d}\label{classBlockGraphBase_ab3d28d9ea5874796a2e790e96c4b968d}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!get\_n\_block\_links@{get\_n\_block\_links}}
+\index{get\_n\_block\_links@{get\_n\_block\_links}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_n\_block\_links()}{get\_n\_block\_links()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual unsigned int \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::get\+\_\+n\+\_\+block\+\_\+links (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a74d5925fdaf3d37e104b9228ed22a88a}\label{classBlockGraphBase_a74d5925fdaf3d37e104b9228ed22a88a}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!get\_n\_links@{get\_n\_links}}
+\index{get\_n\_links@{get\_n\_links}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_n\_links()}{get\_n\_links()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual unsigned int \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::get\+\_\+n\+\_\+links (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_aea6d992e9dae57e697d7c6b9b77480c5}\label{classBlockGraphBase_aea6d992e9dae57e697d7c6b9b77480c5}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!get\_number\_singleton@{get\_number\_singleton}}
+\index{get\_number\_singleton@{get\_number\_singleton}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_number\_singleton()}{get\_number\_singleton()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+unsigned int \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::get\+\_\+number\+\_\+singleton (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_ae30259ecbdbab4479d55f2171e42e96c}\label{classBlockGraphBase_ae30259ecbdbab4479d55f2171e42e96c}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!get\_pos\_singleton@{get\_pos\_singleton}}
+\index{get\_pos\_singleton@{get\_pos\_singleton}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_pos\_singleton()}{get\_pos\_singleton()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+\mbox{\hyperlink{classBlockGraphBase_a8207584f17b9c6964a8c76f13d3c5cce}{Singleton}} \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::get\+\_\+pos\+\_\+singleton (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a3917649fe17909e23c9a46c07ec83460}\label{classBlockGraphBase_a3917649fe17909e23c9a46c07ec83460}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!get\_possible\_block\_links@{get\_possible\_block\_links}}
+\index{get\_possible\_block\_links@{get\_possible\_block\_links}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_possible\_block\_links()}{get\_possible\_block\_links()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual unsigned int \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::get\+\_\+possible\+\_\+block\+\_\+links (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_ab1502f95b9e896eefa38b33ffb83f86b}\label{classBlockGraphBase_ab1502f95b9e896eefa38b33ffb83f86b}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!get\_possible\_links@{get\_possible\_links}}
+\index{get\_possible\_links@{get\_possible\_links}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_possible\_links()}{get\_possible\_links()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual unsigned int \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::get\+\_\+possible\+\_\+links (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a644c77d53c184e26294a9894597df379}\label{classBlockGraphBase_a644c77d53c184e26294a9894597df379}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!get\_ptr\_groups@{get\_ptr\_groups}}
+\index{get\_ptr\_groups@{get\_ptr\_groups}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_ptr\_groups()}{get\_ptr\_groups()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+\mbox{\hyperlink{classBlockGraphBase_ad58375909ecd88e283ce4ae6b4f6abfe}{Groups\+Ptr}} \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::get\+\_\+ptr\+\_\+groups (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a53af1ba280f09344b2a0923baec48e42}\label{classBlockGraphBase_a53af1ba280f09344b2a0923baec48e42}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!get\_row\_with\_singleton@{get\_row\_with\_singleton}}
+\index{get\_row\_with\_singleton@{get\_row\_with\_singleton}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_row\_with\_singleton()}{get\_row\_with\_singleton()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+\mbox{\hyperlink{classBlockGraphBase_ae9a52ad1c58cd42f3ba91ed551987b25}{Singleton\+Eig}} \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::get\+\_\+row\+\_\+with\+\_\+singleton (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_ab54c38d345b8657af6fd1133b399ab58}\label{classBlockGraphBase_ab54c38d345b8657af6fd1133b399ab58}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!get\_size@{get\_size}}
+\index{get\_size@{get\_size}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_size()}{get\_size()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+unsigned int \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::get\+\_\+size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a308f2c4b514108a98e4da67bf44da93e}\label{classBlockGraphBase_a308f2c4b514108a98e4da67bf44da93e}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!map\_to\_complete@{map\_to\_complete}}
+\index{map\_to\_complete@{map\_to\_complete}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{map\_to\_complete()}{map\_to\_complete()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+std\+::vector$<$ std\+::pair$<$unsigned int, unsigned int$>$ $>$ \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::map\+\_\+to\+\_\+complete (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}}}]{i,  }\item[{\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}}}]{j }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a75a8f726a723ca3d54b70b5f9c059377}\label{classBlockGraphBase_a75a8f726a723ca3d54b70b5f9c059377}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!operator()@{operator()}}
+\index{operator()@{operator()}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual T \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::operator() (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&}]{i,  }\item[{\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&}]{j }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a6914a6b12c88d0e7c4175c050e467703}\label{classBlockGraphBase_a6914a6b12c88d0e7c4175c050e467703}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!pos\_to\_ij@{pos\_to\_ij}}
+\index{pos\_to\_ij@{pos\_to\_ij}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{pos\_to\_ij()}{pos\_to\_ij()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+std\+::pair$<$ unsigned int, unsigned int $>$ \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::pos\+\_\+to\+\_\+ij (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&}]{pos }\end{DoxyParamCaption}) const}
+
+\mbox{\Hypertarget{classBlockGraphBase_ac4c1abf91c476ccdbf4bc76899d1b28d}\label{classBlockGraphBase_ac4c1abf91c476ccdbf4bc76899d1b28d}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!remove\_link@{remove\_link}}
+\index{remove\_link@{remove\_link}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{remove\_link()}{remove\_link()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual void \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::remove\+\_\+link (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&}]{i,  }\item[{\mbox{\hyperlink{classBlockGraphBase_ab179f6572e692272a9f15767e4f6e8ae}{Idx\+Type}} const \&}]{j }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_ac1276e1b18989151b8492f3947d18392}\label{classBlockGraphBase_ac1276e1b18989151b8492f3947d18392}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!set\_empty\_graph@{set\_empty\_graph}}
+\index{set\_empty\_graph@{set\_empty\_graph}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{set\_empty\_graph()}{set\_empty\_graph()}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual void \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::set\+\_\+empty\+\_\+graph (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+Implemented in \mbox{\hyperlink{classBlockGraphDyn_a61cd4e6d14e3e1e4366ec6b337599307}{Block\+Graph\+Dyn$<$ T $>$}}, and \mbox{\hyperlink{classBlockGraphAdjDyn_aecf33512015f94830dc52e42d544ce30}{Block\+Graph\+Adj\+Dyn$<$ T $>$}}.
+
+\mbox{\Hypertarget{classBlockGraphBase_a504ebfe43a1fddd9f55fc21c6a229707}\label{classBlockGraphBase_a504ebfe43a1fddd9f55fc21c6a229707}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!set\_graph@{set\_graph}}
+\index{set\_graph@{set\_graph}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{set\_graph()}{set\_graph()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual void \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::set\+\_\+graph (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classBlockGraphBase_acafd492c219f101be8eef9d4fb5b4d9b}{Adj}} \&\&}]{A }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a39421bdae66d89f881b051114ae899fa}\label{classBlockGraphBase_a39421bdae66d89f881b051114ae899fa}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!set\_graph@{set\_graph}}
+\index{set\_graph@{set\_graph}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{set\_graph()}{set\_graph()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+virtual void \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::set\+\_\+graph (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classBlockGraphBase_acafd492c219f101be8eef9d4fb5b4d9b}{Adj}} const \&}]{A }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [pure virtual]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classBlockGraphBase_ae8ffbe28313a09c7b2c2ff9087bc62b6}\label{classBlockGraphBase_ae8ffbe28313a09c7b2c2ff9087bc62b6}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!n\_blocks@{n\_blocks}}
+\index{n\_blocks@{n\_blocks}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{n\_blocks}{n\_blocks}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+unsigned int \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::n\+\_\+blocks\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a52268a882f901aba3aab8983920c6e0a}\label{classBlockGraphBase_a52268a882f901aba3aab8983920c6e0a}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!n\_links@{n\_links}}
+\index{n\_links@{n\_links}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{n\_links}{n\_links}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+unsigned int \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::n\+\_\+links\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a9b2a7a7b7c4bd503e834a7af9ca0eb6e}\label{classBlockGraphBase_a9b2a7a7b7c4bd503e834a7af9ca0eb6e}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!n\_singleton@{n\_singleton}}
+\index{n\_singleton@{n\_singleton}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{n\_singleton}{n\_singleton}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+unsigned int \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::n\+\_\+singleton\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classBlockGraphBase_a53d5aa7b72f7519eb4682b1fdc72e399}\label{classBlockGraphBase_a53d5aa7b72f7519eb4682b1fdc72e399}} 
+\index{BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}!ptr\_groups@{ptr\_groups}}
+\index{ptr\_groups@{ptr\_groups}!BlockGraphBase$<$ T $>$@{BlockGraphBase$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{ptr\_groups}{ptr\_groups}}
+{\footnotesize\ttfamily template$<$class T  = unsigned int$>$ \\
+\mbox{\hyperlink{classBlockGraphBase_ad58375909ecd88e283ce4ae6b4f6abfe}{Groups\+Ptr}} \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::ptr\+\_\+groups\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{BlockGraph_8h}{Block\+Graph.\+h}}\end{DoxyCompactItemize}

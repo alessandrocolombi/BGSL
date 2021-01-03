@@ -167,7 +167,7 @@ FGMsamplerDegub<GraphStructure, T, RetGraph>::run()
 				SaveTaueps.emplace_back(tau_eps);
 			}
 			if((iter - nburn)%thinG == 0){
-				SaveK.emplace_back(K);
+				SaveK.emplace_back(utils::get_upper_part(K));
 				//Se salvo in map / unordered_map
 				std::vector<bool> adj;
 				if constexpr( ! std::is_same_v<T, bool>){

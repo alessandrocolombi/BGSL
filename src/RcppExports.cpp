@@ -17,9 +17,9 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
-// rGwish
-Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, double const& b, Eigen::MatrixXd const& D, Rcpp::String norm, Rcpp::Nullable<Rcpp::List> groups, unsigned int const& max_iter, long double const& threshold_check, long double const& threshold_conv, int seed);
-RcppExport SEXP _BGSL_rGwish(SEXP GSEXP, SEXP bSEXP, SEXP DSEXP, SEXP normSEXP, SEXP groupsSEXP, SEXP max_iterSEXP, SEXP threshold_checkSEXP, SEXP threshold_convSEXP, SEXP seedSEXP) {
+// rGwish_old
+Rcpp::List rGwish_old(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, double const& b, Eigen::MatrixXd const& D, Rcpp::String norm, Rcpp::Nullable<Rcpp::List> groups, unsigned int const& max_iter, long double const& threshold_check, long double const& threshold_conv, int seed);
+RcppExport SEXP _BGSL_rGwish_old(SEXP GSEXP, SEXP bSEXP, SEXP DSEXP, SEXP normSEXP, SEXP groupsSEXP, SEXP max_iterSEXP, SEXP threshold_checkSEXP, SEXP threshold_convSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -32,7 +32,28 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< long double const& >::type threshold_check(threshold_checkSEXP);
     Rcpp::traits::input_parameter< long double const& >::type threshold_conv(threshold_convSEXP);
     Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(rGwish(G, b, D, norm, groups, max_iter, threshold_check, threshold_conv, seed));
+    rcpp_result_gen = Rcpp::wrap(rGwish_old(G, b, D, norm, groups, max_iter, threshold_check, threshold_conv, seed));
+    return rcpp_result_gen;
+END_RCPP
+}
+// rGwish
+Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, double const& b, Eigen::MatrixXd& D, Rcpp::String norm, Rcpp::String form, Rcpp::Nullable<Rcpp::List> groups, bool check_structure, unsigned int const& max_iter, long double const& threshold_check, long double const& threshold_conv, int seed);
+RcppExport SEXP _BGSL_rGwish(SEXP GSEXP, SEXP bSEXP, SEXP DSEXP, SEXP normSEXP, SEXP formSEXP, SEXP groupsSEXP, SEXP check_structureSEXP, SEXP max_iterSEXP, SEXP threshold_checkSEXP, SEXP threshold_convSEXP, SEXP seedSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> >::type G(GSEXP);
+    Rcpp::traits::input_parameter< double const& >::type b(bSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd& >::type D(DSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type norm(normSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String >::type form(formSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::List> >::type groups(groupsSEXP);
+    Rcpp::traits::input_parameter< bool >::type check_structure(check_structureSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type max_iter(max_iterSEXP);
+    Rcpp::traits::input_parameter< long double const& >::type threshold_check(threshold_checkSEXP);
+    Rcpp::traits::input_parameter< long double const& >::type threshold_conv(threshold_convSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(rGwish(G, b, D, norm, form, groups, check_structure, max_iter, threshold_check, threshold_conv, seed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -69,8 +90,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // GGM_sim_sampling
-Rcpp::List GGM_sim_sampling(int const& p, int const& n, int const& niter, int const& burnin, double const& thin, Eigen::MatrixXd const& D, double const& b, int const& MCprior, int const& MCpost, double const& threshold, Rcpp::String form, Rcpp::String prior, Rcpp::String algo, int const& n_groups, int seed, double sparsity, double const& Gprior, double const& sigmaG, double const& paddrm);
-RcppExport SEXP _BGSL_GGM_sim_sampling(SEXP pSEXP, SEXP nSEXP, SEXP niterSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP DSEXP, SEXP bSEXP, SEXP MCpriorSEXP, SEXP MCpostSEXP, SEXP thresholdSEXP, SEXP formSEXP, SEXP priorSEXP, SEXP algoSEXP, SEXP n_groupsSEXP, SEXP seedSEXP, SEXP sparsitySEXP, SEXP GpriorSEXP, SEXP sigmaGSEXP, SEXP paddrmSEXP) {
+Rcpp::List GGM_sim_sampling(int const& p, int const& n, int const& niter, int const& burnin, double const& thin, Eigen::MatrixXd const& D, double const& b, int const& MCprior, int const& MCpost, double const& threshold, Rcpp::String form, Rcpp::String prior, Rcpp::String algo, int const& n_groups, int seed, double sparsity, double const& Gprior, double const& sigmaG, double const& paddrm, bool print_info);
+RcppExport SEXP _BGSL_GGM_sim_sampling(SEXP pSEXP, SEXP nSEXP, SEXP niterSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP DSEXP, SEXP bSEXP, SEXP MCpriorSEXP, SEXP MCpostSEXP, SEXP thresholdSEXP, SEXP formSEXP, SEXP priorSEXP, SEXP algoSEXP, SEXP n_groupsSEXP, SEXP seedSEXP, SEXP sparsitySEXP, SEXP GpriorSEXP, SEXP sigmaGSEXP, SEXP paddrmSEXP, SEXP print_infoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -93,13 +114,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double const& >::type Gprior(GpriorSEXP);
     Rcpp::traits::input_parameter< double const& >::type sigmaG(sigmaGSEXP);
     Rcpp::traits::input_parameter< double const& >::type paddrm(paddrmSEXP);
-    rcpp_result_gen = Rcpp::wrap(GGM_sim_sampling(p, n, niter, burnin, thin, D, b, MCprior, MCpost, threshold, form, prior, algo, n_groups, seed, sparsity, Gprior, sigmaG, paddrm));
+    Rcpp::traits::input_parameter< bool >::type print_info(print_infoSEXP);
+    rcpp_result_gen = Rcpp::wrap(GGM_sim_sampling(p, n, niter, burnin, thin, D, b, MCprior, MCpost, threshold, form, prior, algo, n_groups, seed, sparsity, Gprior, sigmaG, paddrm, print_info));
     return rcpp_result_gen;
 END_RCPP
 }
-// GGM_sampling
-Rcpp::List GGM_sampling(Eigen::MatrixXd const& data, int const& p, int const& n, int const& niter, int const& burnin, double const& thin, Eigen::MatrixXd const& D, double const& b, int const& MCprior, int const& MCpost, double const& threshold, Rcpp::String form, Rcpp::String prior, Rcpp::String algo, int const& n_groups, int seed, double const& Gprior, double const& sigmaG, double const& paddrm);
-RcppExport SEXP _BGSL_GGM_sampling(SEXP dataSEXP, SEXP pSEXP, SEXP nSEXP, SEXP niterSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP DSEXP, SEXP bSEXP, SEXP MCpriorSEXP, SEXP MCpostSEXP, SEXP thresholdSEXP, SEXP formSEXP, SEXP priorSEXP, SEXP algoSEXP, SEXP n_groupsSEXP, SEXP seedSEXP, SEXP GpriorSEXP, SEXP sigmaGSEXP, SEXP paddrmSEXP) {
+// GGM_sampling_c
+Rcpp::List GGM_sampling_c(Eigen::MatrixXd const& data, int const& p, int const& n, int const& niter, int const& burnin, double const& thin, Eigen::MatrixXd D, double const& b, int const& MCprior, int const& MCpost, double const& threshold, Rcpp::String form, Rcpp::String prior, Rcpp::String algo, Rcpp::Nullable<Rcpp::List> groups, int seed, double const& Gprior, double const& sigmaG, double const& paddrm, bool print_info);
+RcppExport SEXP _BGSL_GGM_sampling_c(SEXP dataSEXP, SEXP pSEXP, SEXP nSEXP, SEXP niterSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP DSEXP, SEXP bSEXP, SEXP MCpriorSEXP, SEXP MCpostSEXP, SEXP thresholdSEXP, SEXP formSEXP, SEXP priorSEXP, SEXP algoSEXP, SEXP groupsSEXP, SEXP seedSEXP, SEXP GpriorSEXP, SEXP sigmaGSEXP, SEXP paddrmSEXP, SEXP print_infoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -109,7 +131,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int const& >::type niter(niterSEXP);
     Rcpp::traits::input_parameter< int const& >::type burnin(burninSEXP);
     Rcpp::traits::input_parameter< double const& >::type thin(thinSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd const& >::type D(DSEXP);
+    Rcpp::traits::input_parameter< Eigen::MatrixXd >::type D(DSEXP);
     Rcpp::traits::input_parameter< double const& >::type b(bSEXP);
     Rcpp::traits::input_parameter< int const& >::type MCprior(MCpriorSEXP);
     Rcpp::traits::input_parameter< int const& >::type MCpost(MCpostSEXP);
@@ -117,18 +139,19 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::String >::type form(formSEXP);
     Rcpp::traits::input_parameter< Rcpp::String >::type prior(priorSEXP);
     Rcpp::traits::input_parameter< Rcpp::String >::type algo(algoSEXP);
-    Rcpp::traits::input_parameter< int const& >::type n_groups(n_groupsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::List> >::type groups(groupsSEXP);
     Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
     Rcpp::traits::input_parameter< double const& >::type Gprior(GpriorSEXP);
     Rcpp::traits::input_parameter< double const& >::type sigmaG(sigmaGSEXP);
     Rcpp::traits::input_parameter< double const& >::type paddrm(paddrmSEXP);
-    rcpp_result_gen = Rcpp::wrap(GGM_sampling(data, p, n, niter, burnin, thin, D, b, MCprior, MCpost, threshold, form, prior, algo, n_groups, seed, Gprior, sigmaG, paddrm));
+    Rcpp::traits::input_parameter< bool >::type print_info(print_infoSEXP);
+    rcpp_result_gen = Rcpp::wrap(GGM_sampling_c(data, p, n, niter, burnin, thin, D, b, MCprior, MCpost, threshold, form, prior, algo, groups, seed, Gprior, sigmaG, paddrm, print_info));
     return rcpp_result_gen;
 END_RCPP
 }
 // FLM_sampling_c
-Rcpp::List FLM_sampling_c(Eigen::MatrixXd const& data, int const& niter, int const& burnin, double const& thin, Eigen::MatrixXd const& BaseMat, Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, bool diagonal_graph, double const& threshold_GWish);
-RcppExport SEXP _BGSL_FLM_sampling_c(SEXP dataSEXP, SEXP niterSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP BaseMatSEXP, SEXP GSEXP, SEXP diagonal_graphSEXP, SEXP threshold_GWishSEXP) {
+Rcpp::List FLM_sampling_c(Eigen::MatrixXd const& data, int const& niter, int const& burnin, double const& thin, Eigen::MatrixXd const& BaseMat, Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, bool diagonal_graph, double const& threshold_GWish, bool print_info);
+RcppExport SEXP _BGSL_FLM_sampling_c(SEXP dataSEXP, SEXP niterSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP BaseMatSEXP, SEXP GSEXP, SEXP diagonal_graphSEXP, SEXP threshold_GWishSEXP, SEXP print_infoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -140,12 +163,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> >::type G(GSEXP);
     Rcpp::traits::input_parameter< bool >::type diagonal_graph(diagonal_graphSEXP);
     Rcpp::traits::input_parameter< double const& >::type threshold_GWish(threshold_GWishSEXP);
-    rcpp_result_gen = Rcpp::wrap(FLM_sampling_c(data, niter, burnin, thin, BaseMat, G, diagonal_graph, threshold_GWish));
+    Rcpp::traits::input_parameter< bool >::type print_info(print_infoSEXP);
+    rcpp_result_gen = Rcpp::wrap(FLM_sampling_c(data, niter, burnin, thin, BaseMat, G, diagonal_graph, threshold_GWish, print_info));
     return rcpp_result_gen;
 END_RCPP
 }
 // Create_RandomGraph
-Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> Create_RandomGraph(int const& p, int const& n_groups, Rcpp::String form, Rcpp::Nullable<Rcpp::List> groups, double sparsity, int seed);
+Rcpp::List Create_RandomGraph(int const& p, int const& n_groups, Rcpp::String form, Rcpp::Nullable<Rcpp::List> groups, double sparsity, int seed);
 RcppExport SEXP _BGSL_Create_RandomGraph(SEXP pSEXP, SEXP n_groupsSEXP, SEXP formSEXP, SEXP groupsSEXP, SEXP sparsitySEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -245,6 +269,38 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// SimulateData_GGM_c
+Rcpp::List SimulateData_GGM_c(unsigned int const& p, unsigned int const& n, unsigned int const& n_groups, Rcpp::String const& form, Rcpp::String const& graph, Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const& adj_mat, unsigned int seed, bool mean_null, double const& sparsity, Rcpp::Nullable<Rcpp::List> groups);
+RcppExport SEXP _BGSL_SimulateData_GGM_c(SEXP pSEXP, SEXP nSEXP, SEXP n_groupsSEXP, SEXP formSEXP, SEXP graphSEXP, SEXP adj_matSEXP, SEXP seedSEXP, SEXP mean_nullSEXP, SEXP sparsitySEXP, SEXP groupsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int const& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type n(nSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type n_groups(n_groupsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String const& >::type form(formSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String const& >::type graph(graphSEXP);
+    Rcpp::traits::input_parameter< Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const& >::type adj_mat(adj_matSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type seed(seedSEXP);
+    Rcpp::traits::input_parameter< bool >::type mean_null(mean_nullSEXP);
+    Rcpp::traits::input_parameter< double const& >::type sparsity(sparsitySEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::List> >::type groups(groupsSEXP);
+    rcpp_result_gen = Rcpp::wrap(SimulateData_GGM_c(p, n, n_groups, form, graph, adj_mat, seed, mean_null, sparsity, groups));
+    return rcpp_result_gen;
+END_RCPP
+}
+// CreateGroups
+Rcpp::List CreateGroups(unsigned int const& p, unsigned int const& n_groups);
+RcppExport SEXP _BGSL_CreateGroups(SEXP pSEXP, SEXP n_groupsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< unsigned int const& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type n_groups(n_groupsSEXP);
+    rcpp_result_gen = Rcpp::wrap(CreateGroups(p, n_groups));
+    return rcpp_result_gen;
+END_RCPP
+}
 // GraphTest
 void GraphTest();
 RcppExport SEXP _BGSL_GraphTest() {
@@ -257,12 +313,13 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BGSL_test_null", (DL_FUNC) &_BGSL_test_null, 2},
-    {"_BGSL_rGwish", (DL_FUNC) &_BGSL_rGwish, 9},
+    {"_BGSL_rGwish_old", (DL_FUNC) &_BGSL_rGwish_old, 9},
+    {"_BGSL_rGwish", (DL_FUNC) &_BGSL_rGwish, 11},
     {"_BGSL_log_Gconstant", (DL_FUNC) &_BGSL_log_Gconstant, 6},
     {"_BGSL_log_Gconstant2", (DL_FUNC) &_BGSL_log_Gconstant2, 6},
-    {"_BGSL_GGM_sim_sampling", (DL_FUNC) &_BGSL_GGM_sim_sampling, 19},
-    {"_BGSL_GGM_sampling", (DL_FUNC) &_BGSL_GGM_sampling, 19},
-    {"_BGSL_FLM_sampling_c", (DL_FUNC) &_BGSL_FLM_sampling_c, 8},
+    {"_BGSL_GGM_sim_sampling", (DL_FUNC) &_BGSL_GGM_sim_sampling, 20},
+    {"_BGSL_GGM_sampling_c", (DL_FUNC) &_BGSL_GGM_sampling_c, 20},
+    {"_BGSL_FLM_sampling_c", (DL_FUNC) &_BGSL_FLM_sampling_c, 9},
     {"_BGSL_Create_RandomGraph", (DL_FUNC) &_BGSL_Create_RandomGraph, 6},
     {"_BGSL_rmvnormal", (DL_FUNC) &_BGSL_rmvnormal, 5},
     {"_BGSL_rwishart", (DL_FUNC) &_BGSL_rwishart, 4},
@@ -270,6 +327,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BGSL_Generate_Basis", (DL_FUNC) &_BGSL_Generate_Basis, 5},
     {"_BGSL_Generate_Basis_derivatives", (DL_FUNC) &_BGSL_Generate_Basis_derivatives, 6},
     {"_BGSL_Compute_QuantileBeta", (DL_FUNC) &_BGSL_Compute_QuantileBeta, 3},
+    {"_BGSL_SimulateData_GGM_c", (DL_FUNC) &_BGSL_SimulateData_GGM_c, 10},
+    {"_BGSL_CreateGroups", (DL_FUNC) &_BGSL_CreateGroups, 2},
     {"_BGSL_GraphTest", (DL_FUNC) &_BGSL_GraphTest, 0},
     {NULL, NULL, 0}
 };

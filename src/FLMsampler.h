@@ -17,9 +17,9 @@ class FLMsampler : public FLMsamplerTraits
 										std::tuple<RetBeta, RetMu, RetK, RetTaueps>    > ;
 	public:
 	FLMsampler( MatCol const & _data, FLMParameters const & _params, FLMHyperparameters const & _hy_params, 
-			    InitFLM const & _init, unsigned int _seed = 0):
+			    InitFLM const & _init, unsigned int _seed = 0, bool _print_pb = true):
 			    data(_data), params(_params), hy_params(_hy_params) ,init(_init),
-				p(_init.Beta0.rows()), n(_init.Beta0.cols()), grid_pts(_params.Basemat.rows()), seed(_seed)
+				p(_init.Beta0.rows()), n(_init.Beta0.cols()), grid_pts(_params.Basemat.rows()), seed(_seed), print_pb(_print_pb)
 	{
 	 	this->check();
 	 	if(seed==0){
@@ -40,6 +40,7 @@ class FLMsampler : public FLMsamplerTraits
 	unsigned int n;
 	unsigned int grid_pts;
 	unsigned int seed;
+	bool print_pb;
 };
 
 template< GraphForm Graph >
@@ -57,7 +58,11 @@ typename FLMsampler<Graph>::RetType FLMsampler<Graph>::run()
 {	
 	static_assert(Graph == GraphForm::Diagonal || Graph == GraphForm::Fix,
 			      "Error, this sampler is not a graphical model, the graph has to be given. The possibilities for Graph parameter are GraphForm::Diagonal or GraphForm::Fix");
-	std::cout<<"FLM sampler started"<<std::endl;
+	
+	if(print_pb){
+		std::cout<<"FLM sampler started"<<std::endl;
+	}
+
 	// Declare all parameters (makes use of C++17 structured bindings)
 	const unsigned int & r = grid_pts;
 	const double&  a_tau_eps = this->hy_params.a_tau_eps;
@@ -114,7 +119,9 @@ typename FLMsampler<Graph>::RetType FLMsampler<Graph>::run()
 	for(int iter = 0; iter < niter; iter++){
 		//Show progress bar
 		bar.update(1);
-		bar.print(); 
+		if(print_pb){
+		 bar.print(); 
+		}
 
 		if constexpr(Graph == GraphForm::Diagonal){
 			//mu
@@ -192,7 +199,8 @@ typename FLMsampler<Graph>::RetType FLMsampler<Graph>::run()
 				b_tau_eps_post += beta_i.dot(tbase_base*beta_i) - 2*beta_i.dot(tbase_data.col(i));  
 			}
 			//Precision K
-			K = std::move( utils::rgwish(G,bK+n,DK+U,threshold) );
+			MatCol D_plus_U(DK+U);
+			K = std::move( utils::rgwish(G,bK+n,D_plus_U,threshold) );
 			//Precision tau
 			b_tau_eps_post /= 2.0;
 			tau_eps = rgamma(engine, a_tau_eps_post, 1/b_tau_eps_post);
@@ -202,7 +210,7 @@ typename FLMsampler<Graph>::RetType FLMsampler<Graph>::run()
 					SaveBeta.emplace_back(Beta);
 					SaveMu.emplace_back(mu);
 					SaveTaueps.emplace_back(tau_eps);
-					SaveK.emplace_back(K);
+					SaveK.emplace_back(utils::get_upper_part(K));
 				}
 			}
 		}

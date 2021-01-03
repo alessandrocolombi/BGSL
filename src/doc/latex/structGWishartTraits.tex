@@ -1,0 +1,131 @@
+\hypertarget{structGWishartTraits}{}\doxysection{G\+Wishart\+Traits Struct Reference}
+\label{structGWishartTraits}\index{GWishartTraits@{GWishartTraits}}
+
+
+{\ttfamily \#include $<$G\+Wishart.\+h$>$}
+
+
+
+Inheritance diagram for G\+Wishart\+Traits\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=250pt]{structGWishartTraits__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for G\+Wishart\+Traits\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=168pt]{structGWishartTraits__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{structGWishartTraits_a294524ccc48a25109fcbc2c3e5c4f6c5}{Idx\+Type}} = std\+::size\+\_\+t
+\item 
+using \mbox{\hyperlink{structGWishartTraits_a93c3fbcde1696f7d25c21d5ecfbce69e}{Shape}} = \mbox{\hyperlink{classdouble}{double}}
+\item 
+using \mbox{\hyperlink{structGWishartTraits_a3ba9a1793c496ff5045415549f9ab4b7}{Mat\+Row}} = Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major $>$
+\item 
+using \mbox{\hyperlink{structGWishartTraits_ad9b095a9ff6717f7e7a6175ee7d28499}{Mat\+Col}} = Eigen\+::\+Matrix\+Xd
+\item 
+using \mbox{\hyperlink{structGWishartTraits_a8e1f21b69ec514b82306e9fa4c1abbc5}{Inv\+Scale}} = \mbox{\hyperlink{structGWishartTraits_ad9b095a9ff6717f7e7a6175ee7d28499}{Mat\+Col}}
+\item 
+using \mbox{\hyperlink{structGWishartTraits_a2ef98af4f888f97d42f786b05144366f}{Upper\+Tri}} = Eigen\+::\+Triangular\+View$<$ \mbox{\hyperlink{structGWishartTraits_a3ba9a1793c496ff5045415549f9ab4b7}{Mat\+Row}}, Eigen\+::\+Upper $>$
+\item 
+using \mbox{\hyperlink{structGWishartTraits_a6c8cc37e79ba53f3bf3680275e5efd17}{Inner\+Data}} = \mbox{\hyperlink{structGWishartTraits_a3ba9a1793c496ff5045415549f9ab4b7}{Mat\+Row}}
+\item 
+using \mbox{\hyperlink{structGWishartTraits_a9ebec2b0278b74b6ec355e95e8b0cf9c}{Chol\+Matrix}} = \mbox{\hyperlink{structGWishartTraits_a3ba9a1793c496ff5045415549f9ab4b7}{Mat\+Row}}
+\item 
+using \mbox{\hyperlink{structGWishartTraits_a14f19cbbf7d2a96e2c75b522b340b5eb}{Chol\+Type}} = Eigen\+::\+L\+LT$<$ Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major $>$, Eigen\+::\+Upper $>$
+\item 
+using \mbox{\hyperlink{structGWishartTraits_a3840cc0ba682a1a56eb4c448e6d45a04}{Chol\+Type\+Col}} = Eigen\+::\+L\+LT$<$ Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$, Eigen\+::\+Lower $>$
+\item 
+using \mbox{\hyperlink{structGWishartTraits_aa7af5ed9a0ec3fd08d1f83d955c936c2}{Col\+Type}} = Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, 1 $>$
+\item 
+using \mbox{\hyperlink{structGWishartTraits_a2de7ca8f33bd723eeb164d4e25085bbe}{Row\+Type}} = Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, 1, Eigen\+::\+Dynamic $>$
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{structGWishartTraits_a9ebec2b0278b74b6ec355e95e8b0cf9c}\label{structGWishartTraits_a9ebec2b0278b74b6ec355e95e8b0cf9c}} 
+\index{GWishartTraits@{GWishartTraits}!CholMatrix@{CholMatrix}}
+\index{CholMatrix@{CholMatrix}!GWishartTraits@{GWishartTraits}}
+\doxysubsubsection{\texorpdfstring{CholMatrix}{CholMatrix}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structGWishartTraits_a9ebec2b0278b74b6ec355e95e8b0cf9c}{G\+Wishart\+Traits\+::\+Chol\+Matrix}} =  \mbox{\hyperlink{structGWishartTraits_a3ba9a1793c496ff5045415549f9ab4b7}{Mat\+Row}}}
+
+\mbox{\Hypertarget{structGWishartTraits_a14f19cbbf7d2a96e2c75b522b340b5eb}\label{structGWishartTraits_a14f19cbbf7d2a96e2c75b522b340b5eb}} 
+\index{GWishartTraits@{GWishartTraits}!CholType@{CholType}}
+\index{CholType@{CholType}!GWishartTraits@{GWishartTraits}}
+\doxysubsubsection{\texorpdfstring{CholType}{CholType}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structGWishartTraits_a14f19cbbf7d2a96e2c75b522b340b5eb}{G\+Wishart\+Traits\+::\+Chol\+Type}} =  Eigen\+::\+L\+LT$<$Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major$>$, Eigen\+::\+Upper$>$}
+
+\mbox{\Hypertarget{structGWishartTraits_a3840cc0ba682a1a56eb4c448e6d45a04}\label{structGWishartTraits_a3840cc0ba682a1a56eb4c448e6d45a04}} 
+\index{GWishartTraits@{GWishartTraits}!CholTypeCol@{CholTypeCol}}
+\index{CholTypeCol@{CholTypeCol}!GWishartTraits@{GWishartTraits}}
+\doxysubsubsection{\texorpdfstring{CholTypeCol}{CholTypeCol}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structGWishartTraits_a3840cc0ba682a1a56eb4c448e6d45a04}{G\+Wishart\+Traits\+::\+Chol\+Type\+Col}} =  Eigen\+::\+L\+LT$<$Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major$>$, Eigen\+::\+Lower$>$}
+
+\mbox{\Hypertarget{structGWishartTraits_aa7af5ed9a0ec3fd08d1f83d955c936c2}\label{structGWishartTraits_aa7af5ed9a0ec3fd08d1f83d955c936c2}} 
+\index{GWishartTraits@{GWishartTraits}!ColType@{ColType}}
+\index{ColType@{ColType}!GWishartTraits@{GWishartTraits}}
+\doxysubsubsection{\texorpdfstring{ColType}{ColType}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structGWishartTraits_aa7af5ed9a0ec3fd08d1f83d955c936c2}{G\+Wishart\+Traits\+::\+Col\+Type}} =  Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, 1$>$}
+
+\mbox{\Hypertarget{structGWishartTraits_a294524ccc48a25109fcbc2c3e5c4f6c5}\label{structGWishartTraits_a294524ccc48a25109fcbc2c3e5c4f6c5}} 
+\index{GWishartTraits@{GWishartTraits}!IdxType@{IdxType}}
+\index{IdxType@{IdxType}!GWishartTraits@{GWishartTraits}}
+\doxysubsubsection{\texorpdfstring{IdxType}{IdxType}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structGWishartTraits_a294524ccc48a25109fcbc2c3e5c4f6c5}{G\+Wishart\+Traits\+::\+Idx\+Type}} =  std\+::size\+\_\+t}
+
+\mbox{\Hypertarget{structGWishartTraits_a6c8cc37e79ba53f3bf3680275e5efd17}\label{structGWishartTraits_a6c8cc37e79ba53f3bf3680275e5efd17}} 
+\index{GWishartTraits@{GWishartTraits}!InnerData@{InnerData}}
+\index{InnerData@{InnerData}!GWishartTraits@{GWishartTraits}}
+\doxysubsubsection{\texorpdfstring{InnerData}{InnerData}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structGWishartTraits_a6c8cc37e79ba53f3bf3680275e5efd17}{G\+Wishart\+Traits\+::\+Inner\+Data}} =  \mbox{\hyperlink{structGWishartTraits_a3ba9a1793c496ff5045415549f9ab4b7}{Mat\+Row}}}
+
+\mbox{\Hypertarget{structGWishartTraits_a8e1f21b69ec514b82306e9fa4c1abbc5}\label{structGWishartTraits_a8e1f21b69ec514b82306e9fa4c1abbc5}} 
+\index{GWishartTraits@{GWishartTraits}!InvScale@{InvScale}}
+\index{InvScale@{InvScale}!GWishartTraits@{GWishartTraits}}
+\doxysubsubsection{\texorpdfstring{InvScale}{InvScale}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structGWishartTraits_a8e1f21b69ec514b82306e9fa4c1abbc5}{G\+Wishart\+Traits\+::\+Inv\+Scale}} =  \mbox{\hyperlink{structGWishartTraits_ad9b095a9ff6717f7e7a6175ee7d28499}{Mat\+Col}}}
+
+\mbox{\Hypertarget{structGWishartTraits_ad9b095a9ff6717f7e7a6175ee7d28499}\label{structGWishartTraits_ad9b095a9ff6717f7e7a6175ee7d28499}} 
+\index{GWishartTraits@{GWishartTraits}!MatCol@{MatCol}}
+\index{MatCol@{MatCol}!GWishartTraits@{GWishartTraits}}
+\doxysubsubsection{\texorpdfstring{MatCol}{MatCol}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structGWishartTraits_ad9b095a9ff6717f7e7a6175ee7d28499}{G\+Wishart\+Traits\+::\+Mat\+Col}} =  Eigen\+::\+Matrix\+Xd}
+
+\mbox{\Hypertarget{structGWishartTraits_a3ba9a1793c496ff5045415549f9ab4b7}\label{structGWishartTraits_a3ba9a1793c496ff5045415549f9ab4b7}} 
+\index{GWishartTraits@{GWishartTraits}!MatRow@{MatRow}}
+\index{MatRow@{MatRow}!GWishartTraits@{GWishartTraits}}
+\doxysubsubsection{\texorpdfstring{MatRow}{MatRow}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structGWishartTraits_a3ba9a1793c496ff5045415549f9ab4b7}{G\+Wishart\+Traits\+::\+Mat\+Row}} =  Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major$>$}
+
+\mbox{\Hypertarget{structGWishartTraits_a2de7ca8f33bd723eeb164d4e25085bbe}\label{structGWishartTraits_a2de7ca8f33bd723eeb164d4e25085bbe}} 
+\index{GWishartTraits@{GWishartTraits}!RowType@{RowType}}
+\index{RowType@{RowType}!GWishartTraits@{GWishartTraits}}
+\doxysubsubsection{\texorpdfstring{RowType}{RowType}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structGWishartTraits_a2de7ca8f33bd723eeb164d4e25085bbe}{G\+Wishart\+Traits\+::\+Row\+Type}} =  Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, 1, Eigen\+::\+Dynamic$>$}
+
+\mbox{\Hypertarget{structGWishartTraits_a93c3fbcde1696f7d25c21d5ecfbce69e}\label{structGWishartTraits_a93c3fbcde1696f7d25c21d5ecfbce69e}} 
+\index{GWishartTraits@{GWishartTraits}!Shape@{Shape}}
+\index{Shape@{Shape}!GWishartTraits@{GWishartTraits}}
+\doxysubsubsection{\texorpdfstring{Shape}{Shape}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structGWishartTraits_a93c3fbcde1696f7d25c21d5ecfbce69e}{G\+Wishart\+Traits\+::\+Shape}} =  \mbox{\hyperlink{classdouble}{double}}}
+
+\mbox{\Hypertarget{structGWishartTraits_a2ef98af4f888f97d42f786b05144366f}\label{structGWishartTraits_a2ef98af4f888f97d42f786b05144366f}} 
+\index{GWishartTraits@{GWishartTraits}!UpperTri@{UpperTri}}
+\index{UpperTri@{UpperTri}!GWishartTraits@{GWishartTraits}}
+\doxysubsubsection{\texorpdfstring{UpperTri}{UpperTri}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structGWishartTraits_a2ef98af4f888f97d42f786b05144366f}{G\+Wishart\+Traits\+::\+Upper\+Tri}} =  Eigen\+::\+Triangular\+View$<$ \mbox{\hyperlink{structGWishartTraits_a3ba9a1793c496ff5045415549f9ab4b7}{Mat\+Row}} , Eigen\+::\+Upper$>$}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{GWishart_8h}{G\+Wishart.\+h}}\end{DoxyCompactItemize}

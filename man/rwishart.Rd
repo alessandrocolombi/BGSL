@@ -9,16 +9,16 @@ rwishart(b, D, isChol = FALSE, isUpper = FALSE)
 \arguments{
 \item{b}{double, it is shape parameter.}
 
-\item{D}{Eigen p x p Matrix of double stored columnwise representig the inverse scale parameter. It has to be symmetric and positive definite.}
+\item{D}{matrix of size \eqn{p \times p} representig the Inverse Scale parameter. It has to be symmetric and positive definite.}
 
-\item{isChol}{bool, set true if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance}
+\item{isChol}{boolean, set \code{TRUE} if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance}
 
-\item{isUpper}{bool, used only if isChol is true. Set true if Mat is upper triangular, false if lower.}
+\item{isUpper}{boolean, used only if isChol is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.}
 }
 \value{
 It returns a p x p matrix.
 }
 \description{
 This function draws random samples from Wishart distribution.
-It is also possible to pass directly the Cholesky decomposition of the inverse scale matrix if it is available before the call.
+It is also possible to pass directly the Cholesky decomposition of the Inverse Scale matrix if it is available before the call.
 }

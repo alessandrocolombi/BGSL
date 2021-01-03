@@ -1,0 +1,203 @@
+\hypertarget{classCompleteViewAdjDyn}{}\doxysection{Complete\+View\+Adj\+Dyn$<$ T $>$ Class Template Reference}
+\label{classCompleteViewAdjDyn}\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+
+
+{\ttfamily \#include $<$Block\+Graph.\+h$>$}
+
+
+
+Collaboration diagram for Complete\+View\+Adj\+Dyn$<$ T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=232pt]{classCompleteViewAdjDyn__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classCompleteViewAdjDyn_af28dcfff491a357563ae65813c582096}{value\+\_\+type}} = typename \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classCompleteViewAdjDyn_af28dcfff491a357563ae65813c582096}{value\+\_\+type}}
+\item 
+using \mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}} = typename \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}}
+\item 
+using \mbox{\hyperlink{classCompleteViewAdjDyn_a35020d2fb73f418ab1e8ba267d9a34a1}{Neighbourhood}} = typename \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classCompleteViewAdjDyn_a35020d2fb73f418ab1e8ba267d9a34a1}{Neighbourhood}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classCompleteViewAdjDyn_ac9dd1a1f34512b4cac0a82d3f379e422}{Complete\+View\+Adj\+Dyn}} (\mbox{\hyperlink{classBlockGraphAdjDyn}{Block\+Graph\+Adj\+Dyn}}$<$ T $>$ \&\+\_\+G)
+\item 
+T \mbox{\hyperlink{classCompleteViewAdjDyn_aa9f1f954ceddf751b6d8a8032d0b37ed}{operator()}} (typename \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}} const \&i, typename \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}} const \&j) const
+\item 
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn_ac8767505b1afcdbaf84fb30cf6eecf97}{get\+\_\+size}} () const
+\item 
+\mbox{\hyperlink{classCompleteViewAdjDyn_a35020d2fb73f418ab1e8ba267d9a34a1}{Neighbourhood}} \mbox{\hyperlink{classCompleteViewAdjDyn_aa5ed826fc852b13fbc16ad585be8c50b}{get\+\_\+nbd}} () const
+\item 
+std\+::vector$<$ unsigned int $>$ \mbox{\hyperlink{classCompleteViewAdjDyn_abbf1e8c06bdd268b492dcff9589f3d5d}{get\+\_\+nbd}} (\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}} const \&i) const
+\item 
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn_a2a31982fd571b8996ffbd484258e01c0}{get\+\_\+n\+\_\+links}} () const
+\item 
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn_a18e0477caaac3d775cf9f14576d0e386}{get\+\_\+n\+\_\+groups}} () const
+\item 
+std\+::vector$<$ unsigned int $>$ \mbox{\hyperlink{classCompleteViewAdjDyn_ac42237e827a9c66bd4425731e10194f6}{get\+\_\+group}} (\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}} const \&i) const
+\item 
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn_a88fa0c39c39e150cf65fb8921908473f}{get\+\_\+n\+\_\+singleton}} () const
+\item 
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn_a7aaba68837242f6bd0a706a8c6bda007}{get\+\_\+possible\+\_\+links}} () const
+\item 
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn_a6f2e1644e7e7af03c313c9ac4106c0b7}{get\+\_\+possible\+\_\+block\+\_\+links}} () const
+\item 
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn_a8235243b94309b60a1db6260b5143040}{get\+\_\+n\+\_\+block\+\_\+links}} () const
+\item 
+std\+::vector$<$ std\+::pair$<$ unsigned int, unsigned int $>$ $>$ \mbox{\hyperlink{classCompleteViewAdjDyn_a4d942d948d3ae5f6f47be6148e46d2a4}{map\+\_\+to\+\_\+complete}} (\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}} i, \mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}} j) const
+\item 
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn_a7877179dda9bee06d8221706ed8e8899}{get\+\_\+group\+\_\+size}} (\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}} const \&i) const
+\end{DoxyCompactItemize}
+\doxysubsection*{Friends}
+\begin{DoxyCompactItemize}
+\item 
+std\+::ostream \& \mbox{\hyperlink{classCompleteViewAdjDyn_a119d5e0168e5ca76076d129731650df5}{operator$<$$<$}} (std\+::ostream \&str, \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}} \&\+\_\+G)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}\label{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!IdxType@{IdxType}}
+\index{IdxType@{IdxType}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{IdxType}{IdxType}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+using \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}} =  typename \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$T$>$\+::\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}}}
+
+\mbox{\Hypertarget{classCompleteViewAdjDyn_a35020d2fb73f418ab1e8ba267d9a34a1}\label{classCompleteViewAdjDyn_a35020d2fb73f418ab1e8ba267d9a34a1}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!Neighbourhood@{Neighbourhood}}
+\index{Neighbourhood@{Neighbourhood}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{Neighbourhood}{Neighbourhood}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+using \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::\mbox{\hyperlink{classCompleteViewAdjDyn_a35020d2fb73f418ab1e8ba267d9a34a1}{Neighbourhood}} =  typename \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$T$>$\+::\mbox{\hyperlink{classCompleteViewAdjDyn_a35020d2fb73f418ab1e8ba267d9a34a1}{Neighbourhood}}}
+
+\mbox{\Hypertarget{classCompleteViewAdjDyn_af28dcfff491a357563ae65813c582096}\label{classCompleteViewAdjDyn_af28dcfff491a357563ae65813c582096}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!value\_type@{value\_type}}
+\index{value\_type@{value\_type}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{value\_type}{value\_type}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+using \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::\mbox{\hyperlink{classCompleteViewAdjDyn_af28dcfff491a357563ae65813c582096}{value\+\_\+type}} =  typename \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$T$>$\+::\mbox{\hyperlink{classCompleteViewAdjDyn_af28dcfff491a357563ae65813c582096}{value\+\_\+type}}}
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classCompleteViewAdjDyn_ac9dd1a1f34512b4cac0a82d3f379e422}\label{classCompleteViewAdjDyn_ac9dd1a1f34512b4cac0a82d3f379e422}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!CompleteViewAdjDyn@{CompleteViewAdjDyn}}
+\index{CompleteViewAdjDyn@{CompleteViewAdjDyn}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{CompleteViewAdjDyn()}{CompleteViewAdjDyn()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+\mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::\mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classBlockGraphAdjDyn}{Block\+Graph\+Adj\+Dyn}}$<$ T $>$ \&}]{\+\_\+G }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classCompleteViewAdjDyn_ac42237e827a9c66bd4425731e10194f6}\label{classCompleteViewAdjDyn_ac42237e827a9c66bd4425731e10194f6}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!get\_group@{get\_group}}
+\index{get\_group@{get\_group}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_group()}{get\_group()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+std\+::vector$<$ unsigned int $>$ \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::get\+\_\+group (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}} const \&}]{i }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classCompleteViewAdjDyn_a7877179dda9bee06d8221706ed8e8899}\label{classCompleteViewAdjDyn_a7877179dda9bee06d8221706ed8e8899}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!get\_group\_size@{get\_group\_size}}
+\index{get\_group\_size@{get\_group\_size}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_group\_size()}{get\_group\_size()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::get\+\_\+group\+\_\+size (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}} const \&}]{i }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classCompleteViewAdjDyn_a8235243b94309b60a1db6260b5143040}\label{classCompleteViewAdjDyn_a8235243b94309b60a1db6260b5143040}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!get\_n\_block\_links@{get\_n\_block\_links}}
+\index{get\_n\_block\_links@{get\_n\_block\_links}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_n\_block\_links()}{get\_n\_block\_links()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::get\+\_\+n\+\_\+block\+\_\+links (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classCompleteViewAdjDyn_a18e0477caaac3d775cf9f14576d0e386}\label{classCompleteViewAdjDyn_a18e0477caaac3d775cf9f14576d0e386}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!get\_n\_groups@{get\_n\_groups}}
+\index{get\_n\_groups@{get\_n\_groups}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_n\_groups()}{get\_n\_groups()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::get\+\_\+n\+\_\+groups (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classCompleteViewAdjDyn_a2a31982fd571b8996ffbd484258e01c0}\label{classCompleteViewAdjDyn_a2a31982fd571b8996ffbd484258e01c0}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!get\_n\_links@{get\_n\_links}}
+\index{get\_n\_links@{get\_n\_links}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_n\_links()}{get\_n\_links()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::get\+\_\+n\+\_\+links (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classCompleteViewAdjDyn_a88fa0c39c39e150cf65fb8921908473f}\label{classCompleteViewAdjDyn_a88fa0c39c39e150cf65fb8921908473f}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!get\_n\_singleton@{get\_n\_singleton}}
+\index{get\_n\_singleton@{get\_n\_singleton}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_n\_singleton()}{get\_n\_singleton()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::get\+\_\+n\+\_\+singleton (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classCompleteViewAdjDyn_aa5ed826fc852b13fbc16ad585be8c50b}\label{classCompleteViewAdjDyn_aa5ed826fc852b13fbc16ad585be8c50b}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!get\_nbd@{get\_nbd}}
+\index{get\_nbd@{get\_nbd}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_nbd()}{get\_nbd()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+\mbox{\hyperlink{classCompleteViewAdjDyn_a35020d2fb73f418ab1e8ba267d9a34a1}{Neighbourhood}} \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::get\+\_\+nbd (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classCompleteViewAdjDyn_abbf1e8c06bdd268b492dcff9589f3d5d}\label{classCompleteViewAdjDyn_abbf1e8c06bdd268b492dcff9589f3d5d}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!get\_nbd@{get\_nbd}}
+\index{get\_nbd@{get\_nbd}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_nbd()}{get\_nbd()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+std\+::vector$<$unsigned int$>$ \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::get\+\_\+nbd (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}} const \&}]{i }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classCompleteViewAdjDyn_a6f2e1644e7e7af03c313c9ac4106c0b7}\label{classCompleteViewAdjDyn_a6f2e1644e7e7af03c313c9ac4106c0b7}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!get\_possible\_block\_links@{get\_possible\_block\_links}}
+\index{get\_possible\_block\_links@{get\_possible\_block\_links}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_possible\_block\_links()}{get\_possible\_block\_links()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::get\+\_\+possible\+\_\+block\+\_\+links (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classCompleteViewAdjDyn_a7aaba68837242f6bd0a706a8c6bda007}\label{classCompleteViewAdjDyn_a7aaba68837242f6bd0a706a8c6bda007}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!get\_possible\_links@{get\_possible\_links}}
+\index{get\_possible\_links@{get\_possible\_links}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_possible\_links()}{get\_possible\_links()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::get\+\_\+possible\+\_\+links (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classCompleteViewAdjDyn_ac8767505b1afcdbaf84fb30cf6eecf97}\label{classCompleteViewAdjDyn_ac8767505b1afcdbaf84fb30cf6eecf97}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!get\_size@{get\_size}}
+\index{get\_size@{get\_size}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{get\_size()}{get\_size()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+unsigned int \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::get\+\_\+size (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classCompleteViewAdjDyn_a4d942d948d3ae5f6f47be6148e46d2a4}\label{classCompleteViewAdjDyn_a4d942d948d3ae5f6f47be6148e46d2a4}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!map\_to\_complete@{map\_to\_complete}}
+\index{map\_to\_complete@{map\_to\_complete}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{map\_to\_complete()}{map\_to\_complete()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+std\+::vector$<$ std\+::pair$<$unsigned int, unsigned int$>$ $>$ \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::map\+\_\+to\+\_\+complete (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}}}]{i,  }\item[{\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}}}]{j }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classCompleteViewAdjDyn_aa9f1f954ceddf751b6d8a8032d0b37ed}\label{classCompleteViewAdjDyn_aa9f1f954ceddf751b6d8a8032d0b37ed}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!operator()@{operator()}}
+\index{operator()@{operator()}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+T \mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$\+::operator() (\begin{DoxyParamCaption}\item[{typename \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}} const \&}]{i,  }\item[{typename \mbox{\hyperlink{classBlockGraphBase}{Block\+Graph\+Base}}$<$ T $>$\+::\mbox{\hyperlink{classCompleteViewAdjDyn_a1ba2a7617b47090c60416d673f127223}{Idx\+Type}} const \&}]{j }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Friends And Related Function Documentation}
+\mbox{\Hypertarget{classCompleteViewAdjDyn_a119d5e0168e5ca76076d129731650df5}\label{classCompleteViewAdjDyn_a119d5e0168e5ca76076d129731650df5}} 
+\index{CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!CompleteViewAdjDyn$<$ T $>$@{CompleteViewAdjDyn$<$ T $>$}}
+\doxysubsubsection{\texorpdfstring{operator$<$$<$}{operator<<}}
+{\footnotesize\ttfamily template$<$class T $>$ \\
+std\+::ostream\& operator$<$$<$ (\begin{DoxyParamCaption}\item[{std\+::ostream \&}]{str,  }\item[{\mbox{\hyperlink{classCompleteViewAdjDyn}{Complete\+View\+Adj\+Dyn}}$<$ T $>$ \&}]{\+\_\+G }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [friend]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{BlockGraph_8h}{Block\+Graph.\+h}}\end{DoxyCompactItemize}

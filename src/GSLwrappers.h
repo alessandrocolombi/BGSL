@@ -159,7 +159,6 @@ namespace sample{
 			
 
 			VecCol z(VecCol::Zero(Prec.cols()));
-			//#pragma omp parallel for shared(z) // non sta andando
 			for(unsigned int i = 0; i < Prec.cols(); ++i)
 				z(i) = rnorm()(engine);
 
@@ -172,7 +171,7 @@ namespace sample{
 		}
 	};
 
-	struct rmvnorm_old{
+	struct rmvnorm_not_template{
 		template<typename EigenType>
 		VecCol operator()(GSL_RNG const & engine, VecCol & mean, EigenType & Cov)
 		{
@@ -215,14 +214,15 @@ namespace sample{
 		template<typename EigenType>
 		VecCol operator()(VecCol & mean, EigenType & Cov)
 		{
-			return rmvnorm_old()(GSL_RNG (), mean, Cov);
+			return rmvnorm_not_template()(GSL_RNG (), mean, Cov);
 		}
 	};
 
+	//Quella vecchia, facevo ancora la copia del risultato. Da tenere come esempio
 	template<isChol isCholType = isChol::False>
-	struct rmvnorm{
+	struct rmvnorm_old{
 		template<typename EigenType>
-		VecCol operator()(GSL_RNG const & engine, VecCol & mean, EigenType & Cov)
+		VecCol operator()(GSL_RNG const & engine, VecCol mean, EigenType const & Cov)
 		{
 			static_assert(isCholType == isChol::False || 
 						  isCholType == isChol::Upper ||
@@ -244,7 +244,9 @@ namespace sample{
 				if constexpr( isCholType == isChol::False){
 				//Map in GSL matrix
 				gsl_matrix * V 	= gsl_matrix_calloc(Cov.rows(), Cov.rows());
-				V->data = Cov.data();
+				for(int i = 0; i < Cov.rows()*Cov.rows(); ++i)
+					V->data[i] = Cov.data()[i];
+				//V->data = Cov.data();
 				//Chol decomposition
 				gsl_matrix_memcpy(cholMat, V);
 				gsl_linalg_cholesky_decomp1(cholMat);
@@ -258,26 +260,32 @@ namespace sample{
 						cholMat->data[i] = CovCol.data()[i];
 					}
 					else{
-						cholMat->data = Cov.data();
+						for(int i = 0; i < Cov.rows()*Cov.rows(); ++i)
+							cholMat->data[i] = Cov.data()[i];
+						//cholMat->data = Cov.data();
 					}
 				}
 				else if constexpr(isCholType == isChol::Lower){ 
 				//Cov has to be RowMajor
-				if constexpr( std::is_same_v< EigenType, MatCol> ){
-					MatRow CovRow(Cov);
-					for(int i = 0; i < Cov.rows()*Cov.rows(); ++i) //In questo caso devo essere esplicito. buffer rovinato?? non so ma mi salta la prima riga altrimenti
-						cholMat->data[i] = CovRow.data()[i];
-					}
-					else{
-						cholMat->data = Cov.data();
-					}
+					if constexpr( std::is_same_v< EigenType, MatCol> ){
+						MatRow CovRow(Cov);
+						for(int i = 0; i < Cov.rows()*Cov.rows(); ++i) //In questo caso devo essere esplicito. buffer rovinato?? non so ma mi salta la prima riga altrimenti
+							cholMat->data[i] = CovRow.data()[i];
+						}
+						else{
+							for(int i = 0; i < Cov.rows()*Cov.rows(); ++i)
+								cholMat->data[i] = Cov.data()[i];
+							//cholMat->data = Cov.data();
+						}
 				} 		
 			}
 			gsl_ran_multivariate_gaussian(engine(), mu, cholMat, result);
 			//Map back in Eigen form
 			Eigen::Map<VecCol> temp(&(result->data[0]), Cov.rows()); 
+			//std::cout<<"temp:"<<std::endl<<temp<<std::endl;
 			//Qua si crea una situazione un po' paradossale. result viene messa dentro temp nel modo corretto MA quando libero result poi non posso ritornare la matrice
 			//perché alcuni valori si perdono. sono costretto a fare una copia e dare quella.
+			//Anche se facico una soluzione come nella nuova funzione, ovvero mettendo result->data = nullptr, non possono comunque ritornare temp. ho lo stesso problema dei primi due elementi invalidati.
 			VecCol ReturnVect = temp;
 			//Free and return
 			gsl_matrix_free(cholMat);
@@ -288,12 +296,123 @@ namespace sample{
 		template<typename EigenType>
 		VecCol operator()(VecCol & mean, EigenType & Cov)
 		{
+			return rmvnorm_old()(GSL_RNG (), mean, Cov);
+		}
+	};
+
+
+	template<isChol isCholType = isChol::False>
+	struct rmvnorm{
+		template<typename EigenType>
+		VecCol operator()(GSL_RNG const & engine, VecCol & mean, EigenType & Cov)
+		{
+			//Cov has to be symmetric. Not checked for efficiency
+			static_assert(isCholType == isChol::False || 
+						  isCholType == isChol::Upper ||
+						  isCholType == isChol::Lower ,
+						  "Error, invalid sample::isChol field inserted. It has to be equal to Upper, Lower or False");
+			if(Cov.rows() != Cov.cols())
+				throw std::runtime_error("Non squared matrix inserted");
+			if(Cov.rows() != mean.size())
+				throw std::runtime_error("Matrix and mean do not have compatible size");
+	
+			//Declare return object
+			/* The simplest way to proceed is to create a gsl_vector for storing the sampled values and then to copy it into an eigen vector. If doing this way the copy cannot be avoided 
+			   even if Eigen::Map is used. Indeed Eigen map wraps the gsl_vector buffer of data to be an eigen object but when the vector is returned, the gsl_vector has to be freed and the
+			   buffer is corrupted, returning the wrong result.
+			   What is implemented below is different, first the Eigen object is allocated and then the gsl_vector is defined such that it writes on the same buffer of the Eigen vector. No copies
+			   are done before returning.
+			   Note that the gsl_vector is not defined by means of gsl_vector_alloc(). Indeed that function allocates some space in memory that is lost when result.data is set to be the same
+			   of return_obj, which of course generates a memory leak. This happens because the gsl_vector does not own the buffer and do not deallocate that space by calling gsl_vector_free(). */
+			VecCol return_obj(VecCol::Zero(mean.size()));		//Eigen obj that has to be returned
+			gsl_vector result;									//gsl_vector where the sampled values will be stored. 
+			result.size   = mean.size();						//size of the vector
+			result.stride = 1;									//how close in memory the elements of result.data are. 
+			result.owner  = 0;									//result does not own the buffer where data are stored 
+			result.data   = return_obj.data();					//set data buffer of gsl_vector to the exactly the same of the Eigen vector. 
+															 	//From now on they share the same buffer, writing on result.data is like writing on return_obj.data() and viceversa
+			
+			gsl_matrix *cholMat = gsl_matrix_alloc (Cov.rows(), Cov.rows()); //gsl_ran_multivariate_gaussian requires the Cholesky decompoition and has to be a gsl_matrix
+			gsl_vector mu;									
+			mu.size   = mean.size();						
+			mu.stride = 1;									
+			mu.owner  = 0;									
+			mu.data   = mean.data();					
+			// Declaration of some Eigen quantities that may be needed. They have to be declared here because they will share their buffer with cholMat 
+			// and if they go out of scope, the buffer is corrupted.
+			MatRow Chol_cov;
+			MatRow TCov_row;
+			MatCol TCov_col;
+			//auto start = std::chrono::high_resolution_clock::now();
+			if(Cov.isIdentity()){
+				//std::cout<<"Identity"<<std::endl;
+				gsl_matrix_set_identity(cholMat);
+			}
+			else {
+				if constexpr( isCholType == isChol::False)
+				{
+					//std::cout<<"Not chol"<<std::endl;
+					Chol_cov = Cov.llt().matrixL(); //Use Eigen factorization because Cov is passed by ref and it is not const. If the gsl version is used, Cov is modified!
+					cholMat->data = Chol_cov.data();										
+					//gsl_linalg_cholesky_decomp1(cholMat); //gsl for cholesky decoposition
+				}
+				else if constexpr(isCholType == isChol::Upper){
+					if constexpr( std::is_same_v< EigenType, MatRow> ){
+						//std::cout<<"RowMajor + Upper"<<std::endl;
+						TCov_row = Cov.transpose(); //Do not use Cov.transposeInPlace() otherwise Cov is modified.
+						cholMat->data = TCov_row.data();
+					}
+					else{
+						//std::cout<<"ColMajor + Upper"<<std::endl;	
+						cholMat->data = Cov.data();
+					}
+				}
+				else if constexpr(isCholType == isChol::Lower){ 
+					if constexpr( std::is_same_v< EigenType, MatCol> ){
+						//std::cout<<"ColMajor + Lower"<<std::endl;	
+						TCov_col = Cov.transpose(); //Do not use Cov.transposeInPlace() otherwise Cov is modified.
+						cholMat->data = TCov_col.data();
+					}
+					else{
+						//std::cout<<"RowMajor + Lower"<<std::endl;	
+						cholMat->data = Cov.data();
+					}
+				} 		
+			}
+
+							//std::cout<<"cholMat "<<std::endl;
+			 				//for(auto i = 0; i < cholMat->size1; ++i){
+			 					//for(auto j = 0; j < cholMat->size1; ++j){
+			 						//std::cout<<gsl_matrix_get(cholMat,i,j)<<" ";
+			 					//}
+			 				//std::cout<<std::endl;	
+			 				//}	
+			gsl_ran_multivariate_gaussian(engine(), &mu, cholMat, &result);
+					//std::cout<<"finito, stampo result"<<std::endl;
+					//for(int i = 0; i < result.size; ++i)
+						//std::cout<<gsl_vector_get(&result, i)<<", ";
+				//std::cout<<std::endl;
+			//Free and return
+			gsl_matrix_free(cholMat);
+			return return_obj;	
+			//Runnig with valgrind_memcheck:
+			/*
+			==4546== HEAP SUMMARY:
+			==4546==     in use at exit: 0 bytes in 0 blocks
+			==4546==   total heap usage: 26 allocs, 26 frees, 80,000 bytes allocated
+			==4546== 
+			==4546== All heap blocks were freed -- no leaks are possible
+			*/ 
+		}
+		template<typename EigenType>
+		VecCol operator()(VecCol & mean, EigenType & Cov)
+		{
 			return rmvnorm()(GSL_RNG (), mean, Cov);
 		}
 	};
 
 	template<typename RetType = MatCol>
-	struct rwish_old{
+	struct rwish_non_chol{
 		template<typename EigenType>
 		RetType operator()( GSL_RNG const & engine, double const & b, EigenType &Psi )const
 		{
@@ -332,69 +451,87 @@ namespace sample{
 		}
 		template<typename EigenType>
 		RetType operator()(double const & b, EigenType &Psi)const{
-			return rwish_old<RetType>()(GSL_RNG (), b,Psi);
+			return rwish_non_chol<RetType>()(GSL_RNG (), b,Psi);
 		}
 			
 	};
-	
-
 	//What is better? 
 	//The best results are obtained when the input is ColMajor. In this case return type is not influent
 	//Results are slightly worse if the input is RowMajor, worst case is Row input and Col output.
 	//What about CholType? CholLower is optimal with RowMajor input and CholUpper is optimal with ColMajor input.
 	//In the suboptimal case a temporary obj is needed to change the storage order which causes a little overhead.
 	template<typename RetType = MatCol, isChol isCholType = isChol::False>
-	struct rwish{
+	struct rwish_old{
 		template<typename EigenType>
 		RetType operator()( GSL_RNG const & engine, double const & b, EigenType &Psi )const
 		{	
 			static_assert(isCholType == isChol::False || 
 						  isCholType == isChol::Upper ||
 						  isCholType == isChol::Lower ,
-						  "Error, invalid sample::isChol field inserted. It has to be equal to Upper, Lower or False");
+						  "Error, invalid sample::isChol field inserted. It has to be equal to utils::isChol::Upper, utils::isChol::Lower or utils::isChol::False");
 			if(Psi.rows() != Psi.cols())
 				throw std::runtime_error("Non squared matrix inserted");
 
 			//Declaration of gsl objects
-			gsl_matrix *cholMat = gsl_matrix_alloc (Psi.rows(), Psi.rows());
-			gsl_matrix *result  = gsl_matrix_alloc (Psi.rows(), Psi.rows());
-			gsl_matrix * work   = gsl_matrix_calloc(Psi.rows(), Psi.rows());
+			gsl_matrix *cholMat = gsl_matrix_calloc (Psi.rows(), Psi.rows());
+			gsl_matrix *result  = gsl_matrix_alloc  (Psi.rows(), Psi.rows());
+			gsl_matrix *work    = gsl_matrix_calloc (Psi.rows(), Psi.rows());
 			
+			// Declaration of some Eigen quantities that may be needed. They have to be declared here because they will share their buffer with cholMat 
+			// and if they go out of scope, the buffer is corrupted.
+			MatRow Chol_psi;
+			MatRow Tpsi_row;
+			MatCol Tpsi_col;
 
 			//auto start = std::chrono::high_resolution_clock::now();
 			if(Psi.isIdentity()){
 				gsl_matrix_set_identity(cholMat);
 			}
 			else {
-				if constexpr( isCholType == isChol::False){
-					//Map in GSL matrix
-					gsl_matrix * V 	    = gsl_matrix_calloc(Psi.rows(), Psi.rows());
-					V->data = Psi.data();
-					//Chol decomposition
-					gsl_matrix_memcpy(cholMat, V);
-					gsl_linalg_cholesky_decomp1(cholMat);
-					gsl_matrix_free(V); //Free V
+				if constexpr( isCholType == isChol::False)
+				{
+					//std::cout<<"Not chol"<<std::endl;
+					Chol_psi = Psi.llt().matrixL(); //Use Eigen factorization because Cov is passed by ref and it is not const. If the gsl version is used, Cov is modified!
+					cholMat->data = Chol_psi.data();										
+					//gsl_linalg_cholesky_decomp1(cholMat); //gsl for cholesky decoposition
+
+												////Map in GSL matrix
+												//gsl_matrix * V 	= gsl_matrix_calloc(Psi.rows(), Psi.rows());
+																	////for(int i = 0; i < Psi.rows()*Psi.rows(); ++i)
+																		////V->data[i] = Psi.data()[i];
+												//V->data = Psi.data();
+												////Chol decomposition
+												//gsl_matrix_memcpy(cholMat, V);
+												//gsl_linalg_cholesky_decomp1(cholMat);
+												//gsl_matrix_free(V); //Free V	
 				}
-				else if constexpr(isCholType == isChol::Upper){
-					//Psi has to be ColMajor
+				else if constexpr(isCholType == isChol::Upper)
+				{
 					if constexpr( std::is_same_v< EigenType, MatRow> ){
-						MatCol PsiCol(Psi);
-						for(int i = 0; i < Psi.rows()*Psi.rows(); ++i)
-							cholMat->data[i] = PsiCol.data()[i];
+						std::cout<<"RowMajor + Upper"<<std::endl;
+						Tpsi_row = Psi.transpose(); //Do not use Psi.transposeInPlace() otherwise Psi is modified.
+						cholMat->data = Tpsi_row.data();
+												//MatCol PsiCol(Psi);
+												//for(int i = 0; i < Psi.rows()*Psi.rows(); ++i)
+													//cholMat->data[i] = PsiCol.data()[i];
 					}
 					else{
+						std::cout<<"ColMajor + Upper"<<std::endl;
 						cholMat->data = Psi.data();
 					}
-					
 				}
-				else if constexpr(isCholType == isChol::Lower){ 
-					//Psi has to be RowMajor
+				else if constexpr(isCholType == isChol::Lower)
+				{ 
 					if constexpr( std::is_same_v< EigenType, MatCol> ){
-						MatRow PsiRow(Psi);
-						for(int i = 0; i < Psi.rows()*Psi.rows(); ++i) //In questo caso devo essere esplicito. buffer rovinato?? non so ma mi salta la prima riga altrimenti
-							cholMat->data[i] = PsiRow.data()[i];
+						std::cout<<"ColMajor + Lower"<<std::endl;	
+						Tpsi_col = Psi.transpose(); //Do not use Cov.transposeInPlace() otherwise Cov is modified.
+						cholMat->data = Tpsi_col.data();
+										//MatRow PsiRow(Psi);
+										//for(int i = 0; i < Psi.rows()*Psi.rows(); ++i) //In questo caso devo essere esplicito. buffer rovinato?? non so ma mi salta la prima riga altrimenti
+											//cholMat->data[i] = PsiRow.data()[i];
 					}
 					else{
+						std::cout<<"ColMajor + Upper"<<std::endl;
 						cholMat->data = Psi.data();
 					}
 				} 		
@@ -402,8 +539,8 @@ namespace sample{
 
 
 							//std::cout<<"cholMat "<<std::endl;
-			 				//for(auto i = 0; i < Psi.rows(); ++i){
-			 					//for(auto j = 0; j < Psi.rows(); ++j){
+			 				//for(auto i = 0; i < cholMat->size1; ++i){
+			 					//for(auto j = 0; j < cholMat->size1; ++j){
 			 						//std::cout<<gsl_matrix_get(cholMat,i,j)<<" ";
 			 					//}
 			 				//std::cout<<std::endl;	
@@ -430,9 +567,8 @@ namespace sample{
 		}
 		template<typename EigenType>
 		RetType operator()(double const & b, EigenType &Psi)const{
-			return rwish<RetType, isCholType>()(GSL_RNG (), b,Psi);
+			return rwish_old<RetType, isCholType>()(GSL_RNG (), b,Psi);
 		}
-			
 	};
 	//Both input and output Type are template parameters. Here is some usage example:
 	
@@ -448,7 +584,106 @@ namespace sample{
 	//3) Creation at fly exploiting default value type
 		//res_GSL_col = sample::rwish()(engine_gsl, 3, D);
 
+	template<typename RetType = MatCol, isChol isCholType = isChol::False>
+	struct rwish{
+		template<typename EigenType>
+		RetType operator()( GSL_RNG const & engine, double const & b, EigenType &Psi )const
+		{	
+			static_assert(isCholType == isChol::False || 
+						  isCholType == isChol::Upper ||
+						  isCholType == isChol::Lower ,
+						  "Error, invalid sample::isChol field inserted. It has to be equal to utils::isChol::Upper, utils::isChol::Lower or utils::isChol::False");
+			if(Psi.rows() != Psi.cols())
+				throw std::runtime_error("Non squared matrix inserted");
+			
+			RetType return_obj(RetType::Zero(Psi.rows(), Psi.cols()));		//Eigen obj that has to be returned
+			gsl_matrix result;												//gsl_matrix where the sampled values will be stored. 
+			result.size1   = Psi.rows();									//row of the matrix
+			result.size2   = Psi.cols();									//cols of the matrix
+			result.tda 	= Psi.rows();										//it is not a submatrix, so this parameter is equal to the number of rows.
+			result.owner  = 0;												//result does not own the buffer where data are stored 
+			result.data   = return_obj.data();								//set data buffer of gsl_matrix to be exactly the same of the Eigen matrix. 
+															 				//From now on they share the same buffer, writing on result.data is like writing on return_obj.data() and viceversa
+			//Declaration of other gsl objects
+			gsl_matrix *cholMat = gsl_matrix_calloc(Psi.rows(), Psi.rows());
+			gsl_matrix *work    = gsl_matrix_calloc(Psi.rows(), Psi.rows());
+			
+			// Declaration of some Eigen quantities that may be needed. They have to be declared here because they will share their buffer with cholMat 
+			// and if they go out of scope, the buffer is corrupted.
+			MatRow Chol_psi;
+			MatRow Tpsi_row;
+			MatCol Tpsi_col;
 
+			if(Psi.isIdentity()){
+				gsl_matrix_set_identity(cholMat);
+			}
+			else {
+				if constexpr( isCholType == isChol::False)
+				{
+					//std::cout<<"Not chol"<<std::endl;
+					Chol_psi = Psi.llt().matrixL(); //Use Eigen factorization because Cov is passed by ref and it is not const. If the gsl version is used, Cov is modified!
+					cholMat->data = Chol_psi.data();										
+					//gsl_linalg_cholesky_decomp1(cholMat); //gsl for cholesky decoposition
+				}
+				else if constexpr(isCholType == isChol::Upper)
+				{
+					if constexpr( std::is_same_v< EigenType, MatRow> ){
+						//std::cout<<"RowMajor + Upper"<<std::endl;
+						Tpsi_row = Psi.transpose(); //Do not use Psi.transposeInPlace() otherwise Psi is modified.
+						cholMat->data = Tpsi_row.data();
+					}
+					else{
+						//std::cout<<"ColMajor + Upper"<<std::endl;
+						cholMat->data = Psi.data();
+					}
+				}
+				else if constexpr(isCholType == isChol::Lower)
+				{ 
+					if constexpr( std::is_same_v< EigenType, MatCol> ){
+						//std::cout<<"ColMajor + Lower"<<std::endl;	
+						Tpsi_col = Psi.transpose(); //Do not use Cov.transposeInPlace() otherwise Cov is modified.
+						cholMat->data = Tpsi_col.data();
+					}
+					else{
+						//std::cout<<"ColMajor + Upper"<<std::endl;
+						cholMat->data = Psi.data();
+					}
+				} 		
+			}
+							//std::cout<<"cholMat "<<std::endl;
+			 				//for(auto i = 0; i < cholMat->size1; ++i){
+			 					//for(auto j = 0; j < cholMat->size1; ++j){
+			 						//std::cout<<gsl_matrix_get(cholMat,i,j)<<" ";
+			 					//}
+			 				//std::cout<<std::endl;	
+			 				//}	
+			//Sample with GSL
+			gsl_ran_wishart(engine(), b+Psi.rows()-1, cholMat, &result, work);
+							//std::cout<<"result "<<std::endl;
+			 				//for(auto i = 0; i < result->size1; ++i){
+			 					//for(auto j = 0; j < result->size1; ++j){
+			 						//std::cout<<gsl_matrix_get(result,i,j)<<" ";
+			 					//}
+			 				//std::cout<<std::endl;	
+			 				//}
+			//Free and return
+			gsl_matrix_free(cholMat);
+			gsl_matrix_free(work);
+			return return_obj;	 
+			//Running with valgrind
+			/*
+			==5155== HEAP SUMMARY:
+			==5155==     in use at exit: 0 bytes in 0 blocks
+			==5155==   total heap usage: 40 allocs, 40 frees, 220,224 bytes allocated
+			==5155== 
+			==5155== All heap blocks were freed -- no leaks are possible
+			*/ 	
+		}
+		template<typename EigenType>
+		RetType operator()(double const & b, EigenType & Psi)const{
+			return rwish<RetType, isCholType>()(GSL_RNG (), b,Psi);
+		}
+	};
 
 }
 

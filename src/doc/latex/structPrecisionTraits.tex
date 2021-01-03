@@ -1,0 +1,131 @@
+\hypertarget{structPrecisionTraits}{}\doxysection{Precision\+Traits Struct Reference}
+\label{structPrecisionTraits}\index{PrecisionTraits@{PrecisionTraits}}
+
+
+{\ttfamily \#include $<$Precision.\+h$>$}
+
+
+
+Inheritance diagram for Precision\+Traits\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=267pt]{structPrecisionTraits__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Precision\+Traits\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=167pt]{structPrecisionTraits__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{structPrecisionTraits_aedc1e15586bf0223b89ae1a7018fb7b4}{Idx\+Type}} = std\+::size\+\_\+t
+\item 
+using \mbox{\hyperlink{structPrecisionTraits_a74d4f7a486e37f4c0794bfbd127217a8}{Shape}} = \mbox{\hyperlink{classdouble}{double}}
+\item 
+using \mbox{\hyperlink{structPrecisionTraits_a992ffa561ab99619335f2dd3402b937c}{Mat\+Row}} = Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major $>$
+\item 
+using \mbox{\hyperlink{structPrecisionTraits_a6603b263dbb4f220edb8671cf4ab5002}{Mat\+Col}} = Eigen\+::\+Matrix\+Xd
+\item 
+using \mbox{\hyperlink{structPrecisionTraits_ab0f02fe6156403a95c3e910bbb8e23e7}{Inv\+Scale}} = \mbox{\hyperlink{structPrecisionTraits_a6603b263dbb4f220edb8671cf4ab5002}{Mat\+Col}}
+\item 
+using \mbox{\hyperlink{structPrecisionTraits_a728829fdd128eb59ca5eca6ff43a79bd}{Upper\+Tri}} = Eigen\+::\+Triangular\+View$<$ \mbox{\hyperlink{structPrecisionTraits_a992ffa561ab99619335f2dd3402b937c}{Mat\+Row}}, Eigen\+::\+Upper $>$
+\item 
+using \mbox{\hyperlink{structPrecisionTraits_acf470ffe66e716116843b06b5d084997}{Inner\+Data}} = \mbox{\hyperlink{structPrecisionTraits_a992ffa561ab99619335f2dd3402b937c}{Mat\+Row}}
+\item 
+using \mbox{\hyperlink{structPrecisionTraits_afa315c3a2ee8d49b1ab51f2dd851d845}{Chol\+Matrix}} = \mbox{\hyperlink{structPrecisionTraits_a992ffa561ab99619335f2dd3402b937c}{Mat\+Row}}
+\item 
+using \mbox{\hyperlink{structPrecisionTraits_a2d42c767e39e0608ebff2ee772280583}{Chol\+Type}} = Eigen\+::\+L\+LT$<$ Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major $>$, Eigen\+::\+Upper $>$
+\item 
+using \mbox{\hyperlink{structPrecisionTraits_ab6ddf936e289b62519b0447f48901234}{Chol\+Type\+Col}} = Eigen\+::\+L\+LT$<$ Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$, Eigen\+::\+Lower $>$
+\item 
+using \mbox{\hyperlink{structPrecisionTraits_a79da22ae30c8c05c1a116780dbccb928}{Col\+Type}} = Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, 1 $>$
+\item 
+using \mbox{\hyperlink{structPrecisionTraits_ab06a5df468db97a7abfda6f43dabbbb4}{Row\+Type}} = Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, 1, Eigen\+::\+Dynamic $>$
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{structPrecisionTraits_afa315c3a2ee8d49b1ab51f2dd851d845}\label{structPrecisionTraits_afa315c3a2ee8d49b1ab51f2dd851d845}} 
+\index{PrecisionTraits@{PrecisionTraits}!CholMatrix@{CholMatrix}}
+\index{CholMatrix@{CholMatrix}!PrecisionTraits@{PrecisionTraits}}
+\doxysubsubsection{\texorpdfstring{CholMatrix}{CholMatrix}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structPrecisionTraits_afa315c3a2ee8d49b1ab51f2dd851d845}{Precision\+Traits\+::\+Chol\+Matrix}} =  \mbox{\hyperlink{structPrecisionTraits_a992ffa561ab99619335f2dd3402b937c}{Mat\+Row}}}
+
+\mbox{\Hypertarget{structPrecisionTraits_a2d42c767e39e0608ebff2ee772280583}\label{structPrecisionTraits_a2d42c767e39e0608ebff2ee772280583}} 
+\index{PrecisionTraits@{PrecisionTraits}!CholType@{CholType}}
+\index{CholType@{CholType}!PrecisionTraits@{PrecisionTraits}}
+\doxysubsubsection{\texorpdfstring{CholType}{CholType}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structPrecisionTraits_a2d42c767e39e0608ebff2ee772280583}{Precision\+Traits\+::\+Chol\+Type}} =  Eigen\+::\+L\+LT$<$Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major$>$, Eigen\+::\+Upper$>$}
+
+\mbox{\Hypertarget{structPrecisionTraits_ab6ddf936e289b62519b0447f48901234}\label{structPrecisionTraits_ab6ddf936e289b62519b0447f48901234}} 
+\index{PrecisionTraits@{PrecisionTraits}!CholTypeCol@{CholTypeCol}}
+\index{CholTypeCol@{CholTypeCol}!PrecisionTraits@{PrecisionTraits}}
+\doxysubsubsection{\texorpdfstring{CholTypeCol}{CholTypeCol}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structPrecisionTraits_ab6ddf936e289b62519b0447f48901234}{Precision\+Traits\+::\+Chol\+Type\+Col}} =  Eigen\+::\+L\+LT$<$Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major$>$, Eigen\+::\+Lower$>$}
+
+\mbox{\Hypertarget{structPrecisionTraits_a79da22ae30c8c05c1a116780dbccb928}\label{structPrecisionTraits_a79da22ae30c8c05c1a116780dbccb928}} 
+\index{PrecisionTraits@{PrecisionTraits}!ColType@{ColType}}
+\index{ColType@{ColType}!PrecisionTraits@{PrecisionTraits}}
+\doxysubsubsection{\texorpdfstring{ColType}{ColType}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structPrecisionTraits_a79da22ae30c8c05c1a116780dbccb928}{Precision\+Traits\+::\+Col\+Type}} =  Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, 1$>$}
+
+\mbox{\Hypertarget{structPrecisionTraits_aedc1e15586bf0223b89ae1a7018fb7b4}\label{structPrecisionTraits_aedc1e15586bf0223b89ae1a7018fb7b4}} 
+\index{PrecisionTraits@{PrecisionTraits}!IdxType@{IdxType}}
+\index{IdxType@{IdxType}!PrecisionTraits@{PrecisionTraits}}
+\doxysubsubsection{\texorpdfstring{IdxType}{IdxType}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structPrecisionTraits_aedc1e15586bf0223b89ae1a7018fb7b4}{Precision\+Traits\+::\+Idx\+Type}} =  std\+::size\+\_\+t}
+
+\mbox{\Hypertarget{structPrecisionTraits_acf470ffe66e716116843b06b5d084997}\label{structPrecisionTraits_acf470ffe66e716116843b06b5d084997}} 
+\index{PrecisionTraits@{PrecisionTraits}!InnerData@{InnerData}}
+\index{InnerData@{InnerData}!PrecisionTraits@{PrecisionTraits}}
+\doxysubsubsection{\texorpdfstring{InnerData}{InnerData}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structPrecisionTraits_acf470ffe66e716116843b06b5d084997}{Precision\+Traits\+::\+Inner\+Data}} =  \mbox{\hyperlink{structPrecisionTraits_a992ffa561ab99619335f2dd3402b937c}{Mat\+Row}}}
+
+\mbox{\Hypertarget{structPrecisionTraits_ab0f02fe6156403a95c3e910bbb8e23e7}\label{structPrecisionTraits_ab0f02fe6156403a95c3e910bbb8e23e7}} 
+\index{PrecisionTraits@{PrecisionTraits}!InvScale@{InvScale}}
+\index{InvScale@{InvScale}!PrecisionTraits@{PrecisionTraits}}
+\doxysubsubsection{\texorpdfstring{InvScale}{InvScale}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structPrecisionTraits_ab0f02fe6156403a95c3e910bbb8e23e7}{Precision\+Traits\+::\+Inv\+Scale}} =  \mbox{\hyperlink{structPrecisionTraits_a6603b263dbb4f220edb8671cf4ab5002}{Mat\+Col}}}
+
+\mbox{\Hypertarget{structPrecisionTraits_a6603b263dbb4f220edb8671cf4ab5002}\label{structPrecisionTraits_a6603b263dbb4f220edb8671cf4ab5002}} 
+\index{PrecisionTraits@{PrecisionTraits}!MatCol@{MatCol}}
+\index{MatCol@{MatCol}!PrecisionTraits@{PrecisionTraits}}
+\doxysubsubsection{\texorpdfstring{MatCol}{MatCol}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structPrecisionTraits_a6603b263dbb4f220edb8671cf4ab5002}{Precision\+Traits\+::\+Mat\+Col}} =  Eigen\+::\+Matrix\+Xd}
+
+\mbox{\Hypertarget{structPrecisionTraits_a992ffa561ab99619335f2dd3402b937c}\label{structPrecisionTraits_a992ffa561ab99619335f2dd3402b937c}} 
+\index{PrecisionTraits@{PrecisionTraits}!MatRow@{MatRow}}
+\index{MatRow@{MatRow}!PrecisionTraits@{PrecisionTraits}}
+\doxysubsubsection{\texorpdfstring{MatRow}{MatRow}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structPrecisionTraits_a992ffa561ab99619335f2dd3402b937c}{Precision\+Traits\+::\+Mat\+Row}} =  Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major$>$}
+
+\mbox{\Hypertarget{structPrecisionTraits_ab06a5df468db97a7abfda6f43dabbbb4}\label{structPrecisionTraits_ab06a5df468db97a7abfda6f43dabbbb4}} 
+\index{PrecisionTraits@{PrecisionTraits}!RowType@{RowType}}
+\index{RowType@{RowType}!PrecisionTraits@{PrecisionTraits}}
+\doxysubsubsection{\texorpdfstring{RowType}{RowType}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structPrecisionTraits_ab06a5df468db97a7abfda6f43dabbbb4}{Precision\+Traits\+::\+Row\+Type}} =  Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, 1, Eigen\+::\+Dynamic$>$}
+
+\mbox{\Hypertarget{structPrecisionTraits_a74d4f7a486e37f4c0794bfbd127217a8}\label{structPrecisionTraits_a74d4f7a486e37f4c0794bfbd127217a8}} 
+\index{PrecisionTraits@{PrecisionTraits}!Shape@{Shape}}
+\index{Shape@{Shape}!PrecisionTraits@{PrecisionTraits}}
+\doxysubsubsection{\texorpdfstring{Shape}{Shape}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structPrecisionTraits_a74d4f7a486e37f4c0794bfbd127217a8}{Precision\+Traits\+::\+Shape}} =  \mbox{\hyperlink{classdouble}{double}}}
+
+\mbox{\Hypertarget{structPrecisionTraits_a728829fdd128eb59ca5eca6ff43a79bd}\label{structPrecisionTraits_a728829fdd128eb59ca5eca6ff43a79bd}} 
+\index{PrecisionTraits@{PrecisionTraits}!UpperTri@{UpperTri}}
+\index{UpperTri@{UpperTri}!PrecisionTraits@{PrecisionTraits}}
+\doxysubsubsection{\texorpdfstring{UpperTri}{UpperTri}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structPrecisionTraits_a728829fdd128eb59ca5eca6ff43a79bd}{Precision\+Traits\+::\+Upper\+Tri}} =  Eigen\+::\+Triangular\+View$<$ \mbox{\hyperlink{structPrecisionTraits_a992ffa561ab99619335f2dd3402b937c}{Mat\+Row}} , Eigen\+::\+Upper$>$}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{Precision_8h}{Precision.\+h}}\end{DoxyCompactItemize}

@@ -1,0 +1,9 @@
+<map id="GraphPrior&lt; GraphStructure, T &gt;" name="GraphPrior&lt; GraphStructure, T &gt;">
+<area shape="rect" id="node1" title=" " alt="" coords="343,5,577,141"/>
+<area shape="rect" id="node2" href="$classGraphPrior.html" title=" " alt="" coords="241,219,426,369"/>
+<area shape="rect" id="node5" href="$classGraphPrior.html" title=" " alt="" coords="497,219,676,369"/>
+<area shape="rect" id="node3" href="$classTruncatedBernoulliPrior.html" title=" " alt="" coords="5,419,208,569"/>
+<area shape="rect" id="node4" href="$classTruncatedUniformPrior.html" title=" " alt="" coords="232,426,435,562"/>
+<area shape="rect" id="node6" href="$classBernoulliPrior.html" title=" " alt="" coords="459,426,714,562"/>
+<area shape="rect" id="node7" href="$classUniformPrior.html" title=" " alt="" coords="738,433,987,555"/>
+</map>

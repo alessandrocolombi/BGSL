@@ -1,0 +1,71 @@
+\hypertarget{classTruncatedUniformPrior}{}\doxysection{Truncated\+Uniform\+Prior$<$ Block\+Graph\+Structure, T $>$ Class Template Reference}
+\label{classTruncatedUniformPrior}\index{TruncatedUniformPrior$<$ BlockGraphStructure, T $>$@{TruncatedUniformPrior$<$ BlockGraphStructure, T $>$}}
+
+
+{\ttfamily \#include $<$Graph\+Prior.\+h$>$}
+
+
+
+Inheritance diagram for Truncated\+Uniform\+Prior$<$ Block\+Graph\+Structure, T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=289pt]{classTruncatedUniformPrior__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Truncated\+Uniform\+Prior$<$ Block\+Graph\+Structure, T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=289pt]{classTruncatedUniformPrior__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classTruncatedUniformPrior_a1226649f7b59008dbcde1180a914f030}{Prob}} (Block\+Graph\+Type const \&G) const override
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classTruncatedUniformPrior_aa126d368191cd26d0b37ebb19610f3f6}{ratio}} (Block\+Graph\+Type const \&G\+\_\+num, Block\+Graph\+Type const \&G\+\_\+den) const override
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classTruncatedUniformPrior_a59eaef83d54024773b732b7f6ee29baa}{log\+\_\+ratio}} (Block\+Graph\+Type const \&G\+\_\+num, Block\+Graph\+Type const \&G\+\_\+den) const override
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGraphPrior}{Graph\+Prior}}$<$ Block\+Graph\+Structure, T $>$ $>$ \mbox{\hyperlink{classTruncatedUniformPrior_af8e6431656a37871ed51166e351eef84}{clone}} () const override
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classTruncatedUniformPrior_af8e6431656a37871ed51166e351eef84}\label{classTruncatedUniformPrior_af8e6431656a37871ed51166e351eef84}} 
+\index{TruncatedUniformPrior$<$ BlockGraphStructure, T $>$@{TruncatedUniformPrior$<$ BlockGraphStructure, T $>$}!clone@{clone}}
+\index{clone@{clone}!TruncatedUniformPrior$<$ BlockGraphStructure, T $>$@{TruncatedUniformPrior$<$ BlockGraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{clone()}{clone()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Block\+Graph\+Structure = Block\+Graph, typename T  = unsigned int$>$ \\
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGraphPrior}{Graph\+Prior}}$<$Block\+Graph\+Structure, T$>$ $>$ \mbox{\hyperlink{classTruncatedUniformPrior}{Truncated\+Uniform\+Prior}}$<$ Block\+Graph\+Structure, T $>$\+::clone (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+\mbox{\Hypertarget{classTruncatedUniformPrior_a59eaef83d54024773b732b7f6ee29baa}\label{classTruncatedUniformPrior_a59eaef83d54024773b732b7f6ee29baa}} 
+\index{TruncatedUniformPrior$<$ BlockGraphStructure, T $>$@{TruncatedUniformPrior$<$ BlockGraphStructure, T $>$}!log\_ratio@{log\_ratio}}
+\index{log\_ratio@{log\_ratio}!TruncatedUniformPrior$<$ BlockGraphStructure, T $>$@{TruncatedUniformPrior$<$ BlockGraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{log\_ratio()}{log\_ratio()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Block\+Graph\+Structure = Block\+Graph, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classTruncatedUniformPrior}{Truncated\+Uniform\+Prior}}$<$ Block\+Graph\+Structure, T $>$\+::log\+\_\+ratio (\begin{DoxyParamCaption}\item[{Block\+Graph\+Type const \&}]{G\+\_\+num,  }\item[{Block\+Graph\+Type const \&}]{G\+\_\+den }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+\mbox{\Hypertarget{classTruncatedUniformPrior_a1226649f7b59008dbcde1180a914f030}\label{classTruncatedUniformPrior_a1226649f7b59008dbcde1180a914f030}} 
+\index{TruncatedUniformPrior$<$ BlockGraphStructure, T $>$@{TruncatedUniformPrior$<$ BlockGraphStructure, T $>$}!Prob@{Prob}}
+\index{Prob@{Prob}!TruncatedUniformPrior$<$ BlockGraphStructure, T $>$@{TruncatedUniformPrior$<$ BlockGraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{Prob()}{Prob()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Block\+Graph\+Structure = Block\+Graph, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classTruncatedUniformPrior}{Truncated\+Uniform\+Prior}}$<$ Block\+Graph\+Structure, T $>$\+::Prob (\begin{DoxyParamCaption}\item[{Block\+Graph\+Type const \&}]{G }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+\mbox{\Hypertarget{classTruncatedUniformPrior_aa126d368191cd26d0b37ebb19610f3f6}\label{classTruncatedUniformPrior_aa126d368191cd26d0b37ebb19610f3f6}} 
+\index{TruncatedUniformPrior$<$ BlockGraphStructure, T $>$@{TruncatedUniformPrior$<$ BlockGraphStructure, T $>$}!ratio@{ratio}}
+\index{ratio@{ratio}!TruncatedUniformPrior$<$ BlockGraphStructure, T $>$@{TruncatedUniformPrior$<$ BlockGraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{ratio()}{ratio()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Block\+Graph\+Structure = Block\+Graph, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classTruncatedUniformPrior}{Truncated\+Uniform\+Prior}}$<$ Block\+Graph\+Structure, T $>$\+::ratio (\begin{DoxyParamCaption}\item[{Block\+Graph\+Type const \&}]{G\+\_\+num,  }\item[{Block\+Graph\+Type const \&}]{G\+\_\+den }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{GraphPrior_8h}{Graph\+Prior.\+h}}\end{DoxyCompactItemize}

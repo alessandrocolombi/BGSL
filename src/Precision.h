@@ -76,7 +76,7 @@ class Precision : PrecisionTraits{
 				throw std::runtime_error("Inv_Scale matrix is not symetric");
 			}
 		};
-		//Receive Matrix, Parameters and a lower triangular matrix representing chol(D^-1)
+		//Receive Matrix, Parameters and a upper triangular matrix representing chol(D^-1)
 		Precision(Graph const & G, InnerData const & _data, Shape _b, InvScale const & _DD, InvScale const & _chol_invD):
 				 data(_data.selfadjointView<Eigen::Upper>()), b(_b), D(_DD), chol_invD(_chol_invD), isFactorized(false)
 		{
@@ -179,7 +179,8 @@ class Precision : PrecisionTraits{
 		}
 		template<typename NormType = utils::MeanNorm>
 		void rgwish(const Graph & G, double const threshold = 1e-8, unsigned int seed = 0);
-		
+		template<typename NormType = utils::MeanNorm>
+		void rgwish2(const Graph & G, double const threshold = 1e-8, unsigned int seed = 0);
 		void set_shape(Shape const & _bb){
 			if(_bb <= 2)
 				throw std::runtime_error("Shape parameter has to be larger than 2");
@@ -524,7 +525,7 @@ long double Precision<CompleteStructure, Type>::log_normalizing_constat(const Co
 
 template<template <typename> class CompleteStructure, typename T>
 template< typename NormType >
-void Precision<CompleteStructure, T>::rgwish(const CompleteStructure<T> & G, double const threshold, unsigned int seed){
+void Precision<CompleteStructure, T>::rgwish2(const CompleteStructure<T> & G, double const threshold, unsigned int seed){
 
 	//std::cout<<"Dentro ad rgwish"<<std::endl;
 	//Typedefs
@@ -652,10 +653,12 @@ void Precision<CompleteStructure, T>::rgwish(const CompleteStructure<T> & G, dou
 					}
 							//std::cout<<"beta_hat_i: "<<std::endl<<beta_hat_i<<std::endl;
 				//Step 5: Set i-th row and col of Omega equal to Omega_noti_noti*beta_hat_i
-					MatRow Omega_noti_noti( utils::SubMatrix<utils::Symmetric::True>(i , Omega) );
-							//std::cout<<"Omega_noti_noti: "<<std::endl<<Omega_noti_noti<<std::endl;
-					beta_i = Omega_noti_noti * beta_hat_i;
-							//std::cout<<"beta_i: "<<std::endl<<beta_i<<std::endl;
+				//MatRow Omega_noti_noti( SubMatrix<Symmetric::True>(i , Omega) );
+						utils::SubMatrixView<utils::Symmetric::True> Omega_noti_noti(i, Omega);
+						//std::cout<<"Omega_noti_noti: "<<std::endl<<Omega_noti_noti<<std::endl;
+				//beta_i = Omega_noti_noti * beta_hat_i;
+						beta_i = utils::SymMatMult(Omega_noti_noti, beta_hat_i);
+						//std::cout<<"beta_i: "<<std::endl<<beta_i<<std::endl;
 			}
 			//Plug beta_i into the i-th row / col except from diagonal element
 			if(i == 0)//plug in first row (no first element)
@@ -690,6 +693,12 @@ void Precision<CompleteStructure, T>::rgwish(const CompleteStructure<T> & G, dou
 	//return Omega.inverse();
 }
 
+template<template <typename> class CompleteStructure, typename T>
+template< typename NormType >
+void Precision<CompleteStructure, T>::rgwish(const CompleteStructure<T> & G, double const threshold, unsigned int seed){
+	std::tie(this->data, std::ignore, std::ignore) = utils::rgwish_core<CompleteStructure,T,utils::ScaleForm::CholUpper_InvScale,NormType>(G,this->b,this->chol_invD,threshold,seed,500);
+
+}
 
 #endif
 

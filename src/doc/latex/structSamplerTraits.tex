@@ -1,0 +1,163 @@
+\hypertarget{structSamplerTraits}{}\doxysection{Sampler\+Traits Struct Reference}
+\label{structSamplerTraits}\index{SamplerTraits@{SamplerTraits}}
+
+
+{\ttfamily \#include $<$Sampler\+Options.\+h$>$}
+
+
+
+Inheritance diagram for Sampler\+Traits\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structSamplerTraits__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Sampler\+Traits\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=163pt]{structSamplerTraits__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{structSamplerTraits_a01ba2183ed2e47a418a265b6ffb79523}{Idx\+Type}} = std\+::size\+\_\+t
+\item 
+using \mbox{\hyperlink{structSamplerTraits_af5ce0c46421546cc1c3cb883dd863df4}{Mat\+Row}} = Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major $>$
+\item 
+using \mbox{\hyperlink{structSamplerTraits_ab1bb42c906c54a2b476623c9ef1557f6}{Mat\+Col}} = Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$
+\item 
+using \mbox{\hyperlink{structSamplerTraits_ab498d69dc98282186f6d88716c2d6747}{Vec\+Row}} = Eigen\+::\+Row\+Vector\+Xd
+\item 
+using \mbox{\hyperlink{structSamplerTraits_aa41cf833bf420e638b25a0f9eb2737c7}{Vec\+Col}} = Eigen\+::\+Vector\+Xd
+\item 
+using \mbox{\hyperlink{structSamplerTraits_ad12b4e9fcb460ed08db530b8ce7fdb1f}{Chol\+Type\+Row}} = Eigen\+::\+L\+LT$<$ Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major $>$, Eigen\+::\+Upper $>$
+\item 
+using \mbox{\hyperlink{structSamplerTraits_a0f160f8f28657e143086163ffb8d79e9}{Chol\+Type\+Col}} = Eigen\+::\+L\+LT$<$ Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$, Eigen\+::\+Lower $>$
+\item 
+using \mbox{\hyperlink{structSamplerTraits_a9c0ce7f385062d4d912b1f5816574b70}{Groups\+Ptr}} = std\+::shared\+\_\+ptr$<$ const \mbox{\hyperlink{classGroups}{Groups}} $>$
+\item 
+using \mbox{\hyperlink{structSamplerTraits_a5c4738adb2d6a9aa0f70dc74361b2f2c}{Ret\+Beta}} = std\+::vector$<$ \mbox{\hyperlink{structSamplerTraits_ab1bb42c906c54a2b476623c9ef1557f6}{Mat\+Col}} $>$
+\item 
+using \mbox{\hyperlink{structSamplerTraits_a559dcc0182f3550c66df81bb1db7e706}{Ret\+Mu}} = std\+::vector$<$ \mbox{\hyperlink{structSamplerTraits_aa41cf833bf420e638b25a0f9eb2737c7}{Vec\+Col}} $>$
+\item 
+using \mbox{\hyperlink{structSamplerTraits_af738d28fbce3e4e0ec94d2523123e4fa}{RetK}} = std\+::vector$<$ \mbox{\hyperlink{structSamplerTraits_af5ce0c46421546cc1c3cb883dd863df4}{Mat\+Row}} $>$
+\item 
+using \mbox{\hyperlink{structSamplerTraits_a88531995e26e408593fb067622dfb9e4}{Ret\+Taueps}} = std\+::vector$<$ \mbox{\hyperlink{classdouble}{double}} $>$
+\item 
+using \mbox{\hyperlink{structSamplerTraits_a8be4671a71b83840b53429d6de0eef01}{Iterator\+Ret\+Beta}} = std\+::vector$<$ \mbox{\hyperlink{structSamplerTraits_ab1bb42c906c54a2b476623c9ef1557f6}{Mat\+Col}} $>$\+::iterator
+\item 
+using \mbox{\hyperlink{structSamplerTraits_a362bd2c02ef874fa63b11c0d1b1fa577}{Iterator\+Ret\+Mu}} = std\+::vector$<$ \mbox{\hyperlink{structSamplerTraits_aa41cf833bf420e638b25a0f9eb2737c7}{Vec\+Col}} $>$\+::iterator
+\item 
+using \mbox{\hyperlink{structSamplerTraits_af4529586bccbd205dfd9fd4d86de45b9}{Iterator\+RetK}} = std\+::vector$<$ \mbox{\hyperlink{structSamplerTraits_af5ce0c46421546cc1c3cb883dd863df4}{Mat\+Row}} $>$\+::iterator
+\item 
+using \mbox{\hyperlink{structSamplerTraits_aaa4f27d4888f1d0df4f92933552789f3}{Iterator\+Ret\+Taueps}} = std\+::vector$<$ \mbox{\hyperlink{classdouble}{double}} $>$\+::iterator
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{structSamplerTraits_a0f160f8f28657e143086163ffb8d79e9}\label{structSamplerTraits_a0f160f8f28657e143086163ffb8d79e9}} 
+\index{SamplerTraits@{SamplerTraits}!CholTypeCol@{CholTypeCol}}
+\index{CholTypeCol@{CholTypeCol}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{CholTypeCol}{CholTypeCol}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_a0f160f8f28657e143086163ffb8d79e9}{Sampler\+Traits\+::\+Chol\+Type\+Col}} =  Eigen\+::\+L\+LT$<$Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major$>$, Eigen\+::\+Lower$>$}
+
+\mbox{\Hypertarget{structSamplerTraits_ad12b4e9fcb460ed08db530b8ce7fdb1f}\label{structSamplerTraits_ad12b4e9fcb460ed08db530b8ce7fdb1f}} 
+\index{SamplerTraits@{SamplerTraits}!CholTypeRow@{CholTypeRow}}
+\index{CholTypeRow@{CholTypeRow}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{CholTypeRow}{CholTypeRow}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_ad12b4e9fcb460ed08db530b8ce7fdb1f}{Sampler\+Traits\+::\+Chol\+Type\+Row}} =  Eigen\+::\+L\+LT$<$Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major$>$, Eigen\+::\+Upper$>$}
+
+\mbox{\Hypertarget{structSamplerTraits_a9c0ce7f385062d4d912b1f5816574b70}\label{structSamplerTraits_a9c0ce7f385062d4d912b1f5816574b70}} 
+\index{SamplerTraits@{SamplerTraits}!GroupsPtr@{GroupsPtr}}
+\index{GroupsPtr@{GroupsPtr}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{GroupsPtr}{GroupsPtr}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_a9c0ce7f385062d4d912b1f5816574b70}{Sampler\+Traits\+::\+Groups\+Ptr}} =  std\+::shared\+\_\+ptr$<$const \mbox{\hyperlink{classGroups}{Groups}}$>$}
+
+\mbox{\Hypertarget{structSamplerTraits_a01ba2183ed2e47a418a265b6ffb79523}\label{structSamplerTraits_a01ba2183ed2e47a418a265b6ffb79523}} 
+\index{SamplerTraits@{SamplerTraits}!IdxType@{IdxType}}
+\index{IdxType@{IdxType}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{IdxType}{IdxType}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_a01ba2183ed2e47a418a265b6ffb79523}{Sampler\+Traits\+::\+Idx\+Type}} =  std\+::size\+\_\+t}
+
+\mbox{\Hypertarget{structSamplerTraits_a8be4671a71b83840b53429d6de0eef01}\label{structSamplerTraits_a8be4671a71b83840b53429d6de0eef01}} 
+\index{SamplerTraits@{SamplerTraits}!IteratorRetBeta@{IteratorRetBeta}}
+\index{IteratorRetBeta@{IteratorRetBeta}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{IteratorRetBeta}{IteratorRetBeta}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_a8be4671a71b83840b53429d6de0eef01}{Sampler\+Traits\+::\+Iterator\+Ret\+Beta}} =  std\+::vector$<$\mbox{\hyperlink{structSamplerTraits_ab1bb42c906c54a2b476623c9ef1557f6}{Mat\+Col}}$>$\+::iterator}
+
+\mbox{\Hypertarget{structSamplerTraits_af4529586bccbd205dfd9fd4d86de45b9}\label{structSamplerTraits_af4529586bccbd205dfd9fd4d86de45b9}} 
+\index{SamplerTraits@{SamplerTraits}!IteratorRetK@{IteratorRetK}}
+\index{IteratorRetK@{IteratorRetK}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{IteratorRetK}{IteratorRetK}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_af4529586bccbd205dfd9fd4d86de45b9}{Sampler\+Traits\+::\+Iterator\+RetK}} =  std\+::vector$<$\mbox{\hyperlink{structSamplerTraits_af5ce0c46421546cc1c3cb883dd863df4}{Mat\+Row}}$>$\+::iterator}
+
+\mbox{\Hypertarget{structSamplerTraits_a362bd2c02ef874fa63b11c0d1b1fa577}\label{structSamplerTraits_a362bd2c02ef874fa63b11c0d1b1fa577}} 
+\index{SamplerTraits@{SamplerTraits}!IteratorRetMu@{IteratorRetMu}}
+\index{IteratorRetMu@{IteratorRetMu}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{IteratorRetMu}{IteratorRetMu}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_a362bd2c02ef874fa63b11c0d1b1fa577}{Sampler\+Traits\+::\+Iterator\+Ret\+Mu}} =  std\+::vector$<$\mbox{\hyperlink{structSamplerTraits_aa41cf833bf420e638b25a0f9eb2737c7}{Vec\+Col}}$>$\+::iterator}
+
+\mbox{\Hypertarget{structSamplerTraits_aaa4f27d4888f1d0df4f92933552789f3}\label{structSamplerTraits_aaa4f27d4888f1d0df4f92933552789f3}} 
+\index{SamplerTraits@{SamplerTraits}!IteratorRetTaueps@{IteratorRetTaueps}}
+\index{IteratorRetTaueps@{IteratorRetTaueps}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{IteratorRetTaueps}{IteratorRetTaueps}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_aaa4f27d4888f1d0df4f92933552789f3}{Sampler\+Traits\+::\+Iterator\+Ret\+Taueps}} =  std\+::vector$<$\mbox{\hyperlink{classdouble}{double}}$>$\+::iterator}
+
+\mbox{\Hypertarget{structSamplerTraits_ab1bb42c906c54a2b476623c9ef1557f6}\label{structSamplerTraits_ab1bb42c906c54a2b476623c9ef1557f6}} 
+\index{SamplerTraits@{SamplerTraits}!MatCol@{MatCol}}
+\index{MatCol@{MatCol}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{MatCol}{MatCol}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_ab1bb42c906c54a2b476623c9ef1557f6}{Sampler\+Traits\+::\+Mat\+Col}} =  Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major$>$}
+
+\mbox{\Hypertarget{structSamplerTraits_af5ce0c46421546cc1c3cb883dd863df4}\label{structSamplerTraits_af5ce0c46421546cc1c3cb883dd863df4}} 
+\index{SamplerTraits@{SamplerTraits}!MatRow@{MatRow}}
+\index{MatRow@{MatRow}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{MatRow}{MatRow}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_af5ce0c46421546cc1c3cb883dd863df4}{Sampler\+Traits\+::\+Mat\+Row}} =  Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major$>$}
+
+\mbox{\Hypertarget{structSamplerTraits_a5c4738adb2d6a9aa0f70dc74361b2f2c}\label{structSamplerTraits_a5c4738adb2d6a9aa0f70dc74361b2f2c}} 
+\index{SamplerTraits@{SamplerTraits}!RetBeta@{RetBeta}}
+\index{RetBeta@{RetBeta}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{RetBeta}{RetBeta}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_a5c4738adb2d6a9aa0f70dc74361b2f2c}{Sampler\+Traits\+::\+Ret\+Beta}} =  std\+::vector$<$\mbox{\hyperlink{structSamplerTraits_ab1bb42c906c54a2b476623c9ef1557f6}{Mat\+Col}}$>$}
+
+\mbox{\Hypertarget{structSamplerTraits_af738d28fbce3e4e0ec94d2523123e4fa}\label{structSamplerTraits_af738d28fbce3e4e0ec94d2523123e4fa}} 
+\index{SamplerTraits@{SamplerTraits}!RetK@{RetK}}
+\index{RetK@{RetK}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{RetK}{RetK}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_af738d28fbce3e4e0ec94d2523123e4fa}{Sampler\+Traits\+::\+RetK}} =  std\+::vector$<$\mbox{\hyperlink{structSamplerTraits_af5ce0c46421546cc1c3cb883dd863df4}{Mat\+Row}}$>$}
+
+\mbox{\Hypertarget{structSamplerTraits_a559dcc0182f3550c66df81bb1db7e706}\label{structSamplerTraits_a559dcc0182f3550c66df81bb1db7e706}} 
+\index{SamplerTraits@{SamplerTraits}!RetMu@{RetMu}}
+\index{RetMu@{RetMu}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{RetMu}{RetMu}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_a559dcc0182f3550c66df81bb1db7e706}{Sampler\+Traits\+::\+Ret\+Mu}} =  std\+::vector$<$\mbox{\hyperlink{structSamplerTraits_aa41cf833bf420e638b25a0f9eb2737c7}{Vec\+Col}}$>$}
+
+\mbox{\Hypertarget{structSamplerTraits_a88531995e26e408593fb067622dfb9e4}\label{structSamplerTraits_a88531995e26e408593fb067622dfb9e4}} 
+\index{SamplerTraits@{SamplerTraits}!RetTaueps@{RetTaueps}}
+\index{RetTaueps@{RetTaueps}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{RetTaueps}{RetTaueps}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_a88531995e26e408593fb067622dfb9e4}{Sampler\+Traits\+::\+Ret\+Taueps}} =  std\+::vector$<$\mbox{\hyperlink{classdouble}{double}}$>$}
+
+\mbox{\Hypertarget{structSamplerTraits_aa41cf833bf420e638b25a0f9eb2737c7}\label{structSamplerTraits_aa41cf833bf420e638b25a0f9eb2737c7}} 
+\index{SamplerTraits@{SamplerTraits}!VecCol@{VecCol}}
+\index{VecCol@{VecCol}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{VecCol}{VecCol}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_aa41cf833bf420e638b25a0f9eb2737c7}{Sampler\+Traits\+::\+Vec\+Col}} =  Eigen\+::\+Vector\+Xd}
+
+\mbox{\Hypertarget{structSamplerTraits_ab498d69dc98282186f6d88716c2d6747}\label{structSamplerTraits_ab498d69dc98282186f6d88716c2d6747}} 
+\index{SamplerTraits@{SamplerTraits}!VecRow@{VecRow}}
+\index{VecRow@{VecRow}!SamplerTraits@{SamplerTraits}}
+\doxysubsubsection{\texorpdfstring{VecRow}{VecRow}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{structSamplerTraits_ab498d69dc98282186f6d88716c2d6747}{Sampler\+Traits\+::\+Vec\+Row}} =  Eigen\+::\+Row\+Vector\+Xd}
+
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{SamplerOptions_8h}{Sampler\+Options.\+h}}\end{DoxyCompactItemize}

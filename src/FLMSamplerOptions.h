@@ -8,7 +8,8 @@
 
 
 struct FLMsamplerTraits{
-	
+	// RetK is a vector containing the upper triangular part of the precision matrix. It is important to remember that this choice implies that 
+	// elements are saved row by row.
 	using IdxType  	  		= std::size_t;
 	using MatRow      		= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>; 
 	using MatCol      		= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>; 
@@ -19,7 +20,7 @@ struct FLMsamplerTraits{
 	using RetBeta	  		= std::vector<MatCol>; 
 	using RetMu		  		= std::vector<VecCol>; //Sarebbe meglio salvarli in una matrice pxiter_to_store cosi poi posso fare operazioni rowwise
 	using RetTauK	 	  	= std::vector<VecCol>; 
-	using RetK	 	  		= std::vector<MatRow>; 
+	using RetK	 	  		= std::vector<VecCol>; 
 	using RetTaueps	  		= std::vector<double>;
 	//using RetType 			= std::tuple<RetBeta, RetMu, RetTauK, RetTaueps>;
 	using IteratorRetBeta	= std::vector<MatCol>::iterator;
@@ -105,7 +106,11 @@ class InitFLM : public FLMsamplerTraits{
 		tau_eps0 = _tau_eps0;
 		K0 = _K0; 
 		G  = _G; 
-	}			
+	}
+	void set_init(MatCol const & _K0, GraphType<unsigned int> const & _G){
+		K0 = _K0; 
+		G  = _G; 
+	}				
 	MatCol Beta0; //p x n
 	VecCol mu0; // p
 	double tau_eps0; //scalar

@@ -17,6 +17,11 @@ namespace utils{
 	using MatRow  	= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 	using IdxType   = std::size_t;
 	using Container = std::vector<unsigned int>;
+	using MatCol   	= Eigen::MatrixXd;
+	using VecCol    = Eigen::VectorXd;
+	using ArrInt    = Eigen::Array<unsigned int, Eigen::Dynamic, 1>;
+	using VecInt    = Eigen::Matrix<unsigned int, Eigen::Dynamic, 1>;
+
 	//Some constants
 	inline constexpr double pi 			 = M_PI;
 	inline constexpr double pi_2 			 = M_PI_2;
@@ -28,18 +33,16 @@ namespace utils{
 	inline constexpr long double log_2pi	 = std::log(2*pi);
 	inline constexpr long double log_pi	 = std::log(pi);
 
-
-  //------------------------------------------------------------------------------------------------------------------------------------------------------
+  	//------------------------------------------------------------------------------------------------------------------------------------------------------
 	//With the introduction of Eigen 3.4, all these operations can be done much easier and faster. Unfortunately right now RcppEigen supports only Eigen
 	// 3.3.7.
 	// See https://eigen.tuxfamily.org/dox-devel/group__TutorialSlicingIndexing.html
-	namespace Symmetric{
-		struct True; //Assuming it is upper symmetric
-		struct False;
-	}
-
-	template<typename Sym = Symmetric::False> 
-	MatRow SubMatrix(Container const & nbd, MatRow const & M){
+	enum class Symmetric{
+		True, //Assuming it is upper symmetric
+		False
+	};
+	template<Symmetric Sym = Symmetric::False> 
+	MatRow SubMatrix_old(Container const & nbd, MatRow const & M){
 		//Check
 		if(M.rows() != M.cols())
 			throw std::runtime_error("Passing different number of rows and cols in a symmetric matrix. Maybe you need to use Symmetric::False");
@@ -50,10 +53,9 @@ namespace utils{
 		//Fill the sub-matrix
 		//#pragma omp parallel
 		//{
-			//std::cout<<"Hello SubMatrix! "<<std::endl;
+			//std::cout<<"Hello SubMatrix_old! "<<std::endl;
 		//}
-		if constexpr(std::is_same<Symmetric::True, Sym>::value){
-			//#pragma omp parallel for shared(res, M)
+		if constexpr(Sym == Symmetric::True){
 			for(IdxType i = 0; i < res.rows(); ++i)
 				for(IdxType j = i; j < res.cols(); ++j)
 					res(i,j) = M(nbd[i], nbd[j]);
@@ -61,7 +63,6 @@ namespace utils{
 			return res.selfadjointView<Eigen::Upper>();
 		}
 		else{
-			//#pragma omp parallel for shared(res, M)
 			for(IdxType i = 0; i < res.rows(); ++i)
 				for(IdxType j = 0; j < res.cols(); ++j)
 					res(i,j) = M(nbd[i], nbd[j]);
@@ -69,8 +70,8 @@ namespace utils{
 			return res;
 		}
 	} //Gets vector whose rows and cols has to be estracted
-	template<typename Sym = Symmetric::False>
-	MatRow SubMatrix(unsigned int const & exclude, MatRow const & M){
+	template<Symmetric Sym = Symmetric::False>
+	MatRow SubMatrix_old(unsigned int const & exclude, MatRow const & M){
 		//Check
 		if(M.cols() != M.rows())
 			throw std::runtime_error("Non square matrix inserted.");
@@ -89,15 +90,15 @@ namespace utils{
 			res.block(0,0,exclude,exclude) = M.block(0,0,exclude,exclude);
 			res.block(exclude,exclude,res.rows()-exclude,res.rows()-exclude) = M.block(exclude+1,exclude+1,res.rows()-exclude,res.rows()-exclude);
 			res.block(0,exclude,exclude,res.rows()-exclude) = M.block(0,exclude+1,exclude,res.rows()-exclude);
-				if constexpr(!std::is_same<Symmetric::True, Sym>::value)
+				if constexpr(Sym == Symmetric::False)
 					res.block(exclude,0,res.rows()-exclude,exclude) = M.block(exclude+1,0,res.rows()-exclude,exclude);
 		}
-		if constexpr(std::is_same<Symmetric::True, Sym>::value)
+		if constexpr(Sym == Symmetric::True)
 			return res.selfadjointView<Eigen::Upper>();
 		else
 			return res;
 	} //gets the index whose row and column has to be excluded. Symmetry here is not for efficiency but to be sure to get a sym matrix
-	MatRow SubMatrix(Container const & nbd_rows, Container const & nbd_cols, MatRow const & M){
+	MatRow SubMatrix_old(Container const & nbd_rows, Container const & nbd_cols, MatRow const & M){
 		if(*nbd_rows.crbegin() >= M.rows() || *nbd_cols.crbegin() >= M.cols())
 			throw std::runtime_error("Indeces exceed matrix dimension");
 		//Create return obj
@@ -107,7 +108,7 @@ namespace utils{
 					res(i,j) = M(nbd_rows[i], nbd_cols[j]);
 		return res;
 	} //Passing rows to be exctracted and cols to be extracted. May be different
-	MatRow SubMatrix(Container const & nbd_rows, unsigned int const & idx, MatRow const & M){
+	MatRow SubMatrix_old(Container const & nbd_rows, unsigned int const & idx, MatRow const & M){
 		if(*nbd_rows.crbegin() >= M.rows() || idx >= M.cols())
 			throw std::runtime_error("Indeces exceed matrix dimension");
 		//Create return obj
@@ -116,7 +117,7 @@ namespace utils{
 				res(i) = M(nbd_rows[i], idx);
 		return res;
 	} //Passing rows to be exctracted and the colums index to be extracted.
-	MatRow SubMatrix(unsigned int const & idx, Container const & nbd_cols, MatRow const & M){
+	MatRow SubMatrix_old(unsigned int const & idx, Container const & nbd_cols, MatRow const & M){
 		if(*nbd_cols.crbegin() >= M.cols() || idx >= M.rows())
 			throw std::runtime_error("Indeces exceed matrix dimension");
 		Eigen::RowVectorXd res(nbd_cols.size());
@@ -124,7 +125,205 @@ namespace utils{
 				res(j) = M(idx, nbd_cols[j]);
 		return res;
 	} //Passing cols to be exctracted and row index to be extracted.
+	//------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	// The following functor and function are taken from the Eigen manual. https://eigen.tuxfamily.org/dox/TopicCustomizing_NullaryExpr.html.
+	// The implement a way to easily select submatrices in Matlab fashion, i.e A([1,2,5],[0,3,6]). They are much more general with respect to SubMatrix_old and
+	// way more options are available. For the needs of rgwish_core they actually do not perform much better than the old version.
+	// Right now there is a problem, Neighbourhood is map< vector<unsigned int> > which means that all the nbds need to be mapped into an eigen type. The overhead of Eigen::Map
+	// should be minimal but that function directly works on the buffer. This means that it is not possible to declare nbds as const. Moreover, removing the const adornal, it is 
+	// now no longer possible to pass r-value references, i.e SubMatrix({0,1},M) is not possible.
+	template<class ArgType, class RowIndexType, class ColIndexType>
+	class indexing_functor {
+	  const ArgType &m_arg;
+	  const RowIndexType &m_rowIndices;
+	  const ColIndexType &m_colIndices;
+	  public:
+	  typedef Eigen::Matrix<typename ArgType::Scalar,
+	                 		RowIndexType::SizeAtCompileTime,
+	                 		ColIndexType::SizeAtCompileTime,
+	                 		ArgType::Flags&Eigen::RowMajorBit?Eigen::RowMajor:Eigen::ColMajor,
+	                 		RowIndexType::MaxSizeAtCompileTime,
+	                 		ColIndexType::MaxSizeAtCompileTime> MatrixType;
+	 
+	  indexing_functor(const ArgType& arg, const RowIndexType& row_indices, const ColIndexType& col_indices)
+	    : m_arg(arg), m_rowIndices(row_indices), m_colIndices(col_indices)
+	  {}
+	 
+	  const typename ArgType::Scalar& operator() (Eigen::Index row, Eigen::Index col) const {
+	    return m_arg(m_rowIndices[row], m_colIndices[col]);
+	  }
+	};
+	template <class ArgType, class RowIndexType, class ColIndexType>
+	Eigen::CwiseNullaryOp<indexing_functor<ArgType,RowIndexType,ColIndexType>, typename indexing_functor<ArgType,RowIndexType,ColIndexType>::MatrixType>
+	indexing(const Eigen::MatrixBase<ArgType>& arg, const RowIndexType& row_indices, const ColIndexType& col_indices)
+	{
+	  typedef indexing_functor<ArgType,RowIndexType,ColIndexType> Func;
+	  typedef typename Func::MatrixType MatrixType;
+	  return MatrixType::NullaryExpr(row_indices.size(), col_indices.size(), Func(arg.derived(), row_indices, col_indices));
+	}
 
+	template<Symmetric Sym = Symmetric::False> 
+	MatRow SubMatrix(Container const & nbd, MatRow const & M){
+		//Check
+		if(M.rows() != M.cols())
+			throw std::runtime_error("Passing different number of rows and cols in a symmetric matrix. Maybe you need to use Symmetric::False");
+		if(*nbd.crbegin() >= M.rows())
+			throw std::runtime_error("Indeces exceed matrix dimension");
+
+		MatRow res = indexing(M, Eigen::Map<const ArrInt> (&(nbd[0]), nbd.size()), Eigen::Map<const ArrInt> (&(nbd[0]), nbd.size()));
+		
+		if constexpr(Sym == Symmetric::True){
+			return res.selfadjointView<Eigen::Upper>();
+		}
+		else{
+			return res;
+		}
+	} //Gets vector whose rows and cols has to be estracted
+	template<Symmetric Sym = Symmetric::False>
+	MatRow SubMatrix(unsigned int const & exclude, MatRow const & M){
+		//Check
+		if(M.cols() != M.rows())
+			throw std::runtime_error("Non square matrix inserted.");
+		if(exclude >= M.rows())
+			throw std::runtime_error("Index exceed matrix dimension");
+		const unsigned int & N = M.rows();
+		//Fill the sub-matrix
+		MatRow res(MatRow::Zero(N-1, N-1));
+		if(exclude == 0){
+			ArrInt nbd(ArrInt::LinSpaced(N-1, 1, N));
+			res = indexing(M, nbd, nbd );
+		}
+		else if(exclude == N-1){
+			ArrInt nbd(ArrInt::LinSpaced(N-1, 0, N-1 ));
+			res = indexing(M, nbd, nbd );
+		}
+		else{
+			ArrInt nbd(N-1);
+			nbd.head(exclude) = ArrInt::LinSpaced(exclude, 0, exclude-1);
+			nbd.tail(N - 1 - exclude) = ArrInt::LinSpaced(N - 1 - exclude, exclude+1, N);
+			res = indexing(M, nbd, nbd );
+		}
+		if constexpr(Sym == Symmetric::True)
+			return res.selfadjointView<Eigen::Upper>();
+		else
+			return res;
+	} //gets the index whose row and column has to be excluded. Symmetry here is not for efficiency but to be sure to get a sym matrix
+	MatRow SubMatrix(Container const & nbd_rows, Container const & nbd_cols, MatRow const & M){
+		if(*nbd_rows.crbegin() >= M.rows() || *nbd_cols.crbegin() >= M.cols())
+			throw std::runtime_error("Indeces exceed matrix dimension");
+		MatRow res = indexing(M, Eigen::Map<const ArrInt> (&(nbd_rows[0]), nbd_rows.size()), Eigen::Map<const ArrInt> (&(nbd_cols[0]), nbd_cols.size()));
+		return res;
+	} //Passing rows to be exctracted and cols to be extracted. May be different
+	MatRow SubMatrix(Container const & nbd_rows, unsigned int idx, MatRow const & M){
+		if(*nbd_rows.crbegin() >= M.rows() || idx >= M.cols())
+			throw std::runtime_error("Indeces exceed matrix dimension");
+		MatRow res = indexing( M, Eigen::Map<const ArrInt> (&(nbd_rows[0]), nbd_rows.size()), Eigen::Map<const ArrInt> (&idx, 1) );
+		return res;
+	} //Passing rows to be exctracted and the colums index to be extracted.
+	MatRow SubMatrix(unsigned int idx, Container const & nbd_cols, MatRow const & M){
+		if(*nbd_cols.crbegin() >= M.cols() || idx >= M.rows())
+			throw std::runtime_error("Indeces exceed matrix dimension");
+		MatRow res = indexing( M, Eigen::Map<const ArrInt> (&idx, 1), Eigen::Map<const ArrInt> (&(nbd_cols[0]), nbd_cols.size()) );
+		return res;
+	} //Passing cols to be exctracted and row index to be extracted.
+
+	//------------------------------------------------------------------------------------------------------------------------------------------------------
+	//This class provides a View of a SubMatrix, i.e no copies are performed. The drawback is that it is no longer an Eigen matrix, so operations are not as
+	//optimizes as Eigen
+	template<Symmetric Sym = Symmetric::False>
+	class SubMatrixView  //Esempio uso, SubMatrixView SubMat(GWishObj.get_nbd(idx), Mat);
+	{
+	 	using InnerData  = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>; 
+		using IdxType  	 = std::size_t;
+		using Container  = std::vector<unsigned int>;
+		public:
+			SubMatrixView(Container const & _nbd, InnerData & _data):nbd_rows(_nbd), nbd_cols(_nbd),data(_data){
+				if constexpr(Sym == Symmetric::True){
+					if(nbd_rows.size() != nbd_cols.size())
+						throw std::runtime_error("Passing different number of rows and cols in a symmetric matrix. Maybe you need to use Symmetric::False");
+				}
+			}; //Gets vector whose rows and cols has to be estracted
+			SubMatrixView(unsigned int const & _exclude, InnerData & _data): data(_data){
+				nbd_rows.reserve(data.cols() - 1);
+				nbd_cols.reserve(data.cols() - 1);
+				for(unsigned int i = 0; i <= data.cols()-1; ++i){
+					if(i != _exclude){
+						nbd_rows.emplace_back(i);
+						nbd_cols.emplace_back(i);
+					}
+				}
+			}; //gets the index whose row and column has to be excluded
+			SubMatrixView(Container const & _nbd_rows, Container const & _nbd_cols, InnerData & _data):nbd_rows(_nbd_rows), nbd_cols(_nbd_cols),data(_data){
+				if constexpr(Sym == Symmetric::True){
+					if(nbd_rows.size() != nbd_cols.size())
+						throw std::runtime_error("Passing different number of rows and cols in a symmetric matrix. Maybe you need to use Symmetric::False");
+				}
+			}; //Passing rows to be exctracted and cols to be extracted. May be different
+			SubMatrixView(Container const & _nbd, unsigned int const & _idx, InnerData & _data):nbd_rows(_nbd), nbd_cols({_idx}),data(_data){
+				if constexpr(Sym == Symmetric::True){
+					throw std::runtime_error("A column vector cannot be symmetric. Maybe you need to use Symmetric::False");
+				}
+			}; //Passing rows to be exctracted and the colums index to be extracted. 
+			SubMatrixView(unsigned int const & _idx, Container const & _nbd, InnerData & _data):nbd_rows({_idx}), nbd_cols(_nbd),data(_data){
+				if constexpr(Sym == Symmetric::True){
+					throw std::runtime_error("A row vector cannot be symmetric. Maybe you need to use Symmetric::False");
+				}
+			}; //Passing cols to be exctracted and row index to be extracted. 
+
+			double operator()(IdxType const & i, IdxType const & j) const{
+				if(i >= nbd_rows.size() || j >= nbd_cols.size())
+					throw std::runtime_error("Invalid index request");
+				else{
+					if constexpr(Sym == Symmetric::True)
+						return (i < j) ? data(nbd_rows[i], nbd_cols[j]) : data(nbd_rows[j], nbd_cols[i]);
+					else
+						return data(nbd_rows[i], nbd_cols[j]);
+				}
+			}
+			inline unsigned int rows() const{
+				return nbd_rows.size();
+			}
+			inline unsigned int cols() const{
+				return nbd_cols.size();
+			}
+			inline std::pair<unsigned int, unsigned int> dims() const{
+				return std::make_pair<unsigned int, unsigned int>(nbd_rows.size(), nbd_cols.size());
+			}
+		private:
+			Container nbd_rows; //must be sorted	
+			Container nbd_cols; //must be sorted	
+			const InnerData & data;
+	};
+	//Matrix vector multiplication per a generic matrix A. Only requirement for A is that it implements operator (i,j)
+	template<class MatType>
+	Eigen::VectorXd MatVecMult(MatType const & A, const Eigen::VectorXd & b)
+	{
+		Eigen::VectorXd res(Eigen::VectorXd::Zero(A.rows()));
+		for(unsigned int i = 0; i < A.rows(); ++i){
+			for(unsigned int j = 0; j < A.cols(); ++j){
+				res(i) += A(i,j)*b(j);
+			}
+		}
+		return res;
+	}
+	//As before but tailored for symmetric matrices. It uses only the upper triangular part of the matrix and operations are always performed cache friendly
+	template<class MatType>
+	VecCol SymMatMult(MatType const & A, VecCol const & b)
+	{
+		unsigned int p = A.rows();
+		VecCol res(VecCol::Zero(p));
+		for(unsigned int i = 0; i < p-1; ++i){
+			const double & b_i = b(i);
+			res(i) += A(i,i)*b_i;
+			for(unsigned int j = i+1; j < p; ++j){
+				res(i) += A(i,j)*b(j);
+				res(j) += A(i,j)*b_i;
+			}
+		}
+		res(p-1) += A(p-1,p-1)*b(p-1);
+		return res;
+	}
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 		//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
 	template<template <typename> class Graph, typename T = unsigned int >
@@ -153,6 +352,15 @@ namespace utils{
 			return 1.0/res;
 	} //Rarely used
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	// Taken from eigen manual https://eigen.tuxfamily.org/dox/TopicTemplateKeyword.html
+	// For my needs it is enough to use that line without calling a function but it may be useful for more advanced stuff
+	template <typename Derived1, typename Derived2>
+	void copyUpperTriangularPart(Eigen::MatrixBase<Derived1>& dst, const Eigen::MatrixBase<Derived2>& src)
+	{
+	  dst.template triangularView<Eigen::Upper>() = src.template triangularView<Eigen::Upper>();
+	}
+
 	struct NormInf{
 		using MatRow = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 		static double norm(MatRow const & A, MatRow const & B){
@@ -162,7 +370,7 @@ namespace utils{
 	struct Norm1{
 		using MatRow = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 		static double norm(MatRow const & A, MatRow const & B){
-			return (A - B).lpNorm<1>();
+			return (A - B).template lpNorm<1>();
 		}
 	};
 	struct NormSq{
@@ -181,8 +389,9 @@ namespace utils{
 
 
 	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
+	//(old and well tested version)
  	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, typename NormType = MeanNorm >
- 	MatRow rgwish(GraphStructure<T> const & G, double const & b, Eigen::MatrixXd const & D, double const & threshold = 1e-8,unsigned int seed = 0){
+ 	MatRow rgwish2(GraphStructure<T> const & G, double const & b, Eigen::MatrixXd const & D, double const & threshold = 1e-8,unsigned int seed = 0){
 		//Typedefs
 		using Graph = GraphStructure<T>;
 		using MatRow  	= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
@@ -340,9 +549,9 @@ namespace utils{
 		//return Omega.inverse();
 	}
 
-		//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
+	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
  	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, typename NormType = MeanNorm >
- 	MatRow rgwish2(GraphStructure<T> const & G, double const & b, Eigen::MatrixXd const & D, double const & threshold = 1e-8,unsigned int seed = 0){
+ 	MatRow rgwish3(GraphStructure<T> const & G, double const & b, Eigen::MatrixXd const & D, double const & threshold = 1e-8,unsigned int seed = 0){
 		//Typedefs
 		using Graph = GraphStructure<T>;
 		using MatRow  	= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
@@ -350,7 +559,7 @@ namespace utils{
 		using IdxType  	= std::size_t;
 		using iterator  = std::vector<unsigned int>::iterator;
 		using citerator = std::vector<unsigned int>::const_iterator;
-		//Checks -> meglio farli in R
+		//Checks 
 		static_assert(	std::is_same_v<Graph, GraphType<T> > || std::is_same_v<Graph, CompleteView<T> > || std::is_same_v<Graph, CompleteViewAdj<T> >,
 						"Error, rgwish requires a Complete graph for the sampling. The only possibilities are GraphType, CompleteViewAdj, CompleteView.");
 		if(D.rows()!=D.cols())
@@ -400,7 +609,7 @@ namespace utils{
 		//Start looping
 		while(!converged && it < max_iter){
 			it++;
-			//For every node. Perché devo farlo in ordine? Posso paralellizzare? Avrei sicuro data race ma perché devo fare questi aggiornamenti in ordine
+			//For every node. 
 			for(IdxType i = 0; i < N; ++i){
 					//std::cout<<"i = "<<i<<std::endl;
 					//std::cout<<"Stampo il nbd:"<<std::endl;
@@ -457,7 +666,7 @@ namespace utils{
 					//Step 3: Compute beta_star_i = (Omega_Ni_Ni)^-1*Sigma_Ni_i. beta_star_i in R^|Ni|
 						MatRow Omega_Ni_Ni( SubMatrix<Symmetric::True>(nbd_i, Omega) );
 							//std::cout<<"Omega_Ni_Ni: "<<std::endl<<Omega_Ni_Ni<<std::endl;
-						Eigen::VectorXd Sigma_Ni_i( SubMatrix(nbd_i, i, Sigma) ); //-->questa SubMatrix() meglio farla con block() di eigen -> ma è sbatti
+						Eigen::VectorXd Sigma_Ni_i( SubMatrix(nbd_i, i, Sigma) ); 
 							//std::cout<<"Sigma_Ni_i: "<<std::endl<<Sigma_Ni_i<<std::endl;
 						Eigen::VectorXd beta_star_i = Omega_Ni_Ni.llt().solve(Sigma_Ni_i);
 							//std::cout<<"beta_star_i: "<<std::endl<<beta_star_i<<std::endl;
@@ -475,9 +684,11 @@ namespace utils{
 						}
 								//std::cout<<"beta_hat_i: "<<std::endl<<beta_hat_i<<std::endl;
 					//Step 5: Set i-th row and col of Omega equal to Omega_noti_noti*beta_hat_i
-						MatRow Omega_noti_noti( SubMatrix<Symmetric::True>(i , Omega) );
+						//MatRow Omega_noti_noti( SubMatrix<Symmetric::True>(i , Omega) );
+								SubMatrixView<Symmetric::True> Omega_noti_noti(i, Omega);
 								//std::cout<<"Omega_noti_noti: "<<std::endl<<Omega_noti_noti<<std::endl;
-						beta_i = Omega_noti_noti * beta_hat_i;
+						//beta_i = Omega_noti_noti * beta_hat_i;
+								beta_i = SymMatMult(Omega_noti_noti, beta_hat_i);
 								//std::cout<<"beta_i: "<<std::endl<<beta_i<<std::endl;
 				}
 				//Plug beta_i into the i-th row / col except from diagonal element
@@ -504,10 +715,10 @@ namespace utils{
 				converged = true;
 			}
 		}
-		//std::cout<<"Omega:"<<std::endl<<Omega<<std::endl;
+				//std::cout<<"Omega:"<<std::endl<<Omega<<std::endl;
 		//Step 8: check if everything is fine
-		//std::cout<<"Converged? "<<converged<<std::endl;
-		//std::cout<<"#iterazioni = "<<it<<std::endl;
+				//std::cout<<"Converged? "<<converged<<std::endl;
+				//std::cout<<"#iterazioni = "<<it<<std::endl;
 		//Step 9: return K = Omega^-1
 		return Omega.template selfadjointView<Eigen::Upper>().llt().solve(MatRow::Identity(N, N));
 		//Omega = Omega.selfadjointView<Eigen::Upper>();
@@ -625,7 +836,7 @@ namespace utils{
 							else{ // k < i
 								//std::cout<<"Omega.block(k,0,k,1):"<<std::endl<<Omega.block(k,0,k,1)<<std::endl;
 								//std::cout<<"Omega.block(k,k,1,i-k):"<<std::endl<<Omega.block(k,k,1,i-k)<<std::endl;
-								beta_i.head(k) = Omega.block(k,0,k,1) * beta_star_i;
+								beta_i.head(k) = Omega.block(0,k,k,1) * beta_star_i;
 								beta_i.segment(k,i-k) = Omega.block(k,k,1,i-k).transpose() * beta_star_i;
 								beta_i.tail(beta_i.size()-i) = Omega.block(k,i+1,1,beta_i.size()-i).transpose() * beta_star_i;
 							}
@@ -637,7 +848,7 @@ namespace utils{
 						//Step 3: Compute beta_star_i = (Omega_Ni_Ni)^-1*Sigma_Ni_i. beta_star_i in R^|Ni|
 							MatRow Omega_Ni_Ni( SubMatrix<Symmetric::True>(nbd_i, Omega) );
 								//std::cout<<"Omega_Ni_Ni: "<<std::endl<<Omega_Ni_Ni<<std::endl;
-							Eigen::VectorXd Sigma_Ni_i( SubMatrix(nbd_i, i, Sigma) ); //-->questa SubMatrix() meglio farla con block() di eigen -> ma è sbatti
+							Eigen::VectorXd Sigma_Ni_i( SubMatrix(nbd_i, i, Sigma) ); 
 								//std::cout<<"Sigma_Ni_i: "<<std::endl<<Sigma_Ni_i<<std::endl;
 							Eigen::VectorXd beta_star_i = Omega_Ni_Ni.llt().solve(Sigma_Ni_i);
 								//std::cout<<"beta_star_i: "<<std::endl<<beta_star_i<<std::endl;
@@ -655,9 +866,11 @@ namespace utils{
 							}
 									//std::cout<<"beta_hat_i: "<<std::endl<<beta_hat_i<<std::endl;
 						//Step 5: Set i-th row and col of Omega equal to Omega_noti_noti*beta_hat_i
-							MatRow Omega_noti_noti( SubMatrix<Symmetric::True>(i , Omega) );
+							//MatRow Omega_noti_noti( SubMatrix<Symmetric::True>(i , Omega) );
+							SubMatrixView<Symmetric::True> Omega_noti_noti(i, Omega);
 									//std::cout<<"Omega_noti_noti: "<<std::endl<<Omega_noti_noti<<std::endl;
-							beta_i = Omega_noti_noti * beta_hat_i;
+							//beta_i = Omega_noti_noti * beta_hat_i;
+							beta_i = SymMatMult(Omega_noti_noti, beta_hat_i);
 									//std::cout<<"beta_i: "<<std::endl<<beta_i<<std::endl;
 					}
 					//Plug beta_i into the i-th row / col except from diagonal element
@@ -684,14 +897,322 @@ namespace utils{
 					//std::cout<<"norm_res = "<<norm_res<<std::endl;
 				}
 			}
+			//std::cout<<"Omega:"<<std::endl<<Omega<<std::endl;
 		//Step 8: check if everything is fine
 			//std::cout<<"Converged? "<<converged<<std::endl;
 			//std::cout<<"#iterazioni = "<<it<<std::endl;
 		//Step 9: return K = Omega^-1
-			return std::make_tuple(Omega.selfadjointView<Eigen::Upper>().llt().solve(MatRow::Identity(N, N)),converged, it);
+			return std::make_tuple(Omega.template selfadjointView<Eigen::Upper>().llt().solve(MatRow::Identity(N, N)),converged, it);
 			//Omega = Omega.selfadjointView<Eigen::Upper>();
 			//return Omega.inverse();
 	}
+
+
+	//------------------------------------------------------------------------------------------------------------------------------------------------------
+	enum class ScaleForm
+	{
+		Scale, InvScale, CholUpper_InvScale, CholLower_InvScale
+	};
+
+	template<	template <typename> class GraphStructure = GraphType, typename T = unsigned int, 
+				ScaleForm form = ScaleForm::InvScale, typename NormType = MeanNorm > //Templete parametes
+	std::tuple< MatRow, bool, int>  //Return type
+	rgwish_core( GraphStructure<T> const & G, double const & b, Eigen::MatrixXd & D, double const & threshold = 1e-8,
+				 unsigned int seed = 0, unsigned int const & max_iter = 500 )
+	{
+		//Typedefs
+		using Graph 	= GraphStructure<T>;
+		using MatRow  	= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+		using MatCol   	= Eigen::MatrixXd;
+		using IdxType  	= std::size_t;
+		using iterator  = std::vector<unsigned int>::iterator;
+		using citerator = std::vector<unsigned int>::const_iterator;
+		//Checks 
+		static_assert(	std::is_same_v<Graph, GraphType<T> > || std::is_same_v<Graph, CompleteView<T> > || std::is_same_v<Graph, CompleteViewAdj<T> >,
+						"Error, rgwish requires a Complete graph for the sampling. The only possibilities are GraphType, CompleteViewAdj, CompleteView.");
+		if(D.rows()!=D.cols())
+			throw std::runtime_error("Non squared matrix inserted");
+		if(G.get_size() != D.rows())
+			throw std::runtime_error("Dimension of D is not equal to the number of nodes");
+		//Set parameters
+		unsigned int const N = G.get_size();
+		unsigned int const n_links = G.get_n_links();
+		//unsigned int const max_iter = 500;
+		//double const threshold = 1e-8;
+		bool converged = false;
+		unsigned int it{0};
+		double norm_res{1.0};
+		if(seed == 0){
+			std::random_device rd;
+			seed=rd();
+		}
+		sample::GSL_RNG engine(seed);
+		sample::rchisq  rchisq;
+		if(n_links == 0){
+					//std::cout<<"Empty Graph"<<std::endl;
+			Eigen::VectorXd diag(Eigen::VectorXd::Zero(N));
+			for(unsigned int i = 0; i < N; ++i){  //---> si puo fare con nullaryExpr https://eigen.tuxfamily.org/dox/classEigen_1_1DenseBase.html#title55 ?
+				diag(i) = std::sqrt(rchisq(engine, (double)(b + N - i - 1))  );
+				//K_return(i,i) = std::sqrt(  rchisq(engine, (double)(b + N - i - 1))  );
+			}
+			return std::make_tuple(diag.asDiagonal(), true, 0);
+		}
+
+		//Step 1: Draw K from Wish(b,D) = wish(D^-1, b+N-1)
+			//D matrix can be passed in different form. Usually D is an Inverse_scale parameter, however for sampling from Wishart distribution one need a Scale
+			//matrix, i.e D^-1. The first step of every Wishart sampler is to perform a Cholesky decomposition of D^-1. This means that if this operation has to be
+			//performed many times for the same D matrix, it is convinient to factorized it once and for all. Many choices are then possible and they influence
+			//the function only in this particular point, in the sampling of matrix K. Once K is drawn, they all works the same way.
+		MatCol K(MatCol::Zero(N,N));
+		if constexpr(form == ScaleForm::Scale){ //D is D^-1, Scale matrix. 
+			//std::cout<<"Scale matrix"<<std::endl;
+			K = sample::rwish<MatCol, sample::isChol::False>()(engine, b, D);
+		}
+		else if constexpr(form == ScaleForm::InvScale){ //D is simply D. It has to be also inverted
+			//std::cout<<"InvScale matrix"<<std::endl;
+			MatCol Inv_D(D.llt().solve(MatCol::Identity(N,N))); 
+			K = sample::rwish<MatCol, sample::isChol::False>()(engine, b, Inv_D); 
+		}
+		else if constexpr(form == ScaleForm::CholUpper_InvScale){ // D is chol(D^-1) and it is upper triangular
+			//std::cout<<"Upper chol Scale matrix"<<std::endl;
+			K = sample::rwish<MatCol, sample::isChol::Upper>()(engine, b, D);
+		}
+		else if constexpr(form == ScaleForm::CholLower_InvScale){ // D is chol(D^-1) and it is lower triangular
+			//std::cout<<"Lower chol Scale matrix"<<std::endl;
+			K = sample::rwish<MatCol, sample::isChol::Lower>()(engine, b, D);
+		}
+		else{
+			throw std::runtime_error("Error, rgwish needs to know what type of D matrix has been inserted. Possibilities are utils::ScaleForm::Scale, utils::ScaleForm::InvScale, utils::ScaleForm::CholUpper_InvScale, utils::ScaleForm::CholLower_InvScale");
+		}
+				//std::cout<<"K: "<<std::endl<<K<<std::endl;
+		if(n_links == G.get_possible_links()){
+					//std::cout<<"Complete Graph"<<std::endl;
+			MatRow K_return(K);
+			return std::make_tuple(K_return, true, 0); 
+		}
+		//Step 2: Set Sigma=K^-1 and initialize Omega=Sigma
+			MatRow Sigma(K.llt().solve(MatRow::Identity(N, N)));
+			MatRow Omega_old(MatRow::Zero(Sigma.rows(),Sigma.cols()));
+			MatRow Omega(MatRow::Zero(Sigma.rows(),Sigma.cols()));
+			Omega.template triangularView<Eigen::Upper>() = Omega_old.template triangularView<Eigen::Upper>() = Sigma.template triangularView<Eigen::Upper>();
+
+			//std::cout<<"Sigma: "<<std::endl<<Sigma<<std::endl;
+			//std::cout<<"Omega: "<<std::endl<<Omega<<std::endl;
+		const std::map<unsigned int, std::vector<unsigned int> > nbd(G.get_nbd());
+		//Start looping
+		while(!converged && it < max_iter){
+			it++;
+			//For every node. 
+			for(IdxType i = 0; i < N; ++i){
+					//std::cout<<"i = "<<i<<std::endl;
+					//std::cout<<"Stampo il nbd:"<<std::endl;
+									//auto start = std::chrono::high_resolution_clock::now();
+				//std::vector<unsigned int> nbd_i = G.get_nbd(i);
+				const std::vector<unsigned int>& nbd_i = nbd.find(i)->second;
+									//auto stop = std::chrono::high_resolution_clock::now();
+									//std::chrono::duration<double, std::milli> timer = stop - start;
+									//std::cout << "Time:  " << timer.count()<<" ms"<< std::endl;
+					//for(auto el : nbd_i)
+						//std::cout<<el<<" ";
+					//std::cout<<" "<<std::endl;
+
+				Eigen::VectorXd beta_i = Eigen::VectorXd::Zero(N-1);
+				if(nbd_i.size() == 0){
+					//do nothing
+				}
+				else if( nbd_i.size() == 1){
+					//Non symetric version
+					//std::cout<<"Omega:"<<std::endl<<Omega<<std::endl;
+					const unsigned int &k = nbd_i[0];
+					double beta_star_i = Sigma(k,i) / Omega(k,k); //In this case it is not a linear system but a simple, scalar, equation
+					//std::cout<<"i = "<<i<<std::endl;
+					//std::cout<<"k = "<<k<<std::endl;
+					//std::cout<<"beta_star_i = "<<beta_star_i<<std::endl;
+					if(i == 0){
+						//std::cout<<"Omega.block(1,k, k, 1):"<<std::endl<<Omega.block(1,k, k, 1)<<std::endl;
+						//std::cout<<"Omega.block(k,k+1,1,beta_i.size()-k):"<<std::endl<<Omega.block(k,k+1,1,beta_i.size()-k)<<std::endl;
+						beta_i.head(k) = Omega.block(1,k, k, 1) * beta_star_i;
+						beta_i.tail(beta_i.size()-k) = Omega.block(k,k+1,1,beta_i.size()-k).transpose() * beta_star_i;
+					}
+					else if(i == N-1){
+						//std::cout<<"Omega.block(0,k, k, 1):"<<std::endl<<Omega.block(0,k, k, 1)<<std::endl;
+						//std::cout<<"Omega.block(k,k,1,beta_i.size()-k):"<<std::endl<<Omega.block(k,k,1,beta_i.size()-k)<<std::endl;
+						beta_i.head(k) = Omega.block(0,k, k, 1) * beta_star_i;
+						beta_i.tail(beta_i.size()-k) = Omega.block(k,k,1,beta_i.size()-k).transpose() * beta_star_i;
+					}
+					else{
+						if(i < k){
+							//std::cout<<"Omega.block(0,k, i, 1):"<<std::endl<<Omega.block(0,k, i, 1)<<std::endl;
+							//std::cout<<"Omega.block(i+1,k, k-i, 1):"<<std::endl<<Omega.block(i+1,k, k-i, 1)<<std::endl;
+							//std::cout<<"Omega.block(k,k+1,1,beta_i.size()-k):"<<std::endl<<Omega.block(k,k+1,1,beta_i.size()-k)<<std::endl;
+							beta_i.head(i) = Omega.block(0,k, i, 1) * beta_star_i;
+							beta_i.segment(i,k-i) = Omega.block(i+1,k, k-i, 1) * beta_star_i;
+							beta_i.tail(beta_i.size()-k) = Omega.block(k,k+1,1,beta_i.size()-k).transpose() * beta_star_i;
+						}
+						else{ // k < i
+							//std::cout<<"Omega.block(k,0,k,1):"<<std::endl<<Omega.block(k,0,k,1)<<std::endl;
+							//std::cout<<"Omega.block(k,k,1,i-k):"<<std::endl<<Omega.block(k,k,1,i-k)<<std::endl;
+							beta_i.head(k) = Omega.block(0,k,k,1) * beta_star_i;
+							beta_i.segment(k,i-k) = Omega.block(k,k,1,i-k).transpose() * beta_star_i;
+							beta_i.tail(beta_i.size()-i) = Omega.block(k,i+1,1,beta_i.size()-i).transpose() * beta_star_i;
+						}
+						//get k-th row except i-th column	
+					}
+								//std::cout<<"beta_i: "<<std::endl<<beta_i<<std::endl;
+				}
+				else{
+					//Step 3: Compute beta_star_i = (Omega_Ni_Ni)^-1*Sigma_Ni_i. beta_star_i in R^|Ni|
+						MatRow Omega_Ni_Ni( SubMatrix<Symmetric::True>(nbd_i, Omega) );
+							//std::cout<<"Omega_Ni_Ni: "<<std::endl<<Omega_Ni_Ni<<std::endl;
+						Eigen::VectorXd Sigma_Ni_i( SubMatrix(nbd_i, i, Sigma) ); 
+							//std::cout<<"Sigma_Ni_i: "<<std::endl<<Sigma_Ni_i<<std::endl;
+						Eigen::VectorXd beta_star_i = Omega_Ni_Ni.llt().solve(Sigma_Ni_i);
+							//std::cout<<"beta_star_i: "<<std::endl<<beta_star_i<<std::endl;
+					//Step 4: Define beta_hat_i in R^N-1 such that:
+					//- Entries not associated to elements in Ni are 0
+					//- Entries associated to elements in Ni are given by beta_star_i
+					//- Has no element associated to i
+						Eigen::VectorXd beta_hat_i(Eigen::VectorXd::Zero(N-1));
+						for(citerator j_it = nbd_i.cbegin(); j_it < nbd_i.cend(); ++j_it){
+								//std::cout<<"*j_it = "<<*j_it<<std::endl;
+							if(*j_it < i)
+								beta_hat_i(*j_it) = beta_star_i( j_it - nbd_i.cbegin() );
+							else if(*j_it > i)
+								beta_hat_i(*j_it - 1) = beta_star_i( j_it - nbd_i.cbegin() );
+						}
+								//std::cout<<"beta_hat_i: "<<std::endl<<beta_hat_i<<std::endl;
+					//Step 5: Set i-th row and col of Omega equal to Omega_noti_noti*beta_hat_i
+						//MatRow Omega_noti_noti( SubMatrix<Symmetric::True>(i , Omega) );
+								SubMatrixView<Symmetric::True> Omega_noti_noti(i, Omega);
+								//std::cout<<"Omega_noti_noti: "<<std::endl<<Omega_noti_noti<<std::endl;
+						//beta_i = Omega_noti_noti * beta_hat_i;
+								beta_i = SymMatMult(Omega_noti_noti, beta_hat_i);
+								//std::cout<<"beta_i: "<<std::endl<<beta_i<<std::endl;
+				}
+				//Plug beta_i into the i-th row / col except from diagonal element
+				if(i == 0)//plug in first row (no first element)
+					Omega.block(0,1,1,N-1) = beta_i.transpose();
+				else if(i == N-1)//plug in last column (no last element)
+					Omega.block(0,N-1,N-1,1) = beta_i;
+				else{
+							//std::cout<<"Omega block 1:"<<std::endl<<Omega.block(0,i,i,1)<<std::endl;
+							//std::cout<<"Omega block 2:"<<std::endl<<Omega.block(i,i+1,1,beta_i.size()-i)<<std::endl;
+							//std::cout<<"beta_i: "<<std::endl<<beta_i<<std::endl;
+					Omega.block(0,i,i,1) 	   			 = beta_i.head(i);
+					Omega.block(i,i+1,1,beta_i.size()-i) = beta_i.transpose().tail(beta_i.size()-i);
+				}
+							//std::cout<<"Omega: "<<std::endl<<Omega<<std::endl;
+			}
+		//Step 6: Compute the norm of differences
+			norm_res = NormType::norm(Omega, Omega_old); //Lower trinagular part is all 0. Saddly operator- is not implemented for triangularView
+			Omega_old.template triangularView<Eigen::Upper>() = Omega.template triangularView<Eigen::Upper>();
+			//Omega_old = Omega;
+		//Step 7: Check stop criteria
+				//std::cout<<"Norm res = "<<norm_res<<std::endl;
+			if(norm_res < threshold){
+						//std::cout<<"Norm res = "<<norm_res<<std::endl;
+				converged = true;
+			}
+		}
+				//std::cout<<"converged = "<<converged<<std::endl;
+				//std::cout<<"it = "<<it<<std::endl;
+		return std::make_tuple(Omega.template selfadjointView<Eigen::Upper>().llt().solve(MatRow::Identity(N, N)),converged, it);
+	}
+	
+
+	//------------------------------------------------------------------------------------------------------------------------------------------------------
+	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
+ 	template<	template <typename> class GraphStructure = GraphType, typename T = unsigned int, 
+				ScaleForm form = ScaleForm::InvScale, typename NormType = MeanNorm > //Templete parametes
+	MatRow rgwish( GraphStructure<T> const & G, double const & b, Eigen::MatrixXd & D, double const & threshold = 1e-8,
+				 	unsigned int seed = 0, unsigned int const & max_iter = 500 )
+ 	{
+ 		auto [Prec, conv, n_it] = rgwish_core<GraphStructure,T,form,NormType>(G,b,D,threshold,seed,max_iter);
+ 		return Prec;
+ 	}
+ 	
+ 	//------------------------------------------------------------------------------------------------------------------------------------------------------
+
+ 	//Thanks to rwish_core() function a lot of different possibilities are unified in one simple utility. Unfortunately it depends by many templete parameters.
+ 	//If running in c++ environment this is not a problem and it is a very compact solution. However in R everything is set run time and polymorphism is not allowed.
+ 	//The purpose of build_rgwish_function() is to select the correct type of call deciding runtime. The structure of the graph is still a templete parameter.
+ 	using rgwishRetType = std::tuple< MatRow, bool, int>;
+ 	template <template <typename> class GraphStructure, typename T>
+ 	using rgwish_function = std::function<rgwishRetType(GraphStructure<T> const &, double const &,Eigen::MatrixXd &, double const &,unsigned int, unsigned int const &)>;
+ 	//Usage:
+ 	// auto rgwish_fun = utils::build_rgwish_function<CompleteView, unsigned int>(form, norm);
+ 	// auto rgwish_fun = utils::build_rgwish_function<GraphType, unsigned int>(form, norm);
+ 	// auto [Mat, converged, iter] = rgwish_fun(Graph.completeview(), b, D, threshold, seed, max_iter);
+ 	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int>
+ 	rgwish_function<GraphStructure,T> build_rgwish_function(std::string const & form, std::string const & norm)
+ 	{
+ 		if(form != "Scale" && form !="InvScale" && form != "CholLower_InvScale" && form != "CholUpper_InvScale")
+ 			throw std::runtime_error("Only possible forms are Scale, InvScale, CholLower_InvScale, CholUpper_InvScale");
+ 		if(norm == "Mean"){
+ 			if(form == "Scale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::Scale, MeanNorm>;
+ 			}
+ 			else if(form == "InvScale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::InvScale, MeanNorm>;
+ 			}
+ 			else if(form == "CholLower_InvScale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::CholLower_InvScale, MeanNorm>;
+ 			}
+ 			else if(form == "CholUpper_InvScale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::CholUpper_InvScale, MeanNorm>;
+ 			}
+ 		}
+ 		else if(norm == "Inf"){
+ 			if(form == "Scale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::Scale, NormInf>;
+ 			}
+ 			else if(form == "InvScale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::InvScale, NormInf>;
+ 			}
+ 			else if(form == "CholLower_InvScale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::CholLower_InvScale, NormInf>;
+ 			}
+ 			else if(form == "CholUpper_InvScale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::CholUpper_InvScale, NormInf>;
+ 			}
+
+ 		}
+ 		else if(norm == "One"){
+ 			if(form == "Scale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::Scale, Norm1>;
+ 			}
+ 			else if(form == "InvScale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::InvScale, Norm1>;
+ 			}
+ 			else if(form == "CholLower_InvScale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::CholLower_InvScale, Norm1>;
+ 			}
+ 			else if(form == "CholUpper_InvScale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::CholUpper_InvScale, Norm1>;	
+ 			}
+
+ 		}
+ 		else if(norm == "Squared"){
+ 			if(form == "Scale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::Scale, NormSq>;
+ 			}
+ 			else if(form == "InvScale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::InvScale, NormSq>;
+ 			}
+ 			else if(form == "CholLower_InvScale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::CholLower_InvScale, NormSq>;
+ 			}
+ 			else if(form == "CholUpper_InvScale"){
+ 				return rgwish_core<GraphStructure, T, ScaleForm::CholUpper_InvScale, NormSq>;	
+ 			}
+
+ 		}
+ 		else{ //error
+ 			throw std::runtime_error("The only available norms are Mean, Inf, One and Squared");
+ 		}
+ 		throw std::runtime_error("Error in building rgwish function");
+ 	}
+
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 	
 	double logSumExp(double x, double y)
@@ -764,12 +1285,18 @@ namespace utils{
 		sample::rchisq rchisq;
 		//Start
 		//nu[i] = #1's in i-th row, from position i+1 up to end. Note that it is also  che number of off-diagonal elements in each row
+		auto start = std::chrono::high_resolution_clock::now();
 		std::vector<unsigned int> nu(N);
 		#pragma omp parallel for shared(nu)
 		for(IdxType i = 0; i < N; ++i){
 			std::vector<unsigned int> nbd_i = G.get_nbd(i);
 			nu[i] = std::count_if(nbd_i.cbegin(), nbd_i.cend(), [i](const unsigned int & idx){return idx > i;});
 		}
+		auto stop = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double, std::milli> timer = stop - start;
+		//std::cout << "Time computing nu:  " << timer.count()<<" ms"<< std::endl;
+		
+
 				//std::cout<<"nbd:"<<std::endl;
 					//for(auto v : nu)
 						//std::cout<<v<<", ";
@@ -849,7 +1376,7 @@ namespace utils{
 
 					std::vector<double>::const_iterator it_fe = vector_free_element.cbegin();
 
-					if(H.isIdentity()){ //Takes into account also the case D diagonal but not identity
+					if(H.isIdentity()){ //Takes into account also the case D diagonal 
 						//Step 3: Complete Psi (upper part)
 						//- If i==0 -> all null
 						Psi(0,0) = *it_fe;
@@ -1274,12 +1801,28 @@ namespace utils{
 			return result_MC + result_const_term;
 		}
 	}
+	//------------------------------------------------------------------------------------------------------------------------------------------------------
+	//Function for extracting the upper triangular part of a RowMajor matrix. It is required because Eigen::TriangularView still stores the lower part, it
+	//is simply never used. This version is then more memory friendly.
+	VecCol get_upper_part(MatRow const & Mat)
+	{
+		if(Mat.rows() != Mat.cols())
+			throw std::runtime_error("A squared matrix is needed as input");
+		unsigned int N = Mat.rows();
+		VecCol res(VecCol::Zero(0.5*N*(N-1) + N)); //dimension is equal to all extra-diagonal terms plus diagonal
+		int start_pos{0};
+		unsigned int n_elem{N};
+		for(unsigned int i = 0; i < Mat.rows(); ++i){
+					//std::cout<<"Mat.block(i,i,1,n_elem):"<<std::endl<<Mat.block(i,i,1,n_elem)<<std::endl;
+			res.segment(start_pos, n_elem) = Mat.block(i,i,1,n_elem).transpose();
+			start_pos += n_elem;
+			n_elem--;
+		}
+		return res;
+	}
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 
-	using MatRow  	= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
-	using MatCol   	= Eigen::MatrixXd;
-	using VecCol    = Eigen::VectorXd;
 	std::tuple<MatCol, MatCol, VecCol, double, MatRow, std::vector<bool> > 
 	SimulateData_Block(unsigned int const & p, unsigned int const & n, unsigned int const & r,
 					   MatCol const & BaseMat, BlockGraph<bool> & G,  unsigned int seed = 0)
@@ -1296,7 +1839,8 @@ namespace utils{
 
 				//std::cout<<"G:"<<std::endl<<G<<std::endl;
 		//Precision
-		MatRow K = utils::rgwish(G.completeview(), 3.0, MatRow::Identity(p,p),1e-14,seed);
+		MatCol Icol(MatCol::Identity(p,p));
+		MatRow K = utils::rgwish(G.completeview(), 3.0, Icol, 1e-14,seed,500);
 				//std::cout<<"K:"<<std::endl<<K<<std::endl;
 		//mu
 		VecCol mu(VecCol::Zero(p));
@@ -1349,11 +1893,12 @@ namespace utils{
 		sample::GSL_RNG engine(seed);
 		sample::rmvnorm rmv; //Covariance parametrization
 		MatRow Ip(MatRow::Identity(p,p));
+		MatCol Ip_col(MatCol::Identity(p,p));
 		MatRow Ir(MatRow::Identity(r,r));
 		
 				//std::cout<<"G:"<<std::endl<<G<<std::endl;
 		//Precision
-		MatRow K = utils::rgwish(G.completeview(), 3.0, MatRow::Identity(p,p), 1e-14,seed);
+		MatRow K = utils::rgwish(G.completeview(), 3.0, Ip_col, 1e-14,seed);
 				//std::cout<<"K:"<<std::endl<<K<<std::endl;
 		//mu
 		VecCol mu(VecCol::Zero(p));
@@ -1412,7 +1957,8 @@ namespace utils{
 		sample::rmvnorm_prec<sample::isChol::False> rmv; //Precision parametrization
 				//std::cout<<"G:"<<std::endl<<G<<std::endl;
 		//Precision
-		MatRow K = utils::rgwish(G.completeview(), 3.0, MatRow::Identity(p,p),1e-14,seed);
+		MatCol Icol(MatCol::Identity(p,p));
+		MatRow K = utils::rgwish(G.completeview(), 3.0, Icol,1e-14,seed);
 				//std::cout<<"K:"<<std::endl<<K<<std::endl;
 		//mu
 		VecCol mu(VecCol::Zero(p));
@@ -1461,7 +2007,8 @@ namespace utils{
 		sample::rmvnorm_prec<sample::isChol::False> rmv; //Precision parametrization
 				//std::cout<<"G:"<<std::endl<<G<<std::endl;
 		//Precision
-		MatRow K = utils::rgwish(G, 3.0, MatRow::Identity(p,p), 1e-14, seed);
+		MatCol Icol(MatCol::Identity(p,p));
+		MatRow K = utils::rgwish(G, 3.0, Icol, 1e-14, seed);
 				//std::cout<<"K:"<<std::endl<<K<<std::endl;
 		//mu
 		VecCol mu(VecCol::Zero(p));

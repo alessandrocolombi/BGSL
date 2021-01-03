@@ -74,7 +74,7 @@ public:
   inline unsigned int get_size() const{
     return data.cols();
   }
-  inline unsigned int get_complete_size() const{ //bruttissimo ma serve per coerenza
+  inline unsigned int get_complete_size() const{ //for coherence and symmetry with BlockGraphs
     return data.cols();
   }
   inline Neighbourhood get_nbd() const{
@@ -82,7 +82,7 @@ public:
   }
   inline std::vector<unsigned int> get_nbd(IdxType const & i)const{
     if(i >= neighbours.size())
-      throw std::runtime_error("get_nbd(i) : Invalid index request");
+      throw std::runtime_error("get_nbd(i) : index exceeds matrix dimension");
     else
       return this->neighbours.find(i)->second;
   }
@@ -245,6 +245,8 @@ GraphType<T>::pos_to_ij(typename GraphType<T>::IdxType const & pos) const{
   }
   return static_cast<std::pair<unsigned int, unsigned int> >(std::make_pair(last,last));  
 }
+
+
 
 
 

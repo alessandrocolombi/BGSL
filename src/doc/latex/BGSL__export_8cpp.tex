@@ -1,0 +1,216 @@
+\hypertarget{BGSL__export_8cpp}{}\doxysection{B\+G\+S\+L\+\_\+export.\+cpp File Reference}
+\label{BGSL__export_8cpp}\index{BGSL\_export.cpp@{BGSL\_export.cpp}}
+{\ttfamily \#include $<$Rcpp.\+h$>$}\newline
+{\ttfamily \#include $<$Rcpp\+Eigen.\+h$>$}\newline
+{\ttfamily \#include $<$Rcpp\+Parallel.\+h$>$}\newline
+{\ttfamily \#include \char`\"{}include\+\_\+graphs.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}include\+\_\+headers.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}include\+\_\+helpers.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Graph\+Prior.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Gibbs\+Sampler\+Base.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}G\+G\+M\+Factory.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Posterior\+Analysis.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}Gibbs\+Sampler\+Debug.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}G\+G\+Msampler.\+h\char`\"{}}\newline
+{\ttfamily \#include \char`\"{}F\+L\+Msampler.\+h\char`\"{}}\newline
+Include dependency graph for B\+G\+S\+L\+\_\+export.\+cpp\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{BGSL__export_8cpp__incl}
+\end{center}
+\end{figure}
+\doxysubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \mbox{\hyperlink{BGSL__export_8cpp_a0d32b4def1681c2e4f4d064dfc74b16b}{\+\_\+\+\_\+\+B\+G\+S\+L\+E\+X\+P\+O\+R\+T\+\_\+\+H\+P\+P\+\_\+\+\_\+}}
+\item 
+\#define \mbox{\hyperlink{BGSL__export_8cpp_a966911373aee5e58ed268f7df5539784}{S\+T\+R\+I\+C\+T\+\_\+\+R\+\_\+\+H\+E\+A\+D\+E\+RS}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{BGSL__export_8cpp_a66d21dfc68d67f5d1391f43f24e55b4a}{Mat\+Row}} = Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major $>$
+\item 
+using \mbox{\hyperlink{BGSL__export_8cpp_a8cac83228a6b8718a3e6d93a47aa8840}{Mat\+Col}} = Eigen\+::\+Matrix\+Xd
+\item 
+using \mbox{\hyperlink{BGSL__export_8cpp_a239d468e88b6d7ca53edd726c4b4975f}{Mat\+Uns\+Row}} = Eigen\+::\+Matrix$<$ unsigned int, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major $>$
+\item 
+using \mbox{\hyperlink{BGSL__export_8cpp_aba6864fa4c103d3e5179b6644f4ac492}{Mat\+Uns\+Col}} = Eigen\+::\+Matrix$<$ unsigned int, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$
+\item 
+using \mbox{\hyperlink{BGSL__export_8cpp_a086d4ee2c08441b1f328825308d90f22}{Vec\+Col}} = Eigen\+::\+Vector\+Xd
+\item 
+using \mbox{\hyperlink{BGSL__export_8cpp_a3f532843104f275fc2afe868c9ad2c34}{Vec\+Row}} = Eigen\+::\+Row\+Vector\+Xd
+\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \mbox{\hyperlink{BGSL__export_8cpp_ab16b52d3fe37bccb987164dd4459d997}{test\+\_\+null}} (Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$ G, Rcpp\+::\+Nullable$<$ Rcpp\+::\+List $>$ l=R\+\_\+\+Nil\+Value)
+\item 
+Rcpp\+::\+List \mbox{\hyperlink{BGSL__export_8cpp_a16bd0df7d17fb7150b93247d0e27c780}{r\+Gwish}} (Eigen\+::\+Matrix$<$ unsigned int, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$ G, \mbox{\hyperlink{classdouble}{double}} const \&b, Eigen\+::\+Matrix\+Xd const \&D, Rcpp\+::\+String norm=\char`\"{}Mean\char`\"{}, Rcpp\+::\+Nullable$<$ Rcpp\+::\+List $>$ groups=R\+\_\+\+Nil\+Value, unsigned int const \&max\+\_\+iter=500, long \mbox{\hyperlink{classdouble}{double}} const \&threshold\+\_\+check=1e-\/5, long \mbox{\hyperlink{classdouble}{double}} const \&threshold\+\_\+conv=1e-\/8, int seed=0)
+\item 
+long \mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{BGSL__export_8cpp_ab2a8b20e85d06ce383d8ddced8e36942}{log\+\_\+\+Gconstant}} (Eigen\+::\+Matrix$<$ unsigned int, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$ G, \mbox{\hyperlink{classdouble}{double}} const \&b, Eigen\+::\+Matrix\+Xd const \&D, unsigned int const \&M\+Citeration=100, Rcpp\+::\+Nullable$<$ Rcpp\+::\+List $>$ groups=R\+\_\+\+Nil\+Value, int seed=0)
+\item 
+long \mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{BGSL__export_8cpp_a987b395e78544c4fd73e585f0d4a91d8}{log\+\_\+\+Gconstant2}} (Eigen\+::\+Matrix$<$ unsigned int, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$ G, \mbox{\hyperlink{classdouble}{double}} const \&b, Eigen\+::\+Matrix\+Xd const \&D, unsigned int const \&M\+Citeration=100, Rcpp\+::\+Nullable$<$ Rcpp\+::\+List $>$ groups=R\+\_\+\+Nil\+Value, int seed=0)
+\item 
+Rcpp\+::\+List \mbox{\hyperlink{BGSL__export_8cpp_a6d5a2ad0aba67004fda292042b8ee346}{G\+G\+M\+\_\+sim\+\_\+sampling}} (int const \&p, int const \&n, int const \&niter, int const \&burnin, \mbox{\hyperlink{classdouble}{double}} const \&thin, Eigen\+::\+Matrix\+Xd const \&D, \mbox{\hyperlink{classdouble}{double}} const \&b=3.\+0, int const \&M\+Cprior=100, int const \&M\+Cpost=100, \mbox{\hyperlink{classdouble}{double}} const \&threshold=1e-\/8, Rcpp\+::\+String form=\char`\"{}Complete\char`\"{}, Rcpp\+::\+String prior=\char`\"{}Uniform\char`\"{}, Rcpp\+::\+String algo=\char`\"{}MH\char`\"{}, int const \&n\+\_\+groups=0, int seed=0, \mbox{\hyperlink{classdouble}{double}} sparsity=0.\+5, \mbox{\hyperlink{classdouble}{double}} const \&Gprior=0.\+5, \mbox{\hyperlink{classdouble}{double}} const \&sigmaG=0.\+1, \mbox{\hyperlink{classdouble}{double}} const \&paddrm=0.\+5)
+\item 
+Rcpp\+::\+List \mbox{\hyperlink{BGSL__export_8cpp_aab865cff752ec90bdbbd8efd101417f5}{G\+G\+M\+\_\+sampling}} (Eigen\+::\+Matrix\+Xd const \&data, int const \&p, int const \&n, int const \&niter, int const \&burnin, \mbox{\hyperlink{classdouble}{double}} const \&thin, Eigen\+::\+Matrix\+Xd const \&D, \mbox{\hyperlink{classdouble}{double}} const \&b=3.\+0, int const \&M\+Cprior=100, int const \&M\+Cpost=100, \mbox{\hyperlink{classdouble}{double}} const \&threshold=1e-\/8, Rcpp\+::\+String form=\char`\"{}Complete\char`\"{}, Rcpp\+::\+String prior=\char`\"{}Uniform\char`\"{}, Rcpp\+::\+String algo=\char`\"{}MH\char`\"{}, int const \&n\+\_\+groups=0, int seed=0, \mbox{\hyperlink{classdouble}{double}} const \&Gprior=0.\+5, \mbox{\hyperlink{classdouble}{double}} const \&sigmaG=0.\+1, \mbox{\hyperlink{classdouble}{double}} const \&paddrm=0.\+5)
+\item 
+Rcpp\+::\+List \mbox{\hyperlink{BGSL__export_8cpp_a48a345c3ef18dd6a1f497c9e6d4e09f3}{F\+L\+M\+\_\+sampling\+\_\+c}} (Eigen\+::\+Matrix\+Xd const \&data, int const \&niter, int const \&burnin, \mbox{\hyperlink{classdouble}{double}} const \&thin, Eigen\+::\+Matrix\+Xd const \&Base\+Mat, Eigen\+::\+Matrix$<$ unsigned int, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$ G, bool diagonal\+\_\+graph=true, \mbox{\hyperlink{classdouble}{double}} const \&threshold\+\_\+\+G\+Wish=1e-\/8)
+\item 
+Eigen\+::\+Matrix$<$ unsigned int, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major $>$ \mbox{\hyperlink{BGSL__export_8cpp_af245fb27f1935fa4035d79ededbe4ea0}{Create\+\_\+\+Random\+Graph}} (int const \&p, int const \&n\+\_\+groups=0, Rcpp\+::\+String form=\char`\"{}Complete\char`\"{}, Rcpp\+::\+Nullable$<$ Rcpp\+::\+List $>$ groups=R\+\_\+\+Nil\+Value, \mbox{\hyperlink{classdouble}{double}} sparsity=0.\+5, int seed=0)
+\item 
+Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$ \mbox{\hyperlink{BGSL__export_8cpp_a865b83fdb66053410f1cd40f7101612f}{rmvnormal}} (Eigen\+::\+Vector\+Xd mean, Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$ Mat, bool is\+Prec=false, bool is\+Chol=false, bool is\+Upper=false)
+\item 
+Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$ \mbox{\hyperlink{BGSL__export_8cpp_a7a3ed4257e8ae7245c694b6438f66aa5}{rwishart}} (\mbox{\hyperlink{classdouble}{double}} const \&b, Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$ D, bool is\+Chol=false, bool is\+Upper=false)
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{BGSL__export_8cpp_ad4c033e86dff7485bb884424aa4545f8}{rnormal}} (\mbox{\hyperlink{classdouble}{double}} const \&mean=0.\+0, \mbox{\hyperlink{classdouble}{double}} const \&sd=1.\+0)
+\item 
+Rcpp\+::\+List \mbox{\hyperlink{BGSL__export_8cpp_a22e50a21581b2de8445d9f3eef888c62}{Generate\+\_\+\+Basis}} (int const \&n\+\_\+basis, Rcpp\+::\+Numeric\+Vector range, int n\+\_\+points=0, Rcpp\+::\+Numeric\+Vector grid\+\_\+points=Rcpp\+::\+Numeric\+Vector\+::create(0), int order=3)
+\item 
+Rcpp\+::\+List \mbox{\hyperlink{BGSL__export_8cpp_a216679a793f5faaa8dacfda45519ca81}{Generate\+\_\+\+Basis\+\_\+derivatives}} (int const \&n\+\_\+basis, int const \&nderiv, Rcpp\+::\+Numeric\+Vector range, int n\+\_\+points=0, Rcpp\+::\+Numeric\+Vector grid\+\_\+points=Rcpp\+::\+Numeric\+Vector\+::create(0), int order=3)
+\item 
+Rcpp\+::\+List \mbox{\hyperlink{BGSL__export_8cpp_ad07ee13d2589cdcbfcc08294360a063c}{Compute\+\_\+\+Quantile\+Beta}} (std\+::vector$<$ Eigen\+::\+Matrix\+Xd $>$ const \&Save\+Beta, \mbox{\hyperlink{classdouble}{double}} const \&lower\+\_\+qtl=0.\+05, \mbox{\hyperlink{classdouble}{double}} const \&upper\+\_\+qtl=0.\+95)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Macro Definition Documentation}
+\mbox{\Hypertarget{BGSL__export_8cpp_a0d32b4def1681c2e4f4d064dfc74b16b}\label{BGSL__export_8cpp_a0d32b4def1681c2e4f4d064dfc74b16b}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!\_\_BGSLEXPORT\_HPP\_\_@{\_\_BGSLEXPORT\_HPP\_\_}}
+\index{\_\_BGSLEXPORT\_HPP\_\_@{\_\_BGSLEXPORT\_HPP\_\_}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{\_\_BGSLEXPORT\_HPP\_\_}{\_\_BGSLEXPORT\_HPP\_\_}}
+{\footnotesize\ttfamily \#define \+\_\+\+\_\+\+B\+G\+S\+L\+E\+X\+P\+O\+R\+T\+\_\+\+H\+P\+P\+\_\+\+\_\+}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_a966911373aee5e58ed268f7df5539784}\label{BGSL__export_8cpp_a966911373aee5e58ed268f7df5539784}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!STRICT\_R\_HEADERS@{STRICT\_R\_HEADERS}}
+\index{STRICT\_R\_HEADERS@{STRICT\_R\_HEADERS}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{STRICT\_R\_HEADERS}{STRICT\_R\_HEADERS}}
+{\footnotesize\ttfamily \#define S\+T\+R\+I\+C\+T\+\_\+\+R\+\_\+\+H\+E\+A\+D\+E\+RS}
+
+
+
+\doxysubsection{Typedef Documentation}
+\mbox{\Hypertarget{BGSL__export_8cpp_a8cac83228a6b8718a3e6d93a47aa8840}\label{BGSL__export_8cpp_a8cac83228a6b8718a3e6d93a47aa8840}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!MatCol@{MatCol}}
+\index{MatCol@{MatCol}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{MatCol}{MatCol}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{BGSL__export_8cpp_a8cac83228a6b8718a3e6d93a47aa8840}{Mat\+Col}} =  Eigen\+::\+Matrix\+Xd}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_a66d21dfc68d67f5d1391f43f24e55b4a}\label{BGSL__export_8cpp_a66d21dfc68d67f5d1391f43f24e55b4a}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!MatRow@{MatRow}}
+\index{MatRow@{MatRow}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{MatRow}{MatRow}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{BGSL__export_8cpp_a66d21dfc68d67f5d1391f43f24e55b4a}{Mat\+Row}} =  Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major$>$}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_aba6864fa4c103d3e5179b6644f4ac492}\label{BGSL__export_8cpp_aba6864fa4c103d3e5179b6644f4ac492}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!MatUnsCol@{MatUnsCol}}
+\index{MatUnsCol@{MatUnsCol}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{MatUnsCol}{MatUnsCol}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{BGSL__export_8cpp_aba6864fa4c103d3e5179b6644f4ac492}{Mat\+Uns\+Col}} =  Eigen\+::\+Matrix$<$unsigned int, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major$>$}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_a239d468e88b6d7ca53edd726c4b4975f}\label{BGSL__export_8cpp_a239d468e88b6d7ca53edd726c4b4975f}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!MatUnsRow@{MatUnsRow}}
+\index{MatUnsRow@{MatUnsRow}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{MatUnsRow}{MatUnsRow}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{BGSL__export_8cpp_a239d468e88b6d7ca53edd726c4b4975f}{Mat\+Uns\+Row}} =  Eigen\+::\+Matrix$<$unsigned int, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major$>$}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_a086d4ee2c08441b1f328825308d90f22}\label{BGSL__export_8cpp_a086d4ee2c08441b1f328825308d90f22}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!VecCol@{VecCol}}
+\index{VecCol@{VecCol}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{VecCol}{VecCol}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{BGSL__export_8cpp_a086d4ee2c08441b1f328825308d90f22}{Vec\+Col}} =  Eigen\+::\+Vector\+Xd}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_a3f532843104f275fc2afe868c9ad2c34}\label{BGSL__export_8cpp_a3f532843104f275fc2afe868c9ad2c34}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!VecRow@{VecRow}}
+\index{VecRow@{VecRow}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{VecRow}{VecRow}}
+{\footnotesize\ttfamily using \mbox{\hyperlink{BGSL__export_8cpp_a3f532843104f275fc2afe868c9ad2c34}{Vec\+Row}} =  Eigen\+::\+Row\+Vector\+Xd}
+
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{BGSL__export_8cpp_ad07ee13d2589cdcbfcc08294360a063c}\label{BGSL__export_8cpp_ad07ee13d2589cdcbfcc08294360a063c}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!Compute\_QuantileBeta@{Compute\_QuantileBeta}}
+\index{Compute\_QuantileBeta@{Compute\_QuantileBeta}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{Compute\_QuantileBeta()}{Compute\_QuantileBeta()}}
+{\footnotesize\ttfamily Rcpp\+::\+List Compute\+\_\+\+Quantile\+Beta (\begin{DoxyParamCaption}\item[{std\+::vector$<$ Eigen\+::\+Matrix\+Xd $>$ const \&}]{Save\+Beta,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{lower\+\_\+qtl = {\ttfamily 0.05},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{upper\+\_\+qtl = {\ttfamily 0.95} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_af245fb27f1935fa4035d79ededbe4ea0}\label{BGSL__export_8cpp_af245fb27f1935fa4035d79ededbe4ea0}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!Create\_RandomGraph@{Create\_RandomGraph}}
+\index{Create\_RandomGraph@{Create\_RandomGraph}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{Create\_RandomGraph()}{Create\_RandomGraph()}}
+{\footnotesize\ttfamily Eigen\+::\+Matrix$<$unsigned int, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Row\+Major$>$ Create\+\_\+\+Random\+Graph (\begin{DoxyParamCaption}\item[{int const \&}]{p,  }\item[{int const \&}]{n\+\_\+groups = {\ttfamily 0},  }\item[{Rcpp\+::\+String}]{form = {\ttfamily \char`\"{}Complete\char`\"{}},  }\item[{Rcpp\+::\+Nullable$<$ Rcpp\+::\+List $>$}]{groups = {\ttfamily R\+\_\+NilValue},  }\item[{\mbox{\hyperlink{classdouble}{double}}}]{sparsity = {\ttfamily 0.5},  }\item[{int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_a48a345c3ef18dd6a1f497c9e6d4e09f3}\label{BGSL__export_8cpp_a48a345c3ef18dd6a1f497c9e6d4e09f3}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!FLM\_sampling\_c@{FLM\_sampling\_c}}
+\index{FLM\_sampling\_c@{FLM\_sampling\_c}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{FLM\_sampling\_c()}{FLM\_sampling\_c()}}
+{\footnotesize\ttfamily Rcpp\+::\+List F\+L\+M\+\_\+sampling\+\_\+c (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix\+Xd const \&}]{data,  }\item[{int const \&}]{niter,  }\item[{int const \&}]{burnin,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{thin,  }\item[{Eigen\+::\+Matrix\+Xd const \&}]{Base\+Mat,  }\item[{Eigen\+::\+Matrix$<$ unsigned int, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$}]{G,  }\item[{bool}]{diagonal\+\_\+graph = {\ttfamily true},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{threshold\+\_\+\+G\+Wish = {\ttfamily 1e-\/8} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_a22e50a21581b2de8445d9f3eef888c62}\label{BGSL__export_8cpp_a22e50a21581b2de8445d9f3eef888c62}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!Generate\_Basis@{Generate\_Basis}}
+\index{Generate\_Basis@{Generate\_Basis}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{Generate\_Basis()}{Generate\_Basis()}}
+{\footnotesize\ttfamily Rcpp\+::\+List Generate\+\_\+\+Basis (\begin{DoxyParamCaption}\item[{int const \&}]{n\+\_\+basis,  }\item[{Rcpp\+::\+Numeric\+Vector}]{range,  }\item[{int}]{n\+\_\+points = {\ttfamily 0},  }\item[{Rcpp\+::\+Numeric\+Vector}]{grid\+\_\+points = {\ttfamily Rcpp\+:\+:NumericVector\+:\+:create(0)},  }\item[{int}]{order = {\ttfamily 3} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_a216679a793f5faaa8dacfda45519ca81}\label{BGSL__export_8cpp_a216679a793f5faaa8dacfda45519ca81}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!Generate\_Basis\_derivatives@{Generate\_Basis\_derivatives}}
+\index{Generate\_Basis\_derivatives@{Generate\_Basis\_derivatives}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{Generate\_Basis\_derivatives()}{Generate\_Basis\_derivatives()}}
+{\footnotesize\ttfamily Rcpp\+::\+List Generate\+\_\+\+Basis\+\_\+derivatives (\begin{DoxyParamCaption}\item[{int const \&}]{n\+\_\+basis,  }\item[{int const \&}]{nderiv,  }\item[{Rcpp\+::\+Numeric\+Vector}]{range,  }\item[{int}]{n\+\_\+points = {\ttfamily 0},  }\item[{Rcpp\+::\+Numeric\+Vector}]{grid\+\_\+points = {\ttfamily Rcpp\+:\+:NumericVector\+:\+:create(0)},  }\item[{int}]{order = {\ttfamily 3} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_aab865cff752ec90bdbbd8efd101417f5}\label{BGSL__export_8cpp_aab865cff752ec90bdbbd8efd101417f5}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!GGM\_sampling@{GGM\_sampling}}
+\index{GGM\_sampling@{GGM\_sampling}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{GGM\_sampling()}{GGM\_sampling()}}
+{\footnotesize\ttfamily Rcpp\+::\+List G\+G\+M\+\_\+sampling (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix\+Xd const \&}]{data,  }\item[{int const \&}]{p,  }\item[{int const \&}]{n,  }\item[{int const \&}]{niter,  }\item[{int const \&}]{burnin,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{thin,  }\item[{Eigen\+::\+Matrix\+Xd const \&}]{D,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{b = {\ttfamily 3.0},  }\item[{int const \&}]{M\+Cprior = {\ttfamily 100},  }\item[{int const \&}]{M\+Cpost = {\ttfamily 100},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{threshold = {\ttfamily 1e-\/8},  }\item[{Rcpp\+::\+String}]{form = {\ttfamily \char`\"{}Complete\char`\"{}},  }\item[{Rcpp\+::\+String}]{prior = {\ttfamily \char`\"{}Uniform\char`\"{}},  }\item[{Rcpp\+::\+String}]{algo = {\ttfamily \char`\"{}MH\char`\"{}},  }\item[{int const \&}]{n\+\_\+groups = {\ttfamily 0},  }\item[{int}]{seed = {\ttfamily 0},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{Gprior = {\ttfamily 0.5},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{sigmaG = {\ttfamily 0.1},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{paddrm = {\ttfamily 0.5} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_a6d5a2ad0aba67004fda292042b8ee346}\label{BGSL__export_8cpp_a6d5a2ad0aba67004fda292042b8ee346}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!GGM\_sim\_sampling@{GGM\_sim\_sampling}}
+\index{GGM\_sim\_sampling@{GGM\_sim\_sampling}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{GGM\_sim\_sampling()}{GGM\_sim\_sampling()}}
+{\footnotesize\ttfamily Rcpp\+::\+List G\+G\+M\+\_\+sim\+\_\+sampling (\begin{DoxyParamCaption}\item[{int const \&}]{p,  }\item[{int const \&}]{n,  }\item[{int const \&}]{niter,  }\item[{int const \&}]{burnin,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{thin,  }\item[{Eigen\+::\+Matrix\+Xd const \&}]{D,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{b = {\ttfamily 3.0},  }\item[{int const \&}]{M\+Cprior = {\ttfamily 100},  }\item[{int const \&}]{M\+Cpost = {\ttfamily 100},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{threshold = {\ttfamily 1e-\/8},  }\item[{Rcpp\+::\+String}]{form = {\ttfamily \char`\"{}Complete\char`\"{}},  }\item[{Rcpp\+::\+String}]{prior = {\ttfamily \char`\"{}Uniform\char`\"{}},  }\item[{Rcpp\+::\+String}]{algo = {\ttfamily \char`\"{}MH\char`\"{}},  }\item[{int const \&}]{n\+\_\+groups = {\ttfamily 0},  }\item[{int}]{seed = {\ttfamily 0},  }\item[{\mbox{\hyperlink{classdouble}{double}}}]{sparsity = {\ttfamily 0.5},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{Gprior = {\ttfamily 0.5},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{sigmaG = {\ttfamily 0.1},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{paddrm = {\ttfamily 0.5} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_ab2a8b20e85d06ce383d8ddced8e36942}\label{BGSL__export_8cpp_ab2a8b20e85d06ce383d8ddced8e36942}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!log\_Gconstant@{log\_Gconstant}}
+\index{log\_Gconstant@{log\_Gconstant}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{log\_Gconstant()}{log\_Gconstant()}}
+{\footnotesize\ttfamily long \mbox{\hyperlink{classdouble}{double}} log\+\_\+\+Gconstant (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix$<$ unsigned int, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$}]{G,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{b,  }\item[{Eigen\+::\+Matrix\+Xd const \&}]{D,  }\item[{unsigned int const \&}]{M\+Citeration = {\ttfamily 100},  }\item[{Rcpp\+::\+Nullable$<$ Rcpp\+::\+List $>$}]{groups = {\ttfamily R\+\_\+NilValue},  }\item[{int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_a987b395e78544c4fd73e585f0d4a91d8}\label{BGSL__export_8cpp_a987b395e78544c4fd73e585f0d4a91d8}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!log\_Gconstant2@{log\_Gconstant2}}
+\index{log\_Gconstant2@{log\_Gconstant2}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{log\_Gconstant2()}{log\_Gconstant2()}}
+{\footnotesize\ttfamily long \mbox{\hyperlink{classdouble}{double}} log\+\_\+\+Gconstant2 (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix$<$ unsigned int, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$}]{G,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{b,  }\item[{Eigen\+::\+Matrix\+Xd const \&}]{D,  }\item[{unsigned int const \&}]{M\+Citeration = {\ttfamily 100},  }\item[{Rcpp\+::\+Nullable$<$ Rcpp\+::\+List $>$}]{groups = {\ttfamily R\+\_\+NilValue},  }\item[{int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_a16bd0df7d17fb7150b93247d0e27c780}\label{BGSL__export_8cpp_a16bd0df7d17fb7150b93247d0e27c780}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!rGwish@{rGwish}}
+\index{rGwish@{rGwish}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{rGwish()}{rGwish()}}
+{\footnotesize\ttfamily Rcpp\+::\+List r\+Gwish (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix$<$ unsigned int, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$}]{G,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{b,  }\item[{Eigen\+::\+Matrix\+Xd const \&}]{D,  }\item[{Rcpp\+::\+String}]{norm = {\ttfamily \char`\"{}Mean\char`\"{}},  }\item[{Rcpp\+::\+Nullable$<$ Rcpp\+::\+List $>$}]{groups = {\ttfamily R\+\_\+NilValue},  }\item[{unsigned int const \&}]{max\+\_\+iter = {\ttfamily 500},  }\item[{long \mbox{\hyperlink{classdouble}{double}} const \&}]{threshold\+\_\+check = {\ttfamily 1e-\/5},  }\item[{long \mbox{\hyperlink{classdouble}{double}} const \&}]{threshold\+\_\+conv = {\ttfamily 1e-\/8},  }\item[{int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_a865b83fdb66053410f1cd40f7101612f}\label{BGSL__export_8cpp_a865b83fdb66053410f1cd40f7101612f}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!rmvnormal@{rmvnormal}}
+\index{rmvnormal@{rmvnormal}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{rmvnormal()}{rmvnormal()}}
+{\footnotesize\ttfamily Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major$>$ rmvnormal (\begin{DoxyParamCaption}\item[{Eigen\+::\+Vector\+Xd}]{mean,  }\item[{Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$}]{Mat,  }\item[{bool}]{is\+Prec = {\ttfamily false},  }\item[{bool}]{is\+Chol = {\ttfamily false},  }\item[{bool}]{is\+Upper = {\ttfamily false} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_ad4c033e86dff7485bb884424aa4545f8}\label{BGSL__export_8cpp_ad4c033e86dff7485bb884424aa4545f8}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!rnormal@{rnormal}}
+\index{rnormal@{rnormal}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{rnormal()}{rnormal()}}
+{\footnotesize\ttfamily \mbox{\hyperlink{classdouble}{double}} rnormal (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{mean = {\ttfamily 0.0},  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{sd = {\ttfamily 1.0} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_a7a3ed4257e8ae7245c694b6438f66aa5}\label{BGSL__export_8cpp_a7a3ed4257e8ae7245c694b6438f66aa5}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!rwishart@{rwishart}}
+\index{rwishart@{rwishart}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{rwishart()}{rwishart()}}
+{\footnotesize\ttfamily Eigen\+::\+Matrix$<$\mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major$>$ rwishart (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{b,  }\item[{Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$}]{D,  }\item[{bool}]{is\+Chol = {\ttfamily false},  }\item[{bool}]{is\+Upper = {\ttfamily false} }\end{DoxyParamCaption})}
+
+\mbox{\Hypertarget{BGSL__export_8cpp_ab16b52d3fe37bccb987164dd4459d997}\label{BGSL__export_8cpp_ab16b52d3fe37bccb987164dd4459d997}} 
+\index{BGSL\_export.cpp@{BGSL\_export.cpp}!test\_null@{test\_null}}
+\index{test\_null@{test\_null}!BGSL\_export.cpp@{BGSL\_export.cpp}}
+\doxysubsubsection{\texorpdfstring{test\_null()}{test\_null()}}
+{\footnotesize\ttfamily void test\+\_\+null (\begin{DoxyParamCaption}\item[{Eigen\+::\+Matrix$<$ \mbox{\hyperlink{classdouble}{double}}, Eigen\+::\+Dynamic, Eigen\+::\+Dynamic, Eigen\+::\+Col\+Major $>$}]{G,  }\item[{Rcpp\+::\+Nullable$<$ Rcpp\+::\+List $>$}]{l = {\ttfamily R\+\_\+NilValue} }\end{DoxyParamCaption})}
+

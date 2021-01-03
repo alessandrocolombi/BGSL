@@ -1,0 +1,230 @@
+\hypertarget{classAddRemoveMH}{}\doxysection{Add\+Remove\+MH$<$ Graph\+Structure, T $>$ Class Template Reference}
+\label{classAddRemoveMH}\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+
+
+{\ttfamily \#include $<$Add\+Remove\+M\+H.\+h$>$}
+
+
+
+Inheritance diagram for Add\+Remove\+MH$<$ Graph\+Structure, T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{classAddRemoveMH__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Add\+Remove\+MH$<$ Graph\+Structure, T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classAddRemoveMH__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classAddRemoveMH_a039d66adcc636f153c0575dcecc9135e}{Idx\+Type}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a039d66adcc636f153c0575dcecc9135e}{Idx\+Type}}
+\item 
+using \mbox{\hyperlink{classAddRemoveMH_a765e1651d343bae616aec63d892fa0a5}{Mat\+Row}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a765e1651d343bae616aec63d892fa0a5}{Mat\+Row}}
+\item 
+using \mbox{\hyperlink{classAddRemoveMH_a06aa06a5af908c772965f4de69555176}{Mat\+Col}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a06aa06a5af908c772965f4de69555176}{Mat\+Col}}
+\item 
+using \mbox{\hyperlink{classAddRemoveMH_a6d0e46c06d97cbfafa41c631e52e4508}{Vec\+Row}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a6d0e46c06d97cbfafa41c631e52e4508}{Vec\+Row}}
+\item 
+using \mbox{\hyperlink{classAddRemoveMH_a7822152a82159ea9bb3fd947e702ee27}{Vec\+Col}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a7822152a82159ea9bb3fd947e702ee27}{Vec\+Col}}
+\item 
+using \mbox{\hyperlink{classAddRemoveMH_aacdf5214a078cd8fe6fc4165e93b1ea2}{Chol\+Type\+Row}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_aacdf5214a078cd8fe6fc4165e93b1ea2}{Chol\+Type\+Row}}
+\item 
+using \mbox{\hyperlink{classAddRemoveMH_a0edea6b46a45042ada4353ced0502fad}{Chol\+Type\+Col}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a0edea6b46a45042ada4353ced0502fad}{Chol\+Type\+Col}}
+\item 
+using \mbox{\hyperlink{classAddRemoveMH_a78e2bbf98e2caa3d6af111889f2fea3e}{Groups\+Ptr}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a78e2bbf98e2caa3d6af111889f2fea3e}{Groups\+Ptr}}
+\item 
+using \mbox{\hyperlink{classAddRemoveMH_a0f058c9fc6188ac8449cd249cbc9cf25}{Prior\+Ptr}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a0f058c9fc6188ac8449cd249cbc9cf25}{Prior\+Ptr}}
+\item 
+using \mbox{\hyperlink{classAddRemoveMH_a2a3450a5485f8cae29bf4360277ee87a}{Graph}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a2a3450a5485f8cae29bf4360277ee87a}{Graph}}
+\item 
+using \mbox{\hyperlink{classAddRemoveMH_a16fda2cc9278597bc22790cfaee580d1}{Complete\+Type}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a16fda2cc9278597bc22790cfaee580d1}{Complete\+Type}}
+\item 
+using \mbox{\hyperlink{classAddRemoveMH_a4f2456023da36f97a0e0beb853c4bf91}{Precision\+Type}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a4f2456023da36f97a0e0beb853c4bf91}{Precision\+Type}}
+\item 
+using \mbox{\hyperlink{classAddRemoveMH_a33df57585162ea3930acab62f5bbcc9f}{Return\+Type}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a33df57585162ea3930acab62f5bbcc9f}{Return\+Type}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classAddRemoveMH_ae64f648eeca64a200222aa9ba702257c}{Add\+Remove\+MH}} (\mbox{\hyperlink{classAddRemoveMH_a0f058c9fc6188ac8449cd249cbc9cf25}{Prior\+Ptr}} \&\+\_\+ptr\+\_\+prior, \mbox{\hyperlink{classdouble}{double}} const \&\+\_\+b, \mbox{\hyperlink{classAddRemoveMH_a06aa06a5af908c772965f4de69555176}{Mat\+Col}} const \&\+\_\+D, \mbox{\hyperlink{classdouble}{double}} const \&\+\_\+tr\+Gwish\+Sampler, unsigned int const \&\+\_\+\+M\+Citer\+Prior=100, unsigned int const \&\+\_\+\+M\+Citer\+Post=100)
+\item 
+\mbox{\hyperlink{classAddRemoveMH_a467217a34a6614a261c2f30a598f5c78}{Add\+Remove\+MH}} (\mbox{\hyperlink{classAddRemoveMH_a0f058c9fc6188ac8449cd249cbc9cf25}{Prior\+Ptr}} \&\+\_\+ptr\+\_\+prior, unsigned int const \&\+\_\+p, \mbox{\hyperlink{classdouble}{double}} const \&\+\_\+tr\+Gwish\+Sampler, unsigned int const \&\+\_\+\+M\+Citer\+Prior=100, unsigned int const \&\+\_\+\+M\+Citer\+Post=100)
+\item 
+\mbox{\hyperlink{classAddRemoveMH_a33df57585162ea3930acab62f5bbcc9f}{Return\+Type}} \mbox{\hyperlink{classAddRemoveMH_a94991b14b54bdcc1c47ecb30542c48d8}{operator()}} (\mbox{\hyperlink{classAddRemoveMH_a06aa06a5af908c772965f4de69555176}{Mat\+Col}} const \&data, unsigned int const \&n, \mbox{\hyperlink{classAddRemoveMH_a2a3450a5485f8cae29bf4360277ee87a}{Graph}} \&Gold, \mbox{\hyperlink{classdouble}{double}} alpha, unsigned int seed=0) override
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+unsigned int \mbox{\hyperlink{classAddRemoveMH_a502d2ce98854c02ccb57972d08a2ea7e}{M\+Citer\+Prior}}
+\item 
+unsigned int \mbox{\hyperlink{classAddRemoveMH_af0b4483974d537426fbeae74c16e77ef}{M\+Citer\+Post}}
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classAddRemoveMH_a8189226203acfda57b16469f89729cf3}{negative\+\_\+infinity}} = -\/std\+::numeric\+\_\+limits$<$\mbox{\hyperlink{classdouble}{double}}$>$\+::\mbox{\hyperlink{classAddRemoveMH_a7a0d36ce49da189244edff29e5450a2b}{infinity}}()
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classAddRemoveMH_a7a0d36ce49da189244edff29e5450a2b}{infinity}} = std\+::numeric\+\_\+limits$<$\mbox{\hyperlink{classdouble}{double}}$>$\+::infinity()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classAddRemoveMH_a0edea6b46a45042ada4353ced0502fad}\label{classAddRemoveMH_a0edea6b46a45042ada4353ced0502fad}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!CholTypeCol@{CholTypeCol}}
+\index{CholTypeCol@{CholTypeCol}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{CholTypeCol}{CholTypeCol}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a0edea6b46a45042ada4353ced0502fad}{Chol\+Type\+Col}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classAddRemoveMH_a0edea6b46a45042ada4353ced0502fad}{Chol\+Type\+Col}}}
+
+\mbox{\Hypertarget{classAddRemoveMH_aacdf5214a078cd8fe6fc4165e93b1ea2}\label{classAddRemoveMH_aacdf5214a078cd8fe6fc4165e93b1ea2}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!CholTypeRow@{CholTypeRow}}
+\index{CholTypeRow@{CholTypeRow}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{CholTypeRow}{CholTypeRow}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_aacdf5214a078cd8fe6fc4165e93b1ea2}{Chol\+Type\+Row}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classAddRemoveMH_aacdf5214a078cd8fe6fc4165e93b1ea2}{Chol\+Type\+Row}}}
+
+\mbox{\Hypertarget{classAddRemoveMH_a16fda2cc9278597bc22790cfaee580d1}\label{classAddRemoveMH_a16fda2cc9278597bc22790cfaee580d1}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!CompleteType@{CompleteType}}
+\index{CompleteType@{CompleteType}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{CompleteType}{CompleteType}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a16fda2cc9278597bc22790cfaee580d1}{Complete\+Type}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classAddRemoveMH_a16fda2cc9278597bc22790cfaee580d1}{Complete\+Type}}}
+
+\mbox{\Hypertarget{classAddRemoveMH_a2a3450a5485f8cae29bf4360277ee87a}\label{classAddRemoveMH_a2a3450a5485f8cae29bf4360277ee87a}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!Graph@{Graph}}
+\index{Graph@{Graph}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{Graph}{Graph}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a2a3450a5485f8cae29bf4360277ee87a}{Graph}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classAddRemoveMH_a2a3450a5485f8cae29bf4360277ee87a}{Graph}}}
+
+\mbox{\Hypertarget{classAddRemoveMH_a78e2bbf98e2caa3d6af111889f2fea3e}\label{classAddRemoveMH_a78e2bbf98e2caa3d6af111889f2fea3e}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!GroupsPtr@{GroupsPtr}}
+\index{GroupsPtr@{GroupsPtr}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{GroupsPtr}{GroupsPtr}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a78e2bbf98e2caa3d6af111889f2fea3e}{Groups\+Ptr}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classAddRemoveMH_a78e2bbf98e2caa3d6af111889f2fea3e}{Groups\+Ptr}}}
+
+\mbox{\Hypertarget{classAddRemoveMH_a039d66adcc636f153c0575dcecc9135e}\label{classAddRemoveMH_a039d66adcc636f153c0575dcecc9135e}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!IdxType@{IdxType}}
+\index{IdxType@{IdxType}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{IdxType}{IdxType}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a039d66adcc636f153c0575dcecc9135e}{Idx\+Type}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classAddRemoveMH_a039d66adcc636f153c0575dcecc9135e}{Idx\+Type}}}
+
+\mbox{\Hypertarget{classAddRemoveMH_a06aa06a5af908c772965f4de69555176}\label{classAddRemoveMH_a06aa06a5af908c772965f4de69555176}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!MatCol@{MatCol}}
+\index{MatCol@{MatCol}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{MatCol}{MatCol}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a06aa06a5af908c772965f4de69555176}{Mat\+Col}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classAddRemoveMH_a06aa06a5af908c772965f4de69555176}{Mat\+Col}}}
+
+\mbox{\Hypertarget{classAddRemoveMH_a765e1651d343bae616aec63d892fa0a5}\label{classAddRemoveMH_a765e1651d343bae616aec63d892fa0a5}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!MatRow@{MatRow}}
+\index{MatRow@{MatRow}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{MatRow}{MatRow}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a765e1651d343bae616aec63d892fa0a5}{Mat\+Row}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classAddRemoveMH_a765e1651d343bae616aec63d892fa0a5}{Mat\+Row}}}
+
+\mbox{\Hypertarget{classAddRemoveMH_a4f2456023da36f97a0e0beb853c4bf91}\label{classAddRemoveMH_a4f2456023da36f97a0e0beb853c4bf91}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!PrecisionType@{PrecisionType}}
+\index{PrecisionType@{PrecisionType}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{PrecisionType}{PrecisionType}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a4f2456023da36f97a0e0beb853c4bf91}{Precision\+Type}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classAddRemoveMH_a4f2456023da36f97a0e0beb853c4bf91}{Precision\+Type}}}
+
+\mbox{\Hypertarget{classAddRemoveMH_a0f058c9fc6188ac8449cd249cbc9cf25}\label{classAddRemoveMH_a0f058c9fc6188ac8449cd249cbc9cf25}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!PriorPtr@{PriorPtr}}
+\index{PriorPtr@{PriorPtr}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{PriorPtr}{PriorPtr}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a0f058c9fc6188ac8449cd249cbc9cf25}{Prior\+Ptr}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classAddRemoveMH_a0f058c9fc6188ac8449cd249cbc9cf25}{Prior\+Ptr}}}
+
+\mbox{\Hypertarget{classAddRemoveMH_a33df57585162ea3930acab62f5bbcc9f}\label{classAddRemoveMH_a33df57585162ea3930acab62f5bbcc9f}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!ReturnType@{ReturnType}}
+\index{ReturnType@{ReturnType}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{ReturnType}{ReturnType}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a33df57585162ea3930acab62f5bbcc9f}{Return\+Type}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classAddRemoveMH_a33df57585162ea3930acab62f5bbcc9f}{Return\+Type}}}
+
+\mbox{\Hypertarget{classAddRemoveMH_a7822152a82159ea9bb3fd947e702ee27}\label{classAddRemoveMH_a7822152a82159ea9bb3fd947e702ee27}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!VecCol@{VecCol}}
+\index{VecCol@{VecCol}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{VecCol}{VecCol}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a7822152a82159ea9bb3fd947e702ee27}{Vec\+Col}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classAddRemoveMH_a7822152a82159ea9bb3fd947e702ee27}{Vec\+Col}}}
+
+\mbox{\Hypertarget{classAddRemoveMH_a6d0e46c06d97cbfafa41c631e52e4508}\label{classAddRemoveMH_a6d0e46c06d97cbfafa41c631e52e4508}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!VecRow@{VecRow}}
+\index{VecRow@{VecRow}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{VecRow}{VecRow}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a6d0e46c06d97cbfafa41c631e52e4508}{Vec\+Row}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classAddRemoveMH_a6d0e46c06d97cbfafa41c631e52e4508}{Vec\+Row}}}
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classAddRemoveMH_ae64f648eeca64a200222aa9ba702257c}\label{classAddRemoveMH_ae64f648eeca64a200222aa9ba702257c}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!AddRemoveMH@{AddRemoveMH}}
+\index{AddRemoveMH@{AddRemoveMH}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{AddRemoveMH()}{AddRemoveMH()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classAddRemoveMH_a0f058c9fc6188ac8449cd249cbc9cf25}{Prior\+Ptr}} \&}]{\+\_\+ptr\+\_\+prior,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{\+\_\+b,  }\item[{\mbox{\hyperlink{classAddRemoveMH_a06aa06a5af908c772965f4de69555176}{Mat\+Col}} const \&}]{\+\_\+D,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{\+\_\+tr\+Gwish\+Sampler,  }\item[{unsigned int const \&}]{\+\_\+\+M\+Citer\+Prior = {\ttfamily 100},  }\item[{unsigned int const \&}]{\+\_\+\+M\+Citer\+Post = {\ttfamily 100} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classAddRemoveMH_a467217a34a6614a261c2f30a598f5c78}\label{classAddRemoveMH_a467217a34a6614a261c2f30a598f5c78}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!AddRemoveMH@{AddRemoveMH}}
+\index{AddRemoveMH@{AddRemoveMH}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{AddRemoveMH()}{AddRemoveMH()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classAddRemoveMH_a0f058c9fc6188ac8449cd249cbc9cf25}{Prior\+Ptr}} \&}]{\+\_\+ptr\+\_\+prior,  }\item[{unsigned int const \&}]{\+\_\+p,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{\+\_\+tr\+Gwish\+Sampler,  }\item[{unsigned int const \&}]{\+\_\+\+M\+Citer\+Prior = {\ttfamily 100},  }\item[{unsigned int const \&}]{\+\_\+\+M\+Citer\+Post = {\ttfamily 100} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classAddRemoveMH_a94991b14b54bdcc1c47ecb30542c48d8}\label{classAddRemoveMH_a94991b14b54bdcc1c47ecb30542c48d8}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!operator()@{operator()}}
+\index{operator()@{operator()}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classAddRemoveMH_a33df57585162ea3930acab62f5bbcc9f}{Return\+Type}} \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::operator() (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classAddRemoveMH_a06aa06a5af908c772965f4de69555176}{Mat\+Col}} const \&}]{data,  }\item[{unsigned int const \&}]{n,  }\item[{\mbox{\hyperlink{classAddRemoveMH_a2a3450a5485f8cae29bf4360277ee87a}{Graph}} \&}]{Gold,  }\item[{\mbox{\hyperlink{classdouble}{double}}}]{alpha,  }\item[{unsigned int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classAddRemoveMH_a7a0d36ce49da189244edff29e5450a2b}\label{classAddRemoveMH_a7a0d36ce49da189244edff29e5450a2b}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!infinity@{infinity}}
+\index{infinity@{infinity}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{infinity}{infinity}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::infinity = std\+::numeric\+\_\+limits$<$\mbox{\hyperlink{classdouble}{double}}$>$\+::infinity()\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classAddRemoveMH_af0b4483974d537426fbeae74c16e77ef}\label{classAddRemoveMH_af0b4483974d537426fbeae74c16e77ef}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!MCiterPost@{MCiterPost}}
+\index{MCiterPost@{MCiterPost}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{MCiterPost}{MCiterPost}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+unsigned int \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::M\+Citer\+Post\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classAddRemoveMH_a502d2ce98854c02ccb57972d08a2ea7e}\label{classAddRemoveMH_a502d2ce98854c02ccb57972d08a2ea7e}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!MCiterPrior@{MCiterPrior}}
+\index{MCiterPrior@{MCiterPrior}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{MCiterPrior}{MCiterPrior}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+unsigned int \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::M\+Citer\+Prior\hspace{0.3cm}{\ttfamily [protected]}}
+
+\mbox{\Hypertarget{classAddRemoveMH_a8189226203acfda57b16469f89729cf3}\label{classAddRemoveMH_a8189226203acfda57b16469f89729cf3}} 
+\index{AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}!negative\_infinity@{negative\_infinity}}
+\index{negative\_infinity@{negative\_infinity}!AddRemoveMH$<$ GraphStructure, T $>$@{AddRemoveMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{negative\_infinity}{negative\_infinity}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classAddRemoveMH}{Add\+Remove\+MH}}$<$ Graph\+Structure, T $>$\+::negative\+\_\+infinity = -\/std\+::numeric\+\_\+limits$<$\mbox{\hyperlink{classdouble}{double}}$>$\+::\mbox{\hyperlink{classAddRemoveMH_a7a0d36ce49da189244edff29e5450a2b}{infinity}}()\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{AddRemoveMH_8h}{Add\+Remove\+M\+H.\+h}}\end{DoxyCompactItemize}

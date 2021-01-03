@@ -38,13 +38,13 @@ simulate_curves(
 
 \item{range_x}{vector of length two defining the interval for the curves.}
 
-\item{G}{(p x p) matrix representing the true underlying graph. Default is NULL that corresponds to a diagonal graph.}
+\item{G}{matrix of size \eqn{p \times p} representing the true underlying graph. Default is \code{NULL} that corresponds to a diagonal graph.}
 
-\item{K}{(p x p) matrix representing the true underlying precision matrix. If NULL, a sample from a GWishart is drawn.}
+\item{K}{matrix of size \eqn{p \times p} representing the true underlying precision matrix. If \code{NULL}, a sample from a GWishart is drawn.}
 
-\item{b}{GWishart shape parameter used if the matrix K has to be drawn. It has to be larger than 2 in order to have a well defined distribution. Default is three.}
+\item{b}{GWishart shape parameter used if the matrix \code{K} has to be drawn. It has to be larger than 2 in order to have a well defined distribution. Default is 3.}
 
-\item{D}{GWishart inverse scale matrix parameter used if the matrix K has to be drawn. It has to be symmetric and positive definite. Default is 0.01*diag(p).}
+\item{D}{GWishart inverse scale matrix parameter used if the matrix \code{K} has to be drawn. It has to be symmetric and positive definite. Default is \code{0.01*diag(p)}.}
 
 \item{spline_order}{order of the Bsplines. Set four for cubic splines.}
 
@@ -58,13 +58,13 @@ simulate_curves(
 
 \item{width2}{Set how large the second pick has to be. This parameter acts like a standard deviation of a Normal distribution, so the larger it is, the thinner is the pick.}
 
-\item{position1}{Set where the first pick has to be located. Position is then computed as range_x\link{1} + (range_x\link{2}-range_x\link{1})/position1. Set 2 to place it in the middle.}
+\item{position1}{Set where the first pick has to be located. Position is then computed as \code{range_x[1] + (range_x[2]-range_x[1])/position1}. Set 2 to place it in the middle.}
 
-\item{position2}{Set where the second pick has to be located. Position is then computed as range_x\link{2} - (range_x\link{2}-range_x\link{1})/position2. Set 2 to place it in the middle.}
+\item{position2}{Set where the second pick has to be located. Position is then computed as \code{range_x[2] - (range_x[2]-range_x[1])/position2}. Set 2 to place it in the middle.}
 
 \item{n_plot}{The number of curves to be plotted. If it is set to 0, no curves are displayed.}
 
-\item{highlight_band1}{Vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \link{1,n_basis}.}
+\item{highlight_band1}{Vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \code{[1,n_basis]}.}
 
 \item{title_plot}{Title of the plot.}
 
@@ -72,7 +72,7 @@ simulate_curves(
 
 \item{ytitle}{Title of the x-axis.}
 
-\item{seed}{seed used to simulate data.}
+\item{seed}{seed used to simulate data. Set 0 for random seed.}
 
 \item{n_grid_points}{dimension of the grid where the spline are evaluated.}
 }

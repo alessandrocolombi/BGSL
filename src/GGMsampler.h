@@ -16,9 +16,9 @@ class GGMsampler : public SamplerTraits
 	using RetType 	    = std::tuple<RetK, RetGraph, int, int>;
 	//Right now i'm passing way to many parameters and hyperparameters
 	GGMsampler( MatCol const & _data, unsigned int const & _n, Parameters const & _params, Hyperparameters const & _hy_params, 
-			    Init<GraphStructure, T> const & _init, GGMType & _GGM_method, unsigned int _seed = 0):
+			    Init<GraphStructure, T> const & _init, GGMType & _GGM_method, unsigned int _seed = 0, bool _print_bp = true):
 			    data(_data), params(_params), hy_params(_hy_params), ptr_GGM_method(std::move(_GGM_method)) ,init(_init),
-				p(_data.rows()), n(_n), grid_pts(_params.Basemat.rows()), seed(_seed)
+				p(_data.rows()), n(_n), grid_pts(_params.Basemat.rows()), seed(_seed), print_bp(_print_bp)
 	{
 	 	this->check();
 	 	if(seed == 0)
@@ -39,6 +39,7 @@ class GGMsampler : public SamplerTraits
 	unsigned int seed;
 	int total_accepted{0};
 	int visited{0};
+	bool print_bp;
 
 };
 
@@ -90,7 +91,10 @@ GGMsampler<GraphStructure, T, RetGraph>::run()
 		
 		//Show progress bar
 		bar.update(1);
-		bar.print(); 
+		if(print_bp){
+			bar.print(); 
+		}
+		
 
 		int accepted_mv{0};
 
@@ -101,7 +105,7 @@ GGMsampler<GraphStructure, T, RetGraph>::run()
 		//Save
 		if(iter >= nburn){
 			if((iter - nburn)%thinG == 0){ 
-				//SaveK.emplace_back(K);
+				SaveK.emplace_back(utils::get_upper_part(K));
 				std::vector<bool> adj;
 				if constexpr( ! std::is_same_v<T, bool>){
 					std::vector<T> adj_nobool(G.get_adj_list());

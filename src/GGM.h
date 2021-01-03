@@ -88,24 +88,36 @@ class GGM : public GGMTraits<GraphStructure, T> {
 		inline void init_precision(Graph & G, MatRow const & mat){
 			Kprior.set_matrix(G.completeview(), mat);
 			Kprior.compute_Chol();
+			if constexpr(std::is_same_v<Graph , GraphType<T> >){
+				positions.resize(G.get_possible_links());
+			}
+			else{
+				positions.resize(G.get_possible_block_links());
+			}
+			std::iota(positions.begin(), positions.end(), 0); //fill with increasing values
 		}
+
 		//This method taks the current graph (both form are accepted) and the probability of selecting an addition and return a tuple,
 		//the proposed new graph, a double that is the (log) proposal ratio and the type of selected move
-		
 		std::tuple<Graph, double, MoveType>  propose_new_graph(Graph & Gold, double alpha, unsigned int seed = 0); 
 		
 		virtual ReturnType operator()(MatCol const & data, unsigned int const & n, Graph & Gold, double alpha, unsigned int seed = 0) = 0;
 		virtual ~GGM() = default;
+
+		bool data_factorized = false;
 	protected:
-		PriorPtr ptr_prior; //Poi deve tornare protected questo	
+		PriorPtr ptr_prior; 
 		PrecisionType Kprior;
 		double trGwishSampler;
+		std::vector<unsigned int> positions;
 		//MoveType Move;
-		std::pair<unsigned int, unsigned int> selected_link; //Questo in realtà non è usato da ARMH
+		std::pair<unsigned int, unsigned int> selected_link; //Not used in ARMH case
+		MatCol D_plus_U;
+		MatCol chol_inv_DplusU;
 		
 };
 
-//Sicuramente migliorabile. 
+
 template<template <typename> class GraphStructure, typename T>
 std::tuple< typename GGMTraits<GraphStructure, T>::Graph, double, MoveType> 
 GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>::Graph & Gold, double alpha, unsigned int seed){
@@ -157,8 +169,8 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 			else{
 				zeros.resize(Gold.get_possible_block_links() - Gold.get_n_block_links());
 			}
-			std::vector<unsigned int> positions(adj_list.size());
-			std::iota(positions.begin(), positions.end(), 0); //fill with increasing values
+			//std::vector<unsigned int> positions(adj_list.size());
+			//std::iota(positions.begin(), positions.end(), 0); //fill with increasing values
 			std::copy_if(positions.cbegin(), positions.cend(), zeros.begin(), [&adj_list](unsigned int const & pos){return (bool)adj_list[pos]==false;});
 			std::vector<unsigned int> selected(1);
 			std::sample(zeros.cbegin(), zeros.cend(), selected.begin(), 1, engine);
@@ -168,7 +180,7 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 				return std::make_tuple( Graph (adj_list),  log_proposal_Graph, Move );
 			}
 			else{
-				std::vector< std::pair<unsigned int, unsigned int> > L(Gold.map_to_complete(selected_link.first, selected_link.second));
+				//std::vector< std::pair<unsigned int, unsigned int> > L(Gold.map_to_complete(selected_link.first, selected_link.second));
 				return std::make_tuple( Graph (adj_list, Gold.get_ptr_groups()), log_proposal_Graph, Move );
 			}
 			
@@ -190,8 +202,8 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 		else{
 			ones.resize(Gold.get_n_block_links());
 		}
-		std::vector<unsigned int> positions(adj_list.size());
-		std::iota(positions.begin(), positions.end(), 0); //fill with increasing values
+		//std::vector<unsigned int> positions(adj_list.size());
+		//std::iota(positions.begin(), positions.end(), 0); //fill with increasing values
 		std::copy_if(positions.cbegin(), positions.cend(), ones.begin(), [&adj_list](unsigned int const & pos){return (bool)adj_list[pos]==true;});
 		std::vector<unsigned int> selected(1);
 		std::sample(ones.cbegin(), ones.cend(), selected.begin(), 1, engine);
@@ -201,11 +213,10 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 			return std::make_tuple( Graph (adj_list), log_proposal_Graph, Move );
 		}
 		else{
-			std::vector< std::pair<unsigned int, unsigned int> > L(Gold.map_to_complete(selected_link.first, selected_link.second));
+			//std::vector< std::pair<unsigned int, unsigned int> > L(Gold.map_to_complete(selected_link.first, selected_link.second)); 
 			return std::make_tuple( Graph (adj_list, Gold.get_ptr_groups()), log_proposal_Graph, Move );
 		}
 	}
-
 }
 
 

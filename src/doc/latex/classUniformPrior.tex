@@ -1,0 +1,71 @@
+\hypertarget{classUniformPrior}{}\doxysection{Uniform\+Prior$<$ Graph\+Structure, T $>$ Class Template Reference}
+\label{classUniformPrior}\index{UniformPrior$<$ GraphStructure, T $>$@{UniformPrior$<$ GraphStructure, T $>$}}
+
+
+{\ttfamily \#include $<$Graph\+Prior.\+h$>$}
+
+
+
+Inheritance diagram for Uniform\+Prior$<$ Graph\+Structure, T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=291pt]{classUniformPrior__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Uniform\+Prior$<$ Graph\+Structure, T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=291pt]{classUniformPrior__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classUniformPrior_ad85569494c2315872d07ff2e4a93846b}{Prob}} (Graph const \&G) const override
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classUniformPrior_aaa79213f270d241549c0c6b108edb7b8}{ratio}} (Graph const \&G\+\_\+num, Graph const \&G\+\_\+den) const override
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classUniformPrior_acaf94f693df5c549f19c47decc4ad6bb}{log\+\_\+ratio}} (Graph const \&G\+\_\+num, Graph const \&G\+\_\+den) const override
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGraphPrior}{Graph\+Prior}}$<$ Graph\+Structure, T $>$ $>$ \mbox{\hyperlink{classUniformPrior_a5a2bd20f415102166f4a3460d29f40f0}{clone}} () const override
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classUniformPrior_a5a2bd20f415102166f4a3460d29f40f0}\label{classUniformPrior_a5a2bd20f415102166f4a3460d29f40f0}} 
+\index{UniformPrior$<$ GraphStructure, T $>$@{UniformPrior$<$ GraphStructure, T $>$}!clone@{clone}}
+\index{clone@{clone}!UniformPrior$<$ GraphStructure, T $>$@{UniformPrior$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{clone()}{clone()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGraphPrior}{Graph\+Prior}}$<$Graph\+Structure, T$>$ $>$ \mbox{\hyperlink{classUniformPrior}{Uniform\+Prior}}$<$ Graph\+Structure, T $>$\+::clone (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+\mbox{\Hypertarget{classUniformPrior_acaf94f693df5c549f19c47decc4ad6bb}\label{classUniformPrior_acaf94f693df5c549f19c47decc4ad6bb}} 
+\index{UniformPrior$<$ GraphStructure, T $>$@{UniformPrior$<$ GraphStructure, T $>$}!log\_ratio@{log\_ratio}}
+\index{log\_ratio@{log\_ratio}!UniformPrior$<$ GraphStructure, T $>$@{UniformPrior$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{log\_ratio()}{log\_ratio()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classUniformPrior}{Uniform\+Prior}}$<$ Graph\+Structure, T $>$\+::log\+\_\+ratio (\begin{DoxyParamCaption}\item[{Graph const \&}]{G\+\_\+num,  }\item[{Graph const \&}]{G\+\_\+den }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+\mbox{\Hypertarget{classUniformPrior_ad85569494c2315872d07ff2e4a93846b}\label{classUniformPrior_ad85569494c2315872d07ff2e4a93846b}} 
+\index{UniformPrior$<$ GraphStructure, T $>$@{UniformPrior$<$ GraphStructure, T $>$}!Prob@{Prob}}
+\index{Prob@{Prob}!UniformPrior$<$ GraphStructure, T $>$@{UniformPrior$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{Prob()}{Prob()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classUniformPrior}{Uniform\+Prior}}$<$ Graph\+Structure, T $>$\+::Prob (\begin{DoxyParamCaption}\item[{Graph const \&}]{G }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+\mbox{\Hypertarget{classUniformPrior_aaa79213f270d241549c0c6b108edb7b8}\label{classUniformPrior_aaa79213f270d241549c0c6b108edb7b8}} 
+\index{UniformPrior$<$ GraphStructure, T $>$@{UniformPrior$<$ GraphStructure, T $>$}!ratio@{ratio}}
+\index{ratio@{ratio}!UniformPrior$<$ GraphStructure, T $>$@{UniformPrior$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{ratio()}{ratio()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classUniformPrior}{Uniform\+Prior}}$<$ Graph\+Structure, T $>$\+::ratio (\begin{DoxyParamCaption}\item[{Graph const \&}]{G\+\_\+num,  }\item[{Graph const \&}]{G\+\_\+den }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{GraphPrior_8h}{Graph\+Prior.\+h}}\end{DoxyCompactItemize}

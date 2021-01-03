@@ -1,0 +1,203 @@
+\hypertarget{classDoubleReversibleJumpsMH}{}\doxysection{Double\+Reversible\+Jumps\+MH$<$ Graph\+Structure, T $>$ Class Template Reference}
+\label{classDoubleReversibleJumpsMH}\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+
+
+{\ttfamily \#include $<$D\+R\+J\+M\+H.\+h$>$}
+
+
+
+Inheritance diagram for Double\+Reversible\+Jumps\+MH$<$ Graph\+Structure, T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=550pt]{classDoubleReversibleJumpsMH__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Double\+Reversible\+Jumps\+MH$<$ Graph\+Structure, T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{classDoubleReversibleJumpsMH__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH_a5ed1698fcb814f22aac846ae6e0131f1}{Idx\+Type}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a5ed1698fcb814f22aac846ae6e0131f1}{Idx\+Type}}
+\item 
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH_adb7b75a534afb98a79b42dccca714f63}{Mat\+Row}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_adb7b75a534afb98a79b42dccca714f63}{Mat\+Row}}
+\item 
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH_a003c27d8154121cb6c12b03ebf6bc4a4}{Mat\+Col}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a003c27d8154121cb6c12b03ebf6bc4a4}{Mat\+Col}}
+\item 
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH_acafe653731191214981f532d057c810d}{Vec\+Row}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_acafe653731191214981f532d057c810d}{Vec\+Row}}
+\item 
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH_a9977bb37d27aac4351cc522afc4974be}{Vec\+Col}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a9977bb37d27aac4351cc522afc4974be}{Vec\+Col}}
+\item 
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH_a98984336676f5bed9f86781e0c85957f}{Chol\+Type\+Row}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a98984336676f5bed9f86781e0c85957f}{Chol\+Type\+Row}}
+\item 
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH_a9fbea400e68130df42f73e8d0615ea6e}{Chol\+Type\+Col}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a9fbea400e68130df42f73e8d0615ea6e}{Chol\+Type\+Col}}
+\item 
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH_a37f8a0494ee996a1098c2403a6f2c1c6}{Groups\+Ptr}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a37f8a0494ee996a1098c2403a6f2c1c6}{Groups\+Ptr}}
+\item 
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH_ab6a5c4cb53b6ec4d55c61d1966d8b0d6}{Prior\+Ptr}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_ab6a5c4cb53b6ec4d55c61d1966d8b0d6}{Prior\+Ptr}}
+\item 
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH_a624e09383407820dd59fa8acc59a2be4}{Graph}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a624e09383407820dd59fa8acc59a2be4}{Graph}}
+\item 
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH_a8ffbfdb771f2f72f339b294069e573a0}{Complete\+Type}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a8ffbfdb771f2f72f339b294069e573a0}{Complete\+Type}}
+\item 
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH_a03484c87cabcf0dc7756d4070e48d550}{Precision\+Type}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a03484c87cabcf0dc7756d4070e48d550}{Precision\+Type}}
+\item 
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH_aee2bb939506d0ee1f9dd942b6c3fb80b}{Return\+Type}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_aee2bb939506d0ee1f9dd942b6c3fb80b}{Return\+Type}}
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classDoubleReversibleJumpsMH_a6a8b746fd9bc95917913c9f81970b4e2}{Double\+Reversible\+Jumps\+MH}} (\mbox{\hyperlink{classDoubleReversibleJumpsMH_ab6a5c4cb53b6ec4d55c61d1966d8b0d6}{Prior\+Ptr}} \&\+\_\+ptr\+\_\+prior, \mbox{\hyperlink{classdouble}{double}} const \&\+\_\+b, \mbox{\hyperlink{classDoubleReversibleJumpsMH_a003c27d8154121cb6c12b03ebf6bc4a4}{Mat\+Col}} const \&\+\_\+D, \mbox{\hyperlink{classdouble}{double}} const \&\+\_\+tr\+Gwish\+Sampler, \mbox{\hyperlink{classdouble}{double}} const \&\+\_\+sigma, unsigned int const \&\+\_\+\+M\+Citer\+Prior=0)
+\item 
+\mbox{\hyperlink{classDoubleReversibleJumpsMH_a7ca65cb3249f334725f256517e98196c}{Double\+Reversible\+Jumps\+MH}} (\mbox{\hyperlink{classDoubleReversibleJumpsMH_ab6a5c4cb53b6ec4d55c61d1966d8b0d6}{Prior\+Ptr}} \&\+\_\+ptr\+\_\+prior, unsigned int const \&\+\_\+p, \mbox{\hyperlink{classdouble}{double}} const \&\+\_\+tr\+Gwish\+Sampler, \mbox{\hyperlink{classdouble}{double}} const \&\+\_\+sigma, unsigned int const \&\+\_\+\+M\+Citer\+Prior=0)
+\item 
+\mbox{\hyperlink{classDoubleReversibleJumpsMH_aee2bb939506d0ee1f9dd942b6c3fb80b}{Return\+Type}} \mbox{\hyperlink{classDoubleReversibleJumpsMH_a7ce90b2090486dcaf24e4b5bc27aa0ec}{operator()}} (\mbox{\hyperlink{classDoubleReversibleJumpsMH_a003c27d8154121cb6c12b03ebf6bc4a4}{Mat\+Col}} const \&data, unsigned int const \&n, \mbox{\hyperlink{classDoubleReversibleJumpsMH_a624e09383407820dd59fa8acc59a2be4}{Graph}} \&Gold, \mbox{\hyperlink{classdouble}{double}} alpha, unsigned int seed=0)
+\end{DoxyCompactItemize}
+\doxysubsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classDoubleReversibleJumpsMH_a03484c87cabcf0dc7756d4070e48d550}{Precision\+Type}} \mbox{\hyperlink{classDoubleReversibleJumpsMH_aca8cb9fa3923384c422fdc360329f8fc}{Waux}}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_a9fbea400e68130df42f73e8d0615ea6e}\label{classDoubleReversibleJumpsMH_a9fbea400e68130df42f73e8d0615ea6e}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!CholTypeCol@{CholTypeCol}}
+\index{CholTypeCol@{CholTypeCol}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{CholTypeCol}{CholTypeCol}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a9fbea400e68130df42f73e8d0615ea6e}{Chol\+Type\+Col}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a9fbea400e68130df42f73e8d0615ea6e}{Chol\+Type\+Col}}}
+
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_a98984336676f5bed9f86781e0c85957f}\label{classDoubleReversibleJumpsMH_a98984336676f5bed9f86781e0c85957f}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!CholTypeRow@{CholTypeRow}}
+\index{CholTypeRow@{CholTypeRow}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{CholTypeRow}{CholTypeRow}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a98984336676f5bed9f86781e0c85957f}{Chol\+Type\+Row}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a98984336676f5bed9f86781e0c85957f}{Chol\+Type\+Row}}}
+
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_a8ffbfdb771f2f72f339b294069e573a0}\label{classDoubleReversibleJumpsMH_a8ffbfdb771f2f72f339b294069e573a0}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!CompleteType@{CompleteType}}
+\index{CompleteType@{CompleteType}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{CompleteType}{CompleteType}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a8ffbfdb771f2f72f339b294069e573a0}{Complete\+Type}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a8ffbfdb771f2f72f339b294069e573a0}{Complete\+Type}}}
+
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_a624e09383407820dd59fa8acc59a2be4}\label{classDoubleReversibleJumpsMH_a624e09383407820dd59fa8acc59a2be4}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!Graph@{Graph}}
+\index{Graph@{Graph}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{Graph}{Graph}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a624e09383407820dd59fa8acc59a2be4}{Graph}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a624e09383407820dd59fa8acc59a2be4}{Graph}}}
+
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_a37f8a0494ee996a1098c2403a6f2c1c6}\label{classDoubleReversibleJumpsMH_a37f8a0494ee996a1098c2403a6f2c1c6}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!GroupsPtr@{GroupsPtr}}
+\index{GroupsPtr@{GroupsPtr}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{GroupsPtr}{GroupsPtr}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a37f8a0494ee996a1098c2403a6f2c1c6}{Groups\+Ptr}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a37f8a0494ee996a1098c2403a6f2c1c6}{Groups\+Ptr}}}
+
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_a5ed1698fcb814f22aac846ae6e0131f1}\label{classDoubleReversibleJumpsMH_a5ed1698fcb814f22aac846ae6e0131f1}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!IdxType@{IdxType}}
+\index{IdxType@{IdxType}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{IdxType}{IdxType}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a5ed1698fcb814f22aac846ae6e0131f1}{Idx\+Type}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a5ed1698fcb814f22aac846ae6e0131f1}{Idx\+Type}}}
+
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_a003c27d8154121cb6c12b03ebf6bc4a4}\label{classDoubleReversibleJumpsMH_a003c27d8154121cb6c12b03ebf6bc4a4}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!MatCol@{MatCol}}
+\index{MatCol@{MatCol}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{MatCol}{MatCol}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a003c27d8154121cb6c12b03ebf6bc4a4}{Mat\+Col}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a003c27d8154121cb6c12b03ebf6bc4a4}{Mat\+Col}}}
+
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_adb7b75a534afb98a79b42dccca714f63}\label{classDoubleReversibleJumpsMH_adb7b75a534afb98a79b42dccca714f63}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!MatRow@{MatRow}}
+\index{MatRow@{MatRow}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{MatRow}{MatRow}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_adb7b75a534afb98a79b42dccca714f63}{Mat\+Row}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_adb7b75a534afb98a79b42dccca714f63}{Mat\+Row}}}
+
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_a03484c87cabcf0dc7756d4070e48d550}\label{classDoubleReversibleJumpsMH_a03484c87cabcf0dc7756d4070e48d550}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!PrecisionType@{PrecisionType}}
+\index{PrecisionType@{PrecisionType}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{PrecisionType}{PrecisionType}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a03484c87cabcf0dc7756d4070e48d550}{Precision\+Type}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a03484c87cabcf0dc7756d4070e48d550}{Precision\+Type}}}
+
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_ab6a5c4cb53b6ec4d55c61d1966d8b0d6}\label{classDoubleReversibleJumpsMH_ab6a5c4cb53b6ec4d55c61d1966d8b0d6}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!PriorPtr@{PriorPtr}}
+\index{PriorPtr@{PriorPtr}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{PriorPtr}{PriorPtr}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_ab6a5c4cb53b6ec4d55c61d1966d8b0d6}{Prior\+Ptr}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_ab6a5c4cb53b6ec4d55c61d1966d8b0d6}{Prior\+Ptr}}}
+
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_aee2bb939506d0ee1f9dd942b6c3fb80b}\label{classDoubleReversibleJumpsMH_aee2bb939506d0ee1f9dd942b6c3fb80b}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!ReturnType@{ReturnType}}
+\index{ReturnType@{ReturnType}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{ReturnType}{ReturnType}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_aee2bb939506d0ee1f9dd942b6c3fb80b}{Return\+Type}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_aee2bb939506d0ee1f9dd942b6c3fb80b}{Return\+Type}}}
+
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_a9977bb37d27aac4351cc522afc4974be}\label{classDoubleReversibleJumpsMH_a9977bb37d27aac4351cc522afc4974be}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!VecCol@{VecCol}}
+\index{VecCol@{VecCol}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{VecCol}{VecCol}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a9977bb37d27aac4351cc522afc4974be}{Vec\+Col}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_a9977bb37d27aac4351cc522afc4974be}{Vec\+Col}}}
+
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_acafe653731191214981f532d057c810d}\label{classDoubleReversibleJumpsMH_acafe653731191214981f532d057c810d}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!VecRow@{VecRow}}
+\index{VecRow@{VecRow}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{VecRow}{VecRow}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+using \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_acafe653731191214981f532d057c810d}{Vec\+Row}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_acafe653731191214981f532d057c810d}{Vec\+Row}}}
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_a6a8b746fd9bc95917913c9f81970b4e2}\label{classDoubleReversibleJumpsMH_a6a8b746fd9bc95917913c9f81970b4e2}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!DoubleReversibleJumpsMH@{DoubleReversibleJumpsMH}}
+\index{DoubleReversibleJumpsMH@{DoubleReversibleJumpsMH}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{DoubleReversibleJumpsMH()}{DoubleReversibleJumpsMH()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classDoubleReversibleJumpsMH_ab6a5c4cb53b6ec4d55c61d1966d8b0d6}{Prior\+Ptr}} \&}]{\+\_\+ptr\+\_\+prior,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{\+\_\+b,  }\item[{\mbox{\hyperlink{classDoubleReversibleJumpsMH_a003c27d8154121cb6c12b03ebf6bc4a4}{Mat\+Col}} const \&}]{\+\_\+D,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{\+\_\+tr\+Gwish\+Sampler,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{\+\_\+sigma,  }\item[{unsigned int const \&}]{\+\_\+\+M\+Citer\+Prior = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_a7ca65cb3249f334725f256517e98196c}\label{classDoubleReversibleJumpsMH_a7ca65cb3249f334725f256517e98196c}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!DoubleReversibleJumpsMH@{DoubleReversibleJumpsMH}}
+\index{DoubleReversibleJumpsMH@{DoubleReversibleJumpsMH}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{DoubleReversibleJumpsMH()}{DoubleReversibleJumpsMH()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classDoubleReversibleJumpsMH_ab6a5c4cb53b6ec4d55c61d1966d8b0d6}{Prior\+Ptr}} \&}]{\+\_\+ptr\+\_\+prior,  }\item[{unsigned int const \&}]{\+\_\+p,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{\+\_\+tr\+Gwish\+Sampler,  }\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{\+\_\+sigma,  }\item[{unsigned int const \&}]{\+\_\+\+M\+Citer\+Prior = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_a7ce90b2090486dcaf24e4b5bc27aa0ec}\label{classDoubleReversibleJumpsMH_a7ce90b2090486dcaf24e4b5bc27aa0ec}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!operator()@{operator()}}
+\index{operator()@{operator()}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{operator()()}{operator()()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classDoubleReversibleJumpsMH_aee2bb939506d0ee1f9dd942b6c3fb80b}{Return\+Type}} \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::operator() (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classDoubleReversibleJumpsMH_a003c27d8154121cb6c12b03ebf6bc4a4}{Mat\+Col}} const \&}]{data,  }\item[{unsigned int const \&}]{n,  }\item[{\mbox{\hyperlink{classDoubleReversibleJumpsMH_a624e09383407820dd59fa8acc59a2be4}{Graph}} \&}]{Gold,  }\item[{\mbox{\hyperlink{classdouble}{double}}}]{alpha,  }\item[{unsigned int}]{seed = {\ttfamily 0} }\end{DoxyParamCaption})}
+
+
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{classDoubleReversibleJumpsMH_aca8cb9fa3923384c422fdc360329f8fc}\label{classDoubleReversibleJumpsMH_aca8cb9fa3923384c422fdc360329f8fc}} 
+\index{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}!Waux@{Waux}}
+\index{Waux@{Waux}!DoubleReversibleJumpsMH$<$ GraphStructure, T $>$@{DoubleReversibleJumpsMH$<$ GraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{Waux}{Waux}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classDoubleReversibleJumpsMH_a03484c87cabcf0dc7756d4070e48d550}{Precision\+Type}} \mbox{\hyperlink{classDoubleReversibleJumpsMH}{Double\+Reversible\+Jumps\+MH}}$<$ Graph\+Structure, T $>$\+::Waux\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{DRJMH_8h}{D\+R\+J\+M\+H.\+h}}\end{DoxyCompactItemize}

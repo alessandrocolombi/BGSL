@@ -1,0 +1,4 @@
+var searchData=
+[
+  ['hyperparameters_575',['Hyperparameters',['../classHyperparameters.html#a939b7a397d2c9524054dd39106446e5e',1,'Hyperparameters::Hyperparameters()=default'],['../classHyperparameters.html#aa947d967df79b4ea031c1e249f06f919',1,'Hyperparameters::Hyperparameters(unsigned int const &amp;_p)'],['../classHyperparameters.html#a6116e2472524ab13604bb2a785c166f9',1,'Hyperparameters::Hyperparameters(double const &amp;_bK, MatCol const &amp;_D, double const &amp;_paddrm, double const &amp;_sigmaG, double const &amp;_Gprior)'],['../classHyperparameters.html#a80efb33713babdf39964111f3225f81f',1,'Hyperparameters::Hyperparameters(double const &amp;_a, double const &amp;_b, double const &amp;_sigmamu, double const &amp;_bk, MatCol const &amp;_D, double const &amp;_paddrm, double const &amp;_sigmaG, double const &amp;_Gprior)']]]
+];

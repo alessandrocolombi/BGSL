@@ -18,6 +18,8 @@ class DoubleReversibleJumpsMH : public ReversibleJumpsMH<GraphStructure, T> {
 		using GroupsPtr   		= typename GGMTraits<GraphStructure, T>::GroupsPtr;
 		using PriorPtr			= typename GGMTraits<GraphStructure, T>::PriorPtr;
 		using Graph 			= typename GGMTraits<GraphStructure, T>::Graph;
+		template <typename S>
+		using CompleteSkeleton  = typename GGMTraits<GraphStructure, T>::template CompleteSkeleton<S>; //Need the skelethon of CompleteForm
 		using CompleteType 		= typename GGMTraits<GraphStructure, T>::CompleteType;
 		using PrecisionType     = typename GGMTraits<GraphStructure, T>::PrecisionType;
 		using ReturnType 		= typename GGMTraits<GraphStructure, T>::ReturnType;
@@ -42,6 +44,7 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 										         	   double alpha, unsigned int seed)
 {
 	//std::cout<<"Sono dentro DoubleReversibleJumpsMH"<<std::endl;
+	//std::cout<<"  "<<std::endl;
 	if(seed==0){
 	  std::random_device rd;
 	  seed=rd();
@@ -53,18 +56,28 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 	auto [Gnew, log_GraphMove_proposal, mv_type] = this->propose_new_graph(Gold, alpha, seed);
 	MoveType inverse_mv_type;
 	(mv_type == MoveType::Add) ? (inverse_mv_type = MoveType::Remove) : (inverse_mv_type = MoveType::Add);
-					//std::cout<<""<<std::endl;
+				//if(mv_type == MoveType::Add)
+					//std::cout<<"Aggiungo"<<std::endl;
+				//else
+					//std::cout<<"Tolgo"<<std::endl;
 					//std::cout<<"Gold:"<<std::endl<<Gold<<std::endl;
 					//std::cout<<"Gnew:"<<std::endl<<Gnew<<std::endl;
 	//2) Sample auxiliary matrix according to Gnew
-	this->Waux.rgwish(Gnew.completeview(), this->trGwishSampler, seed);
+	CompleteType Gnew_complete(Gnew.completeview());
+	CompleteType Gold_complete(Gold.completeview());
+
+	this->Waux.rgwish(Gnew_complete, this->trGwishSampler, seed);
 	this->Waux.compute_Chol();
 	//3) Perform the first jump with respect to the actual precision matrix K -> K'
-	auto [Knew, log_rj_proposal_K, log_jacobian_mv_K ] = this->RJ(Gnew.completeview(), this->Kprior, mv_type) ;
+			//std::cout<<"Salto di K"<<std::endl;
+	//auto [Knew, log_rj_proposal_K, log_jacobian_mv_K ] = this->RJ(Gnew_complete, this->Kprior, mv_type) ;
+	auto [Knew, log_rj_proposal_K, log_jacobian_mv_K ] = this->RJ_new(Gnew_complete, this->Kprior, mv_type) ;
 					//std::cout<<"Kold:"<<std::endl<<this->Kprior.get_matrix()<<std::endl;
 					//std::cout<<"Knew:"<<std::endl<<Knew.get_matrix()<<std::endl;
 	//4) Perform the second jump with respect to auxiliary matrix Waux -> W0	
-	auto [W0, log_rj_proposal_W, log_jacobian_mv_W ] = this->RJ(Gold.completeview(), this->Waux, inverse_mv_type) ;
+			//std::cout<<"Salto di W"<<std::endl;
+	//auto [W0, log_rj_proposal_W, log_jacobian_mv_W ] = this->RJ(Gold_complete, this->Waux, inverse_mv_type) ;
+	auto [W0, log_rj_proposal_W, log_jacobian_mv_W ] = this->RJ_new(Gold_complete, this->Waux, inverse_mv_type) ;
 					//std::cout<<"Waux:"<<std::endl<<Waux.get_matrix()<<std::endl;
 					//std::cout<<"W0:"<<std::endl<<W0.get_matrix()<<std::endl;
 
@@ -78,15 +91,21 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 			res += A.row(i)*B.col(i);
 		return( -0.5*res );
 	}; //This lambda function computes trace(A*B)
+	if(!this->data_factorized){
+		this->D_plus_U = this->Kprior.get_inv_scale() + data;	
+		this->chol_inv_DplusU = this->D_plus_U.llt().solve(MatCol::Identity(data.rows(),data.rows())).llt().matrixU();
+		this->data_factorized = true;
+	}
+	
 	double log_GraphPr_ratio(this->ptr_prior->log_ratio(Gnew, Gold));
 	//double log_LL_GWishPr_ratio( -0.5 * ((Knew.get_matrix() - this->Kprior.get_matrix())*(this->Kprior.get_inv_scale() + data)).trace()  );
-	double log_LL_GWishPr_ratio(  TraceProd( Knew.get_matrix() - this->Kprior.get_matrix() , this->Kprior.get_inv_scale() + data)  );
+	double log_LL_GWishPr_ratio(  TraceProd( Knew.get_matrix() - this->Kprior.get_matrix() , this->D_plus_U)  );
 	//double log_aux_ratio( -0.5 * ((this->Waux.get_matrix() - W0.get_matrix())*( this->Waux.get_inv_scale() )).trace() );
 	double log_aux_ratio( TraceProd(this->Waux.get_matrix() - W0.get_matrix(), this->Waux.get_inv_scale() ) );
 
 			//Questo lo metto solo per fare un confronto
-			//double log_GWishPrConst_ratio(this->Kprior.log_normalizing_constat(Gold.completeview(),500, seed) - 
-			//							  Knew.log_normalizing_constat(Gnew.completeview(),500, seed) );
+			//double log_GWishPrConst_ratio(this->Kprior.log_normalizing_constat(Gold_complete,500, seed) - 
+			//							  Knew.log_normalizing_constat(Gnew_complete,500, seed) );
 
 
 					//std::cout<<"GraphMove_proposal = "<<std::exp(log_GraphMove_proposal)<<std::endl;
@@ -129,11 +148,13 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 				//std::cout<<"Ho rifiutato"<<std::endl;
 		accepted = 0;
 	}
-	this->Kprior.set_matrix(Gold.completeview(), utils::rgwish(Gold.completeview(), this->Kprior.get_shape() + n, this->Kprior.get_inv_scale() + data , this->trGwishSampler, seed ) ); 
+	this->Kprior.set_matrix(Gold_complete, 
+		utils::rgwish<CompleteSkeleton, T, utils::ScaleForm::CholUpper_InvScale, utils::MeanNorm>(Gold_complete, this->Kprior.get_shape() + n, this->chol_inv_DplusU , this->trGwishSampler, seed ) ); 
 	this->Kprior.compute_Chol();
 	return std::make_tuple(this->Kprior.get_matrix(),accepted);
 	//return std::make_tuple(utils::rgwish(Gold.completeview(), this->Kprior.get_shape(), this->Kprior.get_inv_scale() + data , seed ), accepted );
-	//It is easier to use the free function becuase the inv_scale matrix has to be factorized for sure.
+	//It is easier to use the free function becuase the inv_scale matrix has to be factorized for sure. 
+	//--> deve essere fattorizzata ogni volta solo nel FGM sampler, nel GGM sampler in realtà no
 	//If the move is accepted, Gold is the new graph
 }
 
@@ -199,14 +220,14 @@ DoubleReversibleJumpsMH<GraphType, T>::operator()(MatCol const & data, unsigned 
 	//1) Propose a new graph
 	auto [Gnew, log_GraphMove_proposal] = this->propose_new_graph(Gold, alpha, seed) ;
 	//2) Sample auxiliary matrix according to Gnew
-	this->Waux.rgwish(Gnew.completeview(), seed);
+	this->Waux.rgwish(Gnew_complete, seed);
 	std::cout<<"chi dentro Waux?"<<std::endl;
 	std::cout<<"this->Waux.get_matrix():"<<std::endl<<this->Waux.get_matrix()<<std::endl;
 	this->Waux.compute_Chol();
 	std::cout<<"this->Waux.get_upper_Chol():"<<std::endl<<this->Waux.get_upper_Chol()<<std::endl;
 
 	//3) Perform the first jump with respect to the actual precision matrix K -> K'
-	auto [Knew, log_rj_proposal_K, log_jacobian_mv_K ] = this->RJ(Gnew.completeview(), this->Kprior) ;
+	auto [Knew, log_rj_proposal_K, log_jacobian_mv_K ] = this->RJ(Gnew_complete, this->Kprior) ;
 	std::cout<<"Uscito da primo salto"<<std::endl;
 	//4) Perform the second jump with respect to auxiliary matrix W_tilde -> W0	
 	auto [W0, log_rj_proposal_W, log_jacobian_mv_W ] = this->RJ(Gold.completeview(), this->Waux) ;

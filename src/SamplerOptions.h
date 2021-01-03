@@ -9,7 +9,8 @@
 #include "ProgressBar.h"
 
 struct SamplerTraits{
-	
+	// RetK is a vector containing the upper triangular part of the precision matrix. It is important to remember that this choice implies that 
+	// elements are saved row by row.
 	using IdxType  	  		= std::size_t;
 	using MatRow      		= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>; 
 	using MatCol      		= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>; 
@@ -20,7 +21,7 @@ struct SamplerTraits{
 	using GroupsPtr   		= std::shared_ptr<const Groups>;
 	using RetBeta	  		= std::vector<MatCol>;
 	using RetMu		  		= std::vector<VecCol>; //Sarebbe meglio salvarli in una matrice pxiter_to_store cosi poi posso fare operazioni rowwise
-	using RetK	 	  		= std::vector<MatRow>; //Non memory friendly perché sto salvando anche la lower part di una matrice simmetrica
+	using RetK	 	  		= std::vector<VecCol>; 
 	using RetTaueps	  		= std::vector<double>;
 	//using RetGraph 		= std::unordered_map< std::vector<bool>, int>;
 	//using RetGraph 		= std::map< std::vector<bool>, int>;
@@ -28,7 +29,7 @@ struct SamplerTraits{
 	//using RetType	  		= std::tuple<RetBeta, RetMu, RetK, RetGraph, RetTaueps>;
 	using IteratorRetBeta	= std::vector<MatCol>::iterator;
 	using IteratorRetMu		= std::vector<VecCol>::iterator;
-	using IteratorRetK	 	= std::vector<MatRow>::iterator; 
+	using IteratorRetK	 	= std::vector<VecCol>::iterator; 
 	using IteratorRetTaueps	= std::vector<double>::iterator;
 };
 
@@ -147,8 +148,7 @@ class Init : public SamplerTraits{
 	public:
 	//Those constructors may lead to errors if uncorrectly set. Every block graph has to be constructed with its groups	
 
-		//This is for complete graphs
-	//Init()=default;	
+	//This is for complete graphs
 	Init(unsigned int const & _n, unsigned int const & _p):
 			Beta0(MatCol::Zero(_p,_n)), mu0(VecCol::Zero(_p)), tau_eps0(1.0), K0(MatRow::Identity(_p,_p)), G0(_p)
 	{
@@ -165,6 +165,11 @@ class Init : public SamplerTraits{
 		mu0 = _mu0;
 		tau_eps0 = _tau_eps0;
 		G0 = _G0; 
+		K0 = _K0;
+	}
+	void set_init(MatRow const & _K0, Graph const & _G0){
+		G0 = _G0; 
+		K0 = _K0;
 	}	
 	
 	MatCol Beta0; //p x n
@@ -251,3 +256,7 @@ SelectMethod_BlockGraphAdj(std::string const & namePr, std::string const & nameG
 		throw std::runtime_error("Error, the only possible GGM algorithm right now are: MH, RJ, DRJ");
 }
 #endif
+
+
+
+

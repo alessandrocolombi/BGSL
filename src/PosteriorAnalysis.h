@@ -72,8 +72,9 @@ namespace analysis{
 		}
 	}
 
+	//Computes mean values for output of FGMsampler
 	template< class RetGraph = std::unordered_map< std::vector<bool>, int> > //template parameters
-	std::tuple<MatCol, VecCol, MatRow, MatRow, double>  //Return type
+	std::tuple<MatCol, VecCol, VecCol, MatRow, double>  //Return type
 	PointwiseEstimate(	std::tuple<RetBeta, RetMu, RetK, RetGraph, RetTaueps> const & ret, 
 						const int& iter_to_store, const int& iter_to_storeG, GroupsPtr const & groups = nullptr)
 	{
@@ -83,7 +84,7 @@ namespace analysis{
 
 		//SaveBeta is a vector of size iter_to_store  with (p x n)-dimensional matrices
 		//SaveMu   is a vector of size iter_to_store  with (p)-dimensional eigen vectors
-		//SaveK    is a vector of size iter_to_storeG with (p x p)-dimensional matrices
+		//SaveK    is a vector of size iter_to_store with (0.5*p*(p+1))-dimensional eigen vectors
 		//SaveTaueps is a std::vector<double> of size iter_to_store    
 		//SaveG    is a vector/map/unsigned_map of size iter_to_storeG with std::vector<bool> representing the adjacendy matrix and its frequency
 
@@ -102,16 +103,18 @@ namespace analysis{
 		double MeanTaueps( std::accumulate(  SaveTaueps.begin(), SaveTaueps.end(), 0.0  ) ); 
 		MeanTaueps /= iter_to_store;
 		//Precision
-		MatRow MeanK( MatRow::Zero(SaveK[0].rows(), SaveK[0].cols())  );
+		//MatRow MeanK( MatRow::Zero(SaveK[0].rows(), SaveK[0].cols())  );
+		VecCol MeanK( VecCol::Zero(SaveK[0].size())  );
 		for(int i = 0; i < SaveK.size(); ++i){
 			MeanK += SaveK[i];
 		}
-		MeanK /= iter_to_store;
+		MeanK /= iter_to_storeG;
 		//plinks
 		MatRow plinks(Compute_plinks(SaveG, iter_to_storeG, groups));
 		return std::make_tuple(MeanBeta, MeanMu, MeanK, plinks, MeanTaueps);
 	}
 
+	//Computes mean values for output of FLMsampler. 
 	std::tuple<MatCol, VecCol, VecCol, double>  //Return type
 	PointwiseEstimate(	std::tuple<RetBeta, RetMu, RetTauK, RetTaueps> const & ret, const int& iter_to_store )
 	{
@@ -141,43 +144,32 @@ namespace analysis{
 		MeanTaueps /= iter_to_store;
 		return std::make_tuple(MeanBeta, MeanMu, MeanTauK, MeanTaueps);
 	}
-
-	std::tuple<MatCol, VecCol, MatRow, double>  //Return type
-	PointwiseEstimate(	std::tuple<RetBeta, RetMu, RetK, RetTaueps> const & ret, const int& iter_to_store )
+	
+	//Computes mean values for output of GGMsampler
+	//Usage: need to be explicit when passing the templete parameter because often cannot be deduced
+	//analysis::PointwiseEstimate<decltype(SampledG)>(std::tie(SampledK, SampledG),param.iter_to_storeG);
+	template< class RetGraph = std::unordered_map< std::vector<bool>, int> > //template parameters
+	std::tuple<VecCol, MatRow>  //Return type
+	PointwiseEstimate(	std::tuple<RetK, RetGraph> const & ret, 
+						const int& iter_to_store, GroupsPtr const & groups = nullptr)
 	{
 		
 		//Unpacking the tuple with reference binding (c++17)
-		const auto&[SaveBeta, SaveMu, SaveK, SaveTaueps] = ret;
-
-		//SaveBeta is a vector of size iter_to_store  with (p x n)-dimensional matrices
-		//SaveMu   is a vector of size iter_to_store  with (p)-dimensional eigen vectors
-		//SaveK    is a vector of size iter_to_storeG with (p x p)-dimensional matrices
-		//SaveTaueps is a std::vector<double> of size iter_to_store    
+		const auto&[SaveK, SaveG] = ret;
+		//SaveK    is a vector of size iter_to_store with (0.5*p*(p+1))-dimensional eigen vectors
+		//SaveG    is a vector/map/unsigned_map of size iter_to_store with std::vector<bool> representing the adjacendy matrix and its frequency
 
 		//It would be better to use std::reduce with execution::par but it is not supported in R and it is difficult to interface with Eigen
-
-		//Beta and Mu
-		MatCol MeanBeta(MatCol::Zero(SaveBeta[0].rows(), SaveBeta[0].cols()));
-		VecCol MeanMu( VecCol::Zero(SaveMu[0].size()) );
-		for(int i = 0; i < SaveBeta.size(); ++i){
-			MeanBeta += SaveBeta[i];
-			MeanMu 	 += SaveMu[i]; 
-		}
-		MeanBeta /= iter_to_store;	
-		MeanMu /= iter_to_store;
-		//Tau_eps
-		double MeanTaueps( std::accumulate(  SaveTaueps.begin(), SaveTaueps.end(), 0.0  ) ); 
-		MeanTaueps /= iter_to_store;
-		//Precision
-		MatRow MeanK( MatRow::Zero(SaveK[0].rows(), SaveK[0].cols())  );
+		VecCol MeanK( VecCol::Zero(SaveK[0].size())  );
 		for(int i = 0; i < SaveK.size(); ++i){
 			MeanK += SaveK[i];
 		}
 		MeanK /= iter_to_store;
 		//plinks
-		return std::make_tuple(MeanBeta, MeanMu, MeanK, MeanTaueps);
+		MatRow plinks(Compute_plinks(SaveG, iter_to_store, groups));
+		return std::make_tuple(MeanK, plinks);
 	}
-
+	
 	std::tuple<MatCol,MatCol> QuantileBeta(RetBeta const & SaveBeta, double const & alpha_lower = 0.05, double const & alpha_upper = 0.95)
 	{
 		using MyMat = std::vector< std::vector< std::vector<double> > >;

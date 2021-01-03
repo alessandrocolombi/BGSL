@@ -1,0 +1,109 @@
+\hypertarget{classFGMsampler}{}\doxysection{F\+G\+Msampler$<$ Graph\+Structure, T, Ret\+Graph $>$ Class Template Reference}
+\label{classFGMsampler}\index{FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}}
+
+
+{\ttfamily \#include $<$Gibbs\+Sampler\+Base.\+h$>$}
+
+
+
+Inheritance diagram for F\+G\+Msampler$<$ Graph\+Structure, T, Ret\+Graph $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=247pt]{classFGMsampler__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for F\+G\+Msampler$<$ Graph\+Structure, T, Ret\+Graph $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=247pt]{classFGMsampler__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+using \mbox{\hyperlink{classFGMsampler_a6dbea35b1456f48cfeffa95dc532d489}{Graph}} = Graph\+Structure$<$ T $>$
+\item 
+using \mbox{\hyperlink{classFGMsampler_a15e6db582d56717fce23f50379537a15}{Complete\+Type}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classFGMsampler_a15e6db582d56717fce23f50379537a15}{Complete\+Type}}
+\item 
+using \mbox{\hyperlink{classFGMsampler_ad967d827f4e59b43a0e1d132e0050fdf}{Precision\+Type}} = typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$ Graph\+Structure, T $>$\+::\mbox{\hyperlink{classFGMsampler_ad967d827f4e59b43a0e1d132e0050fdf}{Precision\+Type}}
+\item 
+using \mbox{\hyperlink{classFGMsampler_a69f37aa2ee58100d7d7eb109558be907}{G\+G\+M\+Type}} = std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGGM}{G\+GM}}$<$ Graph\+Structure, T $>$ $>$
+\item 
+using \mbox{\hyperlink{classFGMsampler_a832cb606c74bbc9f6fa47b42461f8eee}{Ret\+Type}} = std\+::tuple$<$ \mbox{\hyperlink{structSamplerTraits_a5c4738adb2d6a9aa0f70dc74361b2f2c}{Ret\+Beta}}, \mbox{\hyperlink{structSamplerTraits_a559dcc0182f3550c66df81bb1db7e706}{Ret\+Mu}}, \mbox{\hyperlink{structSamplerTraits_af738d28fbce3e4e0ec94d2523123e4fa}{RetK}}, Ret\+Graph, \mbox{\hyperlink{structSamplerTraits_a88531995e26e408593fb067622dfb9e4}{Ret\+Taueps}} $>$
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classFGMsampler_a49934c13a8e7ddd09f38732ffbf823b7}{F\+G\+Msampler}} (\mbox{\hyperlink{structSamplerTraits_ab1bb42c906c54a2b476623c9ef1557f6}{Mat\+Col}} const \&\+\_\+data, \mbox{\hyperlink{classParameters}{Parameters}} const \&\+\_\+params, \mbox{\hyperlink{classHyperparameters}{Hyperparameters}} const \&\+\_\+hy\+\_\+params, \mbox{\hyperlink{classInit}{Init}}$<$ Graph\+Structure, T $>$ const \&\+\_\+init, \mbox{\hyperlink{classFGMsampler_a69f37aa2ee58100d7d7eb109558be907}{G\+G\+M\+Type}} \&\+\_\+\+G\+G\+M\+\_\+method, unsigned int \+\_\+seed=0)
+\item 
+\mbox{\hyperlink{classFGMsampler_a832cb606c74bbc9f6fa47b42461f8eee}{Ret\+Type}} \mbox{\hyperlink{classFGMsampler_a76333a1a82162205623efba905ca3c97}{run}} ()
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Member Typedef Documentation}
+\mbox{\Hypertarget{classFGMsampler_a15e6db582d56717fce23f50379537a15}\label{classFGMsampler_a15e6db582d56717fce23f50379537a15}} 
+\index{FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}!CompleteType@{CompleteType}}
+\index{CompleteType@{CompleteType}!FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}}
+\doxysubsubsection{\texorpdfstring{CompleteType}{CompleteType}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int, class Ret\+Graph  = std\+::unordered\+\_\+map$<$ std\+::vector$<$bool$>$, int$>$$>$ \\
+using \mbox{\hyperlink{classFGMsampler}{F\+G\+Msampler}}$<$ Graph\+Structure, T, Ret\+Graph $>$\+::\mbox{\hyperlink{classFGMsampler_a15e6db582d56717fce23f50379537a15}{Complete\+Type}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classFGMsampler_a15e6db582d56717fce23f50379537a15}{Complete\+Type}}}
+
+\mbox{\Hypertarget{classFGMsampler_a69f37aa2ee58100d7d7eb109558be907}\label{classFGMsampler_a69f37aa2ee58100d7d7eb109558be907}} 
+\index{FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}!GGMType@{GGMType}}
+\index{GGMType@{GGMType}!FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}}
+\doxysubsubsection{\texorpdfstring{GGMType}{GGMType}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int, class Ret\+Graph  = std\+::unordered\+\_\+map$<$ std\+::vector$<$bool$>$, int$>$$>$ \\
+using \mbox{\hyperlink{classFGMsampler}{F\+G\+Msampler}}$<$ Graph\+Structure, T, Ret\+Graph $>$\+::\mbox{\hyperlink{classFGMsampler_a69f37aa2ee58100d7d7eb109558be907}{G\+G\+M\+Type}} =  std\+::unique\+\_\+ptr$<$\mbox{\hyperlink{classGGM}{G\+GM}}$<$Graph\+Structure, T$>$ $>$}
+
+\mbox{\Hypertarget{classFGMsampler_a6dbea35b1456f48cfeffa95dc532d489}\label{classFGMsampler_a6dbea35b1456f48cfeffa95dc532d489}} 
+\index{FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}!Graph@{Graph}}
+\index{Graph@{Graph}!FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}}
+\doxysubsubsection{\texorpdfstring{Graph}{Graph}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int, class Ret\+Graph  = std\+::unordered\+\_\+map$<$ std\+::vector$<$bool$>$, int$>$$>$ \\
+using \mbox{\hyperlink{classFGMsampler}{F\+G\+Msampler}}$<$ Graph\+Structure, T, Ret\+Graph $>$\+::\mbox{\hyperlink{classFGMsampler_a6dbea35b1456f48cfeffa95dc532d489}{Graph}} =  Graph\+Structure$<$T$>$}
+
+\mbox{\Hypertarget{classFGMsampler_ad967d827f4e59b43a0e1d132e0050fdf}\label{classFGMsampler_ad967d827f4e59b43a0e1d132e0050fdf}} 
+\index{FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}!PrecisionType@{PrecisionType}}
+\index{PrecisionType@{PrecisionType}!FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}}
+\doxysubsubsection{\texorpdfstring{PrecisionType}{PrecisionType}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int, class Ret\+Graph  = std\+::unordered\+\_\+map$<$ std\+::vector$<$bool$>$, int$>$$>$ \\
+using \mbox{\hyperlink{classFGMsampler}{F\+G\+Msampler}}$<$ Graph\+Structure, T, Ret\+Graph $>$\+::\mbox{\hyperlink{classFGMsampler_ad967d827f4e59b43a0e1d132e0050fdf}{Precision\+Type}} =  typename \mbox{\hyperlink{structGGMTraits}{G\+G\+M\+Traits}}$<$Graph\+Structure, T$>$\+::\mbox{\hyperlink{classFGMsampler_ad967d827f4e59b43a0e1d132e0050fdf}{Precision\+Type}}}
+
+\mbox{\Hypertarget{classFGMsampler_a832cb606c74bbc9f6fa47b42461f8eee}\label{classFGMsampler_a832cb606c74bbc9f6fa47b42461f8eee}} 
+\index{FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}!RetType@{RetType}}
+\index{RetType@{RetType}!FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}}
+\doxysubsubsection{\texorpdfstring{RetType}{RetType}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int, class Ret\+Graph  = std\+::unordered\+\_\+map$<$ std\+::vector$<$bool$>$, int$>$$>$ \\
+using \mbox{\hyperlink{classFGMsampler}{F\+G\+Msampler}}$<$ Graph\+Structure, T, Ret\+Graph $>$\+::\mbox{\hyperlink{classFGMsampler_a832cb606c74bbc9f6fa47b42461f8eee}{Ret\+Type}} =  std\+::tuple$<$\mbox{\hyperlink{structSamplerTraits_a5c4738adb2d6a9aa0f70dc74361b2f2c}{Ret\+Beta}}, \mbox{\hyperlink{structSamplerTraits_a559dcc0182f3550c66df81bb1db7e706}{Ret\+Mu}}, \mbox{\hyperlink{structSamplerTraits_af738d28fbce3e4e0ec94d2523123e4fa}{RetK}}, Ret\+Graph, \mbox{\hyperlink{structSamplerTraits_a88531995e26e408593fb067622dfb9e4}{Ret\+Taueps}}$>$}
+
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classFGMsampler_a49934c13a8e7ddd09f38732ffbf823b7}\label{classFGMsampler_a49934c13a8e7ddd09f38732ffbf823b7}} 
+\index{FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}!FGMsampler@{FGMsampler}}
+\index{FGMsampler@{FGMsampler}!FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}}
+\doxysubsubsection{\texorpdfstring{FGMsampler()}{FGMsampler()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure = Graph\+Type, typename T  = unsigned int, class Ret\+Graph  = std\+::unordered\+\_\+map$<$ std\+::vector$<$bool$>$, int$>$$>$ \\
+\mbox{\hyperlink{classFGMsampler}{F\+G\+Msampler}}$<$ Graph\+Structure, T, Ret\+Graph $>$\+::\mbox{\hyperlink{classFGMsampler}{F\+G\+Msampler}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{structSamplerTraits_ab1bb42c906c54a2b476623c9ef1557f6}{Mat\+Col}} const \&}]{\+\_\+data,  }\item[{\mbox{\hyperlink{classParameters}{Parameters}} const \&}]{\+\_\+params,  }\item[{\mbox{\hyperlink{classHyperparameters}{Hyperparameters}} const \&}]{\+\_\+hy\+\_\+params,  }\item[{\mbox{\hyperlink{classInit}{Init}}$<$ Graph\+Structure, T $>$ const \&}]{\+\_\+init,  }\item[{\mbox{\hyperlink{classFGMsampler_a69f37aa2ee58100d7d7eb109558be907}{G\+G\+M\+Type}} \&}]{\+\_\+\+G\+G\+M\+\_\+method,  }\item[{unsigned int}]{\+\_\+seed = {\ttfamily 0} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classFGMsampler_a76333a1a82162205623efba905ca3c97}\label{classFGMsampler_a76333a1a82162205623efba905ca3c97}} 
+\index{FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}!run@{run}}
+\index{run@{run}!FGMsampler$<$ GraphStructure, T, RetGraph $>$@{FGMsampler$<$ GraphStructure, T, RetGraph $>$}}
+\doxysubsubsection{\texorpdfstring{run()}{run()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Graph\+Structure, typename T , class Ret\+Graph $>$ \\
+\mbox{\hyperlink{classFGMsampler}{F\+G\+Msampler}}$<$ Graph\+Structure, T, Ret\+Graph $>$\+::\mbox{\hyperlink{classFGMsampler_a832cb606c74bbc9f6fa47b42461f8eee}{Ret\+Type}} \mbox{\hyperlink{classFGMsampler}{F\+G\+Msampler}}$<$ Graph\+Structure, T, Ret\+Graph $>$\+::run}
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{GibbsSamplerBase_8h}{Gibbs\+Sampler\+Base.\+h}}\end{DoxyCompactItemize}

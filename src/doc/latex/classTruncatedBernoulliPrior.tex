@@ -1,0 +1,83 @@
+\hypertarget{classTruncatedBernoulliPrior}{}\doxysection{Truncated\+Bernoulli\+Prior$<$ Block\+Graph\+Structure, T $>$ Class Template Reference}
+\label{classTruncatedBernoulliPrior}\index{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$@{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$}}
+
+
+{\ttfamily \#include $<$Graph\+Prior.\+h$>$}
+
+
+
+Inheritance diagram for Truncated\+Bernoulli\+Prior$<$ Block\+Graph\+Structure, T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=289pt]{classTruncatedBernoulliPrior__inherit__graph}
+\end{center}
+\end{figure}
+
+
+Collaboration diagram for Truncated\+Bernoulli\+Prior$<$ Block\+Graph\+Structure, T $>$\+:\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=289pt]{classTruncatedBernoulliPrior__coll__graph}
+\end{center}
+\end{figure}
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{classTruncatedBernoulliPrior_a6b2629d50d6b2cc26b996dbf4dc2c831}{Truncated\+Bernoulli\+Prior}} (\mbox{\hyperlink{classdouble}{double}} const \&\+\_\+theta)
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classTruncatedBernoulliPrior_a9883dfe325c5afe0aec546c143aab814}{Prob}} (Block\+Graph\+Type const \&G) const override
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classTruncatedBernoulliPrior_a39e583af5637223b580be50645fd3c4b}{ratio}} (Block\+Graph\+Type const \&G\+\_\+num, Block\+Graph\+Type const \&G\+\_\+den) const override
+\item 
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classTruncatedBernoulliPrior_a58372c666dcec2311694bf101d47fad0}{log\+\_\+ratio}} (Block\+Graph\+Type const \&G\+\_\+num, Block\+Graph\+Type const \&G\+\_\+den) const override
+\item 
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGraphPrior}{Graph\+Prior}}$<$ Block\+Graph\+Structure, T $>$ $>$ \mbox{\hyperlink{classTruncatedBernoulliPrior_acca65a8ff45518cc4893beea85050cb3}{clone}} () const override
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{classTruncatedBernoulliPrior_a6b2629d50d6b2cc26b996dbf4dc2c831}\label{classTruncatedBernoulliPrior_a6b2629d50d6b2cc26b996dbf4dc2c831}} 
+\index{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$@{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$}!TruncatedBernoulliPrior@{TruncatedBernoulliPrior}}
+\index{TruncatedBernoulliPrior@{TruncatedBernoulliPrior}!TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$@{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{TruncatedBernoulliPrior()}{TruncatedBernoulliPrior()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Block\+Graph\+Structure = Block\+Graph, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classTruncatedBernoulliPrior}{Truncated\+Bernoulli\+Prior}}$<$ Block\+Graph\+Structure, T $>$\+::\mbox{\hyperlink{classTruncatedBernoulliPrior}{Truncated\+Bernoulli\+Prior}} (\begin{DoxyParamCaption}\item[{\mbox{\hyperlink{classdouble}{double}} const \&}]{\+\_\+theta }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [inline]}}
+
+
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classTruncatedBernoulliPrior_acca65a8ff45518cc4893beea85050cb3}\label{classTruncatedBernoulliPrior_acca65a8ff45518cc4893beea85050cb3}} 
+\index{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$@{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$}!clone@{clone}}
+\index{clone@{clone}!TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$@{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{clone()}{clone()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Block\+Graph\+Structure = Block\+Graph, typename T  = unsigned int$>$ \\
+std\+::unique\+\_\+ptr$<$ \mbox{\hyperlink{classGraphPrior}{Graph\+Prior}}$<$Block\+Graph\+Structure, T$>$ $>$ \mbox{\hyperlink{classTruncatedBernoulliPrior}{Truncated\+Bernoulli\+Prior}}$<$ Block\+Graph\+Structure, T $>$\+::clone (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+\mbox{\Hypertarget{classTruncatedBernoulliPrior_a58372c666dcec2311694bf101d47fad0}\label{classTruncatedBernoulliPrior_a58372c666dcec2311694bf101d47fad0}} 
+\index{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$@{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$}!log\_ratio@{log\_ratio}}
+\index{log\_ratio@{log\_ratio}!TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$@{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{log\_ratio()}{log\_ratio()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Block\+Graph\+Structure = Block\+Graph, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classTruncatedBernoulliPrior}{Truncated\+Bernoulli\+Prior}}$<$ Block\+Graph\+Structure, T $>$\+::log\+\_\+ratio (\begin{DoxyParamCaption}\item[{Block\+Graph\+Type const \&}]{G\+\_\+num,  }\item[{Block\+Graph\+Type const \&}]{G\+\_\+den }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+\mbox{\Hypertarget{classTruncatedBernoulliPrior_a9883dfe325c5afe0aec546c143aab814}\label{classTruncatedBernoulliPrior_a9883dfe325c5afe0aec546c143aab814}} 
+\index{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$@{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$}!Prob@{Prob}}
+\index{Prob@{Prob}!TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$@{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{Prob()}{Prob()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Block\+Graph\+Structure = Block\+Graph, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classTruncatedBernoulliPrior}{Truncated\+Bernoulli\+Prior}}$<$ Block\+Graph\+Structure, T $>$\+::Prob (\begin{DoxyParamCaption}\item[{Block\+Graph\+Type const \&}]{G }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+\mbox{\Hypertarget{classTruncatedBernoulliPrior_a39e583af5637223b580be50645fd3c4b}\label{classTruncatedBernoulliPrior_a39e583af5637223b580be50645fd3c4b}} 
+\index{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$@{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$}!ratio@{ratio}}
+\index{ratio@{ratio}!TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$@{TruncatedBernoulliPrior$<$ BlockGraphStructure, T $>$}}
+\doxysubsubsection{\texorpdfstring{ratio()}{ratio()}}
+{\footnotesize\ttfamily template$<$template$<$ typename $>$ class Block\+Graph\+Structure = Block\+Graph, typename T  = unsigned int$>$ \\
+\mbox{\hyperlink{classdouble}{double}} \mbox{\hyperlink{classTruncatedBernoulliPrior}{Truncated\+Bernoulli\+Prior}}$<$ Block\+Graph\+Structure, T $>$\+::ratio (\begin{DoxyParamCaption}\item[{Block\+Graph\+Type const \&}]{G\+\_\+num,  }\item[{Block\+Graph\+Type const \&}]{G\+\_\+den }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}, {\ttfamily [override]}}
+
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+\mbox{\hyperlink{GraphPrior_8h}{Graph\+Prior.\+h}}\end{DoxyCompactItemize}

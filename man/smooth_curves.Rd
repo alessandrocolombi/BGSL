@@ -19,20 +19,22 @@ smooth_curves(
 )
 }
 \arguments{
-\item{beta}{matrix of dimension n_basis x n_curves containing the values of regression coefficients}
+\item{beta}{matrix of dimension \eqn{n_basis \times n_curves} containing the values of regression coefficients.}
 
-\item{BaseMat}{matrix of dimension n_grid_points x n_basis containing the evaluation of all the spline in all the grid points}
+\item{BaseMat}{matrix of dimension \eqn{n_grid_points \times n_basis} containing the evaluation of all the spline in all the grid points.}
 
 \item{n_plot}{the number of curves to be plotted. Set 0 for no plot.}
 
-\item{range}{the range where the curves has to be plotted. Not needed if n_plot is 0.}
+\item{range}{the range where the curves has to be plotted. Not needed if \code{n_plot} is 0.}
 
-\item{grid_points}{vector of size n_grid_points with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if n_plot is 0.}
+\item{grid_points}{vector of size \code{n_grid_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.}
 
-\item{internal_knots}{vector with the internal knots used to construct the splines. Can be obtained as return value of function Generate_Basis. Default is null.
-but if provided, n_basis are displayed in the plot. The k-th interval represents the segment where the k-th spline dominates the others.}
+\item{internal_knots}{vector with the internal knots used to construct the splines. Can be obtained as return value of function \code{\link{Generate_Basis}}. Default is null.
+but if provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval represents the segment where the \code{k}-th spline dominates the others.}
 
-\item{highlight_band1}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \link{1,n_basis}}
+\item{highlight_band1}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \eqn{[1,n_basis]}}
+
+\item{highlight_band2}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \eqn{[1,n_basis]}}
 
 \item{title_plot}{the title of the plot.}
 
