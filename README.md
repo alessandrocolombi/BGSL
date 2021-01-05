@@ -2,10 +2,10 @@
 **Author:** Alessandro Colombi
 
 ## Table of Contents
-1. [Overview][Overview]
-2. [Prerequisites] [Prerequisites]
-3. [Installation - Unix][Installation-Unix]
-4. [Installation - Window][Installation-Window]
+1. [Overview](#Overview)
+2. [Prerequisites](#Prerequisites)
+3. [Installation - Unix](#Installation-Unix)
+4. [Installation - Window](#Installation-Window)
 
 ## Overview
 
