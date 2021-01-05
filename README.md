@@ -44,10 +44,10 @@ Intel(R) TBB 2018 would be required.
 
 ## Installation - Unix
 Installation on Unix systems is straightforward. Note that all the following commands are valid for Ubuntu/Debian users only. 
-On other platforms, should be easy to use the corresponding package managing tool commands them. 
+On other platforms, should be easy to use the corresponding package managing tool commands. 
 ### R - Rstudio - devtools
 First step is to have `R` installed on your computer. If you already have that, make sure that it is at least version 4.0.3 and that `devtool` package is available. In this case go directly to 
-the next point.
+the [next point](#GSL).
 Otherwise, follow instruction in [r-project](https://cloud.r-project.org/) to download the right version of `R` according to your distribution. Ubuntu users may get lost or get into trouble because of an issue with the key signing Ubuntu archives on CRAN.
 This [guide](https://cran.r-project.org/bin/linux/ubuntu/) is very well done and should clarify all doubts. 
 The longest and safest way to proceed is summarized below. For sake of brevity, only the case of Ubuntu Focal Fossa in given.
@@ -59,8 +59,7 @@ $ sudo apt-key add key.txt
 ```
 4. Go to etc/apt folder and open source.list file with your prefered text editor, let's say sublime
 ```shell
-$ cd /
-$ cd etc/apt
+$ cd /etc/apt
 $ sudo subl sources.list
 ```
 5. Add the two following lines to the bottom of the page
@@ -68,7 +67,7 @@ $ sudo subl sources.list
 deb http://cz.archive.ubuntu.com/ubuntu eoan main universe
 deb https://cloud.r-project.org/bin/linux/ubuntu focal-cran40/
 ```
-The anxious user may check that this operation was succesful by opening "Sowtare and updates" > "Other software". The second string should be displayed.
+The anxious user may check that this operation was succesful by opening "Sowtare and updates" > "Other software". The second string should be displayed. <br/>
 6. Install `R` by typing
 ```shell
 $ sudo apt-get update
@@ -77,15 +76,15 @@ $ R
 ```
 The last instruction should launch the program and display the downloaded version that should be at least 4.0.3.
 7. Install [Rstudio](https://rstudio.com/products/rstudio/download/#download) as IDE for `R`. It is not the only possibility but it is a standard choice and highly recommended. 
+
 The very last step is to install the `devtools` package. This installation may take few minutes since has many dependencies that rely on external libraries. It is indeed suggested to install them at this stage simply typing 
 ```shell
 $ sudo apt-get install libssl-dev libcurl4-openssl-dev libxml2-dev libgit2-dev libnode-dev
 ```
-Once they have all been installed, you are ready to complete this first step by typing
+Once they have all been installed, you are ready to complete this first step launching this command from `R` console.
 ```R
 install.packages("devtools")
 ```
-from the R console.
 
 ### GSL
 
