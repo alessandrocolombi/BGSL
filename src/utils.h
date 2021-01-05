@@ -447,7 +447,7 @@ namespace utils{
 		}
 	}; //returns sum_ij( |a_ij - b_ij| )/N*N
 
-
+	//Old and not updated
 	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
 	//(old and well tested version)
  	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, typename NormType = MeanNorm >
@@ -608,7 +608,7 @@ namespace utils{
 		//Omega = Omega.selfadjointView<Eigen::Upper>();
 		//return Omega.inverse();
 	}
-
+	//Old and not updated
 	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
  	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, typename NormType = MeanNorm >
  	MatRow rgwish3(GraphStructure<T> const & G, double const & b, Eigen::MatrixXd const & D, double const & threshold = 1e-8,unsigned int seed = 0){
@@ -785,7 +785,7 @@ namespace utils{
 		//return Omega.inverse();
 	}
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
-
+	//Old and not updated
 	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
 	//This functions returns also if convergence was reached and the number of iterations
 	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, typename NormType = MeanNorm >
@@ -973,7 +973,8 @@ namespace utils{
 	{
 		Scale, InvScale, CholUpper_InvScale, CholLower_InvScale
 	};
-
+	//L'ho modificata in modo che la "Omega_old" sia salvata semplicemente come lower triangular part di Omega. In questo modo si lavora con una matrice in meno.
+	//Non ho cancellato niente della vecchia versione nel caso non funzioni qualcosa
 	template<	template <typename> class GraphStructure = GraphType, typename T = unsigned int, 
 				ScaleForm form = ScaleForm::InvScale, typename NormType = MeanNorm > //Templete parametes
 	std::tuple< MatRow, bool, int>  //Return type
@@ -987,9 +988,14 @@ namespace utils{
 		using IdxType  	= std::size_t;
 		using iterator  = std::vector<unsigned int>::iterator;
 		using citerator = std::vector<unsigned int>::const_iterator;
-		//Checks 
+		//Checks
+		/*
 		static_assert(	std::is_same_v<Graph, GraphType<T> > || std::is_same_v<Graph, CompleteView<T> > || std::is_same_v<Graph, CompleteViewAdj<T> >,
 						"Error, rgwish requires a Complete graph for the sampling. The only possibilities are GraphType, CompleteViewAdj, CompleteView.");
+		*/
+		static_assert(	internal_type_traits::isCompleteGraph<GraphStructure,T>::value,
+						"___ERROR:_RGWISH_FUNCTION_REQUIRES_IN_INPUT_A_GRAPH_IN_COMPLETE_FORM. HINT -> EVERY_GRAPH_SHOULD_PROVIDE_A_METHOD_CALLED completeview() THAT_CONVERTS_IT_IN_THE_COMPLETE_FORM");				
+		
 		if(D.rows()!=D.cols())
 			throw std::runtime_error("Non squared matrix inserted");
 		if(G.get_size() != D.rows())
@@ -1008,8 +1014,11 @@ namespace utils{
 		}
 		sample::GSL_RNG engine(seed);
 		sample::rchisq  rchisq;
-		if(n_links == 0){
-					//std::cout<<"Empty Graph"<<std::endl;
+
+		//Step 0: If the Graph is empty, sample only diagonal values and return.
+		if(n_links == 0)
+		{
+				//std::cout<<"Empty Graph"<<std::endl;
 			Eigen::VectorXd diag(Eigen::VectorXd::Zero(N));
 			for(unsigned int i = 0; i < N; ++i){  //---> si puo fare con nullaryExpr https://eigen.tuxfamily.org/dox/classEigen_1_1DenseBase.html#title55 ?
 				diag(i) = std::sqrt(rchisq(engine, (double)(b + N - i - 1))  );
@@ -1045,6 +1054,7 @@ namespace utils{
 			throw std::runtime_error("Error, rgwish needs to know what type of D matrix has been inserted. Possibilities are utils::ScaleForm::Scale, utils::ScaleForm::InvScale, utils::ScaleForm::CholUpper_InvScale, utils::ScaleForm::CholLower_InvScale");
 		}
 				//std::cout<<"K: "<<std::endl<<K<<std::endl;
+		//A complete Gwishart is a Wishart. Just return K in that case.
 		if(n_links == G.get_possible_links()){
 					//std::cout<<"Complete Graph"<<std::endl;
 			MatRow K_return(K);
@@ -1052,10 +1062,13 @@ namespace utils{
 		}
 		//Step 2: Set Sigma=K^-1 and initialize Omega=Sigma
 			MatRow Sigma(K.llt().solve(MatRow::Identity(N, N)));
-			MatRow Omega_old(MatRow::Zero(Sigma.rows(),Sigma.cols()));
+			//MatRow Omega_old(MatRow::Zero(Sigma.rows(),Sigma.cols()));
 			MatRow Omega(MatRow::Zero(Sigma.rows(),Sigma.cols()));
-			Omega.template triangularView<Eigen::Upper>() = Omega_old.template triangularView<Eigen::Upper>() = Sigma.template triangularView<Eigen::Upper>();
-
+			//Omega.template triangularView<Eigen::Upper>() = Omega_old.template triangularView<Eigen::Upper>() = Sigma.template triangularView<Eigen::Upper>();
+			//MatRow Omega2(MatRow::Zero(Sigma.rows(),Sigma.cols()));
+			Omega = Sigma;
+			//Omega2.template triangularView<Eigen::Upper>() = Sigma.template triangularView<Eigen::Upper>();
+			//Omega2.template triangularView<Eigen::Lower>() = Sigma.template triangularView<Eigen::Upper>().transpose();
 			//std::cout<<"Sigma: "<<std::endl<<Sigma<<std::endl;
 			//std::cout<<"Omega: "<<std::endl<<Omega<<std::endl;
 		const std::map<unsigned int, std::vector<unsigned int> > nbd(G.get_nbd());
@@ -1067,7 +1080,7 @@ namespace utils{
 					//std::cout<<"i = "<<i<<std::endl;
 					//std::cout<<"Stampo il nbd:"<<std::endl;
 									//auto start = std::chrono::high_resolution_clock::now();
-				//std::vector<unsigned int> nbd_i = G.get_nbd(i);
+					//std::vector<unsigned int> nbd_i = G.get_nbd(i);
 				const std::vector<unsigned int>& nbd_i = nbd.find(i)->second;
 									//auto stop = std::chrono::high_resolution_clock::now();
 									//std::chrono::duration<double, std::milli> timer = stop - start;
@@ -1151,7 +1164,7 @@ namespace utils{
 								//std::cout<<"beta_hat_i: "<<std::endl<<beta_hat_i<<std::endl;
 					//Step 5: Set i-th row and col of Omega equal to Omega_noti_noti*beta_hat_i
 								//MatRow Omega_noti_noti( SubMatrix<Symmetric::True>(i , Omega) );
-								SubMatrixView<Symmetric::True> Omega_noti_noti(i, Omega);
+								//SubMatrixView<Symmetric::True> Omega_noti_noti(i, Omega);
 								//std::cout<<"Omega_noti_noti: "<<std::endl<<Omega_noti_noti<<std::endl;
 						//beta_i = Omega_noti_noti * beta_hat_i;
 								//beta_i = SymMatMult(Omega_noti_noti, beta_hat_i);
@@ -1174,8 +1187,14 @@ namespace utils{
 							//std::cout<<"Omega: "<<std::endl<<Omega<<std::endl;
 			}
 		//Step 6: Compute the norm of differences
-			norm_res = NormType::norm(Omega, Omega_old); //Lower trinagular part is all 0. Saddly operator- is not implemented for triangularView
-			Omega_old.template triangularView<Eigen::Upper>() = Omega.template triangularView<Eigen::Upper>();
+			//Omega2.template triangularView<Eigen::Upper>() = Omega.template triangularView<Eigen::Upper>();
+			norm_res = NormType::norm(Omega.template triangularView<Eigen::Upper>(), Omega.template triangularView<Eigen::Lower>().transpose());
+			//std::cout<<"norm_res 2 = "<<norm_res<<std::endl;
+			//norm_res = NormType::norm(Omega, Omega_old); //Lower trinagular part is all 0. Saddly operator- is not implemented for triangularView
+			//Omega_old.template triangularView<Eigen::Upper>() = Omega.template triangularView<Eigen::Upper>();
+			Omega.template triangularView<Eigen::Lower>() = Omega.template triangularView<Eigen::Upper>().transpose();
+			
+
 			//Omega_old = Omega;
 		//Step 7: Check stop criteria
 				//std::cout<<"Norm res = "<<norm_res<<std::endl;
@@ -1216,6 +1235,8 @@ namespace utils{
  	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int>
  	rgwish_function<GraphStructure,T> build_rgwish_function(std::string const & form, std::string const & norm)
  	{
+ 		static_assert(	internal_type_traits::isCompleteGraph<GraphStructure, T>::value,
+ 						"___ERROR:_RGWISH_FUNCTION_REQUIRES_IN_INPUT_A_GRAPH_IN_COMPLETE_FORM. HINT -> EVERY_GRAPH_SHOULD_PROVIDE_A_METHOD_CALLED completeview() THAT_CONVERTS_IT_IN_THE_COMPLETE_FORM");				
  		if(form != "Scale" && form !="InvScale" && form != "CholLower_InvScale" && form != "CholUpper_InvScale")
  			throw std::runtime_error("Only possible forms are Scale, InvScale, CholLower_InvScale, CholUpper_InvScale");
  		if(norm == "Mean"){
@@ -1327,9 +1348,13 @@ namespace utils{
 		using iterator    = std::vector<unsigned int>::iterator;
 		using citerator   = std::vector<unsigned int>::const_iterator;
 		//Check
+		/*
 		static_assert(	std::is_same_v<Graph, GraphType<Type> > || 
 						std::is_same_v<Graph, CompleteView<Type> > || std::is_same_v<Graph, CompleteViewAdj<Type> > , 
 						"Error, log_normalizing_constat requires a Complete graph for the approximation. The only possibilities are GraphType, CompleteViewAdj, CompleteView.");
+		*/
+		static_assert(	internal_type_traits::isCompleteGraph<GraphStructure, Type>::value,
+						"___ERROR:_lOG_NORMALIZING_CONSTANT_FUNCTION_REQUIRES_IN_INPUT_A_GRAPH_IN_COMPLETE_FORM. HINT -> EVERY_GRAPH_SHOULD_PROVIDE_A_METHOD_CALLED completeview() THAT_CONVERTS_IT_IN_THE_COMPLETE_FORM");				
 		if(b <= 2)
 			throw std::runtime_error("Shape parameter has to be larger than 2");
 		if(D != D.transpose()){
@@ -1616,9 +1641,9 @@ namespace utils{
 		using iterator    = std::vector<unsigned int>::iterator;
 		using citerator   = std::vector<unsigned int>::const_iterator;
 		//Check
-		static_assert(	std::is_same_v<Graph, GraphType<Type> > || 
-						std::is_same_v<Graph, CompleteView<Type> > || std::is_same_v<Graph, CompleteViewAdj<Type> > , 
-						"Error, log_normalizing_constat requires a Complete graph for the approximation. The only possibilities are GraphType, CompleteViewAdj, CompleteView.");
+		static_assert(	internal_type_traits::isCompleteGraph<GraphStructure, Type>::value,
+						"___ERROR:_lOG_NORMALIZING_CONSTANT_FUNCTION_REQUIRES_IN_INPUT_A_GRAPH_IN_COMPLETE_FORM. HINT -> EVERY_GRAPH_SHOULD_PROVIDE_A_METHOD_CALLED completeview() THAT_CONVERTS_IT_IN_THE_COMPLETE_FORM");				
+		
 		if(b <= 2)
 			throw std::runtime_error("Shape parameter has to be larger than 2");
 		if(D != D.transpose()){
@@ -2130,21 +2155,23 @@ namespace utils{
 	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int >
 	std::vector< GraphStructure<T> > list_all_graphs(unsigned int p = 0, std::shared_ptr<const Groups> const & ptr_groups = nullptr, bool print = false){
 		using Graph = GraphStructure<T>;
+		/*
 		static_assert(	std::is_same_v<Graph, GraphType<T> > || std::is_same_v<Graph, BlockGraph<T> > || std::is_same_v<Graph, BlockGraphAdj<T> >,
 						"Wrong type of graph inserted, it can only be GraphType, BlockGraph or BlockGraphAdj.");
+		*/				
 		if( p <= 0 && ptr_groups == nullptr )
 			throw std::runtime_error("Wrong dimension inserted, need to know the dimension of the Graph or the list of Groups");
 		unsigned int n_el{0};
-		if constexpr(std::is_same_v<Graph, GraphType<T> >){
+		if constexpr(internal_type_traits::isCompleteGraph<GraphStructure, T>::value){
 			n_el = 0.5*(p*p - p);
 		}
-		else if constexpr(std::is_same_v<Graph, BlockGraph<T> > || std::is_same_v<Graph, BlockGraphAdj<T> >){
+		else if constexpr( internal_type_traits::isBlockGraph<GraphStructure>::value /*std::is_same_v<Graph, BlockGraph<T> > || std::is_same_v<Graph, BlockGraphAdj<T> >*/){
 			if(ptr_groups == nullptr)
 				throw std::runtime_error("In case of block graphs, it is mandatory to pass the list of Groups");	
 			n_el = ptr_groups->get_possible_block_links();
 		}
 		else
-			throw std::runtime_error("Something bad and strange happened with the type of graph in function list_all_graphs");
+			throw std::runtime_error("The inserted graph is not Complete nor Block. Library is well tested is types are GraphType, BlockGraph or BlockGraphAdj. If a new type of graph was implemented, make sure that internal_type_traits.h has been correctly updated.");
 		if(n_el > 20)
 		 	std::cout<<"Very large graph required: "<<n_el<<" possible links and "<<utils::power(2.0, n_el)<<" possible graphs"<<std::endl;
 	   	std::vector< std::vector<T> > all_G; 
@@ -2181,8 +2208,8 @@ namespace utils{
 	template<template <typename> class GraphStructure = BlockGraph, typename T = unsigned int >
 	std::vector< GraphStructure<T> > list_all_graphs(std::shared_ptr<const Groups> const & ptr_groups, bool print = false){
 		using Graph = GraphStructure<T>;
-		static_assert(	std::is_same_v<Graph, BlockGraph<T> > || std::is_same_v<Graph, BlockGraphAdj<T> >,
-						"Wrong type of graph inserted, since the specialization for block graphs has been called, the only possibilities are BlockGraph or BlockGraphAdj" );
+		static_assert(	internal_type_traits::isBlockGraph<GraphStructure>::value ,
+						"Wrong type of graph inserted. The specialization for block graphs has been called, this means that only Block graphs are allowed." );
 		return list_all_graphs<GraphStructure, T>(0,ptr_groups, print);
 	}
 

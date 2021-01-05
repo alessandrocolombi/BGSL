@@ -6,6 +6,7 @@
 #include "include_headers.h"
 #include "include_graphs.h"
 
+
 template<class D, class T=unsigned int>
 class BlockGraphBaseCRTP{
   public:
@@ -68,9 +69,9 @@ class BlockGraphBaseCRTP{
             //return ptr_groups->find(i);
           //}
     inline unsigned int find_group_idx(IdxType const & i)const{
-      //return ptr_groups->map_of_indeces[(unsigned int)i];
-      auto it = ptr_groups->map_of_indeces.find((unsigned int)i);
-      return it->second;
+      return ptr_groups->map_of_indeces[(unsigned int)i]; //this is for vector
+      //auto it = ptr_groups->map_of_indeces.find((unsigned int)i);
+      //return it->second;
     }
     inline std::vector<unsigned int> find_and_get_group(IdxType const & i) const{
       return ptr_groups->find_and_get(i);
@@ -188,6 +189,7 @@ class BlockGraph : public BlockGraphBaseCRTP<BlockGraph<T>, T>{
     using InnerData     = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
     using GroupsPtr     = typename BlockGraphBaseCRTP<BlockGraph,T>::GroupsPtr;
     using Neighbourhood = typename BlockGraphBaseCRTP<BlockGraph,T>::Neighbourhood;
+    
     //Constructors
     BlockGraph(Adj const & _A, GroupsPtr const & _Gr):BlockGraphBaseCRTP<BlockGraph,T>(_Gr){
       unsigned int M{this->ptr_groups->get_n_groups()};
@@ -226,6 +228,9 @@ class BlockGraph : public BlockGraphBaseCRTP<BlockGraph<T>, T>{
 
     //Getters
     inline InnerData get_graph() const{
+      return data;
+    }
+    inline InnerData& get_graph(){
       return data;
     }
     Adj get_adj_list()const;
@@ -280,6 +285,7 @@ class BlockGraph : public BlockGraphBaseCRTP<BlockGraph<T>, T>{
       //return std::make_unique< BlockGraph<T> > (*this);
     //};
     void find_neighbours();
+    friend class CompleteView<T>; 
   private:
     InnerData data;
     Neighbourhood neighbours;
@@ -511,17 +517,18 @@ class CompleteView{
     using value_type    = typename BlockGraphBaseCRTP<BlockGraph<T>,T>::value_type;
     using IdxType       = typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType;
     using Neighbourhood = typename BlockGraphBaseCRTP<BlockGraph<T>,T>::Neighbourhood;
-    using InnerData     = Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
+    using InnerData     = typename BlockGraph<T>::InnerData;
     //Constructor
-    CompleteView(BlockGraph<T>const & _G):G(_G), data( InnerData::Identity(G.get_complete_size(),G.get_complete_size()) ){
+    CompleteView(BlockGraph<T>const & _G):G(_G), data(_G.data){};
 
-      for(unsigned int i = 0; i < data.rows()-1; ++i){
-        for(unsigned int j = i+1; j < data.cols(); ++j){
-          data(i,j) = G( G.find_group_idx(i), G.find_group_idx(j) );
-        }
-      }
-
-    };
+    //T operator()( typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & i, 
+                  //typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & j) const
+    //{
+      //if(i == j)
+        //return true;
+      //else
+        //return G( G.find_group_idx(i), G.find_group_idx(j) ); 
+    //}
 
     T operator()( typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & i, 
                   typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & j) const
@@ -529,14 +536,9 @@ class CompleteView{
       if(i == j)
         return true;
       else
-        return G( G.find_group_idx(i), G.find_group_idx(j) ); 
+        return this->data( G.find_group_idx(i), G.find_group_idx(j) ); 
     }
 
-    //T operator()( typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & i, 
-                  //typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & j) const
-    //{
-      //return (i <= j) ? data(i,j) : data(j,i);
-    //}
 
     //Getters
     inline unsigned int get_size() const{
@@ -591,7 +593,7 @@ class CompleteView{
 
   private:
     const BlockGraph<T>&  G;
-    InnerData data;
+    const InnerData& data;
 };
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------------
@@ -932,5 +934,8 @@ class CompleteViewAdj{
   private:
     const BlockGraphAdj<T> & G;
 };
+
+// ---------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 #endif

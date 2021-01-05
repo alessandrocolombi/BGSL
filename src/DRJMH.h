@@ -148,6 +148,9 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 				//std::cout<<"Ho rifiutato"<<std::endl;
 		accepted = 0;
 	}
+	static_assert(	internal_type_traits::isCompleteGraph<CompleteSkeleton, T>::value,
+					"QUESTA É LA COSA STRANA");	
+
 	this->Kprior.set_matrix(Gold_complete, 
 		utils::rgwish<CompleteSkeleton, T, utils::ScaleForm::CholUpper_InvScale, utils::MeanNorm>(Gold_complete, this->Kprior.get_shape() + n, this->chol_inv_DplusU , this->trGwishSampler, seed ) ); 
 	this->Kprior.compute_Chol();

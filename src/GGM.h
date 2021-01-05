@@ -18,14 +18,22 @@ struct GGMTraits{
 	using CholTypeCol 		= Eigen::LLT<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>, Eigen::Lower>;
 	using GroupsPtr   		= std::shared_ptr<const Groups>;
 	using PriorPtr			= std::unique_ptr<GraphPrior<GraphStructure, T>>;
-	//Watch out here, using template aliasing for template parameters
 	using Graph 			= GraphStructure<T>;
-	template <typename Partial>
-	using CompleteBlockType = std::conditional_t< std::is_same_v<Graph,  BlockGraph<T>>, CompleteView<Partial> , CompleteViewAdj<Partial> > ;	
-	template <typename Partial2>
-	using CompleteSkeleton  = std::conditional_t< std::is_same_v<Graph , GraphType<T> >, GraphType<Partial2>, CompleteBlockType<Partial2> > ;
-	using CompleteType 		= CompleteSkeleton<T>;
-	using PrecisionType     = Precision<CompleteSkeleton, T> ;
+	/*
+		template <typename Partial>
+		using CompleteBlockType = std::conditional_t< std::is_same_v<Graph,  BlockGraph<T>>, CompleteView<Partial> , CompleteViewAdj<Partial> > ;	
+		template <typename Partial2>
+		using CompleteSkeleton  = std::conditional_t< std::is_same_v<Graph , GraphType<T> >, GraphType<Partial2>, CompleteBlockType<Partial2> > ;
+		using CompleteType 		= CompleteSkeleton<T>;
+	*/
+	//Watch out here, using template aliasing for template parameters
+	template<typename S>
+	using CompleteSkeleton = typename internal_type_traits::Complete_skeleton<GraphStructure>::template CompleteSkeleton<S>;
+	template<typename SS>
+	using CompleteSkeleton2 = typename internal_type_traits::Complete_type<GraphStructure, T>::template CompleteSkeleton<SS>;
+	using CompleteType 		= typename internal_type_traits::Complete_type<GraphStructure, T>::CompleteType;
+	using PrecisionType     = GWishart ;
+	//using PrecisionType     = Precision<CompleteSkeleton, T> ;
 	using ReturnType 		= std::tuple<MatRow, int>; //The last int stands for move accepted (1) or refused (0)	
 };
 

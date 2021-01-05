@@ -115,7 +115,7 @@ class InitFLM : public FLMsamplerTraits{
 	VecCol mu0; // p
 	double tau_eps0; //scalar
 	VecCol tauK0; // p 
-	MatCol K0; // p x p
+	MatRow K0; // p x p
 	GraphType<unsigned int> G;
 };
 

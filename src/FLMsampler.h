@@ -77,7 +77,7 @@ typename FLMsampler<Graph>::RetType FLMsampler<Graph>::run()
 	VecCol mu = init.mu0; // p
 	double tau_eps = init.tau_eps0; //scalar
 	VecCol tauK = init.tauK0; 
-	MatCol K = init.K0;
+	MatRow K = init.K0;
 	const GraphType<unsigned int> &G = init.G; 
 	//Random engine and distributions
 	sample::GSL_RNG engine(seed);

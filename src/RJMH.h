@@ -253,10 +253,13 @@ ReversibleJumpsMH<GraphStructure, T>::RJ(typename ReversibleJumpsMH<GraphStructu
 }
 
 
+
+//This kind of RJ is more faithfull to the procedure described by Lenkoski. The only difference with RJ is that the dimension decreasing move is not done according to a completion operation
+//with respect to the new element but with respect to the old elements. 
 template< template <typename> class GraphStructure , typename T >
 std::tuple<typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType, double, double>
 ReversibleJumpsMH<GraphStructure, T>::RJ_new(typename ReversibleJumpsMH<GraphStructure, T>::CompleteType const & Gnew_CompleteView,
-										 typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move)
+											 typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move)
 {
 	using Graph 		= GraphStructure<T>;
 	using Container		= std::vector< std::pair<unsigned int, unsigned int> >;
@@ -423,8 +426,11 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new(typename ReversibleJumpsMH<GraphStr
 			//std::cout<<"Divido per sigma = "<<log_element_proposal<<std::endl;
 			//std::cout<<"Constant term : "<<static_cast<double>(L.size())*(0.5*utils::log_2pi + std::log(std::abs(this->sigma)))<<std::endl;
 	log_element_proposal += static_cast<double>(L.size())*(0.5*utils::log_2pi + std::log(std::abs(this->sigma)));
+	//return std::make_tuple( 
+			//PrecisionType (Phi_new.template triangularView<Eigen::Upper>(), Kold_prior.get_shape(), Kold_prior.get_inv_scale(), Kold_prior.get_chol_invD() ),
+			//log_element_proposal, log_jacobian );
 	return std::make_tuple( 
-			PrecisionType (Phi_new.template triangularView<Eigen::Upper>(), Kold_prior.get_shape(), Kold_prior.get_inv_scale(), Kold_prior.get_chol_invD() ),
+			PrecisionType ( Phi_new, Kold_prior.get_shape(), Kold_prior.get_inv_scale(), Kold_prior.get_chol_invD() ),
 			log_element_proposal, log_jacobian );
 }
 
@@ -661,7 +667,9 @@ ReversibleJumpsMH<GraphType, T>::RJ(typename ReversibleJumpsMH<GraphType, T>::Co
 	//c) Construct proposed GWishart and return
 				//std::cout<<"Phi_old:"<<std::endl<<Phi_old<<std::endl;
 				//std::cout<<"Phi_new:"<<std::endl<<Phi_new<<std::endl;
-	return std::make_tuple( PrecisionType (Phi_new.template triangularView<Eigen::Upper>(), Kold_prior.get_shape(), Kold_prior.get_inv_scale(), Kold_prior.get_chol_invD() ),
+	//return std::make_tuple( PrecisionType (Phi_new.template triangularView<Eigen::Upper>(), Kold_prior.get_shape(), Kold_prior.get_inv_scale(), Kold_prior.get_chol_invD() ),
+	//log_element_proposal, std::log(Phi_old(changed_link.first, changed_link.first)) );
+	return std::make_tuple( PrecisionType (Phi_new, Kold_prior.get_shape(), Kold_prior.get_inv_scale(), Kold_prior.get_chol_invD() ),
 			log_element_proposal, std::log(Phi_old(changed_link.first, changed_link.first)) );
 }
 
@@ -788,7 +796,10 @@ ReversibleJumpsMH<GraphType, T>::RJ_new(typename ReversibleJumpsMH<GraphType, T>
 	//c) Construct proposed GWishart and return
 				//std::cout<<"Phi_old:"<<std::endl<<Phi_old<<std::endl;
 				//std::cout<<"Phi_new:"<<std::endl<<Phi_new<<std::endl;
-	return std::make_tuple( PrecisionType (Phi_new.template triangularView<Eigen::Upper>(), Kold_prior.get_shape(), Kold_prior.get_inv_scale(), Kold_prior.get_chol_invD() ),
+	//return std::make_tuple( PrecisionType (Phi_new.template triangularView<Eigen::Upper>(), Kold_prior.get_shape(), Kold_prior.get_inv_scale(), Kold_prior.get_chol_invD() ),
+			//log_element_proposal, std::log(Phi_old(changed_link.first, changed_link.first)) );
+	return std::make_tuple( 
+			PrecisionType ( Phi_new, Kold_prior.get_shape(), Kold_prior.get_inv_scale(), Kold_prior.get_chol_invD() ),
 			log_element_proposal, std::log(Phi_old(changed_link.first, changed_link.first)) );
 }
 

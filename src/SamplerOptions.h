@@ -181,7 +181,7 @@ class Init : public SamplerTraits{
 
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
-
+/*
 //For Complete Graphs (GraphType)
 std::unique_ptr< GGM<GraphType, unsigned int> > 
 SelectMethod_GraphType(std::string const & namePr, std::string const & nameGGM, Hyperparameters const & hy, Parameters const & param){
@@ -255,6 +255,41 @@ SelectMethod_BlockGraphAdj(std::string const & namePr, std::string const & nameG
 	else
 		throw std::runtime_error("Error, the only possible GGM algorithm right now are: MH, RJ, DRJ");
 }
+*/
+//Generic
+template < template <typename> class GraphStructure = GraphType, typename T = unsigned int > 
+std::unique_ptr< GGM<GraphStructure, T> > 
+SelectMethod_Generic(std::string const & namePr, std::string const & nameGGM, Hyperparameters const & hy, Parameters const & param){
+	using Graph = GraphStructure<T>;
+	if( !(namePr == "Uniform" || namePr == "Bernoulli" || namePr == "TruncatedUniform" || namePr == "TruncatedBernoulli") )
+		throw std::runtime_error("Error, the only possible priors right now are: Uniform, TruncatedUniform, Bernoulli, TruncatedBernoulli");
+	//1) Select prior
+	std::unique_ptr< GraphPrior<GraphStructure, T> > prior = nullptr;
+	if( namePr == "Uniform" )
+		prior = std::move( Create_GraphPrior<PriorType::Complete, PriorCategory::Uniform, GraphStructure, T >() );
+	else if( namePr == "Bernoulli")
+		prior = std::move( Create_GraphPrior<PriorType::Complete, PriorCategory::Bernoulli, GraphStructure, T >(hy.Gprior) );
+	if constexpr( std::is_same_v< BlockGraphAdj<T>, Graph > || std::is_same_v< BlockGraph<T>, Graph > ){
+		if( namePr == "TruncatedUniform")
+		prior = std::move( Create_GraphPrior<PriorType::Truncated,PriorCategory::Uniform,   GraphStructure, T >() );
+		else if( namePr == "TruncatedBernoulli")
+		prior = std::move( Create_GraphPrior<PriorType::Truncated,PriorCategory::Bernoulli, GraphStructure, T >(hy.Gprior) );
+	}
+	if(prior == nullptr)
+		throw std::runtime_error("Error, the type of selected graph is not compatible with the requested prior. Complete graphs cannot use Truncated priors ");	
+	//2) Select algorithm
+	if(nameGGM == "MH")
+		return Create_GGM<GGMAlgorithm::MH, GraphStructure, T >(prior, hy.b_K, hy.D_K, param.trGwishSampler , param.MCiterPrior, param.MCiterPost);
+	else if(nameGGM == "RJ")
+		return Create_GGM<GGMAlgorithm::RJ, GraphStructure, T >(prior, hy.b_K, hy.D_K, param.trGwishSampler, hy.sigmaG, param.MCiterPrior);
+	else if(nameGGM == "DRJ")
+		return Create_GGM<GGMAlgorithm::DRJ,GraphStructure, T >(prior, hy.b_K, hy.D_K, param.trGwishSampler, hy.sigmaG);
+	else
+		throw std::runtime_error("Error, the only possible GGM algorithm right now are: MH, RJ, DRJ");
+}
+
+
+
 #endif
 
 

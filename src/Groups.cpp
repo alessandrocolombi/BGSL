@@ -117,7 +117,7 @@ InnerContainer Groups::find_and_get(IdxType const & i) const{
 }
 
 void Groups::createMapIdx(){
-  //map_of_indeces.resize(this->get_n_elements());
+  map_of_indeces.resize(this->get_n_elements());
   for(unsigned int i = 0; i < this->size(); ++i)
     for(unsigned int j = 0; j < (*this)[i].size(); ++j)
       map_of_indeces[(*this)[i][j]] = i;  

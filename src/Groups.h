@@ -25,8 +25,9 @@ struct GroupsTraits{
   using Container_Iterator 	    	= Container::iterator;
   using Container_Citerator   		= Container::const_iterator;
   using IdxType 					        = InnerContainer::size_type;
-  //using IdxMap                    = std::vector<unsigned int> ;
-  using IdxMap                    = std::map<unsigned int, unsigned int>;
+  using IdxMap                    = std::vector<unsigned int> ;
+  //using IdxMap                    = std::map<unsigned int, unsigned int>;
+  //using IdxMap                    = std::unordered_map<unsigned int, unsigned int>;
   //Map could be slightly better. To use std::vector, uncomment up here, in Groups.cpp, createMapIdx() -> uncomment the resize line and 
   //BlockGraph.h -> find_group_idx(IdxType const & i) uncomment the return line and comment the one below
 };

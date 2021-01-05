@@ -6,7 +6,7 @@
 #include "BlockGraph.h"
 #include "GraphType.h"
 #include "BlockGraphCRTP.h"
+#include "internal_type_traits.h"
 
-//Si potrebbero chiudere in un bel namespace per esempio
 
 #endif

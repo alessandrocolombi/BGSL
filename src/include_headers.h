@@ -8,6 +8,8 @@
 //Containers
 #include <vector>
 #include <map>
+#include <unordered_map>
+#include <unordered_set>
 #include <set>
 //Generic
 #define _USE_MATH_DEFINES
@@ -26,7 +28,7 @@
 //Eigen
 #include <Eigen/Dense>
 #include <Eigen/Cholesky>
-#include <Eigen/Sparse>
+//#include <Eigen/Sparse>
 //Parallel
 #include <omp.h>
 

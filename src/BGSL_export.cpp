@@ -328,7 +328,7 @@ Rcpp::List GGM_sim_sampling( int const & p, int const & n, int const & niter, in
   {
     Init<GraphType, unsigned int> init(n,p);
     //Select the method to be used
-    auto method = SelectMethod_GraphType(prior, algo, hy, param);
+    auto method = SelectMethod_Generic<GraphType, unsigned int>(prior, algo, hy, param);
     //Simulate data
     auto [data, Prec_true, G_true] = utils::SimulateDataGGM_Complete(p,n,seed);
     GraphType<bool> G_true_mat(G_true);
@@ -377,7 +377,7 @@ Rcpp::List GGM_sim_sampling( int const & p, int const & n, int const & niter, in
     param.ptr_groups = ptr_gruppi;
     Init<BlockGraph,  unsigned int> init(n,p, ptr_gruppi);
     //Select the method to be used
-    auto method = SelectMethod_BlockGraph(prior, algo, hy, param);
+    auto method = SelectMethod_Generic<BlockGraph, unsigned int>(prior, algo, hy, param);
     //Simulate data
     auto [data, Prec_true, G_true] = utils::SimulateDataGGM_Block(p,n,ptr_gruppi,seed);
     BlockGraph<bool> G_true_mat(G_true, ptr_gruppi);
@@ -471,7 +471,7 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
     Rcpp::Rcout<<"init.K0:"<<std::endl<<init.K0<<std::endl;
     */
     //Select the method to be used
-    auto method = SelectMethod_GraphType(prior, algo, hy, param);
+    auto method = SelectMethod_Generic<GraphType, unsigned>(prior, algo, hy, param);
     //Crete sampler obj
     GGMsampler  Sampler(data, n, param, hy, init, method,0,print_info);
     //Run
@@ -523,7 +523,7 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
     MatRow K0(utils::rgwish(G0.completeview(),b,D,1e-16));
     init.set_init(K0,G0);
     //Select the method to be used
-    auto method = SelectMethod_BlockGraph(prior, algo, hy, param);
+    auto method = SelectMethod_Generic<BlockGraph, unsigned int>(prior, algo, hy, param);
     //Crete sampler obj
     GGMsampler<BlockGraph> Sampler(data, n, param, hy, init, method,0,print_info);
     //Run

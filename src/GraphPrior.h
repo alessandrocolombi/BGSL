@@ -11,7 +11,7 @@ template<template <typename> class GraphStructure = GraphType, typename T = unsi
 class GraphPrior
 {
 		using Graph = GraphStructure<T>;
-	public:
+		public:
 		//mettere uno static_assert per il tipo inserito?
 		//GraphPrior();
 		virtual double Prob(Graph const & G) const = 0;
@@ -28,7 +28,7 @@ template<template <typename> class GraphStructure = GraphType, typename T = unsi
 class UniformPrior : public GraphPrior<GraphStructure, T>
 {
 		using Graph = GraphStructure<T>;
-	public:
+		public:
 		//UniformPrior();
 		double Prob(Graph const & G) const override{
 			unsigned int esp( 0.5*G.get_complete_size()*(G.get_complete_size() - 1)  );
@@ -50,11 +50,13 @@ class UniformPrior : public GraphPrior<GraphStructure, T>
 template<template <typename> class BlockGraphStructure = BlockGraph, typename T = unsigned int>
 class TruncatedUniformPrior : public GraphPrior< BlockGraphStructure, T >{
 	using BlockGraphType = BlockGraphStructure<T>;
-	//Questa static assert mi puzza
-	static_assert(std::is_same_v< BlockGraphAdj<unsigned int>, BlockGraphType > || std::is_same_v<BlockGraphAdj<bool>, BlockGraphType > ||
-				  std::is_same_v< BlockGraph   <unsigned int>, BlockGraphType > || std::is_same_v<BlockGraph   <bool>, BlockGraphType > ,
+	/*
+	static_assert(std::is_same_v< BlockGraphAdj<T>, BlockGraphType > ||
+				  std::is_same_v< BlockGraph   <T>, BlockGraphType >  ,
 				  "Error, only graphs in block form are allowed in a truncated prior");
-		
+	*/	
+	static_assert(internal_type_traits::isBlockGraph<BlockGraphStructure>::value ,
+				  "_____ERROR_CREATING_A_PRIOR____ONLY_GRAPHS_IN_BLOCK_FORM_ARE_ALLOWED_IN_TRUNCATED_PRIORS___");
 	public:
 		//TruncatedUniformPrior();
 		double Prob(BlockGraphType const & G) const override{
@@ -78,7 +80,7 @@ template<template <typename> class GraphStructure = GraphType, typename T = unsi
 class BernoulliPrior : public GraphPrior<GraphStructure, T>
 {
 		using Graph = GraphStructure<T>;
-	public:
+		public:
 		BernoulliPrior(double const & _theta):theta(_theta){
 			if(theta <= 0)
 				throw std::runtime_error("The parameter of BernoulliPrior has to be strictly positive");
@@ -101,7 +103,7 @@ class BernoulliPrior : public GraphPrior<GraphStructure, T>
 		std::unique_ptr< GraphPrior<GraphStructure, T> > clone() const override{
 			return std::make_unique<BernoulliPrior<GraphStructure, T>>(*this);
 		}
-	private:
+		private:
 		double theta;	
 };
 
@@ -110,7 +112,14 @@ template<template <typename> class BlockGraphStructure = BlockGraph, typename T 
 class TruncatedBernoulliPrior : public GraphPrior< BlockGraphStructure, T>
 {
 		using BlockGraphType = BlockGraphStructure<T>;
-	public:
+		/*
+		static_assert(std::is_same_v< BlockGraphAdj<T>, BlockGraphType > ||
+					  std::is_same_v< BlockGraph   <T>, BlockGraphType >  ,
+					  "Error, only graphs in block form are allowed in a truncated prior");
+		*/
+		static_assert(internal_type_traits::isBlockGraph<BlockGraphStructure>::value ,
+					  "_____ERROR_CREATING_A_PRIOR____ONLY_GRAPHS_IN_BLOCK_FORM_ARE_ALLOWED_IN_TRUNCATED_PRIORS___");	
+		public:
 		TruncatedBernoulliPrior(double const & _theta):theta(_theta){
 			if(theta <= 0)
 				throw std::runtime_error("The parameter of Bernoulli Prior has to be strictly positive");
@@ -132,7 +141,7 @@ class TruncatedBernoulliPrior : public GraphPrior< BlockGraphStructure, T>
 		std::unique_ptr< GraphPrior<BlockGraphStructure, T> > clone() const override{
 			return std::make_unique<TruncatedBernoulliPrior<BlockGraphStructure, T> >(*this);
 		}
-	private:
+		private:
 		double theta;	
 };
 
@@ -155,22 +164,24 @@ std::unique_ptr< GraphPrior<GraphStructure, T> > Create_GraphPrior(Args&&... arg
 				  "Error, only possible types are Complete and Truncated");
 	static_assert(Category == PriorCategory::Uniform || Category == PriorCategory::Bernoulli,
 			      "Error, only possible categories are Uniform and Bernoulli");
-	static_assert(std::is_same_v<bool, T> || std::is_same_v<unsigned int, T>,
-				  "Error, the only type i can work with are bool and unsigned int.");		
-	
-	static_assert( std::is_same_v< BlockGraphAdj<unsigned int>, GraphStructure<T> > || std::is_same_v<BlockGraphAdj<bool>, GraphStructure<T> > ||
-				   std::is_same_v< BlockGraph   <unsigned int>, GraphStructure<T> > || std::is_same_v<BlockGraph   <bool>, GraphStructure<T> > ||
-				   std::is_same_v< GraphType    <unsigned int>, GraphStructure<T> > || std::is_same_v<GraphType    <bool>, GraphStructure<T> > ,
-				   "Error, the only graphs that i can manage are BlockGraphAdj, BlockGraph, GraphType, with type bool or unsigned int");
-	// std::is_same_v<BlockGraphAdj, GraphStructure> --> error, they are skeletons of types, not type.	
-		  		   
+	static_assert(std::is_same_v<bool, T> || std::is_same_v<unsigned int, T> || std::is_same_v<int, T>,
+				  "Error, the only type i can work with are bool, int and unsigned int."); //why??	
+	/*
+		What is the goal of this assert? How can the user build something different?
+		static_assert( std::is_same_v< BlockGraphAdj<T>, GraphStructure<T> > || 
+					   std::is_same_v< BlockGraph   <T>, GraphStructure<T> > || 
+					   std::is_same_v< GraphType    <T>, GraphStructure<T> >  ,
+					   "Error, the only graphs that i can manage are BlockGraphAdj, BlockGraph, GraphType");
+		// std::is_same_v<BlockGraphAdj, GraphStructure> --> error, they are skeletons of types, not type.	
+	*/
+	  		   
 	if constexpr(Type == PriorType::Complete){
 		if constexpr(Category == PriorCategory::Uniform)
 			return std::make_unique< UniformPrior<GraphStructure, T> >(std::forward<Args>(args)...); 
 		else
 			return std::make_unique< BernoulliPrior<GraphStructure, T> >(std::forward<Args>(args)...);
 	}
-	else{
+	else{ //Type == PriorType::Truncated
 		if constexpr(Category == PriorCategory::Uniform)
 			return std::make_unique< TruncatedUniformPrior<GraphStructure, T> >(std::forward<Args>(args)...);
 		else
@@ -179,12 +190,27 @@ std::unique_ptr< GraphPrior<GraphStructure, T> > Create_GraphPrior(Args&&... arg
 
 }
 
+
 // ----------------------------------------------------------------------------------------------------------------------------------------
 
+//Non ho idea di cosa stia facendo né tanto meno perché lo stia facendo
 
+template< template <typename> class GraphStructure = GraphType, typename T = unsigned int , typename... Args  >
+using PriorBuilder = std::function	< std::unique_ptr< GraphPrior<GraphStructure, T> > //Return type
+									  (Args&&...) //input parameter is a parameter pack
+								  	>;
+using PriorId = std::string;
+template< template <typename> class GraphStructure = GraphType, typename T = unsigned int , typename... Args  >
+using PriorFactory = std::map<PriorId, PriorBuilder<GraphStructure,T,Args...> >;
 
-
-
+template< template <typename> class GraphStructure = GraphType, typename T = unsigned int , typename... Args  >
+void load_PriorFactory( PriorFactory<GraphStructure,T,Args... > & f, double const & theta = 0.5)
+{
+	f["Uniform"] 		 	= [](){return Create_GraphPrior<PriorType::Complete, PriorCategory::Uniform, GraphStructure, T>();};
+	f["TruncatedUniform"] 	= [](){return Create_GraphPrior<PriorType::Truncated, PriorCategory::Uniform, GraphStructure, T>();};
+	f["Bernoulli"] 			= [&theta](){return Create_GraphPrior<PriorType::Complete, PriorCategory::Bernoulli, GraphStructure, T>(theta);};
+	f["TruncatedBernoulli"] = [&theta](){return Create_GraphPrior<PriorType::Truncated, PriorCategory::Bernoulli, GraphStructure, T>(theta);};
+}
 
 #endif
 

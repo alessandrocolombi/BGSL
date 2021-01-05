@@ -16,6 +16,7 @@
 // #  endif
 // #endif
 
+
 namespace utils{ 
 
     //Uses two nested for_each loop with 2 custom lambda functions
@@ -115,9 +116,9 @@ class BlockGraphBase{
             //return ptr_groups->find(i);
           //}
     inline unsigned int find_group_idx(IdxType const & i)const{
-      //return ptr_groups->map_of_indeces[(unsigned int)i];
-      auto it = ptr_groups->map_of_indeces.find((unsigned int)i);
-      return it->second;
+      return ptr_groups->map_of_indeces[(unsigned int)i];
+      //auto it = ptr_groups->map_of_indeces.find((unsigned int)i);
+      //return it->second;
     }
     inline std::vector<unsigned int> find_and_get_group(IdxType const & i) const{
       return ptr_groups->find_and_get(i);
