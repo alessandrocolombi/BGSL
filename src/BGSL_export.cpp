@@ -86,7 +86,7 @@ void test_null(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColM
 Rcpp::List rGwish_old(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
                   double const & b, Eigen::MatrixXd const & D,
                   Rcpp::String norm = "Mean", Rcpp::Nullable<Rcpp::List> groups = R_NilValue, 
-                  unsigned int const & max_iter = 500, long double const & threshold_check = 1e-5, long double const & threshold_conv = 1e-8, int seed = 0)
+                  unsigned int const & max_iter = 500, long double const & threshold_check = 0.00001, long double const & threshold_conv = 0.00000001, int seed = 0)
 {
 
   if (groups.isNotNull()){ //Assume it is a BlockGraph
@@ -191,7 +191,7 @@ Rcpp::List rGwish_old(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic
 Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
                   double const & b, Eigen::MatrixXd & D,Rcpp::String norm = "Mean", Rcpp::String form = "InvScale", 
                   Rcpp::Nullable<Rcpp::List> groups = R_NilValue, bool check_structure = false,
-                  unsigned int const & max_iter = 500, long double const & threshold_check = 1e-5, long double const & threshold_conv = 1e-8, int seed = 0)
+                  unsigned int const & max_iter = 500, long double const & threshold_check = 0.00001, long double const & threshold_conv = 0.00000001, int seed = 0)
 {
 
   if (groups.isNotNull()){ //Assume it is a BlockGraph   
@@ -230,8 +230,7 @@ Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Ei
                                   Rcpp::Named("Converged")=converged, 
                                   Rcpp::Named("iterations")=iter );
     }
-  }
-   
+  } 
 }
 
 
@@ -316,7 +315,7 @@ long double log_Gconstant2(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dy
 //' @export
 // [[Rcpp::export]]
 Rcpp::List GGM_sim_sampling( int const & p, int const & n, int const & niter, int const & burnin, double const & thin, Eigen::MatrixXd const & D, 
-                            double const & b = 3.0, int const & MCprior = 100, int const & MCpost = 100, double const & threshold = 1e-8,
+                            double const & b = 3.0, int const & MCprior = 100, int const & MCpost = 100, double const & threshold = 0.00000001,
                             Rcpp::String form = "Complete", Rcpp::String prior = "Uniform", Rcpp::String algo = "MH",  
                             int const & n_groups = 0, int seed = 0, double sparsity = 0.5, double const & Gprior = 0.5, double const & sigmaG = 0.1, 
                             double const & paddrm = 0.5, bool print_info = true)
@@ -425,7 +424,7 @@ Rcpp::List GGM_sim_sampling( int const & p, int const & n, int const & niter, in
 //' Sampler for Guassian Graphical Models
 //'
 //' This function draws samples a posteriori from a Gaussian Graphical Models. NON MI SERVE ESPORTARLA
-//' @param data matrix of size \eqn{p \times p} containing \eqn{\sum(Y_i^{T}Y_i)}. Data are required to be zero mean.
+//' @param data matrix of size \eqn{p x p} containing \eqn{\sum(Y_i^{T}Y_i)}. Data are required to be zero mean.
 //' @param p non necessario
 //' @param n number of observed data.
 //' @param niter number of total iterations to be performed in the sampling. The number of saved iteration will be \eqn{(niter - burnin)/thin}.
@@ -451,7 +450,7 @@ Rcpp::List GGM_sim_sampling( int const & p, int const & n, int const & niter, in
 Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
                             int const & p, int const & n, int const & niter, int const & burnin, double const & thin, 
                             Eigen::MatrixXd D, 
-                            double const & b = 3.0, int const & MCprior = 100, int const & MCpost = 100, double const & threshold = 1e-8,
+                            double const & b = 3.0, int const & MCprior = 100, int const & MCpost = 100, double const & threshold = 0.00000001,
                             Rcpp::String form = "Complete", Rcpp::String prior = "Uniform", Rcpp::String algo = "MH",  
                             Rcpp::Nullable<Rcpp::List> groups = R_NilValue, int seed = 0, double const & Gprior = 0.5, 
                             double const & sigmaG = 0.1, double const & paddrm = 0.5, bool print_info = true  )
@@ -577,7 +576,7 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
 Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int const & burnin, double const & thin, Eigen::MatrixXd const & BaseMat,
                         Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
                         bool diagonal_graph = true, 
-                        double const & threshold_GWish = 1e-8, bool print_info = true)
+                        double const & threshold_GWish = 0.00000001, bool print_info = true)
 {
   const unsigned int p = BaseMat.cols();
   const unsigned int n = data.cols();
@@ -729,7 +728,7 @@ Rcpp::List                          //Eigen::Matrix<unsigned int, Eigen::Dynamic
 //' This function draws random samples from Multivariate Gaussian distribution. It implements both covariance and precision parametrization.
 //' It is also possible to pass directly the Cholesky decomposition if it is available before the call.
 //' @param mean vector of size \code{p} representig the mean of the Gaussian distribution.
-//' @param Mat matrix of size \eqn{p \times p} reprenting the covariance or the precision matrix or their Cholesky decompositions.
+//' @param Mat matrix of size \eqn{p x p} reprenting the covariance or the precision matrix or their Cholesky decompositions.
 //' @param isPrec boolean, set \code{TRUE} if Mat parameter is a precision, \code{FALSE} if it is a covariance.
 //' @param isChol boolean, set \code{TRUE} if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance matrix.
 //' @param isUpper boolean, used only if \code{isChol} is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.
@@ -771,7 +770,7 @@ rmvnormal(Eigen::VectorXd mean, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dyn
 //' This function draws random samples from Wishart distribution. 
 //' It is also possible to pass directly the Cholesky decomposition of the Inverse Scale matrix if it is available before the call.
 //' @param b double, it is shape parameter. 
-//' @param D matrix of size \eqn{p \times p} representig the Inverse Scale parameter. It has to be symmetric and positive definite. 
+//' @param D matrix of size \eqn{p x p} representig the Inverse Scale parameter. It has to be symmetric and positive definite. 
 //' @param isChol boolean, set \code{TRUE} if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance
 //' @param isUpper boolean, used only if isChol is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.
 //' @return It returns a p x p matrix.

@@ -219,8 +219,8 @@ GWish_PostConst_tuning = function(p, n, b=3, D = diag(p), nrep = 100, MCiter_lis
 #' Computes and plot smoothed curves
 #'
 #' This function gets the regression coefficients and the evaluated splines and builds the smooted curves.
-#' @param beta matrix of dimension \eqn{n_basis \times n_curves} containing the values of regression coefficients.
-#' @param BaseMat matrix of dimension \eqn{n_grid_points \times n_basis} containing the evaluation of all the spline in all the grid points.
+#' @param beta matrix of dimension \eqn{n_basis x n_curves} containing the values of regression coefficients.
+#' @param BaseMat matrix of dimension \eqn{n_grid_points x n_basis} containing the evaluation of all the spline in all the grid points.
 #' @param n_plot the number of curves to be plotted. Set 0 for no plot.
 #' @param range the range where the curves has to be plotted. Not needed if \code{n_plot} is 0.
 #' @param grid_points vector of size \code{n_grid_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
@@ -344,10 +344,10 @@ smooth_curves = function( beta, BaseMat, n_plot = 0, range = NULL, grid_points =
 #'
 #' This function gets the mean values of the regression coefficients as well as the lower and upper quantiles and builds the smooted curves with their credible bands.
 #' It does not computes the quantiles nor the mean starting from all the sampled values, they have to be previously computed using \code{\link{Compute_QuantileBeta}} function.
-#' @param beta matrix of dimension \eqn{n_basis \times n_curves} containing the mean values of regression coefficients
-#' @param betaLower matrix of dimension \eqn{n_basis \times n_curves} containing the lower quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.
-#' @param betaUpper matrix of dimension \eqn{n_basis \times n_curves} containing the upper quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.
-#' @param BaseMat matrix of dimension \eqn{n_grid_points \times n_basis} containing the evaluation of all the spline in all the grid points.
+#' @param beta matrix of dimension \eqn{n_basis x n_curves} containing the mean values of regression coefficients
+#' @param betaLower matrix of dimension \eqn{n_basis x n_curves} containing the lower quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.
+#' @param betaUpper matrix of dimension \eqn{n_basis x n_curves} containing the upper quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.
+#' @param BaseMat matrix of dimension \eqn{n_grid_points x n_basis} containing the evaluation of all the spline in all the grid points.
 #' @param n_plot the number of curves to be plotted. Set 0 for no plot.
 #' @param range the range where the curves has to be plotted. Not needed if \code{n_plot} is 0.
 #' @param grid_points vector of size \code{n_grid_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
@@ -495,8 +495,8 @@ smooth_curves_credible_bands = function( beta, betaLower, betaUpper, BaseMat, n_
 #'
 #' This functions gets one or two dataset representig functional data and plot them. It does not smooth the curves, indeed it requires as input the data, not
 #' the regression coefficients. Use \code{\link{smooth_curves}} function for that.
-#' @param data1 matrix of dimension \eqn{n_curves \times n_grid_points} representing the first dataset to be plotted.
-#' @param data2 matrix of dimension \eqn{n_curves \times n_grid_points} representing the second dataset to be plotted, if needed.
+#' @param data1 matrix of dimension \eqn{n_curves x n_grid_points} representing the first dataset to be plotted.
+#' @param data2 matrix of dimension \eqn{n_curves x n_grid_points} representing the second dataset to be plotted, if needed.
 #' @param range the range where the curves has to be plotted. Not needed if\code{n_plot} is 0.
 #' @param n_plot the number of curves to be plotted. Set 0 for no plot.
 #' @param grid_points vector of size n_grid_points with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
@@ -628,13 +628,13 @@ plot_curves = function( data1, data2 = NULL, range, n_plot = 1, grid_points = NU
 #'
 #' This function performs a linear regression for functional data, according to model (INSERIRE FORMULA MODELLO).
 #' It is not a graphical model, the graph has to be fixed. It is possible to fix both a diagonal graph or a generic graph.
-#' @param data matrix of dimension \code{n_grid_points \times n} containing the evaluation of \code{n} functional data over a grid of \code{n_grid_points} nodes.
+#' @param data matrix of dimension \code{n_grid_points x n} containing the evaluation of \code{n} functional data over a grid of \code{n_grid_points} nodes.
 #' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be \code{(niter - burnin)/thin}.
 #' @param burnin the number of discarded iterations.
 #' @param thin the thining value, it means that only one out of \code{thin} itarations is saved.
-#' @param BaseMat matrix of dimension \code{n_grid_points \times p} containing the evalutation of \code{p} Bspline basis over a grid of \code{n_grid_points} nodes.
+#' @param BaseMat matrix of dimension \code{n_grid_points x p} containing the evalutation of \code{p} Bspline basis over a grid of \code{n_grid_points} nodes.
 #' @param diagonal_graph boolean, set true if the graph has to be diagonal. Set false otherwise and pass as input the desired graph through the \code{G} parameter.
-#' @param G matrix of size \code{p \times p} representing the graphical part of the model that would remain fixed through out the sampling. Needed only if \code{diagonal_graph} is set to \code{FALSE}. 
+#' @param G matrix of size \code{p x p} representing the graphical part of the model that would remain fixed through out the sampling. Needed only if \code{diagonal_graph} is set to \code{FALSE}. 
 #' @param threshold_GWish double, stop algorithm for GWishart samling if the difference between two subsequent iterations is less than \code{threshold_conv.} Used only if \code{diagonal_graph} is set to \code{FALSE}.
 #' @param progressBar boolean, set \code{TRUE} to display the progress bar.
 #' @return Two lists are returned, one with all the sampler values and the other with the posterior means.
@@ -659,8 +659,8 @@ FLM_sampling = function(data, niter, burnin, thin, BaseMat, diagonal_graph = T, 
 #' @param n Number of curves to be generated.
 #' @param n_grid_points dimension of the grid where the spline are evaluated.
 #' @param range_x vector of length two defining the interval for the curves.
-#' @param G  matrix of size \eqn{p \times p} representing the true underlying graph. Default is \code{NULL} that corresponds to a diagonal graph.
-#' @param K  matrix of size \eqn{p \times p} representing the true underlying precision matrix. If \code{NULL}, a sample from a GWishart is drawn.
+#' @param G  matrix of size \eqn{p x p} representing the true underlying graph. Default is \code{NULL} that corresponds to a diagonal graph.
+#' @param K  matrix of size \eqn{p x p} representing the true underlying precision matrix. If \code{NULL}, a sample from a GWishart is drawn.
 #' @param b GWishart shape parameter used if the matrix \code{K} has to be drawn. It has to be larger than 2 in order to have a well defined distribution. Default is 3.
 #' @param D GWishart inverse scale matrix parameter used if the matrix \code{K} has to be drawn. It has to be symmetric and positive definite. Default is \code{0.01*diag(p)}.
 #' @param spline_order order of the Bsplines. Set four for cubic splines.
@@ -771,7 +771,7 @@ simulate_curves = function( p = 10, n = 300, r = 235,range_x = c(100,200), G = N
 #' Bayesian FDR Analysis
 #'
 #' Given the plinks matrix, this utility computes the False Discovery Rate Index, forcing the false discovery rates to be less than \code{min_rate.}
-#' @param plinks matrix of size \eqn{p \times p} containing the posterior inclusion probability for each link. It has to be upper triangular.
+#' @param plinks matrix of size \eqn{p x p} containing the posterior inclusion probability for each link. It has to be upper triangular.
 #' @param tol sequence of tolerances to be tested trying to select a graph truncating \code{plinks} at that value.
 #' @param min_rate fix false discoveries to remain under this selected threshold.
 #' @param diag boolean, if the diagonal of \code{plinks} has to be included in the computations. Set \code{FALSE} if the graph is in complete form, set \code{TRUE} for block graphs.
@@ -836,8 +836,8 @@ Compute_AUC = function (x, y)
 #'
 #' Given the true graph and a \code{plinks} matrix, this utility computes the confusion matrices, plot the ROC curve (if required) and the AUC index,
 #' selects the best threshold according to the number of misclassified links and also return the best graph according to the abovementioned analysis.
-#' @param PL matrix of size \eqn{p \times p} containing the posterior inclusion probability for each link. It has to be upper triangular.
-#' @param G_true matrix of size \eqn{p \times p} containing the true graph. It has to be upper triangular.
+#' @param PL matrix of size \eqn{p x p} containing the posterior inclusion probability for each link. It has to be upper triangular.
+#' @param G_true matrix of size \eqn{p x p} containing the true graph. It has to be upper triangular.
 #' @param tol sequence of tolerances to be tested trying to select a graph truncating \code{plinks} at that value.
 #' @param ROC boolean. If \code{TRUE}, the plot the ROC curve is showed.
 #' @param diag
@@ -965,7 +965,7 @@ SimulateData_GGM = function(p,n,n_groups = 0,form = "Complete",groups = NULL,adj
 #' Sampler for Guassian Graphical Models
 #'
 #' This function draws samples a posteriori from a Gaussian Graphical Models.
-#' @param data matrix of size \eqn{p \times p} containing \eqn{\sum(Y_i^{T}Y_i)}. Data are required to be zero mean.
+#' @param data matrix of size \eqn{p x p} containing \eqn{\sum(Y_i^{T}Y_i)}. Data are required to be zero mean.
 #' @param n number of observed data.
 #' @param niter number of total iterations to be performed in the sampling. The number of saved iteration will be \code{(niter - burnin)/thin}.
 #' @param burnin number of discarded iterations.
@@ -1092,7 +1092,7 @@ LM_hyperparameters = function(a_tau_eps = 20, b_tau_eps = 0.002, sigma_mu = 100,
 #' moreover some of them may not be needed in some algorithm. The goal of this function is to fix a precise notation that will be used in all the code.
 #' @param MCprior positive integer, the number of iteration for the MonteCarlo approximation of prior normalizing constant of GWishart distribution. Needed in \code{"MH"} and \code{"RJ"} algorithms.
 #' @param MCpost positive integer, the number of iteration for the MonteCarlo approximation of posterior normalizing constant of GWishart distribution. Needed only in \code{"MH"} algorithms.
-#' @param BaseMat matrix of dimension \code{n_grid_points \times p} containing the evalutation of \code{p} Bspline basis over a grid of \eqn{n_grid_points} nodes. May be defaulted as \code{NULL} but note this case it is not automatically generated.
+#' @param BaseMat matrix of dimension \code{n_grid_points x p} containing the evalutation of \code{p} Bspline basis over a grid of \eqn{n_grid_points} nodes. May be defaulted as \code{NULL} but note this case it is not automatically generated.
 #' Use \code{\link{Generate_Basis}} to generete it. Needed in all Functional models, i.e \code{FGM} and \code{FLM} samplers.
 #' @param threshold double, threshold for convergence in GWishart sampler. It is not needed only in \code{FLM} sampler with diagonal graph.
 #' @return A list with all the inserted parameters.
@@ -1152,7 +1152,7 @@ GM_init = function(p ,n, empty = TRUE, G0 = NULL, K0 = NULL, Beta0 = NULL, mu0 =
 #' The choice of \code{sigmaG} parameter is a crucial part of \code{"RJ"} and \code{"DRJ"} algorithm. It indeed represents the standard deviation for the proposal of new elements in the
 #' precision matrix. This function provides a simple utility for tuning this parameter by simply repeting \code{Nrep} times the first \code{niter} iteration for every proposed
 #' \code{sigmaG} in \code{sigmaG_list}.
-#' @param data matrix of size \eqn{p \times p} containing \eqn{\sum(Y_i^{T}Y_i)}.
+#' @param data matrix of size \eqn{p x p} containing \eqn{\sum(Y_i^{T}Y_i)}.
 #' @param n number of observed values.
 #' @param niter iteration to be performed in the sampling.
 #' @param sigmaG_list list containing the values of \code{sigmaG} that has to be tested.
@@ -1206,7 +1206,7 @@ sigmaG_GGM_tuning = function( data, n, niter = 1000, sigmaG_list = seq(0.05, 0.5
 #' Block to Complete map
 #'
 #' Function for mapping from a block matrix to its non-block representation. It can be used also for matrices whose entries are not just 1 or 0.
-#' @param Gblock matrix of size \eqn{n_groups \times n_groups} to be mapped.
+#' @param Gblock matrix of size \eqn{n_groups x n_groups} to be mapped.
 #' @param groups list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
 #' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. It is possible to generete it through CreateGroups function.
 #' @return p x p matrix containing the Complete form of Gblock.
