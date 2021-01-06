@@ -7,14 +7,15 @@
 #endif
 
 #include "include_headers.h"
-// #ifdef PARALLELEXEC
-// #  if defined(__GNUC__) && (__GNUC__ >= 9)
-// #    include <execution>
-// #	 warning "Using parallel implementation"
-// #  else
-// #    undef PARALLELEXEC
-// #  endif
-// #endif
+
+ //#ifdef PARALLELEXEC
+ //#  if defined(__GNUC__) && (__GNUC__ >= 9)
+ //#    include <execution>
+ //#	 warning "Using parallel implementation"
+ //#  else
+ //#    undef PARALLELEXEC
+ //#  endif
+ //#endif
 
 
 struct GroupsTraits{
