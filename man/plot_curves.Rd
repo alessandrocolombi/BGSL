@@ -21,9 +21,9 @@ plot_curves(
 )
 }
 \arguments{
-\item{data1}{matrix of dimension \eqn{n_curves \times n_grid_points} representing the first dataset to be plotted.}
+\item{data1}{matrix of dimension \eqn{n_curves x n_grid_points} representing the first dataset to be plotted.}
 
-\item{data2}{matrix of dimension \eqn{n_curves \times n_grid_points} representing the second dataset to be plotted, if needed.}
+\item{data2}{matrix of dimension \eqn{n_curves x n_grid_points} representing the second dataset to be plotted, if needed.}
 
 \item{range}{the range where the curves has to be plotted. Not needed if\code{n_plot} is 0.}
 

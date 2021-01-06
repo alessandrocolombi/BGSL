@@ -38,9 +38,9 @@ simulate_curves(
 
 \item{range_x}{vector of length two defining the interval for the curves.}
 
-\item{G}{matrix of size \eqn{p \times p} representing the true underlying graph. Default is \code{NULL} that corresponds to a diagonal graph.}
+\item{G}{matrix of size \eqn{p x p} representing the true underlying graph. Default is \code{NULL} that corresponds to a diagonal graph.}
 
-\item{K}{matrix of size \eqn{p \times p} representing the true underlying precision matrix. If \code{NULL}, a sample from a GWishart is drawn.}
+\item{K}{matrix of size \eqn{p x p} representing the true underlying precision matrix. If \code{NULL}, a sample from a GWishart is drawn.}
 
 \item{b}{GWishart shape parameter used if the matrix \code{K} has to be drawn. It has to be larger than 2 in order to have a well defined distribution. Default is 3.}
 

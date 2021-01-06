@@ -19,9 +19,9 @@ smooth_curves(
 )
 }
 \arguments{
-\item{beta}{matrix of dimension \eqn{n_basis \times n_curves} containing the values of regression coefficients.}
+\item{beta}{matrix of dimension \eqn{n_basis x n_curves} containing the values of regression coefficients.}
 
-\item{BaseMat}{matrix of dimension \eqn{n_grid_points \times n_basis} containing the evaluation of all the spline in all the grid points.}
+\item{BaseMat}{matrix of dimension \eqn{n_grid_points x n_basis} containing the evaluation of all the spline in all the grid points.}
 
 \item{n_plot}{the number of curves to be plotted. Set 0 for no plot.}
 

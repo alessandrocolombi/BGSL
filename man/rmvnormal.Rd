@@ -9,7 +9,7 @@ rmvnormal(mean, Mat, isPrec = FALSE, isChol = FALSE, isUpper = FALSE)
 \arguments{
 \item{mean}{vector of size \code{p} representig the mean of the Gaussian distribution.}
 
-\item{Mat}{matrix of size \eqn{p \times p} reprenting the covariance or the precision matrix or their Cholesky decompositions.}
+\item{Mat}{matrix of size \eqn{p x p} reprenting the covariance or the precision matrix or their Cholesky decompositions.}
 
 \item{isPrec}{boolean, set \code{TRUE} if Mat parameter is a precision, \code{FALSE} if it is a covariance.}
 

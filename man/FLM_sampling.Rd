@@ -17,7 +17,7 @@ FLM_sampling(
 )
 }
 \arguments{
-\item{data}{matrix of dimension \code{n_grid_points \times n} containing the evaluation of \code{n} functional data over a grid of \code{n_grid_points} nodes.}
+\item{data}{matrix of dimension \code{n_grid_points x n} containing the evaluation of \code{n} functional data over a grid of \code{n_grid_points} nodes.}
 
 \item{niter}{the number of total iterations to be performed in the sampling. The number of saved iteration will be \code{(niter - burnin)/thin}.}
 
@@ -25,11 +25,11 @@ FLM_sampling(
 
 \item{thin}{the thining value, it means that only one out of \code{thin} itarations is saved.}
 
-\item{BaseMat}{matrix of dimension \code{n_grid_points \times p} containing the evalutation of \code{p} Bspline basis over a grid of \code{n_grid_points} nodes.}
+\item{BaseMat}{matrix of dimension \code{n_grid_points x p} containing the evalutation of \code{p} Bspline basis over a grid of \code{n_grid_points} nodes.}
 
 \item{diagonal_graph}{boolean, set true if the graph has to be diagonal. Set false otherwise and pass as input the desired graph through the \code{G} parameter.}
 
-\item{G}{matrix of size \code{p \times p} representing the graphical part of the model that would remain fixed through out the sampling. Needed only if \code{diagonal_graph} is set to \code{FALSE}.}
+\item{G}{matrix of size \code{p x p} representing the graphical part of the model that would remain fixed through out the sampling. Needed only if \code{diagonal_graph} is set to \code{FALSE}.}
 
 \item{threshold_GWish}{double, stop algorithm for GWishart samling if the difference between two subsequent iterations is less than \code{threshold_conv.} Used only if \code{diagonal_graph} is set to \code{FALSE}.}
 

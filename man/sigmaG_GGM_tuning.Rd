@@ -20,7 +20,7 @@ sigmaG_GGM_tuning(
 )
 }
 \arguments{
-\item{data}{matrix of size \eqn{p \times p} containing \eqn{\sum(Y_i^{T}Y_i)}.}
+\item{data}{matrix of size \eqn{p x p} containing \eqn{\sum(Y_i^{T}Y_i)}.}
 
 \item{n}{number of observed values.}
 

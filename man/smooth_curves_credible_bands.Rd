@@ -21,13 +21,13 @@ smooth_curves_credible_bands(
 )
 }
 \arguments{
-\item{beta}{matrix of dimension \eqn{n_basis \times n_curves} containing the mean values of regression coefficients}
+\item{beta}{matrix of dimension \eqn{n_basis x n_curves} containing the mean values of regression coefficients}
 
-\item{betaLower}{matrix of dimension \eqn{n_basis \times n_curves} containing the lower quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.}
+\item{betaLower}{matrix of dimension \eqn{n_basis x n_curves} containing the lower quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.}
 
-\item{betaUpper}{matrix of dimension \eqn{n_basis \times n_curves} containing the upper quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.}
+\item{betaUpper}{matrix of dimension \eqn{n_basis x n_curves} containing the upper quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.}
 
-\item{BaseMat}{matrix of dimension \eqn{n_grid_points \times n_basis} containing the evaluation of all the spline in all the grid points.}
+\item{BaseMat}{matrix of dimension \eqn{n_grid_points x n_basis} containing the evaluation of all the spline in all the grid points.}
 
 \item{n_plot}{the number of curves to be plotted. Set 0 for no plot.}
 

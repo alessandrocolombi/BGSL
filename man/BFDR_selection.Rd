@@ -12,7 +12,7 @@ BFDR_selection(
 )
 }
 \arguments{
-\item{plinks}{matrix of size \eqn{p \times p} containing the posterior inclusion probability for each link. It has to be upper triangular.}
+\item{plinks}{matrix of size \eqn{p x p} containing the posterior inclusion probability for each link. It has to be upper triangular.}
 
 \item{tol}{sequence of tolerances to be tested trying to select a graph truncating \code{plinks} at that value.}
 

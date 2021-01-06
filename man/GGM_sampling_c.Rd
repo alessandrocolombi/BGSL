@@ -28,7 +28,7 @@ GGM_sampling_c(
 )
 }
 \arguments{
-\item{data}{matrix of size \eqn{p \times p} containing \eqn{\sum(Y_i^{T}Y_i)}. Data are required to be zero mean.}
+\item{data}{matrix of size \eqn{p x p} containing \eqn{\sum(Y_i^{T}Y_i)}. Data are required to be zero mean.}
 
 \item{p}{non necessario}
 

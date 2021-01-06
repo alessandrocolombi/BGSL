@@ -115,7 +115,7 @@ GGM_sim_sampling <- function(p, n, niter, burnin, thin, D, b = 3.0, MCprior = 10
 #' Sampler for Guassian Graphical Models
 #'
 #' This function draws samples a posteriori from a Gaussian Graphical Models. NON MI SERVE ESPORTARLA
-#' @param data matrix of size \eqn{p \times p} containing \eqn{\sum(Y_i^{T}Y_i)}. Data are required to be zero mean.
+#' @param data matrix of size \eqn{p x p} containing \eqn{\sum(Y_i^{T}Y_i)}. Data are required to be zero mean.
 #' @param p non necessario
 #' @param n number of observed data.
 #' @param niter number of total iterations to be performed in the sampling. The number of saved iteration will be \eqn{(niter - burnin)/thin}.
@@ -176,7 +176,7 @@ Create_RandomGraph <- function(p, n_groups = 0L, form = "Complete", groups = NUL
 #' This function draws random samples from Multivariate Gaussian distribution. It implements both covariance and precision parametrization.
 #' It is also possible to pass directly the Cholesky decomposition if it is available before the call.
 #' @param mean vector of size \code{p} representig the mean of the Gaussian distribution.
-#' @param Mat matrix of size \eqn{p \times p} reprenting the covariance or the precision matrix or their Cholesky decompositions.
+#' @param Mat matrix of size \eqn{p x p} reprenting the covariance or the precision matrix or their Cholesky decompositions.
 #' @param isPrec boolean, set \code{TRUE} if Mat parameter is a precision, \code{FALSE} if it is a covariance.
 #' @param isChol boolean, set \code{TRUE} if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance matrix.
 #' @param isUpper boolean, used only if \code{isChol} is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.
@@ -191,7 +191,7 @@ rmvnormal <- function(mean, Mat, isPrec = FALSE, isChol = FALSE, isUpper = FALSE
 #' This function draws random samples from Wishart distribution. 
 #' It is also possible to pass directly the Cholesky decomposition of the Inverse Scale matrix if it is available before the call.
 #' @param b double, it is shape parameter. 
-#' @param D matrix of size \eqn{p \times p} representig the Inverse Scale parameter. It has to be symmetric and positive definite. 
+#' @param D matrix of size \eqn{p x p} representig the Inverse Scale parameter. It has to be symmetric and positive definite. 
 #' @param isChol boolean, set \code{TRUE} if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance
 #' @param isUpper boolean, used only if isChol is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.
 #' @return It returns a p x p matrix.

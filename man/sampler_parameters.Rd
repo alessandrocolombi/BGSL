@@ -16,7 +16,7 @@ sampler_parameters(
 
 \item{MCpost}{positive integer, the number of iteration for the MonteCarlo approximation of posterior normalizing constant of GWishart distribution. Needed only in \code{"MH"} algorithms.}
 
-\item{BaseMat}{matrix of dimension \code{n_grid_points \times p} containing the evalutation of \code{p} Bspline basis over a grid of \eqn{n_grid_points} nodes. May be defaulted as \code{NULL} but note this case it is not automatically generated.
+\item{BaseMat}{matrix of dimension \code{n_grid_points x p} containing the evalutation of \code{p} Bspline basis over a grid of \eqn{n_grid_points} nodes. May be defaulted as \code{NULL} but note this case it is not automatically generated.
 Use \code{\link{Generate_Basis}} to generete it. Needed in all Functional models, i.e \code{FGM} and \code{FLM} samplers.}
 
 \item{threshold}{double, threshold for convergence in GWishart sampler. It is not needed only in \code{FLM} sampler with diagonal graph.}

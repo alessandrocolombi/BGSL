@@ -9,7 +9,7 @@ rwishart(b, D, isChol = FALSE, isUpper = FALSE)
 \arguments{
 \item{b}{double, it is shape parameter.}
 
-\item{D}{matrix of size \eqn{p \times p} representig the Inverse Scale parameter. It has to be symmetric and positive definite.}
+\item{D}{matrix of size \eqn{p x p} representig the Inverse Scale parameter. It has to be symmetric and positive definite.}
 
 \item{isChol}{boolean, set \code{TRUE} if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance}
 

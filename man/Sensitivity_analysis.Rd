@@ -13,9 +13,9 @@ Sensitivity_analysis(
 )
 }
 \arguments{
-\item{PL}{matrix of size \eqn{p \times p} containing the posterior inclusion probability for each link. It has to be upper triangular.}
+\item{PL}{matrix of size \eqn{p x p} containing the posterior inclusion probability for each link. It has to be upper triangular.}
 
-\item{G_true}{matrix of size \eqn{p \times p} containing the true graph. It has to be upper triangular.}
+\item{G_true}{matrix of size \eqn{p x p} containing the true graph. It has to be upper triangular.}
 
 \item{tol}{sequence of tolerances to be tested trying to select a graph truncating \code{plinks} at that value.}
 
