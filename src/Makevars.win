@@ -2,6 +2,12 @@
 #CXX_STD = CXX17
 #NOCRANFLAGS = -Wno-attributes -Wno-ignored-attributes -Wno-deprecated-declarations
 
+#ifeq ($(R_ARCH), /x64)
+#FOLDER = C:/rtools40/mingw64
+#else
+#FOLDER = C:/rtools40/mingw32
+#endif
+
 # GSL library flags
 #GSL_INC = $(shell $(FOLDER)/bin/gsl-config --cflags)
 #GSL_LIBS = $(shell $(FOLDER)/bin/gsl-config --libs)
