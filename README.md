@@ -112,6 +112,18 @@ All those packages can be installed directly from the `R` console via
 install.packages(c("Rcpp", "RcppEigen", "RcppParallel", "fields", "plot.matrix"))
 ```
 
+### BGSL
+Once all dependencies have been installed, the SPMIX is extremely simple to install. To do so, open R and simply type
+
+devtools::install_github("TeoGiane/SPMIX")
+This command will automatically download, build and install SPMIX in your package library. Once installed, you can import it in your workflow as a standard package with library("SPMIX").
+
+You are now ready to dowload, build and install **BGSL**. Open `R` and run 
+```R
+devtools::install_github("alessandrocolombi/BGSL")
+library("BGSL")
+```
+
 ## Installation - Window
 
 Window users will have to leave their confort zone when installing this package as things get a little more complicated. There are two difficulties here. 
@@ -186,3 +198,14 @@ No difference with Unix system here, [see](#R-depencencies) for details or simpl
 install.packages(c("Rcpp", "RcppEigen", "RcppParallel", "fields", "plot.matrix"))
 ```
 
+### BGSL
+Once all dependencies have been installed, the SPMIX is extremely simple to install. To do so, open R and simply type
+
+devtools::install_github("TeoGiane/SPMIX")
+This command will automatically download, build and install SPMIX in your package library. Once installed, you can import it in your workflow as a standard package with library("SPMIX").
+
+You are now ready to dowload, build and install **BGSL**. Open `R` and run 
+```R
+devtools::install_github("alessandrocolombi/BGSL")
+library("BGSL")
+```
