@@ -30,7 +30,7 @@ test_null <- function(G, l = NULL) {
 #' @return List containing the sampled matrix as an Eigen RowMajor matrix, a bool that states if the convergence was reached or not and finally an int with the number of performed iterations.
 #' If the graph is empty or complete, no iterations are performed.
 #' @export
-rGwish_old <- function(G, b, D, norm = "Mean", groups = NULL, max_iter = 500L, threshold_check = 1e-5L, threshold_conv = 1e-8L, seed = 0L) {
+rGwish_old <- function(G, b, D, norm = "Mean", groups = NULL, max_iter = 500L, threshold_check = 0.00001, threshold_conv = 0.00000001, seed = 0L) {
     .Call(`_BGSL_rGwish_old`, G, b, D, norm, groups, max_iter, threshold_check, threshold_conv, seed)
 }
 
@@ -58,7 +58,7 @@ rGwish_old <- function(G, b, D, norm = "Mean", groups = NULL, max_iter = 500L, t
 #' @return Rcpp::List containing the sampled matrix as an Eigen RowMajor matrix, a bool that states if the convergence was reached or not and finally an int with the number of performed iterations.
 #' If the graph is empty or complete, no iterations are performed. If check_structure is \code{TRUE}, then the result of that check is also returned.
 #' @export
-rGwish <- function(G, b, D, norm = "Mean", form = "InvScale", groups = NULL, check_structure = FALSE, max_iter = 500L, threshold_check = 1e-5L, threshold_conv = 1e-8L, seed = 0L) {
+rGwish <- function(G, b, D, norm = "Mean", form = "InvScale", groups = NULL, check_structure = FALSE, max_iter = 500L, threshold_check = 0.00001, threshold_conv = 0.00000001, seed = 0L) {
     .Call(`_BGSL_rGwish`, G, b, D, norm, form, groups, check_structure, max_iter, threshold_check, threshold_conv, seed)
 }
 
@@ -108,7 +108,7 @@ log_Gconstant2 <- function(G, b, D, MCiteration = 100L, groups = NULL, seed = 0L
 #' @param D Eigen Matrix of double stored columnwise. It has to be symmetric and positive definite. 
 #' @param MCiteration unsigned int, the number of iteration for the MonteCarlo approximation. 
 #' @export
-GGM_sim_sampling <- function(p, n, niter, burnin, thin, D, b = 3.0, MCprior = 100L, MCpost = 100L, threshold = 1e-8L, form = "Complete", prior = "Uniform", algo = "MH", n_groups = 0L, seed = 0L, sparsity = 0.5, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5, print_info = TRUE) {
+GGM_sim_sampling <- function(p, n, niter, burnin, thin, D, b = 3.0, MCprior = 100L, MCpost = 100L, threshold = 0.00000001, form = "Complete", prior = "Uniform", algo = "MH", n_groups = 0L, seed = 0L, sparsity = 0.5, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5, print_info = TRUE) {
     .Call(`_BGSL_GGM_sim_sampling`, p, n, niter, burnin, thin, D, b, MCprior, MCpost, threshold, form, prior, algo, n_groups, seed, sparsity, Gprior, sigmaG, paddrm, print_info)
 }
 
@@ -137,7 +137,7 @@ GGM_sim_sampling <- function(p, n, niter, burnin, thin, D, b = 3.0, MCprior = 10
 #' @param print_info boolean, if \code{TRUE} progress bar and execution time are displayed.
 #' @return This function returns a list with the posterior precision mean, a matrix with the probability of inclusion of each link, the number of accepted moves, the number of visited graphs and the list of all visited graphs.
 #' @export 
-GGM_sampling_c <- function(data, p, n, niter, burnin, thin, D, b = 3.0, MCprior = 100L, MCpost = 100L, threshold = 1e-8L, form = "Complete", prior = "Uniform", algo = "MH", groups = NULL, seed = 0L, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5, print_info = TRUE) {
+GGM_sampling_c <- function(data, p, n, niter, burnin, thin, D, b = 3.0, MCprior = 100L, MCpost = 100L, threshold = 0.00000001, form = "Complete", prior = "Uniform", algo = "MH", groups = NULL, seed = 0L, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5, print_info = TRUE) {
     .Call(`_BGSL_GGM_sampling_c`, data, p, n, niter, burnin, thin, D, b, MCprior, MCpost, threshold, form, prior, algo, groups, seed, Gprior, sigmaG, paddrm, print_info)
 }
 
@@ -151,7 +151,7 @@ GGM_sampling_c <- function(data, p, n, niter, burnin, thin, D, b = 3.0, MCprior 
 #' @param thin the thining value, it means that only one out of thin itarations is saved.
 #' @param BaseMat matrix of dimension r x p containing the evalutation of p Bspline basis over a grid of r nodes
 #' 
-FLM_sampling_c <- function(data, niter, burnin, thin, BaseMat, G, diagonal_graph = TRUE, threshold_GWish = 1e-8L, print_info = TRUE) {
+FLM_sampling_c <- function(data, niter, burnin, thin, BaseMat, G, diagonal_graph = TRUE, threshold_GWish = 0.00000001, print_info = TRUE) {
     .Call(`_BGSL_FLM_sampling_c`, data, niter, burnin, thin, BaseMat, G, diagonal_graph, threshold_GWish, print_info)
 }
 

@@ -938,7 +938,7 @@ Sensitivity_analysis = function (PL, G_true, tol = seq(0.1, 1, by = 0.01), ROC =
 #' @return a list containing a matrix called U with sum(Y_iY_i), the true precision, the true graph and if Block form is selected, the graph in its complete form is also returned.
 #' @export
 SimulateData_GGM = function(p,n,n_groups = 0,form = "Complete",groups = NULL,adj_mat = NULL,
-							seed = 0,mean_null = TRUE,sparsity = 0.3 )
+							seed = 0,mean_null = TRUE, sparsity = 0.3 )
 {
 	if(!(form == "Complete" || form == "Block"))
 		stop("Only possible forms are Complete and Block")
