@@ -138,17 +138,15 @@ install.packages("devtools")
 At linking stage, **BGSL** would need to know where the GNU Scientific Library is. The main reference to make it available is [Rtools Packages](https://github.com/r-windows/rtools-packages).
 It offer an automatized procedure for both 32 and 64 bits architectures.
 
-<<<<<<< HEAD
 1. Open a Rtool Bash terminal, you can find it in "C:\rtools40\mingw64.exe" or "C:\rtools40\msys2.exe" or using the shortcut in your Start Menu. Both executables should work fine. <br/>
 **Note** it is in general not equivalent to the default terminal that is available in Rstudio (Alt+Shift+R). That usually opens the Command Prompt or Git Bash. It is suggested to open the correct
 terminal as explained above.
 2. `cd` into [Rtools Packages directory](https://github.com/r-windows/rtools-packages). The easiest way is by cloning it with Git. Make sure if it is already available with
-=======
+
 1. Open a Rtool Bash terminal, you can find it in "C:\rtools40\mingw64.exe" or "C:\rtools40\msys2.exe" or using the shortcut in your Start Menu. Both executables should work fine.
 **Note** it is in general not equivalent to the default terminal that is available in Rstudio (Alt+Shift+R). That usually opens the Command Prompt or Git Bash. It is suggested to open the correct
 terminal as explained above.
 2. `cd` into [Rtools Packages directory](https://github.com/r-windows/rtools-packages). The easiest way to that is by cloning it with Git. Make sure if it is already available with
->>>>>>> 5f36525b6ee7748a3e52b23b6f3d0cbb0cc35cd7
 ```shell
 $ where git
 C:\Program Files\Git\cmd\git.exe #if so, you already have it
@@ -183,7 +181,7 @@ If 32-bit version is needed, perform the same test but with "C:\rtools40\mingw32
 
 ### R depencencies
 
-No difference with Unix system here, [see](#Installation---Unix-R-depencencies) for details or simply type on `R` console
+No difference with Unix system here, [see](#R-depencencies) for details or simply type on `R` console
 ```R
 install.packages(c("Rcpp", "RcppEigen", "RcppParallel", "fields", "plot.matrix"))
 ```
