@@ -95,11 +95,7 @@ $ sudo apt-get install libgsl-dev
 In order to test if everything went smoothly, try 
 ```shell
 $ gsl-config --cflags
-<<<<<<< HEAD
 -I/usr/include #where the header files are
-=======
--I/usr/include #where my the header files are
->>>>>>> 5f36525b6ee7748a3e52b23b6f3d0cbb0cc35cd7
 $ gsl-config --libs
 -L/usr/lib/x86_64-linux-gnu -lgsl -lgslcblas -lm #where the linked libraries are
 ```
