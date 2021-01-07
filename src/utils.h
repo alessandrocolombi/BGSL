@@ -1009,6 +1009,7 @@ namespace utils{
 		unsigned int it{0};
 		double norm_res{1.0};
 		if(seed == 0){
+			std::cout<<"seed null, lo setto random"<<std::endl;
 			std::random_device rd;
 			seed=rd();
 		}
@@ -1057,8 +1058,9 @@ namespace utils{
 		//A complete Gwishart is a Wishart. Just return K in that case.
 		if(n_links == G.get_possible_links()){
 					//std::cout<<"Complete Graph"<<std::endl;
-			MatRow K_return(K);
-			return std::make_tuple(K_return, true, 0); 
+			//MatRow K_return(K); ----> ma se non la converto in RowMajor va comunque? <-----------------------------------------
+			return std::make_tuple(K, true, 0); 
+			//return std::make_tuple(K_return, true, 0); 
 		}
 		//Step 2: Set Sigma=K^-1 and initialize Omega=Sigma
 			MatRow Sigma(K.llt().solve(MatRow::Identity(N, N)));
@@ -2165,7 +2167,7 @@ namespace utils{
 		if constexpr(internal_type_traits::isCompleteGraph<GraphStructure, T>::value){
 			n_el = 0.5*(p*p - p);
 		}
-		else if constexpr( internal_type_traits::isBlockGraph<GraphStructure>::value /*std::is_same_v<Graph, BlockGraph<T> > || std::is_same_v<Graph, BlockGraphAdj<T> >*/){
+		else if constexpr( internal_type_traits::isBlockGraph<GraphStructure, T>::value /*std::is_same_v<Graph, BlockGraph<T> > || std::is_same_v<Graph, BlockGraphAdj<T> >*/){
 			if(ptr_groups == nullptr)
 				throw std::runtime_error("In case of block graphs, it is mandatory to pass the list of Groups");	
 			n_el = ptr_groups->get_possible_block_links();
@@ -2208,7 +2210,7 @@ namespace utils{
 	template<template <typename> class GraphStructure = BlockGraph, typename T = unsigned int >
 	std::vector< GraphStructure<T> > list_all_graphs(std::shared_ptr<const Groups> const & ptr_groups, bool print = false){
 		using Graph = GraphStructure<T>;
-		static_assert(	internal_type_traits::isBlockGraph<GraphStructure>::value ,
+		static_assert(	internal_type_traits::isBlockGraph<GraphStructure, T>::value ,
 						"Wrong type of graph inserted. The specialization for block graphs has been called, this means that only Block graphs are allowed." );
 		return list_all_graphs<GraphStructure, T>(0,ptr_groups, print);
 	}

@@ -40,7 +40,7 @@ public:
       for(IdxType j = i+1; j < data.cols(); ++j){
         data(i,j) = _A[pos++];
       }
-      this->find_neighbours();
+    this->find_neighbours();
   };
   GraphType(IdxType const & _N): data(InnerData::Identity(_N, _N)){
     this->find_neighbours();

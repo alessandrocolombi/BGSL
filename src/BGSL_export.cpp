@@ -193,7 +193,8 @@ Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Ei
                   Rcpp::Nullable<Rcpp::List> groups = R_NilValue, bool check_structure = false,
                   unsigned int const & max_iter = 500, long double const & threshold_check = 0.00001, long double const & threshold_conv = 0.00000001, int seed = 0)
 {
-
+  std::cout<<"max_iter = "<<max_iter<<std::endl;
+  std::cout<<"seed = "<<seed<<std::endl;
   if (groups.isNotNull()){ //Assume it is a BlockGraph   
     Rcpp::List L(groups); // casting to underlying type List
     //Rcpp::Rcout << "List is not NULL." << std::endl;

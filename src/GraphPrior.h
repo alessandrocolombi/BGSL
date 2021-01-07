@@ -54,8 +54,11 @@ class TruncatedUniformPrior : public GraphPrior< BlockGraphStructure, T >{
 	static_assert(std::is_same_v< BlockGraphAdj<T>, BlockGraphType > ||
 				  std::is_same_v< BlockGraph   <T>, BlockGraphType >  ,
 				  "Error, only graphs in block form are allowed in a truncated prior");
-	*/	
+		
 	static_assert(internal_type_traits::isBlockGraph<BlockGraphStructure>::value ,
+				  "_____ERROR_CREATING_A_PRIOR____ONLY_GRAPHS_IN_BLOCK_FORM_ARE_ALLOWED_IN_TRUNCATED_PRIORS___");
+	*/
+	static_assert(internal_type_traits::isBlockGraph<BlockGraphStructure, T>::value ,
 				  "_____ERROR_CREATING_A_PRIOR____ONLY_GRAPHS_IN_BLOCK_FORM_ARE_ALLOWED_IN_TRUNCATED_PRIORS___");
 	public:
 		//TruncatedUniformPrior();
@@ -117,7 +120,7 @@ class TruncatedBernoulliPrior : public GraphPrior< BlockGraphStructure, T>
 					  std::is_same_v< BlockGraph   <T>, BlockGraphType >  ,
 					  "Error, only graphs in block form are allowed in a truncated prior");
 		*/
-		static_assert(internal_type_traits::isBlockGraph<BlockGraphStructure>::value ,
+		static_assert(internal_type_traits::isBlockGraph<BlockGraphStructure, T>::value ,
 					  "_____ERROR_CREATING_A_PRIOR____ONLY_GRAPHS_IN_BLOCK_FORM_ARE_ALLOWED_IN_TRUNCATED_PRIORS___");	
 		public:
 		TruncatedBernoulliPrior(double const & _theta):theta(_theta){

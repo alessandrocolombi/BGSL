@@ -9,8 +9,8 @@ namespace internal_type_traits
 	//--------------------------------------------------------------------
 	/*Type_traits to check is a Graph is in Block form.
 	  Usage example:
-	  internal_type_traits::isBlockGraph<BlockGraph>::value --> true
-	  internal_type_traits::isBlockGraph<CompleteView>::value --> false
+	  internal_type_traits::isBlockGraph<BlockGraph, int>::value --> true
+	  internal_type_traits::isBlockGraph<CompleteView, bool>::value --> false
 	*/
 
 	/*
@@ -29,7 +29,7 @@ namespace internal_type_traits
 		{
 		  static constexpr bool value{true};
 		};
-	*/
+	
 	template< template <typename> class GraphStructure >
 	struct isBlockGraph : public std::false_type {};
 	template<>
@@ -40,6 +40,15 @@ namespace internal_type_traits
 	struct isBlockGraph<BlockGraphAdjDyn> : public std::true_type{};
 	template<>
 	struct isBlockGraph<BlockGraphDyn> : public std::true_type{};
+	*/
+	template< template <typename> class GraphStructure, typename T >
+	struct isBlockGraph
+	{
+		//Using is_base_of_v< , > all specializations of BlockGraphBaseCRTP are automatically inserted as BlockGraph
+		static constexpr bool value { std::is_base_of_v< BlockGraphBaseCRTP<GraphStructure<T> ,T>, GraphStructure<T> >  ||
+									  std::is_same_v<GraphStructure<T>, BlockGraphDyn<T> > || std::is_same_v<GraphStructure<T>, BlockGraphAdjDyn<T> >
+									};
+	};
 	//--------------------------------------------------------------------
 	/* Type_traits to check is a Graph is in Complete form
 	  --> isCompleteGraph is simply wrapping std::is_same_v
