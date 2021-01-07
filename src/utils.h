@@ -475,8 +475,9 @@ namespace utils{
 		unsigned int it{0};
 		double norm_res{1.0};
 		if(seed == 0){
-			std::random_device rd;
-			seed=rd();
+			//std::random_device rd;
+			//seed=rd();
+			seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 		}
 		sample::GSL_RNG engine(seed);
 		sample::rchisq  rchisq;
@@ -635,8 +636,9 @@ namespace utils{
 		unsigned int it{0};
 		double norm_res{1.0};
 		if(seed == 0){
-			std::random_device rd;
-			seed=rd();
+			//std::random_device rd;
+			//seed=rd();
+			seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 		}
 		sample::GSL_RNG engine(seed);
 		sample::rchisq  rchisq;
@@ -817,8 +819,9 @@ namespace utils{
 			unsigned int it{0};
 			double norm_res{1.0};
 			if(seed == 0){
-				std::random_device rd;
-				seed=rd();
+				//std::random_device rd;
+				//seed=rd();
+				seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 			}
 			sample::GSL_RNG engine(seed);
 			sample::rchisq  rchisq;
@@ -1012,7 +1015,7 @@ namespace utils{
 			std::cout<<"seed null, lo setto random"<<std::endl;
 			//std::random_device rd;
 			//seed=rd();
-			seed=static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+			seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 			std::cout<<"random seed = "<<seed<<std::endl;
 		}
 		sample::GSL_RNG engine(seed);
@@ -1378,8 +1381,9 @@ namespace utils{
 		unsigned int number_nan{0};
 		long double result_MC{0};
 		if(seed == 0){
-			std::random_device rd;
-			seed=rd();
+			//std::random_device rd;
+			//seed=rd();
+			seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 		}
 		sample::GSL_RNG engine(seed);
 		sample::rnorm rnorm;
@@ -1667,8 +1671,9 @@ namespace utils{
 		unsigned int number_nan{0};
 		long double result_MC{0};
 		if(seed == 0){
-			std::random_device rd;
-			seed=rd();
+			//std::random_device rd;
+			//seed=rd();
+			seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 		}
 		sample::GSL_RNG engine(seed);
 		sample::rnorm rnorm;
@@ -1930,8 +1935,9 @@ namespace utils{
 	{
 	
 		if(seed==0){
-		  std::random_device rd;
-		  seed=rd();
+		  //std::random_device rd;
+		  //seed=rd();
+		  seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 		}
 		sample::GSL_RNG engine(seed);
 		sample::rmvnorm rmv; //Covariance parametrization
@@ -1988,8 +1994,9 @@ namespace utils{
 	{
 
 		if(seed==0){
-		  std::random_device rd;
-		  seed=rd();
+			//std::random_device rd;
+			//seed=rd();
+			seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 		}
 		sample::GSL_RNG engine(seed);
 		sample::rmvnorm rmv; //Covariance parametrization
@@ -2051,8 +2058,9 @@ namespace utils{
 	{
 	
 		if(seed==0){
-		  std::random_device rd;
-		  seed=rd();
+			//std::random_device rd;
+			//seed=rd();
+			seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 		}
 		sample::GSL_RNG engine(seed);
 		sample::rmvnorm_prec<sample::isChol::False> rmv; //Precision parametrization
@@ -2101,8 +2109,9 @@ namespace utils{
 	SimulateDataGGM_Complete(unsigned int const & p, unsigned int const & n, GraphType<bool> & G, unsigned int seed = 0, bool mean_null = true)
 	{
 		if(seed==0){
-		  std::random_device rd;
-		  seed=rd();
+			//std::random_device rd;
+			//seed=rd();
+			seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 		}
 		sample::GSL_RNG engine(seed);
 		sample::rmvnorm_prec<sample::isChol::False> rmv; //Precision parametrization

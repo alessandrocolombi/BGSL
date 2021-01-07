@@ -22,8 +22,9 @@ class FGMsampler : public SamplerTraits
 	{
 	 	this->check();
 	 	if(seed==0){
-	 	  std::random_device rd;
-	 	  seed=rd();
+	 		//std::random_device rd;
+	 		//seed=rd();
+	 		seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	 	}	
 	} 
 

@@ -374,8 +374,9 @@ void BlockGraph<T>::fillRandom(double sparsity, unsigned int seed){
   }
   // If I do not give the sees I initialize the sequence using the random device. Every call will produce a different matrix
   if(seed==0){
-    std::random_device rd;
-    seed=rd();
+    //std::random_device rd;
+    //seed=rd();
+    seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
   }
   // I use the standard engine for random numbers
   std::default_random_engine engine(seed);
@@ -728,8 +729,9 @@ void BlockGraphAdj<T>::fillRandom(double sparsity, unsigned int seed){
   }
   // If I do not give the sees I initialize the sequence using the random device. Every call will produce a different matrix
   if(seed==0){
-    std::random_device rd;
-    seed=rd();
+    //std::random_device rd;
+    //seed=rd();
+    seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
   }
   // I use the standard engine for random numbers
   std::default_random_engine engine(seed);

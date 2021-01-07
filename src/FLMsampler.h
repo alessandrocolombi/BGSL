@@ -22,10 +22,11 @@ class FLMsampler : public FLMsamplerTraits
 				p(_init.Beta0.rows()), n(_init.Beta0.cols()), grid_pts(_params.Basemat.rows()), seed(_seed), print_pb(_print_pb)
 	{
 	 	this->check();
-	 	if(seed==0){
-	 	  std::random_device rd;
-	 	  seed=rd();
-	 	}	
+	 	if(seed == 0){
+	 		//std::random_device rd;
+	 		//seed=rd();
+	 		seed=static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+	 	}
 	} 
 
 	RetType run();
@@ -162,7 +163,8 @@ typename FLMsampler<Graph>::RetType FLMsampler<Graph>::run()
 			//Precision tau_eps
 			b_tau_eps_post /= 2.0;
 			tau_eps = rgamma(engine, a_tau_eps_post, 1/b_tau_eps_post);
-					//std::cout<<"tau_eps:"<<std::endl<<tau_eps<<std::endl;
+			double tau_eps_prova_seed = rgamma(engine, 5, 20);
+				std::cout<<"tau_eps_prova_seed:"<<std::endl<<tau_eps_prova_seed<<std::endl;
 			//Save
 			if(iter >= nburn){
 				if((iter - nburn)%thin == 0){

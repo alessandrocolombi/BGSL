@@ -263,8 +263,9 @@ long double Precision<CompleteStructure, Type>::log_normalizing_constat(const Co
 	long double result_MC{0};
 	unsigned int number_nan{0};
 	if(seed == 0){
-		std::random_device rd;
-		seed=rd();
+		//std::random_device rd;
+		//seed=rd();
+		seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	}
 	sample::GSL_RNG engine(seed);
 	sample::rnorm rnorm;
@@ -540,9 +541,9 @@ void Precision<CompleteStructure, T>::rgwish2(const CompleteStructure<T> & G, do
 	unsigned int it{0};
 	double norm_res{1.0};
 	if(seed == 0){
-		std::random_device rd;
-		seed=rd();
-		//seed = std::chrono::system_clock::now().time_since_epoch().count();	
+		//std::random_device rd;
+		//seed=rd();
+		seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	}
 	sample::GSL_RNG engine(seed);
 	sample::rchisq rchisq;

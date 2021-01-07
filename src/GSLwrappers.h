@@ -34,6 +34,9 @@ namespace sample{
 
 
 	//This function simply wraps in c++ code the construction and desctruction of a gsl_rng obj
+	//Had to remove std::random_device because there is a bug when compiling in window (returs always the same value).
+	//std::chrono is fine but seed are very similar when generated in the sampler, but at least they are different. Would be nice to find a solution generating more entropy
+	// reference for bug -> https://en.cppreference.com/w/cpp/numeric/random/random_device, https://sourceforge.net/p/mingw-w64/bugs/338/
 	class GSL_RNG{ 
 		public:
 			GSL_RNG(unsigned int const & _seed){
@@ -59,7 +62,6 @@ namespace sample{
 				printf ("first value = %lu\n", gsl_rng_get(r));
 			}
 			gsl_rng* operator()()const{
-				this->print_info();
 				return r;
 			}
 			inline void set_seed(unsigned int const & s){

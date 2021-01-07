@@ -283,8 +283,9 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 	long double result_MC{0};
 	unsigned int number_nan{0};
 	if(seed == 0){
-		std::random_device rd;
-		seed=rd();
+		//std::random_device rd;
+		//seed=rd();
+		seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	}
 	sample::GSL_RNG engine(seed);
 	sample::rnorm rnorm;

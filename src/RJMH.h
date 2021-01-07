@@ -92,8 +92,8 @@ ReversibleJumpsMH<GraphStructure, T>::RJ(typename ReversibleJumpsMH<GraphStructu
 
 	//std::cout<<"Sono dentro RJ per quelli a blocchi"<<std::endl;
 
-	std::random_device rd;
-    unsigned int seed=rd();
+	//std::random_device rd;
+    unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	sample::GSL_RNG engine_gsl(seed);
 	unsigned int p(Kold_prior.get_matrix().rows());
 				//std::cout<<"p = "<<p<<std::endl;
@@ -267,8 +267,8 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new(typename ReversibleJumpsMH<GraphStr
 
 	//std::cout<<"Sono dentro RJ_new per quelli a blocchi ---> per ora è ancora come RJ"<<std::endl;
 
-	std::random_device rd;
-    unsigned int seed=rd();
+	//std::random_device rd;
+    unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	sample::GSL_RNG engine_gsl(seed);
 	unsigned int p(Kold_prior.get_matrix().rows());
 				//std::cout<<"p = "<<p<<std::endl;
@@ -447,8 +447,8 @@ ReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsigned i
 	using CompleteType = typename GGMTraits<GraphStructure, T>::CompleteType;
 
 	if(seed==0){
-	  std::random_device rd;
-	  seed=rd();
+	 	//std::random_device rd;
+    	seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	}
 	std::default_random_engine engine(seed);
 	std::uniform_real_distribution< double > rand(0.,1.);
@@ -560,8 +560,8 @@ ReversibleJumpsMH<GraphType, T>::RJ(typename ReversibleJumpsMH<GraphType, T>::Co
 	using Graph = GraphType<T>;
 
 			//std::cout<<"Sono in RJ per i completi "<<std::endl;
-	std::random_device rd;
-	unsigned int seed=rd();
+	//std::random_device rd;
+    unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	sample::GSL_RNG engine_gsl(seed);
 	const unsigned int p(Kold_prior.get_matrix().rows());
 	const std::pair<unsigned int, unsigned int>& changed_link = this->selected_link; //For lighter notation
@@ -683,8 +683,8 @@ ReversibleJumpsMH<GraphType, T>::RJ_new(typename ReversibleJumpsMH<GraphType, T>
 	using Graph = GraphType<T>;
 
 			//std::cout<<"Sono in RJ per i completi "<<std::endl;
-	std::random_device rd;
-	unsigned int seed=rd();
+	//std::random_device rd;
+    unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	sample::GSL_RNG engine_gsl(seed);
 	const unsigned int p(Kold_prior.get_matrix().rows());
 	const std::pair<unsigned int, unsigned int>& changed_link = this->selected_link; //For lighter notation
@@ -816,8 +816,7 @@ ReversibleJumpsMH<GraphType, T>::operator()(MatCol const & data, unsigned int co
 	using Graph = GraphType<T>;
 
 	if(seed==0){
-	  std::random_device rd;
-	  seed=rd();
+    	seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	}
 	std::default_random_engine engine(seed);
 	std::uniform_real_distribution< double > rand(0.,1.);
@@ -1004,8 +1003,8 @@ ReversibleJumpsMH_enableif<GraphStructure, T>::RJ_enableif( typename ReversibleJ
 
 		//std::cout<<"Sono dentro RJ per quelli a blocchi"<<std::endl;
 
-		std::random_device rd;
-	    unsigned int seed=rd();
+		//std::random_device rd;
+	    unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 		sample::GSL_RNG engine_gsl(seed);
 		unsigned int p(Kold_prior.get_matrix().rows());
 					//std::cout<<"p = "<<p<<std::endl;
@@ -1173,8 +1172,8 @@ ReversibleJumpsMH_enableif<GraphStructure, T>::RJ_enableif( typename ReversibleJ
 	using Graph = GraphStructure<T>;
 
 			//std::cout<<"Sono in RJ per i completi "<<std::endl;
-	std::random_device rd;
-	unsigned int seed=rd();
+	//std::random_device rd;
+	unsigned int seed=seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	sample::GSL_RNG engine_gsl(seed);
 	const unsigned int p(Kold_prior.get_matrix().rows());
 	const std::pair<unsigned int, unsigned int>& changed_link = this->selected_link; //For lighter notation
@@ -1298,8 +1297,8 @@ ReversibleJumpsMH_enableif<GraphStructure, T>::RJ_enableif_new( typename Reversi
 
 		//std::cout<<"Sono dentro RJ_new per quelli a blocchi ---> per ora è ancora come RJ"<<std::endl;
 
-		std::random_device rd;
-	    unsigned int seed=rd();
+		//std::random_device rd;
+	    unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 		sample::GSL_RNG engine_gsl(seed);
 		unsigned int p(Kold_prior.get_matrix().rows());
 					//std::cout<<"p = "<<p<<std::endl;
@@ -1474,8 +1473,8 @@ ReversibleJumpsMH_enableif<GraphStructure, T>::RJ_enableif_new( typename Reversi
 	using Graph = GraphStructure<T>;
 
 			//std::cout<<"Sono in RJ per i completi "<<std::endl;
-	std::random_device rd;
-	unsigned int seed=rd();
+	//std::random_device rd;
+	unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	sample::GSL_RNG engine_gsl(seed);
 	const unsigned int p(Kold_prior.get_matrix().rows());
 	const std::pair<unsigned int, unsigned int>& changed_link = this->selected_link; //For lighter notation
@@ -1607,8 +1606,9 @@ ReversibleJumpsMH_enableif<GraphStructure, T>::operator()(MatCol const & data, u
 	using CompleteType = typename GGMTraits<GraphStructure, T>::CompleteType;
 
 	if(seed==0){
-	  std::random_device rd;
-	  seed=rd();
+	  //std::random_device rd;
+	  //seed=rd();
+	  seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	}
 	std::default_random_engine engine(seed);
 	std::uniform_real_distribution< double > rand(0.,1.);

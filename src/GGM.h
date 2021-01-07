@@ -136,8 +136,9 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 	  alpha = 0.5;
 	}
 	if(seed==0){
-	  std::random_device rd;
-	  seed=rd();
+		//std::random_device rd;
+		//seed=rd();
+		seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	}
 	std::default_random_engine engine(seed);
 	std::uniform_real_distribution<double> rand(0.,1.);
