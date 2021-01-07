@@ -45,8 +45,9 @@ namespace sample{
 			GSL_RNG(){
 				gsl_rng_env_setup();
 				r = gsl_rng_alloc(gsl_rng_default);
-				std::random_device rd;
-				seed=rd();
+				//std::random_device rd;
+				//seed=rd();
+				seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
 				gsl_rng_set(r,seed);
 			}
 			~GSL_RNG(){
@@ -58,6 +59,7 @@ namespace sample{
 				printf ("first value = %lu\n", gsl_rng_get(r));
 			}
 			gsl_rng* operator()()const{
+				this->print_info();
 				return r;
 			}
 			inline void set_seed(unsigned int const & s){

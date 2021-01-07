@@ -1010,8 +1010,9 @@ namespace utils{
 		double norm_res{1.0};
 		if(seed == 0){
 			std::cout<<"seed null, lo setto random"<<std::endl;
-			std::random_device rd;
-			seed=rd();
+			//std::random_device rd;
+			//seed=rd();
+			seed=static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
 			std::cout<<"random seed = "<<seed<<std::endl;
 		}
 		sample::GSL_RNG engine(seed);
