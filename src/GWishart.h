@@ -346,14 +346,18 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 		int thread_id;
 		std::vector<double> vec_ss_nonfree;
 		std::vector<double> vec_ss_nonfree_result; //useful for parallel case, does not harm in sequential case (no unuseful copies are done)
+		
+
 		#pragma omp parallel private(thread_id),private(vec_ss_nonfree),shared(vec_ss_nonfree_result)
 		{
 			int n_threads{1};
 			#ifdef PARALLELEXEC
 				n_threads = omp_get_num_threads();
+						//std::cout<<"n_threads = "<<n_threads<<std::endl;
 			#endif
 			vec_ss_nonfree.reserve(MCiteration/n_threads);
 			//Start MC for loop
+
 			for(IdxType iter = 0; iter < MCiteration/n_threads; ++ iter){
 				#ifdef PARALLELEXEC
 				thread_id = omp_get_thread_num();
@@ -511,11 +515,13 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 					vec_ss_nonfree.emplace_back(-0.5*sq_sum_nonfree);
 				}
 			}
+
 									//std::cout<<"vec_ss_nonfree.size() = "<<vec_ss_nonfree.size()<<std::endl;
 			#ifdef PARALLELEXEC
 				#pragma omp barrier
 				#pragma omp critical
 				{
+							//std::cout<<"I'm td number #"<<omp_get_thread_num()<<std::endl;
 					vec_ss_nonfree_result.insert(vec_ss_nonfree_result.end(), 
 												 std::make_move_iterator(vec_ss_nonfree.begin()), std::make_move_iterator(vec_ss_nonfree.end())
 												);

@@ -3,6 +3,7 @@
 
 #include "GGM.h"
 
+/*
 //This is for block graphs
 template<template <typename> class GraphStructure = GraphType, typename T = unsigned int >
 class ReversibleJumpsMH : public GGM<GraphStructure, T> {
@@ -471,10 +472,10 @@ ReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsigned i
 	//3) Compute acceptance probability ratio
 	PrecisionType& Kold_prior = this->Kprior; //lighter notation to avoid this every time
 	double log_GraphPr_ratio(this->ptr_prior->log_ratio(Gnew, Gold));
-	/*
-	double log_GWishPrConst_ratio(Kold_prior.log_normalizing_constat(Gold.completeview(),MCiterPrior, seed) - 
-								  Knew_prior.log_normalizing_constat(Gnew_complete,MCiterPrior, seed) );
-	*/
+	//
+	//double log_GWishPrConst_ratio(Kold_prior.log_normalizing_constat(Gold.completeview(),MCiterPrior, seed) - 
+								  //Knew_prior.log_normalizing_constat(Gnew_complete,MCiterPrior, seed) );
+	//
 	double const_old = 	Kold_prior.log_normalizing_constat(Gold_complete,MCiterPrior, seed);						  
 	double const_new = 	Knew_prior.log_normalizing_constat(Gnew_complete,MCiterPrior, seed);	
 	if(const_new < std::numeric_limits<double>::min()){
@@ -913,7 +914,7 @@ ReversibleJumpsMH<GraphType, T>::operator()(MatCol const & data, unsigned int co
 	//It is easier to use the free function becuase the inv_scale matrix has to be factorized for sure.
 	//If the move is accepted, Gold is the new graph
 }
-
+*/
 
 //--------------------------------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------------------------------------------------------------------------------------------------
@@ -942,7 +943,7 @@ ReversibleJumpsMH<GraphType, T>::operator()(MatCol const & data, unsigned int co
 
 
 template<template <typename> class GraphStructure = GraphType, typename T = unsigned int >
-class ReversibleJumpsMH_enableif : public GGM<GraphStructure, T> {
+class ReversibleJumpsMH : public GGM<GraphStructure, T> {
 	public:
 		//Typedefs
 		using IdxType  	  		= typename GGMTraits<GraphStructure, T>::IdxType;
@@ -961,28 +962,28 @@ class ReversibleJumpsMH_enableif : public GGM<GraphStructure, T> {
 		using PrecisionType     = typename GGMTraits<GraphStructure, T>::PrecisionType;
 		using ReturnType 		= typename GGMTraits<GraphStructure, T>::ReturnType;
 		//Constructors
-		ReversibleJumpsMH_enableif(	PriorPtr& _ptr_prior,double const & _b , MatCol const & _D, double const & _trGwishSampler, double const & _sigma, 
+		ReversibleJumpsMH(	PriorPtr& _ptr_prior,double const & _b , MatCol const & _D, double const & _trGwishSampler, double const & _sigma, 
 						  			unsigned int const & _MCiterPrior = 100):
 						  			GGM<GraphStructure, T>(_ptr_prior, _b, _D, _trGwishSampler), sigma(_sigma), MCiterPrior(_MCiterPrior) {}
-		ReversibleJumpsMH_enableif(	PriorPtr& _ptr_prior,unsigned int const & _p, double const & _trGwishSampler, double const & _sigma, 
+		ReversibleJumpsMH(	PriorPtr& _ptr_prior,unsigned int const & _p, double const & _trGwishSampler, double const & _sigma, 
 									unsigned int const & _MCiterPrior = 100 ):
 						  			GGM<GraphStructure, T>(_ptr_prior, _p, _trGwishSampler), sigma(_sigma), MCiterPrior(_MCiterPrior) {}
 		//Methods
 		template< template <typename> class GG = GraphStructure, typename TT = T,
 					std::enable_if_t< internal_type_traits::isBlockGraph<GG,TT>::value , TT> =0  > //BlockGraph case						  			
-		std::tuple<PrecisionType, double, double> RJ_enableif(CompleteType const & Gnew_CompleteView, PrecisionType& Kold_prior, MoveType Move);
+		std::tuple<PrecisionType, double, double> RJ(CompleteType const & Gnew_CompleteView, PrecisionType& Kold_prior, MoveType Move);
 		
 		template< template <typename> class GG = GraphStructure, typename TT = T,
 					std::enable_if_t< internal_type_traits::isCompleteGraph<GG,TT>::value , TT> =0  > //CompleteGraphs case
-		std::tuple<PrecisionType, double, double> RJ_enableif(CompleteType const & Gnew, PrecisionType& Kold_prior, MoveType Move);
+		std::tuple<PrecisionType, double, double> RJ(CompleteType const & Gnew, PrecisionType& Kold_prior, MoveType Move);
 		
 		template< template <typename> class GG = GraphStructure, typename TT = T,
 					std::enable_if_t< internal_type_traits::isBlockGraph<GG,TT>::value , TT> =0  > //BlockGraph case
-		std::tuple<PrecisionType, double, double> RJ_enableif_new(CompleteType const & Gnew_CompleteView, PrecisionType& Kold_prior, MoveType Move);
+		std::tuple<PrecisionType, double, double> RJ_new(CompleteType const & Gnew_CompleteView, PrecisionType& Kold_prior, MoveType Move);
 
 		template< template <typename> class GG = GraphStructure, typename TT = T,
 					std::enable_if_t< internal_type_traits::isCompleteGraph<GG,TT>::value , TT> =0  > //CompleteGraphs case
-		std::tuple<PrecisionType, double, double> RJ_enableif_new(CompleteType const & Gnew, PrecisionType& Kold_prior, MoveType Move);
+		std::tuple<PrecisionType, double, double> RJ_new(CompleteType const & Gnew, PrecisionType& Kold_prior, MoveType Move);
 	
 		ReturnType operator()(MatCol const & data, unsigned int const & n, Graph & Gold, double alpha, unsigned int seed = 0);
 	protected:
@@ -993,9 +994,9 @@ class ReversibleJumpsMH_enableif : public GGM<GraphStructure, T> {
 
 template<template <typename> class GraphStructure, typename T>
 template< template <typename> class GG, typename TT, std::enable_if_t< internal_type_traits::isBlockGraph<GG,TT>::value , TT> > //BlockGraphs
-std::tuple<typename ReversibleJumpsMH_enableif<GraphStructure, T>::PrecisionType, double, double>
-ReversibleJumpsMH_enableif<GraphStructure, T>::RJ_enableif( typename ReversibleJumpsMH_enableif<GraphStructure, T>::CompleteType const & Gnew_CompleteView,
-										 				    typename ReversibleJumpsMH_enableif<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move)
+std::tuple<typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType, double, double>
+ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStructure, T>::CompleteType const & Gnew_CompleteView,
+										 				    typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move)
 {
 		using Graph 		= GraphStructure<T>;
 		using Container		= std::vector< std::pair<unsigned int, unsigned int> >;
@@ -1159,15 +1160,15 @@ ReversibleJumpsMH_enableif<GraphStructure, T>::RJ_enableif( typename ReversibleJ
 				//std::cout<<"Constant term : "<<static_cast<double>(L.size())*(0.5*utils::log_2pi + std::log(std::abs(this->sigma)))<<std::endl;
 		log_element_proposal += static_cast<double>(L.size())*(0.5*utils::log_2pi + std::log(std::abs(this->sigma)));
 		return std::make_tuple( 
-				PrecisionType (Phi_new.template triangularView<Eigen::Upper>(), Kold_prior.get_shape(), Kold_prior.get_inv_scale(), Kold_prior.get_chol_invD() ),
+				PrecisionType (Phi_new, Kold_prior.get_shape(), Kold_prior.get_inv_scale(), Kold_prior.get_chol_invD() ),
 				log_element_proposal, log_jacobian );
 }
 
 template<template <typename> class GraphStructure, typename T>
 template< template <typename> class GG, typename TT, std::enable_if_t< internal_type_traits::isCompleteGraph<GG,TT>::value , TT> > //CompleteGraphs
-std::tuple<typename ReversibleJumpsMH_enableif<GraphStructure, T>::PrecisionType, double, double>
-ReversibleJumpsMH_enableif<GraphStructure, T>::RJ_enableif( typename ReversibleJumpsMH_enableif<GraphStructure, T>::CompleteType const & Gnew,
-										 				    typename ReversibleJumpsMH_enableif<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move)
+std::tuple<typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType, double, double>
+ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStructure, T>::CompleteType const & Gnew,
+										 				    typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move)
 {
 	using Graph = GraphStructure<T>;
 
@@ -1287,15 +1288,15 @@ ReversibleJumpsMH_enableif<GraphStructure, T>::RJ_enableif( typename ReversibleJ
 
 template<template <typename> class GraphStructure, typename T>
 template< template <typename> class GG, typename TT, std::enable_if_t< internal_type_traits::isBlockGraph<GG,TT>::value , TT> > //BlockGraphs
-std::tuple<typename ReversibleJumpsMH_enableif<GraphStructure, T>::PrecisionType, double, double>
-ReversibleJumpsMH_enableif<GraphStructure, T>::RJ_enableif_new( typename ReversibleJumpsMH_enableif<GraphStructure, T>::CompleteType const & Gnew_CompleteView,
-										 				   		typename ReversibleJumpsMH_enableif<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move)
+std::tuple<typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType, double, double>
+ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphStructure, T>::CompleteType const & Gnew_CompleteView,
+										 				   		typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move)
 {
 		using Graph 		= GraphStructure<T>;
 		using Container		= std::vector< std::pair<unsigned int, unsigned int> >;
 		using Citerator 	= Container::const_iterator;
 
-		//std::cout<<"Sono dentro RJ_new per quelli a blocchi ---> per ora è ancora come RJ"<<std::endl;
+			//std::cout<<"Sono dentro RJ_new per quelli a blocchi "<<std::endl;
 
 		//std::random_device rd;
 	    unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
@@ -1466,13 +1467,13 @@ ReversibleJumpsMH_enableif<GraphStructure, T>::RJ_enableif_new( typename Reversi
 
 template<template <typename> class GraphStructure, typename T>
 template< template <typename> class GG, typename TT, std::enable_if_t< internal_type_traits::isCompleteGraph<GG,TT>::value , TT> > //CompleteGraphs
-std::tuple<typename ReversibleJumpsMH_enableif<GraphStructure, T>::PrecisionType, double, double>
-ReversibleJumpsMH_enableif<GraphStructure, T>::RJ_enableif_new( typename ReversibleJumpsMH_enableif<GraphStructure, T>::CompleteType const & Gnew,
-										 				    	typename ReversibleJumpsMH_enableif<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move)
+std::tuple<typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType, double, double>
+ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphStructure, T>::CompleteType const & Gnew,
+										 				    	typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move)
 {
 	using Graph = GraphStructure<T>;
 
-			//std::cout<<"Sono in RJ per i completi "<<std::endl;
+			//std::cout<<"Sono in RJ new per i completi "<<std::endl;
 	//std::random_device rd;
 	unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 	sample::GSL_RNG engine_gsl(seed);
@@ -1596,8 +1597,8 @@ ReversibleJumpsMH_enableif<GraphStructure, T>::RJ_enableif_new( typename Reversi
 
 
 template< template <typename> class GraphStructure , typename T >
-typename ReversibleJumpsMH_enableif<GraphStructure, T>::ReturnType
-ReversibleJumpsMH_enableif<GraphStructure, T>::operator()(MatCol const & data, unsigned int const & n, 
+typename ReversibleJumpsMH<GraphStructure, T>::ReturnType
+ReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsigned int const & n, 
 										  	     		  typename GGMTraits<GraphStructure, T>::Graph & Gold,  
 										         		  double alpha, unsigned int seed)
 {
