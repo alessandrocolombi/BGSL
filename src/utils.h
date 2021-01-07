@@ -1012,8 +1012,11 @@ namespace utils{
 			std::cout<<"seed null, lo setto random"<<std::endl;
 			std::random_device rd;
 			seed=rd();
+			std::cout<<"random seed = "<<seed<<std::endl;
 		}
 		sample::GSL_RNG engine(seed);
+		std::cout<<"info engine = "<<std::endl;
+		engine.print_info();
 		sample::rchisq  rchisq;
 
 		//Step 0: If the Graph is empty, sample only diagonal values and return.
