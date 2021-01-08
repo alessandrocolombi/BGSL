@@ -52,6 +52,7 @@ namespace sample{
 				//seed=rd();
 				seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
 				gsl_rng_set(r,seed);
+				this->print_info();
 			}
 			~GSL_RNG(){
 				gsl_rng_free(r);
