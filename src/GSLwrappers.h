@@ -50,7 +50,11 @@ namespace sample{
 				r = gsl_rng_alloc(gsl_rng_default);
 				//std::random_device rd;
 				//seed=rd();
-				seed = static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
+				seed = static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count());
+				std::seed_seq seq = {seed};
+				std::vector<unsigned int> seeds(1);
+				seq.generate(seeds.begin(), seeds.end());
+				seed = seeds[0];
 				gsl_rng_set(r,seed);
 				this->print_info();
 			}

@@ -1609,7 +1609,8 @@ ReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsigned i
 	if(seed==0){
 	  //std::random_device rd;
 	  //seed=rd();
-	  seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+	  seed=static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count());
+	  //std::cout<<"seed = "<<seed<<std::endl;
 	}
 	std::default_random_engine engine(seed);
 	std::uniform_real_distribution< double > rand(0.,1.);
