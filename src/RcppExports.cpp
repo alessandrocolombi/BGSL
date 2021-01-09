@@ -150,8 +150,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // FLM_sampling_c
-Rcpp::List FLM_sampling_c(Eigen::MatrixXd const& data, int const& niter, int const& burnin, double const& thin, Eigen::MatrixXd const& BaseMat, Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, bool diagonal_graph, double const& threshold_GWish, bool print_info);
-RcppExport SEXP _BGSL_FLM_sampling_c(SEXP dataSEXP, SEXP niterSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP BaseMatSEXP, SEXP GSEXP, SEXP diagonal_graphSEXP, SEXP threshold_GWishSEXP, SEXP print_infoSEXP) {
+Rcpp::List FLM_sampling_c(Eigen::MatrixXd const& data, int const& niter, int const& burnin, double const& thin, Eigen::MatrixXd const& BaseMat, Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, bool diagonal_graph, double const& threshold_GWish, int seed, bool print_info);
+RcppExport SEXP _BGSL_FLM_sampling_c(SEXP dataSEXP, SEXP niterSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP BaseMatSEXP, SEXP GSEXP, SEXP diagonal_graphSEXP, SEXP threshold_GWishSEXP, SEXP seedSEXP, SEXP print_infoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -163,8 +163,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> >::type G(GSEXP);
     Rcpp::traits::input_parameter< bool >::type diagonal_graph(diagonal_graphSEXP);
     Rcpp::traits::input_parameter< double const& >::type threshold_GWish(threshold_GWishSEXP);
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
     Rcpp::traits::input_parameter< bool >::type print_info(print_infoSEXP);
-    rcpp_result_gen = Rcpp::wrap(FLM_sampling_c(data, niter, burnin, thin, BaseMat, G, diagonal_graph, threshold_GWish, print_info));
+    rcpp_result_gen = Rcpp::wrap(FLM_sampling_c(data, niter, burnin, thin, BaseMat, G, diagonal_graph, threshold_GWish, seed, print_info));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -185,8 +186,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // rmvnormal
-Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> rmvnormal(Eigen::VectorXd mean, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> Mat, bool isPrec, bool isChol, bool isUpper);
-RcppExport SEXP _BGSL_rmvnormal(SEXP meanSEXP, SEXP MatSEXP, SEXP isPrecSEXP, SEXP isCholSEXP, SEXP isUpperSEXP) {
+Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> rmvnormal(Eigen::VectorXd mean, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> Mat, bool isPrec, bool isChol, bool isUpper, int seed);
+RcppExport SEXP _BGSL_rmvnormal(SEXP meanSEXP, SEXP MatSEXP, SEXP isPrecSEXP, SEXP isCholSEXP, SEXP isUpperSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -195,13 +196,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type isPrec(isPrecSEXP);
     Rcpp::traits::input_parameter< bool >::type isChol(isCholSEXP);
     Rcpp::traits::input_parameter< bool >::type isUpper(isUpperSEXP);
-    rcpp_result_gen = Rcpp::wrap(rmvnormal(mean, Mat, isPrec, isChol, isUpper));
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(rmvnormal(mean, Mat, isPrec, isChol, isUpper, seed));
     return rcpp_result_gen;
 END_RCPP
 }
 // rwishart
-Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> rwishart(double const& b, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> D, bool isChol, bool isUpper);
-RcppExport SEXP _BGSL_rwishart(SEXP bSEXP, SEXP DSEXP, SEXP isCholSEXP, SEXP isUpperSEXP) {
+Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> rwishart(double const& b, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> D, bool isChol, bool isUpper, int seed);
+RcppExport SEXP _BGSL_rwishart(SEXP bSEXP, SEXP DSEXP, SEXP isCholSEXP, SEXP isUpperSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -209,19 +211,21 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> >::type D(DSEXP);
     Rcpp::traits::input_parameter< bool >::type isChol(isCholSEXP);
     Rcpp::traits::input_parameter< bool >::type isUpper(isUpperSEXP);
-    rcpp_result_gen = Rcpp::wrap(rwishart(b, D, isChol, isUpper));
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(rwishart(b, D, isChol, isUpper, seed));
     return rcpp_result_gen;
 END_RCPP
 }
 // rnormal
-double rnormal(double const& mean, double const& sd);
-RcppExport SEXP _BGSL_rnormal(SEXP meanSEXP, SEXP sdSEXP) {
+double rnormal(double const& mean, double const& sd, int seed);
+RcppExport SEXP _BGSL_rnormal(SEXP meanSEXP, SEXP sdSEXP, SEXP seedSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< double const& >::type mean(meanSEXP);
     Rcpp::traits::input_parameter< double const& >::type sd(sdSEXP);
-    rcpp_result_gen = Rcpp::wrap(rnormal(mean, sd));
+    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
+    rcpp_result_gen = Rcpp::wrap(rnormal(mean, sd, seed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -319,11 +323,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BGSL_log_Gconstant2", (DL_FUNC) &_BGSL_log_Gconstant2, 6},
     {"_BGSL_GGM_sim_sampling", (DL_FUNC) &_BGSL_GGM_sim_sampling, 20},
     {"_BGSL_GGM_sampling_c", (DL_FUNC) &_BGSL_GGM_sampling_c, 20},
-    {"_BGSL_FLM_sampling_c", (DL_FUNC) &_BGSL_FLM_sampling_c, 9},
+    {"_BGSL_FLM_sampling_c", (DL_FUNC) &_BGSL_FLM_sampling_c, 10},
     {"_BGSL_Create_RandomGraph", (DL_FUNC) &_BGSL_Create_RandomGraph, 6},
-    {"_BGSL_rmvnormal", (DL_FUNC) &_BGSL_rmvnormal, 5},
-    {"_BGSL_rwishart", (DL_FUNC) &_BGSL_rwishart, 4},
-    {"_BGSL_rnormal", (DL_FUNC) &_BGSL_rnormal, 2},
+    {"_BGSL_rmvnormal", (DL_FUNC) &_BGSL_rmvnormal, 6},
+    {"_BGSL_rwishart", (DL_FUNC) &_BGSL_rwishart, 5},
+    {"_BGSL_rnormal", (DL_FUNC) &_BGSL_rnormal, 3},
     {"_BGSL_Generate_Basis", (DL_FUNC) &_BGSL_Generate_Basis, 5},
     {"_BGSL_Generate_Basis_derivatives", (DL_FUNC) &_BGSL_Generate_Basis_derivatives, 6},
     {"_BGSL_Compute_QuantileBeta", (DL_FUNC) &_BGSL_Compute_QuantileBeta, 3},

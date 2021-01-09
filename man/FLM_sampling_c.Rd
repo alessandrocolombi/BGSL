@@ -13,6 +13,7 @@ FLM_sampling_c(
   G,
   diagonal_graph = TRUE,
   threshold_GWish = 1e-08,
+  seed = 0L,
   print_info = TRUE
 )
 }

@@ -447,7 +447,7 @@ namespace utils{
 		}
 	}; //returns sum_ij( |a_ij - b_ij| )/N*N
 
-	//Old and not updated
+	//Old and not updated --> DO NOT USE IT
 	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
 	//(old and well tested version)
  	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, typename NormType = MeanNorm >
@@ -609,7 +609,7 @@ namespace utils{
 		//Omega = Omega.selfadjointView<Eigen::Upper>();
 		//return Omega.inverse();
 	}
-	//Old and not updated
+	//Old and not updated --> DO NOT USE IT
 	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
  	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, typename NormType = MeanNorm >
  	MatRow rgwish3(GraphStructure<T> const & G, double const & b, Eigen::MatrixXd const & D, double const & threshold = 1e-8,unsigned int seed = 0){
@@ -787,7 +787,7 @@ namespace utils{
 		//return Omega.inverse();
 	}
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
-	//Old and not updated
+	//Old and not updated --> DO NOT USE IT
 	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
 	//This functions returns also if convergence was reached and the number of iterations
 	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, typename NormType = MeanNorm >
@@ -982,8 +982,9 @@ namespace utils{
 				ScaleForm form = ScaleForm::InvScale, typename NormType = MeanNorm > //Templete parametes
 	std::tuple< MatRow, bool, int>  //Return type
 	rgwish_core( GraphStructure<T> const & G, double const & b, Eigen::MatrixXd & D, double const & threshold = 1e-8,
-				 unsigned int seed = 0, unsigned int const & max_iter = 500 )
+				 sample::GSL_RNG const & engine = sample::GSL_RNG(), unsigned int const & max_iter = 500 )
 	{
+
 		//Typedefs
 		using Graph 	= GraphStructure<T>;
 		using MatRow  	= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
@@ -992,10 +993,6 @@ namespace utils{
 		using iterator  = std::vector<unsigned int>::iterator;
 		using citerator = std::vector<unsigned int>::const_iterator;
 		//Checks
-		/*
-		static_assert(	std::is_same_v<Graph, GraphType<T> > || std::is_same_v<Graph, CompleteView<T> > || std::is_same_v<Graph, CompleteViewAdj<T> >,
-						"Error, rgwish requires a Complete graph for the sampling. The only possibilities are GraphType, CompleteViewAdj, CompleteView.");
-		*/
 		static_assert(	internal_type_traits::isCompleteGraph<GraphStructure,T>::value,
 						"___ERROR:_RGWISH_FUNCTION_REQUIRES_IN_INPUT_A_GRAPH_IN_COMPLETE_FORM. HINT -> EVERY_GRAPH_SHOULD_PROVIDE_A_METHOD_CALLED completeview() THAT_CONVERTS_IT_IN_THE_COMPLETE_FORM");				
 		
@@ -1011,12 +1008,12 @@ namespace utils{
 		bool converged = false;
 		unsigned int it{0};
 		double norm_res{1.0};
-		if(seed == 0){
-			seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-		}
-		sample::GSL_RNG engine(seed);
-				//std::cout<<"info engine = "<<std::endl;
-				//engine.print_info();
+								//if(seed == 0){
+									//seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+								//}
+								//sample::GSL_RNG engine(seed);
+										//std::cout<<"info engine = "<<std::endl;
+										//engine.print_info();
 		sample::rchisq  rchisq;
 
 		//Step 0: If the Graph is empty, sample only diagonal values and return.
@@ -1175,7 +1172,7 @@ namespace utils{
 								//beta_i = SymMatMult(Omega_noti_noti, beta_hat_i);
 								//std::cout<<"beta_i (old) : "<<std::endl<<beta_i<<std::endl;
 						beta_i = View_ExcMult(i, Omega, beta_hat_i);
-								//std::cout<<"beta_i (new): "<<std::endl<<beta_i<<std::endl;
+								//std::cout<<"beta_i: "<<std::endl<<beta_i<<std::endl;
 				}
 				//Plug beta_i into the i-th row / col except from diagonal element
 				if(i == 0)//plug in first row (no first element)
@@ -1219,9 +1216,9 @@ namespace utils{
  	template<	template <typename> class GraphStructure = GraphType, typename T = unsigned int, 
 				ScaleForm form = ScaleForm::InvScale, typename NormType = MeanNorm > //Templete parametes
 	MatRow rgwish( GraphStructure<T> const & G, double const & b, Eigen::MatrixXd & D, double const & threshold = 1e-8,
-				 	unsigned int seed = 0, unsigned int const & max_iter = 500 )
+				 	sample::GSL_RNG const & engine = sample::GSL_RNG(), unsigned int const & max_iter = 500 )
  	{
- 		auto [Prec, conv, n_it] = rgwish_core<GraphStructure,T,form,NormType>(G,b,D,threshold,seed,max_iter);
+ 		auto [Prec, conv, n_it] = rgwish_core<GraphStructure,T,form,NormType>(G,b,D,threshold,engine,max_iter);
  		return Prec;
  	}
  	
@@ -1232,11 +1229,11 @@ namespace utils{
  	//The purpose of build_rgwish_function() is to select the correct type of call deciding runtime. The structure of the graph is still a templete parameter.
  	using rgwishRetType = std::tuple< MatRow, bool, int>;
  	template <template <typename> class GraphStructure, typename T>
- 	using rgwish_function = std::function<rgwishRetType(GraphStructure<T> const &, double const &,Eigen::MatrixXd &, double const &,unsigned int, unsigned int const &)>;
+ 	using rgwish_function = std::function<rgwishRetType(GraphStructure<T> const &, double const &,Eigen::MatrixXd &, double const &, sample::GSL_RNG const &, unsigned int const &)>;
  	//Usage:
  	// auto rgwish_fun = utils::build_rgwish_function<CompleteView, unsigned int>(form, norm);
  	// auto rgwish_fun = utils::build_rgwish_function<GraphType, unsigned int>(form, norm);
- 	// auto [Mat, converged, iter] = rgwish_fun(Graph.completeview(), b, D, threshold, seed, max_iter);
+ 	// auto [Mat, converged, iter] = rgwish_fun(Graph.completeview(), b, D, threshold, engine, max_iter);
  	template<template <typename> class GraphStructure = GraphType, typename T = unsigned int>
  	rgwish_function<GraphStructure,T> build_rgwish_function(std::string const & form, std::string const & norm)
  	{
@@ -1343,7 +1340,8 @@ namespace utils{
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 	//GraphStructure may be GraphType / CompleteViewAdj / CompleteView
 	template<template <typename> class GraphStructure = GraphType, typename Type = unsigned int >
-	long double log_normalizing_constat(GraphStructure<Type> const & G, double const & b, Eigen::MatrixXd const & D, unsigned int const & MCiteration, unsigned int seed = 0)
+	long double log_normalizing_constat(GraphStructure<Type> const & G, double const & b, Eigen::MatrixXd const & D, unsigned int const & MCiteration, 
+										sample::GSL_RNG const & engine = sample::GSL_RNG())
 	{
 		//Typedefs
 		using Graph 	  = GraphStructure<Type>;
@@ -1376,12 +1374,12 @@ namespace utils{
 		const long double min_numeric_limits_ld = std::numeric_limits<long double>::min() * 1000;
 		unsigned int number_nan{0};
 		long double result_MC{0};
-		if(seed == 0){
-			//std::random_device rd;
-			//seed=rd();
-			seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-		}
-		sample::GSL_RNG engine(seed);
+									//if(seed == 0){
+										////std::random_device rd;
+										////seed=rd();
+										//seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+									//}
+									//sample::GSL_RNG engine(seed);
 		sample::rnorm rnorm;
 		sample::rchisq rchisq;
 		//Start
@@ -1925,16 +1923,12 @@ namespace utils{
 
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 
+	//seed == 0 case in now directly handled in GSL_RNG constructor
 	std::tuple<MatCol, MatCol, VecCol, double, MatRow, std::vector<bool> > 
 	SimulateData_Block(unsigned int const & p, unsigned int const & n, unsigned int const & r,
 					   MatCol const & BaseMat, BlockGraph<bool> & G,  unsigned int seed = 0)
 	{
 	
-		if(seed==0){
-		  //std::random_device rd;
-		  //seed=rd();
-		  seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-		}
 		sample::GSL_RNG engine(seed);
 		sample::rmvnorm rmv; //Covariance parametrization
 		MatRow Ip(MatRow::Identity(p,p));
@@ -1943,7 +1937,7 @@ namespace utils{
 				//std::cout<<"G:"<<std::endl<<G<<std::endl;
 		//Precision
 		MatCol Icol(MatCol::Identity(p,p));
-		MatRow K = utils::rgwish(G.completeview(), 3.0, Icol, 1e-14,seed,500);
+		MatRow K = utils::rgwish(G.completeview(), 3.0, Icol, 1e-14,engine,500);
 				//std::cout<<"K:"<<std::endl<<K<<std::endl;
 		//mu
 		VecCol mu(VecCol::Zero(p));
@@ -1989,11 +1983,6 @@ namespace utils{
 					  	  MatCol const & BaseMat, GraphType<bool> & G, unsigned int seed = 0)
 	{
 
-		if(seed==0){
-			//std::random_device rd;
-			//seed=rd();
-			seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-		}
 		sample::GSL_RNG engine(seed);
 		sample::rmvnorm rmv; //Covariance parametrization
 		MatRow Ip(MatRow::Identity(p,p));
@@ -2002,7 +1991,7 @@ namespace utils{
 		
 				//std::cout<<"G:"<<std::endl<<G<<std::endl;
 		//Precision
-		MatRow K = utils::rgwish(G.completeview(), 3.0, Ip_col, 1e-14,seed);
+		MatRow K = utils::rgwish(G.completeview(), 3.0, Ip_col, 1e-14,engine);
 				//std::cout<<"K:"<<std::endl<<K<<std::endl;
 		//mu
 		VecCol mu(VecCol::Zero(p));
@@ -2053,17 +2042,21 @@ namespace utils{
 	SimulateDataGGM_Block(unsigned int const & p, unsigned int const & n, BlockGraph<bool> & G, unsigned int seed = 0, bool mean_null = true)
 	{
 	
-		if(seed==0){
-			//std::random_device rd;
-			//seed=rd();
-			seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-		}
+		//if(seed==0){
+			////std::random_device rd;
+			////seed=rd();
+			//seed = static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count());
+			//std::seed_seq seq = {seed}; //seed provived here has to be random. Than std::seed_seq adds entropy becasuse steady_clock is not sufficientyl widespread
+			//std::vector<unsigned int> seeds(1);
+			//seq.generate(seeds.begin(), seeds.end());
+			//seed = seeds[0];
+		//}
 		sample::GSL_RNG engine(seed);
 		sample::rmvnorm_prec<sample::isChol::False> rmv; //Precision parametrization
 				//std::cout<<"G:"<<std::endl<<G<<std::endl;
 		//Precision
 		MatCol Icol(MatCol::Identity(p,p));
-		MatRow K = utils::rgwish(G.completeview(), 3.0, Icol,1e-14,seed);
+		MatRow K = utils::rgwish(G.completeview(), 3.0, Icol,1e-14,engine);
 				//std::cout<<"K:"<<std::endl<<K<<std::endl;
 		//mu
 		VecCol mu(VecCol::Zero(p));
@@ -2104,17 +2097,21 @@ namespace utils{
 	std::tuple<MatCol, MatRow, std::vector<bool> > 
 	SimulateDataGGM_Complete(unsigned int const & p, unsigned int const & n, GraphType<bool> & G, unsigned int seed = 0, bool mean_null = true)
 	{
-		if(seed==0){
-			//std::random_device rd;
-			//seed=rd();
-			seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-		}
+		//if(seed==0){
+			////std::random_device rd;
+			////seed=rd();
+			//seed = static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count());
+			//std::seed_seq seq = {seed}; //seed provived here has to be random. Than std::seed_seq adds entropy becasuse steady_clock is not sufficientyl widespread
+			//std::vector<unsigned int> seeds(1);
+			//seq.generate(seeds.begin(), seeds.end());
+			//seed = seeds[0];
+		//}
 		sample::GSL_RNG engine(seed);
 		sample::rmvnorm_prec<sample::isChol::False> rmv; //Precision parametrization
 				//std::cout<<"G:"<<std::endl<<G<<std::endl;
 		//Precision
 		MatCol Icol(MatCol::Identity(p,p));
-		MatRow K = utils::rgwish(G, 3.0, Icol, 1e-14, seed);
+		MatRow K = utils::rgwish(G, 3.0, Icol, 1e-14, engine);
 				//std::cout<<"K:"<<std::endl<<K<<std::endl;
 		//mu
 		VecCol mu(VecCol::Zero(p));

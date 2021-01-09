@@ -29,7 +29,7 @@ class DoubleReversibleJumpsMH : public ReversibleJumpsMH<GraphStructure, T> {
 		DoubleReversibleJumpsMH(	PriorPtr& _ptr_prior,unsigned int const & _p, double const & _trGwishSampler, double const & _sigma, unsigned int const & _MCiterPrior = 0):
 						 			 ReversibleJumpsMH<GraphStructure, T>(_ptr_prior, _p, _trGwishSampler, _sigma, _MCiterPrior), Waux(_p){}
 		//Methods
-		ReturnType operator()(MatCol const & data, unsigned int const & n, Graph & Gold, double alpha, unsigned int seed = 0);
+		ReturnType operator()(MatCol const & data, unsigned int const & n, Graph & Gold, double alpha, sample::GSL_RNG const & engine = sample::GSL_RNG() );
 	protected:
 		PrecisionType Waux; 
 };
@@ -41,20 +41,21 @@ template< template <typename> class GraphStructure , typename T >
 typename DoubleReversibleJumpsMH<GraphStructure, T>::ReturnType
 DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsigned int const & n, 
 										  	    	   typename GGMTraits<GraphStructure, T>::Graph & Gold,  
-										         	   double alpha, unsigned int seed)
+										         	   double alpha, sample::GSL_RNG const & engine )
 {
 	//std::cout<<"Sono dentro DoubleReversibleJumpsMH"<<std::endl;
 	//std::cout<<"  "<<std::endl;
-	if(seed==0){
-		//std::random_device rd;
-		//seed=rd();
-		seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-	}
-	std::default_random_engine engine(seed);
-	std::uniform_real_distribution< double > rand(0.,1.);
+			//if(seed==0){
+				////std::random_device rd;
+				////seed=rd();
+				//seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+			//}
+			//std::default_random_engine engine(seed);
+			//std::uniform_real_distribution< double > rand(0.,1.);
+	sample::runif rand;
 	double log_acceptance_ratio{0}; 
 	//1) Propose a new graph
-	auto [Gnew, log_GraphMove_proposal, mv_type] = this->propose_new_graph(Gold, alpha, seed);
+	auto [Gnew, log_GraphMove_proposal, mv_type] = this->propose_new_graph(Gold, alpha, engine);
 	MoveType inverse_mv_type;
 	(mv_type == MoveType::Add) ? (inverse_mv_type = MoveType::Remove) : (inverse_mv_type = MoveType::Add);
 				//if(mv_type == MoveType::Add)
@@ -67,18 +68,18 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 	CompleteType Gnew_complete(Gnew.completeview());
 	CompleteType Gold_complete(Gold.completeview());
 
-	this->Waux.rgwish(Gnew_complete, this->trGwishSampler, seed);
+	this->Waux.rgwish(Gnew_complete, this->trGwishSampler, engine);
 	this->Waux.compute_Chol();
 	//3) Perform the first jump with respect to the actual precision matrix K -> K'
 			//std::cout<<"Salto di K"<<std::endl;
 	//auto [Knew, log_rj_proposal_K, log_jacobian_mv_K ] = this->RJ(Gnew_complete, this->Kprior, mv_type) ;
-	auto [Knew, log_rj_proposal_K, log_jacobian_mv_K ] = this->RJ_new(Gnew_complete, this->Kprior, mv_type) ;
+	auto [Knew, log_rj_proposal_K, log_jacobian_mv_K ] = this->RJ_new(Gnew_complete, this->Kprior, mv_type, engine) ;
 					//std::cout<<"Kold:"<<std::endl<<this->Kprior.get_matrix()<<std::endl;
 					//std::cout<<"Knew:"<<std::endl<<Knew.get_matrix()<<std::endl;
 	//4) Perform the second jump with respect to auxiliary matrix Waux -> W0	
 			//std::cout<<"Salto di W"<<std::endl;
 	//auto [W0, log_rj_proposal_W, log_jacobian_mv_W ] = this->RJ(Gold_complete, this->Waux, inverse_mv_type) ;
-	auto [W0, log_rj_proposal_W, log_jacobian_mv_W ] = this->RJ_new(Gold_complete, this->Waux, inverse_mv_type) ;
+	auto [W0, log_rj_proposal_W, log_jacobian_mv_W ] = this->RJ_new(Gold_complete, this->Waux, inverse_mv_type, engine) ;
 					//std::cout<<"Waux:"<<std::endl<<Waux.get_matrix()<<std::endl;
 					//std::cout<<"W0:"<<std::endl<<W0.get_matrix()<<std::endl;
 
@@ -153,7 +154,7 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 					"QUESTA É LA COSA STRANA");	
 
 	this->Kprior.set_matrix(Gold_complete, 
-		utils::rgwish<CompleteSkeleton, T, utils::ScaleForm::CholUpper_InvScale, utils::MeanNorm>(Gold_complete, this->Kprior.get_shape() + n, this->chol_inv_DplusU , this->trGwishSampler, seed ) ); 
+		utils::rgwish<CompleteSkeleton, T, utils::ScaleForm::CholUpper_InvScale, utils::MeanNorm>(Gold_complete, this->Kprior.get_shape() + n, this->chol_inv_DplusU , this->trGwishSampler, engine ) ); 
 	this->Kprior.compute_Chol();
 	return std::make_tuple(this->Kprior.get_matrix(),accepted);
 	//return std::make_tuple(utils::rgwish(Gold.completeview(), this->Kprior.get_shape(), this->Kprior.get_inv_scale() + data , seed ), accepted );

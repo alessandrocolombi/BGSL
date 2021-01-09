@@ -4,7 +4,14 @@
 \alias{rmvnormal}
 \title{Sampler for Multivariate Normal random variables}
 \usage{
-rmvnormal(mean, Mat, isPrec = FALSE, isChol = FALSE, isUpper = FALSE)
+rmvnormal(
+  mean,
+  Mat,
+  isPrec = FALSE,
+  isChol = FALSE,
+  isUpper = FALSE,
+  seed = 0L
+)
 }
 \arguments{
 \item{mean}{vector of size \code{p} representig the mean of the Gaussian distribution.}

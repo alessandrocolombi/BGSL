@@ -361,7 +361,11 @@ void BlockGraphAdjDyn<T>::fillRandom(double sparsity, unsigned int seed){
   if(seed==0){
     //std::random_device rd;
     //seed=rd();
-    seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+    seed = static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count());
+    std::seed_seq seq = {seed}; //seed provived here has to be random. Than std::seed_seq adds entropy becasuse steady_clock is not sufficientyl widespread
+    std::vector<unsigned int> seeds(1);
+    seq.generate(seeds.begin(), seeds.end());
+    seed = seeds[0];
   }
   // I use the standard engine for random numbers
   std::default_random_engine engine(seed);
@@ -765,7 +769,11 @@ void BlockGraphDyn<T>::fillRandom(double sparsity, unsigned int seed){
   if(seed==0){
     //std::random_device rd;
     //seed=rd();
-    seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+    seed = static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count());
+    std::seed_seq seq = {seed}; //seed provived here has to be random. Than std::seed_seq adds entropy becasuse steady_clock is not sufficientyl widespread
+    std::vector<unsigned int> seeds(1);
+    seq.generate(seeds.begin(), seeds.end());
+    seed = seeds[0];
   }
   // I use the standard engine for random numbers
   std::default_random_engine engine(seed);

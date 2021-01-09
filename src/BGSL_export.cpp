@@ -193,15 +193,14 @@ Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Ei
                   Rcpp::Nullable<Rcpp::List> groups = R_NilValue, bool check_structure = false,
                   unsigned int const & max_iter = 500, long double const & threshold_check = 0.00001, long double const & threshold_conv = 0.00000001, int seed = 0)
 {
-  std::cout<<"max_iter = "<<max_iter<<std::endl;
-  std::cout<<"seed = "<<seed<<std::endl;
+  sample::GSL_RNG engine( static_cast<unsigned int>(seed) );
   if (groups.isNotNull()){ //Assume it is a BlockGraph   
     Rcpp::List L(groups); // casting to underlying type List
     //Rcpp::Rcout << "List is not NULL." << std::endl;
     std::shared_ptr<const Groups> ptr_gr = std::make_shared<const Groups>(L); //Create pointer to groups
     BlockGraph<unsigned int> Graph(G, ptr_gr);
     auto rgwish_fun = utils::build_rgwish_function<CompleteView, unsigned int>(form, norm);
-    auto [Mat, converged, iter] = rgwish_fun(Graph.completeview(), b, D, threshold_conv, (unsigned int)seed, max_iter);
+    auto [Mat, converged, iter] = rgwish_fun(Graph.completeview(), b, D, threshold_conv, engine, max_iter);
     if(check_structure){
       return Rcpp::List::create ( Rcpp::Named("Matrix")= Mat, 
                                   Rcpp::Named("Converged")=converged, 
@@ -219,7 +218,7 @@ Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Ei
     //Rcpp::Rcout << "List is NULL." << std::endl;
     GraphType<unsigned int> Graph(G);
     auto rgwish_fun = utils::build_rgwish_function<GraphType, unsigned int>(form, norm);
-    auto [Mat, converged, iter] = rgwish_fun(Graph.completeview(), b, D, threshold_conv, (unsigned int)seed, max_iter);
+    auto [Mat, converged, iter] = rgwish_fun(Graph.completeview(), b, D, threshold_conv, engine, max_iter);
     if(check_structure){
       return Rcpp::List::create ( Rcpp::Named("Matrix")= Mat, 
                                   Rcpp::Named("Converged")=converged, 
@@ -256,18 +255,19 @@ long double log_Gconstant(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dyn
                           double const & b, Eigen::MatrixXd const & D,  unsigned int const & MCiteration = 100, 
                           Rcpp::Nullable<Rcpp::List> groups = R_NilValue, int seed = 0)
 {
+    sample::GSL_RNG engine( static_cast<unsigned int>(seed) );
     if (groups.isNotNull()){ //Assume it is in block form with respect to the groups given in groups
       
       Rcpp::List L(groups); // casting to underlying type List
       //Rcpp::Rcout << "List is not NULL." << std::endl;
       std::shared_ptr<const Groups> ptr_gr = std::make_shared<const Groups>(L); //Create pointer to groups
       BlockGraph<unsigned int> Graph(G, ptr_gr);
-      return utils::log_normalizing_constat(Graph.completeview(), b, D, MCiteration, seed);
+      return utils::log_normalizing_constat(Graph.completeview(), b, D, MCiteration, engine);
     }
     else{ //Assume it is a BlockGraph
       //Rcpp::Rcout << "List is NULL." << std::endl;
       GraphType<unsigned int> Graph(G);
-      return utils::log_normalizing_constat(Graph.completeview(), b, D, MCiteration, seed);
+      return utils::log_normalizing_constat(Graph.completeview(), b, D, MCiteration, engine);
     }
 }
 
@@ -333,7 +333,7 @@ Rcpp::List GGM_sim_sampling( int const & p, int const & n, int const & niter, in
     auto [data, Prec_true, G_true] = utils::SimulateDataGGM_Complete(p,n,seed);
     GraphType<bool> G_true_mat(G_true);
     //Crete sampler obj
-    GGMsampler  Sampler(data, n, param, hy, init, method,0,print_info);
+    GGMsampler  Sampler(data, n, param, hy, init, method, seed, print_info);
     //Run
     if(print_info){
       Rcpp::Rcout<<"GGM Sampler starts:"<<std::endl; 
@@ -382,7 +382,7 @@ Rcpp::List GGM_sim_sampling( int const & p, int const & n, int const & niter, in
     auto [data, Prec_true, G_true] = utils::SimulateDataGGM_Block(p,n,ptr_gruppi,seed);
     BlockGraph<bool> G_true_mat(G_true, ptr_gruppi);
     //Crete sampler obj
-    GGMsampler<BlockGraph> Sampler(data, n, param, hy, init, method,0,print_info);
+    GGMsampler<BlockGraph> Sampler(data, n, param, hy, init, method, seed, print_info);
     //Run
     if(print_info){
       Rcpp::Rcout<<"GGM Sampler starts:"<<std::endl; 
@@ -448,7 +448,7 @@ Rcpp::List GGM_sim_sampling( int const & p, int const & n, int const & niter, in
 //' @return This function returns a list with the posterior precision mean, a matrix with the probability of inclusion of each link, the number of accepted moves, the number of visited graphs and the list of all visited graphs.
 //' @export 
 // [[Rcpp::export]]
-Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
+Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data, //Devo ancora mettere come settare i valori inizialiiiiiiiiiiiiiiiiiiii
                             int const & p, int const & n, int const & niter, int const & burnin, double const & thin, 
                             Eigen::MatrixXd D, 
                             double const & b = 3.0, int const & MCprior = 100, int const & MCpost = 100, double const & threshold = 0.00000001,
@@ -473,7 +473,7 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
     //Select the method to be used
     auto method = SelectMethod_Generic<GraphType, unsigned>(prior, algo, hy, param);
     //Crete sampler obj
-    GGMsampler  Sampler(data, n, param, hy, init, method,0,print_info);
+    GGMsampler  Sampler(data, n, param, hy, init, method, seed, print_info);
     //Run
     if(print_info){
       Rcpp::Rcout<<"GGM Sampler starts:"<<std::endl; 
@@ -518,14 +518,16 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
     std::shared_ptr<const Groups> ptr_gruppi = std::make_shared<const Groups>(gr); 
     param.ptr_groups = ptr_gruppi;
     Init<BlockGraph,  unsigned int> init(n,p, ptr_gruppi);
+    /*
     BlockGraph<unsigned int> G0(ptr_gruppi);
     G0.fillRandom();
     MatRow K0(utils::rgwish(G0.completeview(),b,D,1e-16));
     init.set_init(K0,G0);
+    */
     //Select the method to be used
     auto method = SelectMethod_Generic<BlockGraph, unsigned int>(prior, algo, hy, param);
     //Crete sampler obj
-    GGMsampler<BlockGraph> Sampler(data, n, param, hy, init, method,0,print_info);
+    GGMsampler<BlockGraph> Sampler(data, n, param, hy, init, method, seed, print_info);
     //Run
     if(print_info){
       Rcpp::Rcout<<"Block GGM Sampler starts:"<<std::endl; 
@@ -577,7 +579,7 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
 Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int const & burnin, double const & thin, Eigen::MatrixXd const & BaseMat,
                         Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
                         bool diagonal_graph = true, 
-                        double const & threshold_GWish = 0.00000001, bool print_info = true)
+                        double const & threshold_GWish = 0.00000001, int seed = 0, bool print_info = true)
 {
   const unsigned int p = BaseMat.cols();
   const unsigned int n = data.cols();
@@ -589,7 +591,7 @@ Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
     FLMHyperparameters hy(p);
     FLMParameters param(niter, burnin, thin, BaseMat);
     InitFLM init(n,p);
-    FLMsampler<GraphForm::Diagonal> Sampler(data, param, hy, init, 0, print_info);
+    FLMsampler<GraphForm::Diagonal> Sampler(data, param, hy, init, seed, print_info);
     //Run
     auto start = std::chrono::high_resolution_clock::now();
     auto [SaveBeta, SaveMu, SaveTauK, SaveTaueps] = Sampler.run();
@@ -636,7 +638,7 @@ Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
     G.cast<unsigned int>();
     GraphType<unsigned int> Graph(G);
     InitFLM init(n,p, Graph);
-    FLMsampler<GraphForm::Fix> Sampler(data, param, hy, init, 0, print_info);
+    FLMsampler<GraphForm::Fix> Sampler(data, param, hy, init, seed, print_info);
     //Run
     auto start = std::chrono::high_resolution_clock::now();
     auto [SaveBeta, SaveMu, SaveK, SaveTaueps] = Sampler.run();
@@ -733,35 +735,37 @@ Rcpp::List                          //Eigen::Matrix<unsigned int, Eigen::Dynamic
 //' @param isPrec boolean, set \code{TRUE} if Mat parameter is a precision, \code{FALSE} if it is a covariance.
 //' @param isChol boolean, set \code{TRUE} if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance matrix.
 //' @param isUpper boolean, used only if \code{isChol} is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.
+//' @param seed int, works as R function set.seed(). If provived, the same results are always returned. Set 0 for randomly generated seed.
 //' @return It returns a \code{p} dimensional vector with the sampled values.
 //' @export
 // [[Rcpp::export]]
 Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
 rmvnormal(Eigen::VectorXd mean, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> Mat, 
-          bool isPrec = false, bool isChol = false, bool isUpper = false)
+          bool isPrec = false, bool isChol = false, bool isUpper = false, int seed = 0) 
 {
+  sample::GSL_RNG engine( static_cast<unsigned int>(seed) );
   if(Mat.rows() != Mat.cols())
     throw std::runtime_error("Precision or Covariance matrix has to be symmetric.");
   if(!isPrec){ //Covariance parametrization
     if(!isChol){
-      return sample::rmvnorm<sample::isChol::False>()(mean, Mat);
+      return sample::rmvnorm<sample::isChol::False>()(engine, mean, Mat);
     }
     else if(isUpper){
-     return sample::rmvnorm<sample::isChol::Upper>()(mean, Mat);
+     return sample::rmvnorm<sample::isChol::Upper>()(engine, mean, Mat);
     }
     else{
-     return sample::rmvnorm<sample::isChol::Lower>()(mean, Mat);
+     return sample::rmvnorm<sample::isChol::Lower>()(engine, mean, Mat);
     }
   }
   else{ //Precision parametrization
     if(!isChol){ //Not chol
-      return sample::rmvnorm_prec<sample::isChol::False>()(mean, Mat);
+      return sample::rmvnorm_prec<sample::isChol::False>()(engine, mean, Mat);
     }
     else if(isUpper){ //Chol, upper triangular
-      return sample::rmvnorm_prec<sample::isChol::Upper>()(mean, Mat);
+      return sample::rmvnorm_prec<sample::isChol::Upper>()(engine, mean, Mat);
     }
     else{ //Chol, lower triangular 
-      return sample::rmvnorm_prec<sample::isChol::Lower>()(mean, Mat);
+      return sample::rmvnorm_prec<sample::isChol::Lower>()(engine, mean, Mat);
     }
   }
 }
@@ -779,19 +783,20 @@ rmvnormal(Eigen::VectorXd mean, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dyn
 // [[Rcpp::export]]
 Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
 rwishart(double const & b, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> D, 
-         bool isChol = false, bool isUpper = false)
+         bool isChol = false, bool isUpper = false, int seed = 0)
 {
   using MatCol = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
+  sample::GSL_RNG engine( static_cast<unsigned int>(seed) );
   if(D.rows() != D.cols())
     throw std::runtime_error("Inverse scale matrix has to be symmetric.");
   if(!isChol){ //Not chol
-    return sample::rwish<MatCol, sample::isChol::False>()(b, D);
+    return sample::rwish<MatCol, sample::isChol::False>()(engine, b, D);
   }
   else if(isUpper){ //Chol, upper triangular
-    return sample::rwish<MatCol, sample::isChol::Upper>()(b, D);
+    return sample::rwish<MatCol, sample::isChol::Upper>()(engine, b, D);
   }
   else{ //Chol, lower triangular 
-    return sample::rwish<MatCol, sample::isChol::Lower>()(b, D);
+    return sample::rwish<MatCol, sample::isChol::Lower>()(engine, b, D);
   }  
 }
 
@@ -799,8 +804,9 @@ rwishart(double const & b, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic,
 //'
 //' @export
 // [[Rcpp::export]]
-double rnormal(double const & mean = 0.0, double const & sd = 1.0){
-  return sample::rnorm()(mean, sd);
+double rnormal(double const & mean = 0.0, double const & sd = 1.0, int seed = 0){
+  sample::GSL_RNG engine( static_cast<unsigned int>(seed) );
+  return sample::rnorm()(engine, mean, sd);
 }
 
 

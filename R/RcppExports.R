@@ -151,8 +151,8 @@ GGM_sampling_c <- function(data, p, n, niter, burnin, thin, D, b = 3.0, MCprior 
 #' @param thin the thining value, it means that only one out of thin itarations is saved.
 #' @param BaseMat matrix of dimension r x p containing the evalutation of p Bspline basis over a grid of r nodes
 #' 
-FLM_sampling_c <- function(data, niter, burnin, thin, BaseMat, G, diagonal_graph = TRUE, threshold_GWish = 0.00000001, print_info = TRUE) {
-    .Call(`_BGSL_FLM_sampling_c`, data, niter, burnin, thin, BaseMat, G, diagonal_graph, threshold_GWish, print_info)
+FLM_sampling_c <- function(data, niter, burnin, thin, BaseMat, G, diagonal_graph = TRUE, threshold_GWish = 0.00000001, seed = 0L, print_info = TRUE) {
+    .Call(`_BGSL_FLM_sampling_c`, data, niter, burnin, thin, BaseMat, G, diagonal_graph, threshold_GWish, seed, print_info)
 }
 
 #' Generates random Graphs
@@ -182,8 +182,8 @@ Create_RandomGraph <- function(p, n_groups = 0L, form = "Complete", groups = NUL
 #' @param isUpper boolean, used only if \code{isChol} is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.
 #' @return It returns a \code{p} dimensional vector with the sampled values.
 #' @export
-rmvnormal <- function(mean, Mat, isPrec = FALSE, isChol = FALSE, isUpper = FALSE) {
-    .Call(`_BGSL_rmvnormal`, mean, Mat, isPrec, isChol, isUpper)
+rmvnormal <- function(mean, Mat, isPrec = FALSE, isChol = FALSE, isUpper = FALSE, seed = 0L) {
+    .Call(`_BGSL_rmvnormal`, mean, Mat, isPrec, isChol, isUpper, seed)
 }
 
 #' Sampler for Wishart random variables
@@ -196,15 +196,15 @@ rmvnormal <- function(mean, Mat, isPrec = FALSE, isChol = FALSE, isUpper = FALSE
 #' @param isUpper boolean, used only if isChol is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.
 #' @return It returns a p x p matrix.
 #' @export
-rwishart <- function(b, D, isChol = FALSE, isUpper = FALSE) {
-    .Call(`_BGSL_rwishart`, b, D, isChol, isUpper)
+rwishart <- function(b, D, isChol = FALSE, isUpper = FALSE, seed = 0L) {
+    .Call(`_BGSL_rwishart`, b, D, isChol, isUpper, seed)
 }
 
 #' Sampler for Normal distribution
 #'
 #' @export
-rnormal <- function(mean = 0.0, sd = 1.0) {
-    .Call(`_BGSL_rnormal`, mean, sd)
+rnormal <- function(mean = 0.0, sd = 1.0, seed = 0L) {
+    .Call(`_BGSL_rnormal`, mean, sd, seed)
 }
 
 #' Generate Bspine basis 

@@ -971,21 +971,21 @@ class ReversibleJumpsMH : public GGM<GraphStructure, T> {
 		//Methods
 		template< template <typename> class GG = GraphStructure, typename TT = T,
 					std::enable_if_t< internal_type_traits::isBlockGraph<GG,TT>::value , TT> =0  > //BlockGraph case						  			
-		std::tuple<PrecisionType, double, double> RJ(CompleteType const & Gnew_CompleteView, PrecisionType& Kold_prior, MoveType Move);
+		std::tuple<PrecisionType, double, double> RJ(CompleteType const & Gnew_CompleteView, PrecisionType& Kold_prior, MoveType Move, sample::GSL_RNG const & engine = sample::GSL_RNG());
 		
 		template< template <typename> class GG = GraphStructure, typename TT = T,
 					std::enable_if_t< internal_type_traits::isCompleteGraph<GG,TT>::value , TT> =0  > //CompleteGraphs case
-		std::tuple<PrecisionType, double, double> RJ(CompleteType const & Gnew, PrecisionType& Kold_prior, MoveType Move);
+		std::tuple<PrecisionType, double, double> RJ(CompleteType const & Gnew, PrecisionType& Kold_prior, MoveType Move, sample::GSL_RNG const & engine = sample::GSL_RNG());
 		
 		template< template <typename> class GG = GraphStructure, typename TT = T,
 					std::enable_if_t< internal_type_traits::isBlockGraph<GG,TT>::value , TT> =0  > //BlockGraph case
-		std::tuple<PrecisionType, double, double> RJ_new(CompleteType const & Gnew_CompleteView, PrecisionType& Kold_prior, MoveType Move);
+		std::tuple<PrecisionType, double, double> RJ_new(CompleteType const & Gnew_CompleteView, PrecisionType& Kold_prior, MoveType Move, sample::GSL_RNG const & engine = sample::GSL_RNG());
 
 		template< template <typename> class GG = GraphStructure, typename TT = T,
 					std::enable_if_t< internal_type_traits::isCompleteGraph<GG,TT>::value , TT> =0  > //CompleteGraphs case
-		std::tuple<PrecisionType, double, double> RJ_new(CompleteType const & Gnew, PrecisionType& Kold_prior, MoveType Move);
+		std::tuple<PrecisionType, double, double> RJ_new(CompleteType const & Gnew, PrecisionType& Kold_prior, MoveType Move, sample::GSL_RNG const & engine = sample::GSL_RNG() );
 	
-		ReturnType operator()(MatCol const & data, unsigned int const & n, Graph & Gold, double alpha, unsigned int seed = 0);
+		ReturnType operator()(MatCol const & data, unsigned int const & n, Graph & Gold, double alpha, sample::GSL_RNG const & engine = sample::GSL_RNG());
 	protected:
 		double const sigma; //it is a standard deviation
 		unsigned int MCiterPrior;
@@ -996,7 +996,7 @@ template<template <typename> class GraphStructure, typename T>
 template< template <typename> class GG, typename TT, std::enable_if_t< internal_type_traits::isBlockGraph<GG,TT>::value , TT> > //BlockGraphs
 std::tuple<typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType, double, double>
 ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStructure, T>::CompleteType const & Gnew_CompleteView,
-										 				    typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move)
+										  typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move, sample::GSL_RNG const & engine)
 {
 		using Graph 		= GraphStructure<T>;
 		using Container		= std::vector< std::pair<unsigned int, unsigned int> >;
@@ -1005,8 +1005,9 @@ ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStruct
 		//std::cout<<"Sono dentro RJ per quelli a blocchi"<<std::endl;
 
 		//std::random_device rd;
-	    unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-		sample::GSL_RNG engine_gsl(seed);
+	    //unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+		//sample::GSL_RNG engine(seed);
+
 		unsigned int p(Kold_prior.get_matrix().rows());
 					//std::cout<<"p = "<<p<<std::endl;
 		//2) Find all the links that are changing in Complete form 
@@ -1059,7 +1060,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStruct
 			}
 			else{ //There is a link. Is it the new one?
 				if(Move == MoveType::Add && it_L != L.cend() && std::make_pair((unsigned int)0,j) == *it_L){
-					Phi_new(0,j) = sample::rnorm()(engine_gsl, Phi_old(0,j), this->sigma); //The new element is a free element
+					Phi_new(0,j) = sample::rnorm()(engine, Phi_old(0,j), this->sigma); //The new element is a free element
 					log_element_proposal += (Phi_new(0,j) - Phi_old(0,j))*(Phi_new(0,j) - Phi_old(0,j));
 					//log_jacobian += Phi_old(0,0);
 					it_L++;
@@ -1091,7 +1092,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStruct
 			else{ //There is a link. Is it the new one?
 
 				if(Move == MoveType::Add && it_L != L.cend() && std::make_pair((unsigned int)1,j) == *it_L){
-					Phi_new(1,j) = sample::rnorm()(engine_gsl, Phi_old(1,j), this->sigma); //The new element is a free element
+					Phi_new(1,j) = sample::rnorm()(engine, Phi_old(1,j), this->sigma); //The new element is a free element
 					log_element_proposal +=	(Phi_new(1,j) - Phi_old(1,j))*(Phi_new(1,j) - Phi_old(1,j));
 					//log_jacobian += Phi_old(1,1);
 					it_L++;
@@ -1128,7 +1129,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStruct
 				else{ //There is a link. Is it the new one?
 
 					if(Move == MoveType::Add && it_L != L.cend() && std::make_pair(i,j) == *it_L){ 
-						Phi_new(i,j) = sample::rnorm()(engine_gsl, Phi_old(i,j), this->sigma); //The new element is a free element
+						Phi_new(i,j) = sample::rnorm()(engine, Phi_old(i,j), this->sigma); //The new element is a free element
 						log_element_proposal += (Phi_new(i,j) - Phi_old(i,j))*(Phi_new(i,j) - Phi_old(i,j));
 						//log_jacobian += Phi_old(i,i);
 						it_L++;
@@ -1168,14 +1169,14 @@ template<template <typename> class GraphStructure, typename T>
 template< template <typename> class GG, typename TT, std::enable_if_t< internal_type_traits::isCompleteGraph<GG,TT>::value , TT> > //CompleteGraphs
 std::tuple<typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType, double, double>
 ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStructure, T>::CompleteType const & Gnew,
-										 				    typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move)
+										  typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move, sample::GSL_RNG const & engine)
 {
 	using Graph = GraphStructure<T>;
 
 			//std::cout<<"Sono in RJ per i completi "<<std::endl;
 	//std::random_device rd;
-	unsigned int seed=seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-	sample::GSL_RNG engine_gsl(seed);
+	//unsigned int seed=seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+	//sample::GSL_RNG engine(seed);
 	const unsigned int p(Kold_prior.get_matrix().rows());
 	const std::pair<unsigned int, unsigned int>& changed_link = this->selected_link; //For lighter notation
 	double log_element_proposal{0};
@@ -1206,7 +1207,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStruct
 		}
 		else{ //There is a link. Is it the new one?
 			if(Move == MoveType::Add && !found && std::make_pair((unsigned int)0,j) == changed_link){
-				Phi_new(0,j) = sample::rnorm()(engine_gsl, Phi_old(0,j), this->sigma); //The new element is a free element
+				Phi_new(0,j) = sample::rnorm()(engine, Phi_old(0,j), this->sigma); //The new element is a free element
 				found = true;
 				log_element_proposal = 	0.5*utils::log_2pi + std::log(std::abs(this->sigma)) + 
 										(Phi_new(0,j) - Phi_old(0,j))*(Phi_new(0,j) - Phi_old(0,j))/(2*this->sigma*this->sigma);
@@ -1233,7 +1234,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStruct
 
 			if(Move == MoveType::Add && !found && std::make_pair((unsigned int)1,j) == changed_link){
 				found = true;
-				Phi_new(1,j) = sample::rnorm()(engine_gsl, Phi_old(1,j), this->sigma); //The new element is a free element
+				Phi_new(1,j) = sample::rnorm()(engine, Phi_old(1,j), this->sigma); //The new element is a free element
 				log_element_proposal = 	0.5*utils::log_2pi + std::log(std::abs(this->sigma)) + 
 										(Phi_new(1,j) - Phi_old(1,j))*(Phi_new(1,j) - Phi_old(1,j))/(2*this->sigma*this->sigma);
 			}
@@ -1265,7 +1266,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStruct
 
 				if(Move == MoveType::Add && !found && std::make_pair(i,j) == changed_link){ 
 					found = true;
-					Phi_new(i,j) = sample::rnorm()(engine_gsl, Phi_old(i,j), this->sigma); //The new element is a free element
+					Phi_new(i,j) = sample::rnorm()(engine, Phi_old(i,j), this->sigma); //The new element is a free element
 					log_element_proposal = 	0.5*utils::log_2pi + std::log(std::abs(this->sigma)) + 
 											(Phi_new(i,j) - Phi_old(i,j))*(Phi_new(i,j) - Phi_old(i,j))/(2*this->sigma*this->sigma);
 				}
@@ -1290,7 +1291,7 @@ template<template <typename> class GraphStructure, typename T>
 template< template <typename> class GG, typename TT, std::enable_if_t< internal_type_traits::isBlockGraph<GG,TT>::value , TT> > //BlockGraphs
 std::tuple<typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType, double, double>
 ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphStructure, T>::CompleteType const & Gnew_CompleteView,
-										 				   		typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move)
+										 	  typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move, sample::GSL_RNG const & engine)
 {
 		using Graph 		= GraphStructure<T>;
 		using Container		= std::vector< std::pair<unsigned int, unsigned int> >;
@@ -1299,8 +1300,8 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphSt
 			//std::cout<<"Sono dentro RJ_new per quelli a blocchi "<<std::endl;
 
 		//std::random_device rd;
-	    unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-		sample::GSL_RNG engine_gsl(seed);
+	    //unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+		//sample::GSL_RNG engine(seed);
 		unsigned int p(Kold_prior.get_matrix().rows());
 					//std::cout<<"p = "<<p<<std::endl;
 		//2) Find all the links that are changing in Complete form 
@@ -1353,7 +1354,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphSt
 			}
 			else{ //There is a link. Is it the new one?
 				if(Move == MoveType::Add && it_L != L.cend() && std::make_pair((unsigned int)0,j) == *it_L){
-					Phi_new(0,j) = sample::rnorm()(engine_gsl, Phi_old(0,j), this->sigma); //The new element is a free element
+					Phi_new(0,j) = sample::rnorm()(engine, Phi_old(0,j), this->sigma); //The new element is a free element
 					log_element_proposal += (Phi_new(0,j) - Phi_old(0,j))*(Phi_new(0,j) - Phi_old(0,j));
 					//log_jacobian += Phi_old(0,0);
 					it_L++;
@@ -1387,7 +1388,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphSt
 			else{ //There is a link. Is it the new one?
 
 				if(Move == MoveType::Add && it_L != L.cend() && std::make_pair((unsigned int)1,j) == *it_L){
-					Phi_new(1,j) = sample::rnorm()(engine_gsl, Phi_old(1,j), this->sigma); //The new element is a free element
+					Phi_new(1,j) = sample::rnorm()(engine, Phi_old(1,j), this->sigma); //The new element is a free element
 					log_element_proposal +=	(Phi_new(1,j) - Phi_old(1,j))*(Phi_new(1,j) - Phi_old(1,j));
 					//log_jacobian += Phi_old(1,1);
 					it_L++;
@@ -1426,7 +1427,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphSt
 				else{ //There is a link. Is it the new one?
 
 					if(Move == MoveType::Add && it_L != L.cend() && std::make_pair(i,j) == *it_L){ 
-						Phi_new(i,j) = sample::rnorm()(engine_gsl, Phi_old(i,j), this->sigma); //The new element is a free element
+						Phi_new(i,j) = sample::rnorm()(engine, Phi_old(i,j), this->sigma); //The new element is a free element
 						log_element_proposal += (Phi_new(i,j) - Phi_old(i,j))*(Phi_new(i,j) - Phi_old(i,j));
 						//log_jacobian += Phi_old(i,i);
 						it_L++;
@@ -1469,14 +1470,14 @@ template<template <typename> class GraphStructure, typename T>
 template< template <typename> class GG, typename TT, std::enable_if_t< internal_type_traits::isCompleteGraph<GG,TT>::value , TT> > //CompleteGraphs
 std::tuple<typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType, double, double>
 ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphStructure, T>::CompleteType const & Gnew,
-										 				    	typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move)
+										 	  typename ReversibleJumpsMH<GraphStructure, T>::PrecisionType& Kold_prior, MoveType Move, sample::GSL_RNG const & engine)
 {
 	using Graph = GraphStructure<T>;
 
 			//std::cout<<"Sono in RJ new per i completi "<<std::endl;
 	//std::random_device rd;
-	unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-	sample::GSL_RNG engine_gsl(seed);
+	//unsigned int seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+	//sample::GSL_RNG engine(seed);
 	const unsigned int p(Kold_prior.get_matrix().rows());
 	const std::pair<unsigned int, unsigned int>& changed_link = this->selected_link; //For lighter notation
 	double log_element_proposal{0};
@@ -1507,7 +1508,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphSt
 		}
 		else{ //There is a link. Is it the new one?
 			if(Move == MoveType::Add && !found && std::make_pair((unsigned int)0,j) == changed_link){
-				Phi_new(0,j) = sample::rnorm()(engine_gsl, Phi_old(0,j), this->sigma); //The new element is a free element
+				Phi_new(0,j) = sample::rnorm()(engine, Phi_old(0,j), this->sigma); //The new element is a free element
 				found = true;
 				log_element_proposal = 	0.5*utils::log_2pi + std::log(std::abs(this->sigma)) + 
 										(Phi_new(0,j) - Phi_old(0,j))*(Phi_new(0,j) - Phi_old(0,j))/(2*this->sigma*this->sigma);
@@ -1538,7 +1539,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphSt
 
 			if(Move == MoveType::Add && !found && std::make_pair((unsigned int)1,j) == changed_link){
 				found = true;
-				Phi_new(1,j) = sample::rnorm()(engine_gsl, Phi_old(1,j), this->sigma); //The new element is a free element
+				Phi_new(1,j) = sample::rnorm()(engine, Phi_old(1,j), this->sigma); //The new element is a free element
 				log_element_proposal = 	0.5*utils::log_2pi + std::log(std::abs(this->sigma)) + 
 										(Phi_new(1,j) - Phi_old(1,j))*(Phi_new(1,j) - Phi_old(1,j))/(2*this->sigma*this->sigma);
 			}
@@ -1572,7 +1573,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphSt
 
 				if(Move == MoveType::Add && !found && std::make_pair(i,j) == changed_link){ 
 					found = true;
-					Phi_new(i,j) = sample::rnorm()(engine_gsl, Phi_old(i,j), this->sigma); //The new element is a free element
+					Phi_new(i,j) = sample::rnorm()(engine, Phi_old(i,j), this->sigma); //The new element is a free element
 					log_element_proposal = 	0.5*utils::log_2pi + std::log(std::abs(this->sigma)) + 
 											(Phi_new(i,j) - Phi_old(i,j))*(Phi_new(i,j) - Phi_old(i,j))/(2*this->sigma*this->sigma);
 				}
@@ -1598,35 +1599,35 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphSt
 
 template< template <typename> class GraphStructure , typename T >
 typename ReversibleJumpsMH<GraphStructure, T>::ReturnType
-ReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsigned int const & n, 
-										  	     		  typename GGMTraits<GraphStructure, T>::Graph & Gold,  
-										         		  double alpha, unsigned int seed)
+ReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsigned int const & n, typename GGMTraits<GraphStructure, T>::Graph & Gold,  
+										         double alpha, sample::GSL_RNG const & engine)
 {
 
 	using Graph  = GraphStructure<T>;
 	using CompleteType = typename GGMTraits<GraphStructure, T>::CompleteType;
 
-	if(seed==0){
-	  //std::random_device rd;
-	  //seed=rd();
-	  seed=static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count());
-	  //std::cout<<"seed = "<<seed<<std::endl;
-	}
-	std::default_random_engine engine(seed);
-	std::uniform_real_distribution< double > rand(0.,1.);
+			//if(seed==0){
+	  		////std::random_device rd;
+	  		////seed=rd();
+	  		//seed=static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count());
+	  		////std::cout<<"seed = "<<seed<<std::endl;
+			//}
+			//std::default_random_engine engine(seed);
+			//std::uniform_real_distribution< double > rand(0.,1.);
+	sample::runif rand;
 	double log_acceptance_ratio{0}; 
 	bool isInf_new{false};
 	bool isInf_old{false};
 
 	//1) Propose new Graph
-	auto [Gnew, log_GraphMove_proposal, mv_type] = this->propose_new_graph(Gold, alpha, seed) ;
+	auto [Gnew, log_GraphMove_proposal, mv_type] = this->propose_new_graph(Gold, alpha, engine) ;
 				//std::cout<<std::endl;
 				//std::cout<<"Gold:"<<std::endl<<Gold<<std::endl;
 				//std::cout<<"Gnew:"<<std::endl<<Gnew<<std::endl;
 	//2) Perform RJ according to the proposed move and graph
 	CompleteType Gnew_complete(Gnew.completeview());
 	CompleteType Gold_complete(Gold.completeview());
-	auto [Knew_prior, log_rj_proposal, log_jacobian_mv ] = this->RJ_new(Gnew_complete, this->Kprior, mv_type) ;	
+	auto [Knew_prior, log_rj_proposal, log_jacobian_mv ] = this->RJ_new(Gnew_complete, this->Kprior, mv_type, engine) ;	
 	//auto [Knew_prior, log_rj_proposal, log_jacobian_mv ] = this->RJ(Gnew_complete, this->Kprior, mv_type) ;	
 				//std::cout<<"Kold_prior.get_matrix():"<<std::endl<<this->Kprior.get_matrix()<<std::endl;
 				//std::cout<<"Knew_prior.get_matrix():"<<std::endl<<Knew_prior.get_matrix()<<std::endl;
@@ -1637,8 +1638,8 @@ ReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsigned i
 	double log_GWishPrConst_ratio(Kold_prior.log_normalizing_constat(Gold.completeview(),MCiterPrior, seed) - 
 								  Knew_prior.log_normalizing_constat(Gnew_complete,MCiterPrior, seed) );
 	*/
-	double const_old = 	Kold_prior.log_normalizing_constat(Gold_complete,MCiterPrior, seed);						  
-	double const_new = 	Knew_prior.log_normalizing_constat(Gnew_complete,MCiterPrior, seed);	
+	double const_old = 	Kold_prior.log_normalizing_constat(Gold_complete,MCiterPrior, engine);						  
+	double const_new = 	Knew_prior.log_normalizing_constat(Gnew_complete,MCiterPrior, engine);	
 	if(const_new < std::numeric_limits<double>::min()){
 		isInf_new = true;
 		//std::cout<<std::endl<<"Inf in GWish const prior new"<<std::endl;
@@ -1705,7 +1706,7 @@ ReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsigned i
 	}
 			//this->Kprior.set_matrix(Gold_complete, utils::rgwish(Gold_complete, Kold_prior.get_shape() + n, D_plus_U , this->trGwishSampler, seed ) ); //Copia inutile, costruiscila qua dentro
 	this->Kprior.set_matrix(Gold_complete, 
-		utils::rgwish<CompleteSkeleton, T, utils::ScaleForm::CholUpper_InvScale, utils::MeanNorm>(Gold_complete, this->Kprior.get_shape() + n, this->chol_inv_DplusU , this->trGwishSampler, seed ) ); 
+		utils::rgwish<CompleteSkeleton, T, utils::ScaleForm::CholUpper_InvScale, utils::MeanNorm>(Gold_complete, this->Kprior.get_shape() + n, this->chol_inv_DplusU , this->trGwishSampler, engine ) ); 
 	this->Kprior.compute_Chol();
 	return std::make_tuple(this->Kprior.get_matrix(), accepted);
 	//return std::make_tuple(utils::rgwish(Gold.completeview(), Kold_prior.get_shape() + n , Kold_prior.get_inv_scale() + data , seed ), accepted );

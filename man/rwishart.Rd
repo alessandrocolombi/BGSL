@@ -4,7 +4,7 @@
 \alias{rwishart}
 \title{Sampler for Wishart random variables}
 \usage{
-rwishart(b, D, isChol = FALSE, isUpper = FALSE)
+rwishart(b, D, isChol = FALSE, isUpper = FALSE, seed = 0L)
 }
 \arguments{
 \item{b}{double, it is shape parameter.}

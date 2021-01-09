@@ -191,11 +191,11 @@ class GWishart : GWishartTraits{
 			//compute_Chol();
 			isFactorized = false;
 		}
-		template<template <typename> class CompleteStructure = GraphType, typename T = unsigned int>
-		void set_random(const CompleteStructure<T> & G, double const threshold = 1e-8, unsigned int const & seed = 0){
+		template<template <typename> class CompleteStructure = GraphType, typename T = unsigned int> //--> forse meglio toglierla direttamente oppure implementarla wrt rgwish member function
+		void set_random(const CompleteStructure<T> & G, double const threshold = 1e-8, sample::GSL_RNG const & engine = sample::GSL_RNG()){
 			static_assert(	internal_type_traits::isCompleteGraph<CompleteStructure,T>::value,
 						"___ERROR:_GWISHART_REQUIRES_A_GRAPH_IN_COMPLETE_FORM. HINT -> EVERY_GRAPH_SHOULD_PROVIDE_A_METHOD_CALLED completeview() THAT_CONVERTS_IT_IN_THE_COMPLETE_FORM");
-			data = utils::rgwish(G, b, D, threshold, seed); //Funziona con valori di default?
+			data = utils::rgwish(G, b, D, threshold, engine); 
 			isFactorized = false;
 		}
 		void set_shape(Shape const & _bb){
@@ -229,7 +229,7 @@ class GWishart : GWishartTraits{
 		}
 		//main methods
 		template<template <typename> class CompleteStructure = GraphType, typename T = unsigned int, typename NormType = utils::MeanNorm>
-		void rgwish(const CompleteStructure<T> & G, double const threshold = 1e-8, unsigned int seed = 0);
+		void rgwish(const CompleteStructure<T> & G, double const threshold = 1e-8, sample::GSL_RNG const & engine = sample::GSL_RNG() );
 		template<template <typename> class CompleteStructure = GraphType, typename T = unsigned int>
 		bool check_structure(const CompleteStructure<T> & G)const{
 			static_assert(	internal_type_traits::isCompleteGraph<CompleteStructure,T>::value,
@@ -248,7 +248,7 @@ class GWishart : GWishartTraits{
 			return true;	
 		}
 		template<template <typename> class CompleteStructure = GraphType, typename Type = unsigned int>
-		long double log_normalizing_constat(const CompleteStructure<Type> & G, unsigned int const & MCiteration = 100, unsigned int seed=0); 
+		long double log_normalizing_constat(const CompleteStructure<Type> & G, unsigned int const & MCiteration = 100, sample::GSL_RNG const & engine = sample::GSL_RNG() ); 
 		//Public member stating if the matrix is factorized or not, i.e if U is such that data=U.transpose()*U
 		bool 		isFactorized;
 	private:
@@ -263,7 +263,7 @@ class GWishart : GWishartTraits{
 
 
 template<template <typename> class CompleteStructure, typename Type>
-long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G, unsigned int const & MCiteration, unsigned int seed){
+long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G, unsigned int const & MCiteration, sample::GSL_RNG const & engine){
 	
 	static_assert(	internal_type_traits::isCompleteGraph<CompleteStructure,Type>::value,
 				"___ERROR:_GWISHART_REQUIRES_A_GRAPH_IN_COMPLETE_FORM. HINT -> EVERY_GRAPH_SHOULD_PROVIDE_A_METHOD_CALLED completeview() THAT_CONVERTS_IT_IN_THE_COMPLETE_FORM");
@@ -282,16 +282,17 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 	const long double min_numeric_limits_ld = std::numeric_limits<long double>::min() * 1000;
 	long double result_MC{0};
 	unsigned int number_nan{0};
-	if(seed == 0){
-		//std::random_device rd;
-		//seed=rd();
-		seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-	}
-	sample::GSL_RNG engine(seed);
+			//if(seed == 0){
+				////std::random_device rd;
+				////seed=rd();
+				//seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+			//}
+			//sample::GSL_RNG engine(seed);
+			//std::default_random_engine engine(seed);
+			//std::normal_distribution<> rnorm{0.0,1.0}; //For sampling from normal distribution
 	sample::rnorm rnorm;
 	sample::rchisq rchisq;
-	//std::default_random_engine engine(seed);
-	//std::normal_distribution<> rnorm{0.0,1.0}; //For sampling from normal distribution
+	
 	
 
 	//Start
@@ -550,8 +551,8 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 }
 
 template<template <typename> class CompleteStructure, typename T, typename NormType>
-void GWishart::rgwish(const CompleteStructure<T> & G, double const threshold, unsigned int seed){
-	std::tie(this->data, std::ignore, std::ignore) = utils::rgwish_core<CompleteStructure,T,utils::ScaleForm::CholUpper_InvScale,NormType>(G,this->b,this->chol_invD,threshold,seed,500);
+void GWishart::rgwish(const CompleteStructure<T> & G, double const threshold, sample::GSL_RNG const & engine){
+	std::tie(this->data, std::ignore, std::ignore) = utils::rgwish_core<CompleteStructure,T,utils::ScaleForm::CholUpper_InvScale,NormType>(G,this->b,this->chol_invD,threshold,engine,500);
 
 }
 

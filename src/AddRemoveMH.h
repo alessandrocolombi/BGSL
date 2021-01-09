@@ -27,7 +27,7 @@ class AddRemoveMH : public GGM<GraphStructure, T> {
 		AddRemoveMH(PriorPtr& _ptr_prior,unsigned int const & _p, double const & _trGwishSampler, unsigned int const & _MCiterPrior = 100, unsigned int const & _MCiterPost = 100): 
 					GGM<GraphStructure, T>(_ptr_prior, _p, _trGwishSampler), MCiterPrior(_MCiterPrior), MCiterPost(_MCiterPost){}
 
-		ReturnType operator()(MatCol const & data, unsigned int const & n, Graph & Gold, double alpha, unsigned int seed = 0) override ;
+		ReturnType operator()(MatCol const & data, unsigned int const & n, Graph & Gold, double alpha, sample::GSL_RNG const & engine = sample::GSL_RNG() ) override ;
 	protected:
 		unsigned int MCiterPrior;
 		unsigned int MCiterPost;
@@ -39,21 +39,22 @@ class AddRemoveMH : public GGM<GraphStructure, T> {
 template<template <typename> class GraphStructure, typename T>
 typename GGMTraits<GraphStructure, T>::ReturnType
 AddRemoveMH<GraphStructure, T>::operator()(MatCol const & data, unsigned int const & n, 
-										   typename GGMTraits<GraphStructure, T>::Graph & Gold, double alpha, unsigned int seed) 
+										   typename GGMTraits<GraphStructure, T>::Graph & Gold, double alpha, sample::GSL_RNG const & engine ) 
 {
 
 	using Graph = GraphStructure<T>;
 	
 			//std::cout<<"Sono dentro ad AddRemoveMH ()"<<std::endl;
-	if(seed==0){
-			//std::random_device rd;
-			//seed=rd();
-			seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-	}
-	std::default_random_engine engine(seed);
-	std::uniform_real_distribution<double> rand(0.,1.);
+			//if(seed==0){
+					////std::random_device rd;
+					////seed=rd();
+					//seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+			//}
+			//std::default_random_engine engine(seed);
+			//std::uniform_real_distribution<double> rand(0.,1.);
+	sample::runif rand;
 	//1) Propose new Graph
-	auto [Gnew, log_proposal_Graph, mv_type] = this->propose_new_graph(Gold, alpha, seed) ; //mv_type probably wont be used here
+	auto [Gnew, log_proposal_Graph, mv_type] = this->propose_new_graph(Gold, alpha, engine) ; //mv_type probably wont be used here
 			//std::cout<<std::endl;
 			//std::cout<<"Gold:"<<std::endl<<Gold<<std::endl;
 			//std::cout<<"Gnew:"<<std::endl<<Gnew<<std::endl;
@@ -74,10 +75,10 @@ AddRemoveMH<GraphStructure, T>::operator()(MatCol const & data, unsigned int con
 	//double log_acceptance_ratio( this->ptr_prior->log_ratio(Gnew, Gold) + log_proposal_Graph + new_post - new_prior - old_post + old_prior ); 
 	
 	//std::cout<<"Simulo dalla member function"<<std::endl;
-	double old_prior_member =  this->Kprior.log_normalizing_constat(Gold.completeview(),MCiterPrior, seed);
-	double old_post_member  =  Kpost.log_normalizing_constat(Gold.completeview(),MCiterPost, seed);
-	double new_post_member  =  Kpost.log_normalizing_constat(Gnew.completeview(),MCiterPost, seed);
-	double new_prior_member =  this->Kprior.log_normalizing_constat(Gnew.completeview(),MCiterPrior, seed);
+	double old_prior_member =  this->Kprior.log_normalizing_constat(Gold.completeview(),MCiterPrior, engine);
+	double old_post_member  =  Kpost.log_normalizing_constat(Gold.completeview(),MCiterPost, engine);
+	double new_post_member  =  Kpost.log_normalizing_constat(Gnew.completeview(),MCiterPost, engine);
+	double new_prior_member =  this->Kprior.log_normalizing_constat(Gnew.completeview(),MCiterPrior, engine);
 
 	/*
 	double log_acceptance_ratio(this->ptr_prior->log_ratio(Gnew, Gold) + log_proposal_Graph +
@@ -119,7 +120,7 @@ AddRemoveMH<GraphStructure, T>::operator()(MatCol const & data, unsigned int con
 			//std::cout<<"Refused"<<std::endl;
 		accepted = 0;
 	}
-	Kpost.rgwish(Gold.completeview(), this->trGwishSampler, seed); //Sample new matrix. If the move was accepted, Gold is the new graph
+	Kpost.rgwish(Gold.completeview(), this->trGwishSampler, engine); //Sample new matrix. If the move was accepted, Gold is the new graph
 	//std::cout<<"Kpost.get_matrix():"<<std::endl<<Kpost.get_matrix()<<std::endl;
 	return std::make_tuple(Kpost.get_matrix(), accepted); 
 }

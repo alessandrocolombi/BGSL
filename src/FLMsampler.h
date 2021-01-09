@@ -19,14 +19,14 @@ class FLMsampler : public FLMsamplerTraits
 	FLMsampler( MatCol const & _data, FLMParameters const & _params, FLMHyperparameters const & _hy_params, 
 			    InitFLM const & _init, unsigned int _seed = 0, bool _print_pb = true):
 			    data(_data), params(_params), hy_params(_hy_params) ,init(_init),
-				p(_init.Beta0.rows()), n(_init.Beta0.cols()), grid_pts(_params.Basemat.rows()), seed(_seed), print_pb(_print_pb)
+				p(_init.Beta0.rows()), n(_init.Beta0.cols()), grid_pts(_params.Basemat.rows()), engine(_seed), print_pb(_print_pb)
 	{
 	 	this->check();
-	 	if(seed == 0){
-	 		//std::random_device rd;
-	 		//seed=rd();
-	 		seed=static_cast<unsigned int>(std::chrono::system_clock::now().time_since_epoch().count());
-	 	}
+	 	//if(seed == 0){
+	 		////std::random_device rd;
+	 		////seed=rd();
+	 		//seed = static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count());
+	 	//}
 	} 
 
 	RetType run();
@@ -40,7 +40,8 @@ class FLMsampler : public FLMsamplerTraits
 	unsigned int p;
 	unsigned int n;
 	unsigned int grid_pts;
-	unsigned int seed;
+	//unsigned int seed;
+	sample::GSL_RNG engine;
 	bool print_pb;
 };
 
@@ -81,7 +82,7 @@ typename FLMsampler<Graph>::RetType FLMsampler<Graph>::run()
 	MatRow K = init.K0;
 	const GraphType<unsigned int> &G = init.G; 
 	//Random engine and distributions
-	sample::GSL_RNG engine(seed);
+	//sample::GSL_RNG engine(seed);
 	sample::rnorm rnorm;
 	sample::rmvnorm rmv; //Covariance parametrization
 	sample::rgamma  rgamma;
@@ -163,8 +164,6 @@ typename FLMsampler<Graph>::RetType FLMsampler<Graph>::run()
 			//Precision tau_eps
 			b_tau_eps_post /= 2.0;
 			tau_eps = rgamma(engine, a_tau_eps_post, 1/b_tau_eps_post);
-			double tau_eps_prova_seed = rgamma(engine, 5, 20);
-				std::cout<<"tau_eps_prova_seed:"<<std::endl<<tau_eps_prova_seed<<std::endl;
 			//Save
 			if(iter >= nburn){
 				if((iter - nburn)%thin == 0){
@@ -202,7 +201,7 @@ typename FLMsampler<Graph>::RetType FLMsampler<Graph>::run()
 			}
 			//Precision K
 			MatCol D_plus_U(DK+U);
-			K = std::move( utils::rgwish(G,bK+n,D_plus_U,threshold) );
+			K = std::move( utils::rgwish(G,bK+n,D_plus_U,threshold,engine) );
 			//Precision tau
 			b_tau_eps_post /= 2.0;
 			tau_eps = rgamma(engine, a_tau_eps_post, 1/b_tau_eps_post);

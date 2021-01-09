@@ -4,7 +4,7 @@
 \alias{rnormal}
 \title{Sampler for Normal distribution}
 \usage{
-rnormal(mean = 0, sd = 1)
+rnormal(mean = 0, sd = 1, seed = 0L)
 }
 \description{
 Sampler for Normal distribution

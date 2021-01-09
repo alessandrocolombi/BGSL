@@ -14,15 +14,13 @@ class GGMsampler : public SamplerTraits
 	using PrecisionType = typename GGMTraits<GraphStructure, T>::PrecisionType;
 	using GGMType 	    = std::unique_ptr<GGM<GraphStructure, T>>;
 	using RetType 	    = std::tuple<RetK, RetGraph, int, int>;
-	//Right now i'm passing way to many parameters and hyperparameters
+	//Right now i'm passing way to many parameters and hyperparameters ?
 	GGMsampler( MatCol const & _data, unsigned int const & _n, Parameters const & _params, Hyperparameters const & _hy_params, 
 			    Init<GraphStructure, T> const & _init, GGMType & _GGM_method, unsigned int _seed = 0, bool _print_bp = true):
 			    data(_data), params(_params), hy_params(_hy_params), ptr_GGM_method(std::move(_GGM_method)) ,init(_init),
-				p(_data.rows()), n(_n), grid_pts(_params.Basemat.rows()), seed(_seed), print_bp(_print_bp)
+				p(_data.rows()), n(_n), grid_pts(_params.Basemat.rows()), engine(_seed), print_bp(_print_bp)
 	{
 	 	this->check();
-	 	if(seed == 0)
-	 		seed = (unsigned int)std::chrono::system_clock::now().time_since_epoch().count();	
 	} 
 	RetType run();
 
@@ -36,7 +34,8 @@ class GGMsampler : public SamplerTraits
 	unsigned int p;
 	unsigned int n;
 	unsigned int grid_pts;
-	unsigned int seed;
+	//unsigned int seed;
+	sample::GSL_RNG engine;
 	int total_accepted{0};
 	int visited{0};
 	bool print_bp;
@@ -73,7 +72,7 @@ GGMsampler<GraphStructure, T, RetGraph>::run()
 	visited = 0;
 
 	//Random engine and distributions
-	sample::GSL_RNG engine(seed);
+				//sample::GSL_RNG engine(seed);
 	sample::rmvnorm rmv; //Covariance parametrization
 	sample::rgamma  rGamma;
 	//Define all those quantities that can be compute once
@@ -99,7 +98,7 @@ GGMsampler<GraphStructure, T, RetGraph>::run()
 		int accepted_mv{0};
 
 		//Graphical Step
-		std::tie(K, accepted_mv) = GGM_method(data, n, G, p_addrm, 0); //G is modified inside the function.
+		std::tie(K, accepted_mv) = GGM_method(data, n, G, p_addrm, engine); //G is modified inside the function.
 				//std::cout<<"SampledK:"<<std::endl<<K<<std::endl;
 		total_accepted += accepted_mv;
 		//Save

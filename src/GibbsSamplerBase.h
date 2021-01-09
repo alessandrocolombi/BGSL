@@ -18,14 +18,9 @@ class FGMsampler : public SamplerTraits
 	FGMsampler( MatCol const & _data, Parameters const & _params, Hyperparameters const & _hy_params, 
 			    Init<GraphStructure, T> const & _init, GGMType & _GGM_method, unsigned int _seed = 0, bool _print_pb = true):
 			    data(_data), params(_params), hy_params(_hy_params), ptr_GGM_method(std::move(_GGM_method)) ,init(_init),
-				p(_init.Beta0.rows()), n(_init.Beta0.cols()), grid_pts(_params.Basemat.rows()), seed(_seed), print_pb(_print_pb)
+				p(_init.Beta0.rows()), n(_init.Beta0.cols()), grid_pts(_params.Basemat.rows()), engine(_seed), print_pb(_print_pb)
 	{
 	 	this->check();
-	 	if(seed==0){
-	 		//std::random_device rd;
-	 		//seed=rd();
-	 		seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-	 	}	
 	} 
 
 	RetType run();
@@ -40,7 +35,8 @@ class FGMsampler : public SamplerTraits
 	unsigned int p;
 	unsigned int n;
 	unsigned int grid_pts;
-	unsigned int seed;
+	//unsigned int seed;
+	sample::GSL_RNG engine;
 	int total_accepted{0};
 	int visited{0};
 	bool print_pb;
@@ -90,7 +86,7 @@ FGMsampler<GraphStructure, T, RetGraph>::run()
 	visited = 0;
 
 	//Random engine and distributions
-	sample::GSL_RNG engine(seed);
+	//sample::GSL_RNG engine(seed);
 	sample::rmvnorm rmv; //Covariance parametrization
 	sample::rgamma  rGamma;
 	//Define all those quantities that can be compute once
@@ -157,7 +153,7 @@ FGMsampler<GraphStructure, T, RetGraph>::run()
 		tau_eps = rGamma(engine, a_tau_eps_post, 1/b_tau_eps_post);
 		//Graphical Step
 		GGM_method.data_factorized = false; //Need to tell it that matrix U is changing at every iteration and that has to be factorized everytime
-		std::tie(K, accepted_mv) = GGM_method(U, n, G, p_addrm, 0); //G is modified inside the function.
+		std::tie(K, accepted_mv) = GGM_method(U, n, G, p_addrm, engine); //G is modified inside the function.
 		total_accepted += accepted_mv;
 
 

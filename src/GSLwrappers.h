@@ -40,10 +40,21 @@ namespace sample{
 	class GSL_RNG{ 
 		public:
 			GSL_RNG(unsigned int const & _seed){
+				if(_seed == 0){
+					//std::random_device rd;
+					//seed=rd();
+					seed = static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count());
+					std::seed_seq seq = {seed}; //seed provived here has to be random. Than std::seed_seq adds entropy becasuse steady_clock is not sufficientyl widespread
+					std::vector<unsigned int> seeds(1);
+					seq.generate(seeds.begin(), seeds.end());
+					seed = seeds[0];
+				}
+				else{
+					seed = _seed;
+				}
 				gsl_rng_env_setup();
 				r = gsl_rng_alloc(gsl_rng_default);
-				seed = _seed;
-				gsl_rng_set(r,_seed);
+				gsl_rng_set(r,seed);	
 			}
 			GSL_RNG(){
 				gsl_rng_env_setup();
@@ -51,12 +62,11 @@ namespace sample{
 				//std::random_device rd;
 				//seed=rd();
 				seed = static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count());
-				std::seed_seq seq = {seed};
+				std::seed_seq seq = {seed}; //seed provived here has to be random. Than std::seed_seq adds entropy becasuse steady_clock is not sufficientyl widespread
 				std::vector<unsigned int> seeds(1);
 				seq.generate(seeds.begin(), seeds.end());
 				seed = seeds[0];
 				gsl_rng_set(r,seed);
-				this->print_info();
 			}
 			~GSL_RNG(){
 				gsl_rng_free(r);
@@ -64,7 +74,7 @@ namespace sample{
 			void print_info()const{
 				printf ("generator type: %s\n", gsl_rng_name(r));
 				std::cout<<"seed = "<<seed<<std::endl;
-				printf ("first value = %lu\n", gsl_rng_get(r));
+				//printf ("first value = %lu\n", gsl_rng_get(r));
 			}
 			gsl_rng* operator()()const{
 				return r;
@@ -80,6 +90,26 @@ namespace sample{
 			gsl_rng * r;
 		private:
 			unsigned int seed;
+	};
+
+	struct runif
+	{
+		double operator()(GSL_RNG const & engine)const{
+			return gsl_rng_uniform(engine.r); //gsl_rng_uniform is a function, nothing has to be de-allocated
+		}
+		double operator()()const{
+			return runif()(GSL_RNG ());
+		}
+	};
+
+	struct runif_int //This function returns a random integer from 0 to N-1
+	{
+		unsigned int operator()(GSL_RNG const & engine, unsigned int const & N)const{
+			return gsl_rng_uniform_int(engine.r, N); //gsl_rng_uniform_int is a function, nothing has to be de-allocated.
+		}
+		unsigned int operator()(unsigned int const & N)const{
+			return runif_int()(GSL_RNG (), N);
+		}
 	};
 
 	struct rnorm
