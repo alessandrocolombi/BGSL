@@ -1,6 +1,6 @@
 # Setting compiler standard
 CXX_STD = CXX17
-NOCRANFLAGS = -Wno-attributes -Wno-ignored-attributes -Wno-deprecated-declarations
+#NOCRANFLAGS = -Wno-attributes -Wno-ignored-attributes -Wno-deprecated-declarations
 
 ifeq ($(R_ARCH), /x64)
 FOLDER = C:/rtools40/mingw64
@@ -16,7 +16,8 @@ GSL_LIBS = $(shell $(FOLDER)/bin/gsl-config --libs)
 HDF5_INC = $(shell $(FOLDER)/bin/pkg-config --cflags hdf5-1.10.5)
 HDF5_LIB = $(shell $(FOLDER)/bin/pkg-config --libs hdf5-1.10.5)
 
+
 # Setting Package Flags
 PKG_CXXFLAGS += -DPARALLELEXEC $(shell "$(R_HOME)/bin$(R_ARCH)/Rscript.exe" -e "RcppParallel::CxxFlags()") \
                -D_REENTRANT $(GSL_INC) $(HDF5_INC) -I'.' -fopenmp $(NOCRANFLAGS)
-PKG_LIBS = $(shell "$(R_HOME)/bin$(R_ARCH)/Rscript.exe" -e "RcppParallel::LdFlags()") $(GSL_LIBS) $(HDF5_LIB) -fopenmp
+PKG_LIBS = $(shell "$(R_HOME)/bin$(R_ARCH)/Rscript.exe" -e "RcppParallel::LdFlags()") $(GSL_LIBS) $(HDF5_LIB) -lhdf5 -fopenmp
