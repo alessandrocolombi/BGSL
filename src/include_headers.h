@@ -5,6 +5,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
+#include <sstream>
+#include <fstream>
 //Containers
 #include <vector>
 #include <map>

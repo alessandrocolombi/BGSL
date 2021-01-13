@@ -12,6 +12,10 @@ endif
 GSL_INC = $(shell $(FOLDER)/bin/gsl-config --cflags)
 GSL_LIBS = $(shell $(FOLDER)/bin/gsl-config --libs)
 
+# HDF5
+HDF5_INC = $(shell $(FOLDER)/bin/pkg-config --cflags hdf5-1.10.5)
+HDF5_LIB = $(shell $(FOLDER)/bin/pkg-config --libs hdf5-1.10.5) -lhdf5
+
 # Setting Package Flags
 PKG_CXXFLAGS += -DPARALLELEXEC $(shell "$(R_HOME)/bin$(R_ARCH)/Rscript.exe" -e "RcppParallel::CxxFlags()") \
                -D_REENTRANT $(GSL_INC) -I'.' -fopenmp $(NOCRANFLAGS)

@@ -36,8 +36,8 @@ rGwish_old <- function(G, b, D, norm = "Mean", groups = NULL, max_iter = 500L, t
 
 #' A direct sampler for GWishart distributed random variables.  
 #'
-#' This function draws a random matrices, distributed according to the GWishart distribution with shape parameter \code{b} and inverse scale \code{D}, 
-#' with respect to the graph structure \code{G}. METTERE LA FORMULA DELLA DISTRIBUZIONE 
+#'\loadmathjax This function draws a random matrices, distributed according to the GWishart distribution with shape parameter \code{b} and inverse scale \code{D}, 
+#' with respect to the graph structure \code{G}. \mjsdeqn{p\left(K~\lvert~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} \lvert K\rvert^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
 #' It implements the algorithm described by METTERE CITAZIONI LENKOSKI. It works with both decomposable and non decomposable graphs. 
 #' In particular it is possible to provide a graph in block form. 
 #' @param G Matrix of int stored columnwise. If a standard R matrix is provided, it is automaticaly converted. The lower part 
@@ -136,9 +136,8 @@ GGM_sim_sampling <- function(p, n, niter, burnin, thin, D, b = 3.0, MCprior = 10
 #' @param paddrm double, probability of proposing a new graph by adding one link.
 #' @param print_info boolean, if \code{TRUE} progress bar and execution time are displayed.
 #' @return This function returns a list with the posterior precision mean, a matrix with the probability of inclusion of each link, the number of accepted moves, the number of visited graphs and the list of all visited graphs.
-#' @export 
-GGM_sampling_c <- function(data, p, n, niter, burnin, thin, D, b = 3.0, MCprior = 100L, MCpost = 100L, threshold = 0.00000001, form = "Complete", prior = "Uniform", algo = "MH", groups = NULL, seed = 0L, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5, print_info = TRUE) {
-    .Call(`_BGSL_GGM_sampling_c`, data, p, n, niter, burnin, thin, D, b, MCprior, MCpost, threshold, form, prior, algo, groups, seed, Gprior, sigmaG, paddrm, print_info)
+GGM_sampling_c <- function(data, p, n, niter, burnin, thin, D, b, G0, K0, MCprior = 100L, MCpost = 100L, threshold = 0.00000001, form = "Complete", prior = "Uniform", algo = "MH", groups = NULL, seed = 0L, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5, print_info = TRUE) {
+    .Call(`_BGSL_GGM_sampling_c`, data, p, n, niter, burnin, thin, D, b, G0, K0, MCprior, MCpost, threshold, form, prior, algo, groups, seed, Gprior, sigmaG, paddrm, print_info)
 }
 
 #' Functional Linear model for smoothing
@@ -151,8 +150,14 @@ GGM_sampling_c <- function(data, p, n, niter, burnin, thin, D, b = 3.0, MCprior 
 #' @param thin the thining value, it means that only one out of thin itarations is saved.
 #' @param BaseMat matrix of dimension r x p containing the evalutation of p Bspline basis over a grid of r nodes
 #' 
-FLM_sampling_c <- function(data, niter, burnin, thin, BaseMat, G, diagonal_graph = TRUE, threshold_GWish = 0.00000001, seed = 0L, print_info = TRUE) {
-    .Call(`_BGSL_FLM_sampling_c`, data, niter, burnin, thin, BaseMat, G, diagonal_graph, threshold_GWish, seed, print_info)
+FLM_sampling_c <- function(data, niter, burnin, thin, BaseMat, G, Beta0, mu0, tau_eps0, tauK0, K0, a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK, bK, DK, diagonal_graph = TRUE, threshold_GWish = 0.00000001, seed = 0L, print_info = TRUE) {
+    .Call(`_BGSL_FLM_sampling_c`, data, niter, burnin, thin, BaseMat, G, Beta0, mu0, tau_eps0, tauK0, K0, a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK, bK, DK, diagonal_graph, threshold_GWish, seed, print_info)
+}
+
+#' Functional Graphical model for smoothing
+#'
+FGM_sampling_c <- function(data, niter, burnin, thin, thinG, BaseMat, Beta0, mu0, tau_eps0, G0, K0, a_tau_eps, b_tau_eps, sigmamu, bK, DK, sigmaG, paddrm, Gprior, MCprior, MCpost, threshold, form = "Complete", prior = "Uniform", algo = "MH", groups = NULL, seed = 0L, print_info = TRUE) {
+    .Call(`_BGSL_FGM_sampling_c`, data, niter, burnin, thin, thinG, BaseMat, Beta0, mu0, tau_eps0, G0, K0, a_tau_eps, b_tau_eps, sigmamu, bK, DK, sigmaG, paddrm, Gprior, MCprior, MCpost, threshold, form, prior, algo, groups, seed, print_info)
 }
 
 #' Generates random Graphs
@@ -180,6 +185,7 @@ Create_RandomGraph <- function(p, n_groups = 0L, form = "Complete", groups = NUL
 #' @param isPrec boolean, set \code{TRUE} if Mat parameter is a precision, \code{FALSE} if it is a covariance.
 #' @param isChol boolean, set \code{TRUE} if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance matrix.
 #' @param isUpper boolean, used only if \code{isChol} is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.
+#' @param seed int, works as R function set.seed(). If provived, the same results are always returned. Set 0 for randomly generated seed.
 #' @return It returns a \code{p} dimensional vector with the sampled values.
 #' @export
 rmvnormal <- function(mean, Mat, isPrec = FALSE, isChol = FALSE, isUpper = FALSE, seed = 0L) {

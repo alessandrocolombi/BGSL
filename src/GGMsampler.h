@@ -150,6 +150,8 @@ GGMsampler<GraphStructure, T, RetGraph>::run()
 	return std::make_tuple(SaveK, SaveG, total_accepted, visited);
 }
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
 

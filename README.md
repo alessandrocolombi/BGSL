@@ -100,6 +100,19 @@ $ gsl-config --libs
 -L/usr/lib/x86_64-linux-gnu -lgsl -lgslcblas -lm #where the linked libraries are
 ```
 
+### HDF5
+It can be directly download from your package manager with
+```shell
+$ sudo apt-get install libhdf5-dev
+```
+It is probably going to ask if it fine to install some auxiliary packeges. Say yes and continue. As before, if everything is fine, something like this should be displayed
+```shell
+$ pkg-config --cflags hdf5
+-I/usr/include/hdf5/serial #where the header files are
+$ pkg-config --libs hdf5
+-L/usr/lib/x86_64-linux-gnu/hdf5/serial -lhdf5 #where the linked libraries are
+```
+
 ### R depencencies
 
 **BGSL**'s core code is all written in `C++` language and exploits the `Rcpp` package to interfece with `R` which allow to map many `R` data types and objects back and forth to their `C++` equivalents.
@@ -109,7 +122,7 @@ achive cheap and portable parallelization via [Intel(R) TBB](https://software.in
 Other useful packages are `fields` and `plot.matrix`, used to plot matrices.
 All those packages can be installed directly from the `R` console via
 ```R
-install.packages(c("Rcpp", "RcppEigen", "RcppParallel", "fields", "plot.matrix"))
+install.packages(c("Rcpp", "RcppEigen", "RcppParallel", "fields", "plot.matrix", "mathjaxr"))
 ```
 
 ### BGSL
@@ -191,11 +204,21 @@ $ gsl-configure --libs
 ```
 If 32-bit version is needed, perform the same test but with "C:\rtools40\mingw32.exe" terminal.
 
+### HDF5
+
+Basically, all you have to do now is to repeat the same procedure as for GSL. Open a Rtools Bash terminal as previously explained and go into [Rtools Packages directory](https://github.com/r-windows/rtools-packages). It should now be available  without cloning again.
+```shell
+$ cd rtools-packages
+$ cd mingw-w64-gsl
+$ makepkg-mingw --syncdeps --noconfirm
+```
+
+
 ### R depencencies
 
 No difference with Unix system here, [see](#R-depencencies) for details or simply type on `R` console
 ```R
-install.packages(c("Rcpp", "RcppEigen", "RcppParallel", "fields", "plot.matrix"))
+install.packages(c("Rcpp", "RcppEigen", "RcppParallel", "fields", "plot.matrix", "mathjaxr"))
 ```
 
 ### BGSL

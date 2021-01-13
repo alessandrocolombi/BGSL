@@ -50,8 +50,8 @@ Rcpp::List containing the sampled matrix as an Eigen RowMajor matrix, a bool tha
 If the graph is empty or complete, no iterations are performed. If check_structure is \code{TRUE}, then the result of that check is also returned.
 }
 \description{
-This function draws a random matrices, distributed according to the GWishart distribution with shape parameter \code{b} and inverse scale \code{D},
-with respect to the graph structure \code{G}. METTERE LA FORMULA DELLA DISTRIBUZIONE
+\loadmathjax This function draws a random matrices, distributed according to the GWishart distribution with shape parameter \code{b} and inverse scale \code{D},
+with respect to the graph structure \code{G}. \mjsdeqn{p\left(K~\lvert~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} \lvert K\rvert^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
 It implements the algorithm described by METTERE CITAZIONI LENKOSKI. It works with both decomposable and non decomposable graphs.
 In particular it is possible to provide a graph in block form.
 }

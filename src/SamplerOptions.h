@@ -80,6 +80,13 @@ class Parameters : public SamplerTraits{
 					iter_to_storeG = static_cast<unsigned int>((niter - nburn)/thinG);
 	}
 	Parameters(int const & _niter, int const & _nburn, double const & _thin, double const & _thinG, 
+				unsigned int const & _MCiterPr, unsigned int const & _MCiterPost , MatCol const & _PHI, double const & _trGwishSampler, GroupsPtr const & _ptrGr = nullptr):
+				niter(_niter), nburn(_nburn), thin(_thin), thinG(_thinG), MCiterPrior(_MCiterPr), MCiterPost(_MCiterPost) ,Basemat(_PHI), ptr_groups(_ptrGr), trGwishSampler(_trGwishSampler)
+	{
+					iter_to_store  = static_cast<unsigned int>((niter - nburn)/thin );
+					iter_to_storeG = static_cast<unsigned int>((niter - nburn)/thinG);
+	}
+	Parameters(int const & _niter, int const & _nburn, double const & _thin, double const & _thinG, 
 				unsigned int const & _MCiterPr, MatCol const & _PHI, GroupsPtr const & _ptrGr):
 				niter(_niter), nburn(_nburn), thin(_thin), thinG(_thinG), MCiterPrior(_MCiterPr), MCiterPost(_MCiterPr), Basemat(_PHI), ptr_groups(_ptrGr), trGwishSampler(1e-8)
 	{
@@ -154,12 +161,32 @@ class Init : public SamplerTraits{
 	{
 		   	G0.set_empty_graph();
 	};
-		//This is for block graphs															   
-	Init(unsigned int const & _n, unsigned int const & _p, GroupsPtr const & _ptrGr)
-		:Beta0(MatCol::Zero(_p,_n)), mu0(VecCol::Zero(_p)), tau_eps0(1.0), K0(MatRow::Identity(_p,_p)), G0(_ptrGr){
-			G0.set_empty_graph();
-		};
-		
+
+	//This is for block graphs															   
+	Init(unsigned int const & _n, unsigned int const & _p, GroupsPtr const & _ptrGr):
+			Beta0(MatCol::Zero(_p,_n)), mu0(VecCol::Zero(_p)), tau_eps0(1.0), K0(MatRow::Identity(_p,_p)), G0(_ptrGr)
+	{
+		G0.set_empty_graph();
+	};
+	//Explicit constructor. Only for Complete
+	Init(MatCol const & _Beta0, VecCol const & _mu0, double const & _tau_eps0, MatRow const & _K0, Graph const & _G0):
+			Beta0(_Beta0), mu0(_mu0), tau_eps0(_tau_eps0), K0(_K0) , G0(_G0)
+	{
+		   if(tau_eps0 == 0)
+		   	throw("Initial value for tau_eps0 cannot be 0");
+
+	};
+	/*
+	//Explicit constructor. Not yet tested
+	Init(MatCol const & _Beta0, VecCol const & _mu0, double const & _tau_eps0, MatRow const & _K0, Graph const & _G0, GroupsPtr const & _ptrGr):
+			Beta0(_Beta0), mu0(_mu0), tau_eps0(_tau_eps0), K0(_K0) , G0(_ptrGr)
+	{
+		   G0 = _G0;	
+		   if(tau_eps0 == 0)
+		   	throw("Initial value for tau_eps0 cannot be 0");
+
+	};
+	*/
 	void set_init(MatCol const & _Beta0, VecCol const & _mu0, double const & _tau_eps0, MatRow const & _K0, Graph const & _G0){
 		Beta0 = _Beta0;
 		mu0 = _mu0;

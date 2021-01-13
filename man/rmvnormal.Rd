@@ -23,6 +23,8 @@ rmvnormal(
 \item{isChol}{boolean, set \code{TRUE} if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance matrix.}
 
 \item{isUpper}{boolean, used only if \code{isChol} is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.}
+
+\item{seed}{int, works as R function set.seed(). If provived, the same results are always returned. Set 0 for randomly generated seed.}
 }
 \value{
 It returns a \code{p} dimensional vector with the sampled values.

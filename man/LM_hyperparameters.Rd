@@ -5,17 +5,19 @@
 \title{Skeleton for Hyperparameters in Linear Models}
 \usage{
 LM_hyperparameters(
+  p,
   a_tau_eps = 20,
   b_tau_eps = 0.002,
   sigma_mu = 100,
   b_K = 3,
   D_K = NULL,
-  p = NULL,
   a_tauK = 0.5,
   b_tauK = 0.5
 )
 }
 \arguments{
+\item{p}{integer, dimension of the graph.}
+
 \item{a_tau_eps}{double, shape parameter for gamma prior distribution of \code{tau_eps} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.}
 
 \item{b_tau_eps}{double, inverse scale parameter for gamma prior distribution of \code{tau_eps} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.}
@@ -25,8 +27,6 @@ LM_hyperparameters(
 \item{b_K}{double, it is prior GWishart shape parameter. It has to be larger than 2 in order to have a well defined distribution. Needed in all graphical model, i.e \code{FGM} and \code{GGM} sampler and in \code{FLM} with fixed graph.}
 
 \item{D_K}{matrix of double stored columnwise. It is prior GWishart inverse scale parameter. It has to be symmetric and positive definite. Default is identity matrix but \code{p} has to be provided in that case. Needed in all graphical model, i.e \code{FGM} and \code{GGM} sampler and in \code{FLM} with fixed graph.}
-
-\item{p}{integer, number of basis. It is needed if \code{D_K} parameter is null.}
 
 \item{a_tauK}{double, shape parameter for gamma prior distribution for each \code{tau_K} parameters. Needed only in \code{FLM} sampler with diagonal graph.}
 

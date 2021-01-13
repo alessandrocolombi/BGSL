@@ -165,8 +165,8 @@ Rcpp::List rGwish_old(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic
 
 //' A direct sampler for GWishart distributed random variables.  
 //'
-//' This function draws a random matrices, distributed according to the GWishart distribution with shape parameter \code{b} and inverse scale \code{D}, 
-//' with respect to the graph structure \code{G}. METTERE LA FORMULA DELLA DISTRIBUZIONE 
+//'\loadmathjax This function draws a random matrices, distributed according to the GWishart distribution with shape parameter \code{b} and inverse scale \code{D}, 
+//' with respect to the graph structure \code{G}. \mjsdeqn{p\left(K~\lvert~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} \lvert K\rvert^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
 //' It implements the algorithm described by METTERE CITAZIONI LENKOSKI. It works with both decomposable and non decomposable graphs. 
 //' In particular it is possible to provide a graph in block form. 
 //' @param G Matrix of int stored columnwise. If a standard R matrix is provided, it is automaticaly converted. The lower part 
@@ -188,7 +188,7 @@ Rcpp::List rGwish_old(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic
 //' If the graph is empty or complete, no iterations are performed. If check_structure is \code{TRUE}, then the result of that check is also returned.
 //' @export
 // [[Rcpp::export]]
-Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
+Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const & G,
                   double const & b, Eigen::MatrixXd & D,Rcpp::String norm = "Mean", Rcpp::String form = "InvScale", 
                   Rcpp::Nullable<Rcpp::List> groups = R_NilValue, bool check_structure = false,
                   unsigned int const & max_iter = 500, long double const & threshold_check = 0.00001, long double const & threshold_conv = 0.00000001, int seed = 0)
@@ -251,7 +251,7 @@ Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Ei
 //' @return long double, the logarithm of the normalizing constant of GWishart distribution.
 //' @export
 // [[Rcpp::export]]
-long double log_Gconstant(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
+long double log_Gconstant(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const & G,
                           double const & b, Eigen::MatrixXd const & D,  unsigned int const & MCiteration = 100, 
                           Rcpp::Nullable<Rcpp::List> groups = R_NilValue, int seed = 0)
 {
@@ -422,6 +422,12 @@ Rcpp::List GGM_sim_sampling( int const & p, int const & n, int const & niter, in
     throw std::runtime_error("Error, the only possible form are: Complete and Block.");
 }
 
+
+
+/*
+--------> Manca ancora l'opzione sull'ordine con cui salvare i grafi <------------
+*/
+
 //' Sampler for Guassian Graphical Models
 //'
 //' This function draws samples a posteriori from a Gaussian Graphical Models. NON MI SERVE ESPORTARLA
@@ -446,12 +452,12 @@ Rcpp::List GGM_sim_sampling( int const & p, int const & n, int const & niter, in
 //' @param paddrm double, probability of proposing a new graph by adding one link.
 //' @param print_info boolean, if \code{TRUE} progress bar and execution time are displayed.
 //' @return This function returns a list with the posterior precision mean, a matrix with the probability of inclusion of each link, the number of accepted moves, the number of visited graphs and the list of all visited graphs.
-//' @export 
 // [[Rcpp::export]]
-Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data, //Devo ancora mettere come settare i valori inizialiiiiiiiiiiiiiiiiiiii
+Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data, 
                             int const & p, int const & n, int const & niter, int const & burnin, double const & thin, 
-                            Eigen::MatrixXd D, 
-                            double const & b = 3.0, int const & MCprior = 100, int const & MCpost = 100, double const & threshold = 0.00000001,
+                            Eigen::MatrixXd D, double const & b, 
+                            Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const & G0, Eigen::MatrixXd const & K0,
+                            int const & MCprior = 100, int const & MCpost = 100, double const & threshold = 0.00000001,
                             Rcpp::String form = "Complete", Rcpp::String prior = "Uniform", Rcpp::String algo = "MH",  
                             Rcpp::Nullable<Rcpp::List> groups = R_NilValue, int seed = 0, double const & Gprior = 0.5, 
                             double const & sigmaG = 0.1, double const & paddrm = 0.5, bool print_info = true  )
@@ -462,14 +468,7 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data, //Devo ancora mettere 
   if (form == "Complete")
   {
     Init<GraphType, unsigned int> init(n,p);
-    /*
-    GraphType<unsigned int> G0(p);
-    G0.fillRandom();
-    MatRow K0(utils::rgwish(G0,b,D,1e-16));
-    init.set_init(K0,G0);
-    Rcpp::Rcout<<"init.G0:"<<std::endl<<init.G0<<std::endl;
-    Rcpp::Rcout<<"init.K0:"<<std::endl<<init.K0<<std::endl;
-    */
+    init.set_init(MatRow (K0), GraphType<unsigned int> (G0)  );
     //Select the method to be used
     auto method = SelectMethod_Generic<GraphType, unsigned>(prior, algo, hy, param);
     //Crete sampler obj
@@ -512,18 +511,10 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data, //Devo ancora mettere 
       throw std::runtime_error("Error, group list has to be provided if Block form is selected");  
     }
     Rcpp::List gr(groups);
-    //std::shared_ptr<const Groups> ptr_gruppi(std::make_shared<const Groups>(n_groups,p));
-          //Groups prova_stampa_gruppi(gr);
-          //Rcpp::Rcout<<"prova_stampa_gruppi:"<<std::endl<<prova_stampa_gruppi<<std::endl;
     std::shared_ptr<const Groups> ptr_gruppi = std::make_shared<const Groups>(gr); 
     param.ptr_groups = ptr_gruppi;
     Init<BlockGraph,  unsigned int> init(n,p, ptr_gruppi);
-    /*
-    BlockGraph<unsigned int> G0(ptr_gruppi);
-    G0.fillRandom();
-    MatRow K0(utils::rgwish(G0.completeview(),b,D,1e-16));
-    init.set_init(K0,G0);
-    */
+    init.set_init(MatRow (K0),BlockGraph<unsigned int>(G0,ptr_gruppi));
     //Select the method to be used
     auto method = SelectMethod_Generic<BlockGraph, unsigned int>(prior, algo, hy, param);
     //Crete sampler obj
@@ -577,10 +568,13 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data, //Devo ancora mettere 
 //' 
 // [[Rcpp::export]]
 Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int const & burnin, double const & thin, Eigen::MatrixXd const & BaseMat,
-                        Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
-                        bool diagonal_graph = true, 
-                        double const & threshold_GWish = 0.00000001, int seed = 0, bool print_info = true)
+                          Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
+                          Eigen::MatrixXd const & Beta0, Eigen::VectorXd const & mu0, double const & tau_eps0, Eigen::VectorXd const & tauK0, Eigen::MatrixXd const & K0,
+                          double const & a_tau_eps, double const & b_tau_eps, double const & sigmamu, double const & aTauK, double const & bTauK, double const & bK, Eigen::MatrixXd const & DK,
+                          bool diagonal_graph = true, 
+                          double const & threshold_GWish = 0.00000001, int seed = 0, bool print_info = true)
 {
+
   const unsigned int p = BaseMat.cols();
   const unsigned int n = data.cols();
   const unsigned int r = BaseMat.rows();
@@ -588,9 +582,11 @@ Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
     throw std::runtime_error("Dimension of data and BaseMat are incoherent. data has to be (n_grid_points x n), BaseMat is (n_grid_points x p)");
   
   if(diagonal_graph){
-    FLMHyperparameters hy(p);
+    //FLMHyperparameters hy(p);
+    FLMHyperparameters hy(a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK );
     FLMParameters param(niter, burnin, thin, BaseMat);
     InitFLM init(n,p);
+    init.set_init(Beta0, mu0, tau_eps0, tauK0);
     FLMsampler<GraphForm::Diagonal> Sampler(data, param, hy, init, seed, print_info);
     //Run
     auto start = std::chrono::high_resolution_clock::now();
@@ -629,7 +625,8 @@ Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
   }
   else{
     
-    FLMHyperparameters hy(p);
+    //FLMHyperparameters hy(p);
+    FLMHyperparameters hy(a_tau_eps, b_tau_eps, sigmamu, bK, DK );
     FLMParameters param(niter, burnin, thin, BaseMat, threshold_GWish);
     if(G.rows() != G.cols())
       throw std::runtime_error("Inserted graph is not squared");
@@ -638,6 +635,7 @@ Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
     G.cast<unsigned int>();
     GraphType<unsigned int> Graph(G);
     InitFLM init(n,p, Graph);
+    init.set_init(Beta0, mu0, tau_eps0, K0 );
     FLMsampler<GraphForm::Fix> Sampler(data, param, hy, init, seed, print_info);
     //Run
     auto start = std::chrono::high_resolution_clock::now();
@@ -661,11 +659,133 @@ Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
                                                      Rcpp::Named("MeanK")=MeanK ,   
                                                      Rcpp::Named("MeanTaueps")=MeanTaueps );   
     return Rcpp::List::create(Rcpp::Named("SampledValues")=SampledValues,Rcpp::Named("PostMeans")=PosteriorMeans);
-    
   }
 }
 
 
+//' Functional Graphical model for smoothing
+//'
+// [[Rcpp::export]]
+Rcpp::List FGM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int const & burnin, double const & thin, double const & thinG,  //data and iterations
+                          Eigen::MatrixXd const & BaseMat,   //Basemat
+
+                          Eigen::MatrixXd const & Beta0, Eigen::VectorXd const & mu0, double const & tau_eps0,  //initial values
+                          Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const & G0, Eigen::MatrixXd const & K0, 
+
+                          double const & a_tau_eps, double const & b_tau_eps, double const & sigmamu,  double const & bK, //hyperparam
+                          Eigen::MatrixXd const & DK, double const & sigmaG, double const & paddrm , double const & Gprior,
+                          
+                          int const & MCprior, int const & MCpost, double const & threshold,  //GGM_parameters
+                          Rcpp::String form = "Complete", Rcpp::String prior = "Uniform", Rcpp::String algo = "MH",  
+                          Rcpp::Nullable<Rcpp::List> groups = R_NilValue, 
+
+                          int seed = 0, bool print_info = true 
+                        )
+{
+
+  const unsigned int p = BaseMat.cols();
+  const unsigned int n = data.cols();
+  const unsigned int r = BaseMat.rows();
+  if(data.rows() != r)
+    throw std::runtime_error("Dimension of data and BaseMat are incoherent. data has to be (n_grid_points x n), BaseMat is (n_grid_points x p)");
+  
+ using MatRow = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;  
+ Hyperparameters hy(a_tau_eps, b_tau_eps, sigmamu, bK, DK, paddrm, sigmaG, Gprior);
+ Parameters param(niter, burnin, thin, thinG, MCprior, MCpost, BaseMat, threshold);
+ if (form == "Complete")
+ {
+
+   Init<GraphType, unsigned int> init(Beta0, mu0, tau_eps0, MatRow (K0), GraphType<unsigned int> (G0) );
+   //Select the method to be used
+   auto method = SelectMethod_Generic<GraphType, unsigned>(prior, algo, hy, param);
+   //Crete sampler obj
+   FGMsampler  Sampler(data, param, hy, init, method, seed, print_info);
+   //Run
+   if(print_info){
+     Rcpp::Rcout<<"FGM Sampler starts:"<<std::endl; 
+   }
+   auto start = std::chrono::high_resolution_clock::now();
+   auto [SampledBeta, SampledMu, SampledK, SampledG, SampledTaueps] = Sampler.run();
+   auto stop = std::chrono::high_resolution_clock::now();
+   std::chrono::duration<double> timer = stop - start;
+   if(print_info){
+     Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
+   }
+   //Posterior Analysis
+   auto[MeanBeta, MeanMu, MeanK_vec, plinks, MeanTaueps] = analysis::PointwiseEstimate<decltype(SampledG)>(
+                                                          std::tie(SampledBeta, SampledMu, SampledK, SampledG, SampledTaueps), param.iter_to_store, param.iter_to_storeG);
+   MatRow MeanK(MatRow::Zero(p,p));
+   unsigned int pos{0};
+   for(unsigned int i = 0; i < p; ++i){
+     for(unsigned int j = i; j < p; ++j){
+       MeanK(i,j) = MeanK_vec(pos++);
+     }
+   } 
+   //Create Rcpp::List of sampled Graphs
+   std::vector< Rcpp::List > L(SampledG.size());
+   int counter = 0;
+   for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){ //This only works for maps!
+     L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+   }
+   return Rcpp::List::create ( Rcpp::Named("MeanBeta")      = MeanBeta, 
+                               Rcpp::Named("MeanMu")        = MeanMu,  
+                               Rcpp::Named("MeanK")         = MeanK, 
+                               Rcpp::Named("MeanTaueps")    = MeanTaueps, 
+                               Rcpp::Named("plinks")        = plinks, 
+                               Rcpp::Named("SampledGraphs") = L   ); //NON STO ANCORA RESTITUENDO TUTTE LE CATENE COMPLETE!
+ }
+ else if(form == "Block")
+ {
+   if(!groups.isNotNull()){
+     throw std::runtime_error("Error, group list has to be provided if Block form is selected");  
+   }
+   Rcpp::List gr(groups);
+   std::shared_ptr<const Groups> ptr_gruppi = std::make_shared<const Groups>(gr); 
+   param.ptr_groups = ptr_gruppi;
+   Init<BlockGraph, unsigned int> init(Beta0, mu0, tau_eps0, MatRow (K0), BlockGraph<unsigned int> (G0, ptr_gruppi) );
+   //Select the method to be used
+   auto method = SelectMethod_Generic<BlockGraph, unsigned int>(prior, algo, hy, param);
+   //Crete sampler obj
+   FGMsampler<BlockGraph> Sampler(data, param, hy, init, method, seed, print_info);
+   //Run
+   if(print_info){
+     Rcpp::Rcout<<"Block GGM Sampler starts:"<<std::endl; 
+   }
+   auto start = std::chrono::high_resolution_clock::now();
+   auto [SampledBeta, SampledMu, SampledK, SampledG, SampledTaueps] = Sampler.run();
+   auto stop = std::chrono::high_resolution_clock::now();
+   std::chrono::duration<double> timer = stop - start;
+   if(print_info){
+     Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
+   }
+   //Posterior Analysis
+   auto[MeanBeta, MeanMu, MeanK_vec, plinks, MeanTaueps] = 
+           analysis::PointwiseEstimate<decltype(SampledG)>(std::tie(SampledBeta, SampledMu, SampledK, SampledG, SampledTaueps), param.iter_to_store, param.iter_to_storeG, ptr_gruppi);
+   
+   MatRow MeanK(MatRow::Zero(p,p));
+   unsigned int pos{0};
+   for(unsigned int i = 0; i < p; ++i){
+     for(unsigned int j = i; j < p; ++j){
+       MeanK(i,j) = MeanK_vec(pos++);
+     }
+   }
+   //Create Rcpp::List of sampled Graphs
+   std::vector< Rcpp::List > L(SampledG.size());
+   int counter = 0;
+   for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
+     L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+   }
+    return Rcpp::List::create ( Rcpp::Named("MeanBeta")        = MeanBeta, 
+                                  Rcpp::Named("MeanMu")        = MeanMu,  
+                                  Rcpp::Named("MeanK")         = MeanK, 
+                                  Rcpp::Named("MeanTaueps")    = MeanTaueps, 
+                                  Rcpp::Named("plinks")        = plinks, 
+                                  Rcpp::Named("SampledGraphs") = L   ); //NON STO ANCORA RESTITUENDO TUTTE LE CATENE COMPLETE!
+ }
+ else
+   throw std::runtime_error("Error, the only possible form are: Complete and Block.");
+
+}
 
 //' Generates random Graphs
 //'

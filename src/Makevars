@@ -1,8 +1,13 @@
-CXX_STD = CXX17
+CXX_STD = CXX17 
 NOCRANFLAGS = -Wno-ignored-attributes -Wno-deprecated-declarations
 
+#GSL
 GSL_CFLAGS = $(shell gsl-config --cflags)
 GSL_LIBS = $(shell gsl-config --libs)
 
-PKG_CXXFLAGS += -DPARALLELEXEC $(GSL_CFLAGS) -fopenmp $(NOCRANFLAGS)
-PKG_LIBS +=  $(GSL_LIBS) -fopenmp
+#HDF5 
+HDF5_CFLAG = $(shell pkg-config --cflags hdf5)
+HDF5_LIBS = $(shell pkg-config --libs hdf5)
+
+PKG_CXXFLAGS += -DPARALLELEXEC $(GSL_CFLAGS) $(HDF5_CFLAG) -fopenmp $(NOCRANFLAGS)
+PKG_LIBS +=  $(GSL_LIBS) $(HDF5_LIBS) -fopenmp

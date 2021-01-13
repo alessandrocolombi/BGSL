@@ -17,11 +17,12 @@ class FLMsampler : public FLMsamplerTraits
 										std::tuple<RetBeta, RetMu, RetK, RetTaueps>    > ;
 	public:
 	FLMsampler( MatCol const & _data, FLMParameters const & _params, FLMHyperparameters const & _hy_params, 
-			    InitFLM const & _init, unsigned int _seed = 0, bool _print_pb = true):
+			    InitFLM const & _init, unsigned int _seed = 0, bool _print_pb = true, std::string _file_name = "FLMresult"):
 			    data(_data), params(_params), hy_params(_hy_params) ,init(_init),
-				p(_init.Beta0.rows()), n(_init.Beta0.cols()), grid_pts(_params.Basemat.rows()), engine(_seed), print_pb(_print_pb)
+				p(_init.Beta0.rows()), n(_init.Beta0.cols()), grid_pts(_params.Basemat.rows()), engine(_seed), print_pb(_print_pb), file_name(_file_name)
 	{
 	 	this->check();
+	 	file_name += ".h5";
 	 	//if(seed == 0){
 	 		////std::random_device rd;
 	 		////seed=rd();
@@ -43,6 +44,7 @@ class FLMsampler : public FLMsamplerTraits
 	//unsigned int seed;
 	sample::GSL_RNG engine;
 	bool print_pb;
+	std::string file_name;
 };
 
 template< GraphForm Graph >
@@ -64,7 +66,7 @@ typename FLMsampler<Graph>::RetType FLMsampler<Graph>::run()
 	if(print_pb){
 		std::cout<<"FLM sampler started"<<std::endl;
 	}
-
+	
 	// Declare all parameters (makes use of C++17 structured bindings)
 	const unsigned int & r = grid_pts;
 	const double&  a_tau_eps = this->hy_params.a_tau_eps;
@@ -102,6 +104,11 @@ typename FLMsampler<Graph>::RetType FLMsampler<Graph>::run()
 	RetTauK	  SaveTauK;
 	RetK 	  SaveK; 	 
 	RetTaueps SaveTaueps;
+
+	//Open file
+	//HDF5conversion::FileType file;
+	//file = H5Fcreate(file_name, H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT); 
+	//SURE_ASSERT(file>0,"Cannot create file ");
 
 	SaveBeta.reserve(iter_to_store);
 	SaveMu.reserve(iter_to_store);

@@ -33,10 +33,10 @@ class FLMHyperparameters : public FLMsamplerTraits{
 	public:
 	FLMHyperparameters()=default;
 	FLMHyperparameters(unsigned int const & _p):
-					a_tau_eps(2.0*10), b_tau_eps(2.0*0.001), sigma_mu(100.0), a_tauK(a_tau_eps), b_tauK(b_tau_eps), bK(3.0), DK(MatCol::Identity(_p,_p)){}									 
+					a_tau_eps(2.0*10), b_tau_eps(2.0*0.001), sigma_mu(100.0), a_tauK(a_tau_eps), b_tauK(b_tau_eps), bK(3.0), DK(MatCol::Identity(_p,_p)){}		//for diagonal graph							 
 	FLMHyperparameters(double const & _a, double const & _b, double const & _sigmamu, double const & _aK, double const & _bk ):
 					a_tau_eps(_a), b_tau_eps(_b), sigma_mu(_sigmamu), a_tauK(_aK), b_tauK(_bk){}
-	FLMHyperparameters(double const & _a, double const & _b, double const & _sigmamu, double const & _bK, MatCol const & _DK ):
+	FLMHyperparameters(double const & _a, double const & _b, double const & _sigmamu, double const & _bK, MatCol const & _DK ): 								//for fixed graph
 					a_tau_eps(_a), b_tau_eps(_b), sigma_mu(_sigmamu), a_tauK(1.0), b_tauK(1.0), bK(_bK), DK(_DK){}
 	double a_tau_eps;
     double b_tau_eps;
@@ -93,12 +93,19 @@ class InitFLM : public FLMsamplerTraits{
 			}
 	InitFLM(unsigned int const & _n, unsigned int const & _p, GraphType<unsigned int> const & _G):
 			Beta0(MatCol::Zero(_p,_n)), mu0(VecCol::Zero(_p)), tau_eps0(1.0), tauK0(VecCol::Ones(_p)), K0(MatCol::Identity(_p,_p)), G(_G) {}				
+	
 	void set_init(MatCol const & _Beta0, VecCol const & _mu0, double const & _tau_eps0, VecCol const & _tauK0){
 		Beta0 = _Beta0;
 		mu0 = _mu0;
 		tau_eps0 = _tau_eps0;
 		tauK0 = _tauK0; 
 		G.set_empty_graph();
+	}
+	void set_init(MatCol const & _Beta0, VecCol const & _mu0, double const & _tau_eps0, MatCol const & _K0){
+		Beta0 = _Beta0;
+		mu0 = _mu0;
+		tau_eps0 = _tau_eps0;
+		K0 = _K0; 
 	}
 	void set_init(MatCol const & _Beta0, VecCol const & _mu0, double const & _tau_eps0, MatCol const & _K0, GraphType<unsigned int> const & _G){
 		Beta0 = _Beta0;

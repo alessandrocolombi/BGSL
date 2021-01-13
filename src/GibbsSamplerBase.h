@@ -211,8 +211,7 @@ FGMsampler<GraphStructure, T, RetGraph>::run()
 	return std::make_tuple(SaveBeta, SaveMu, SaveK, SaveG, SaveTaueps);
 }
 
-
-
+//------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
