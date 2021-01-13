@@ -14,7 +14,7 @@ GSL_LIBS = $(shell $(FOLDER)/bin/gsl-config --libs)
 
 # HDF5
 HDF5_INC = $(shell $(FOLDER)/bin/pkg-config --cflags hdf5-1.10.5)
-HDF5_LIB = $(shell $(FOLDER)/bin/pkg-config --libs hdf5-1.10.5 -lhdf5)
+HDF5_LIB = $(shell $(FOLDER)/bin/pkg-config --libs hdf5-1.10.5)
 
 # Setting Package Flags
 PKG_CXXFLAGS += -DPARALLELEXEC $(shell "$(R_HOME)/bin$(R_ARCH)/Rscript.exe" -e "RcppParallel::CxxFlags()") \
