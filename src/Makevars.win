@@ -19,7 +19,7 @@ HDF5_LIB = $(shell $(FOLDER)/bin/pkg-config --libs hdf5-1.10.5)
 # Setting Package Flags
 PKG_CXXFLAGS += -DPARALLELEXEC $(shell "$(R_HOME)/bin$(R_ARCH)/Rscript.exe" -e "RcppParallel::CxxFlags()") \
                -D_REENTRANT $(GSL_INC) $(HDF5_INC) -I'.' -fopenmp 
-PKG_LIBS = $(shell "$(R_HOME)/bin$(R_ARCH)/Rscript.exe" -e "RcppParallel::LdFlags()") $(GSL_LIBS) $(HDF5_LIB) -lhdf5 -fopenmp
+PKG_LIBS = $(shell "$(R_HOME)/bin$(R_ARCH)/Rscript.exe" -e "RcppParallel::LdFlags()") $(GSL_LIBS) $(HDF5_LIB) -lhdf5 -lz -fopenmp
 
 
 # NOCRANFLAGS = -Wno-attributes -Wno-ignored-attributes -Wno-deprecated-declarations
