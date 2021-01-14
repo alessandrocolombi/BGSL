@@ -7,6 +7,7 @@
 #include "GraphPrior.h"
 #include "GGMFactory.h"
 #include "ProgressBar.h"
+#include "HDF5conversion.h"
 
 struct SamplerTraits{
 	// RetK is a vector containing the upper triangular part of the precision matrix. It is important to remember that this choice implies that 

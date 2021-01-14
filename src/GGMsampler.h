@@ -16,11 +16,12 @@ class GGMsampler : public SamplerTraits
 	using RetType 	    = std::tuple<RetK, RetGraph, int, int>;
 	//Right now i'm passing way to many parameters and hyperparameters ?
 	GGMsampler( MatCol const & _data, unsigned int const & _n, Parameters const & _params, Hyperparameters const & _hy_params, 
-			    Init<GraphStructure, T> const & _init, GGMType & _GGM_method, unsigned int _seed = 0, bool _print_bp = true):
+			    Init<GraphStructure, T> const & _init, GGMType & _GGM_method, unsigned int _seed = 0, bool _print_bp = true, std::string const & _file_name = "GGMresult"):
 			    data(_data), params(_params), hy_params(_hy_params), ptr_GGM_method(std::move(_GGM_method)) ,init(_init),
-				p(_data.rows()), n(_n), grid_pts(_params.Basemat.rows()), engine(_seed), print_bp(_print_bp)
+				p(_data.rows()), n(_n), grid_pts(_params.Basemat.rows()), engine(_seed), print_bp(_print_bp), file_name(_file_name)
 	{
 	 	this->check();
+	 	file_name += ".h5";
 	} 
 	RetType run();
 
@@ -39,6 +40,7 @@ class GGMsampler : public SamplerTraits
 	int total_accepted{0};
 	int visited{0};
 	bool print_bp;
+	std::string file_name;
 
 };
 
@@ -70,7 +72,17 @@ GGMsampler<GraphStructure, T, RetGraph>::run()
 	GGM_method.init_precision(G,K); //non serve per ARMH
 	total_accepted = 0;
 	visited = 0;
-
+	const unsigned int prec_elem = 0.5*p*(p+1); //Number of elements in the upper part of precision matrix (diagonal inclused). It is what is saved of the Precision matrix
+	unsigned int n_graph_elem{0};
+	if constexpr( internal_type_traits::isBlockGraph<GraphStructure, T>::value ){
+		n_graph_elem = G.get_possible_block_links();
+		std::cout<<"è block, elem = "<<n_graph_elem<<std::endl;
+	}
+	else{
+		n_graph_elem = G.get_possible_links();
+		std::cout<<"è complete, elem = "<<n_graph_elem<<std::endl;
+	}
+	unsigned int it_saved{0};
 	//Random engine and distributions
 				//sample::GSL_RNG engine(seed);
 	sample::rmvnorm rmv; //Covariance parametrization
@@ -82,6 +94,25 @@ GGMsampler<GraphStructure, T, RetGraph>::run()
 	RetGraph  SaveG;
 	SaveK.reserve(iter_to_storeG);
 
+	//Open file
+	HDF5conversion::FileType file;
+	file = H5Fcreate(file_name.data(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT); 
+	SURE_ASSERT(file > 0,"Cannot create file ");
+	//Create dataspaces
+	HDF5conversion::DataspaceType dataspace_Prec, dataspace_Graph;
+	int one_dim_rank = 1;//for 1-dim datasets. All other quantities
+	HDF5conversion::ScalarType Dim_K_ds = prec_elem*iter_to_store;
+	HDF5conversion::ScalarType Dim_G_ds = n_graph_elem*iter_to_store;
+
+	dataspace_Prec  = H5Screate_simple(one_dim_rank, &Dim_K_ds, NULL);
+	dataspace_Graph = H5Screate_simple(one_dim_rank, &Dim_G_ds, NULL);
+
+	//Create dataset
+	HDF5conversion::DatasetType  dataset_Prec, dataset_Graph;
+	dataset_Prec = H5Dcreate(file,"/Precision", H5T_NATIVE_DOUBLE, dataspace_Prec, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	SURE_ASSERT(dataset_Prec>=0,"Cannot create dataset for Precision");
+	dataset_Graph = H5Dcreate(file,"/Graphs", H5T_NATIVE_UINT, dataspace_Graph, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	SURE_ASSERT(dataset_Graph>=0,"Cannot create dataset for Graphs");
 	//Setup for progress bar, need to specify the total number of iterations
 	pBar bar(niter);
 	 
@@ -103,8 +134,9 @@ GGMsampler<GraphStructure, T, RetGraph>::run()
 		total_accepted += accepted_mv;
 		//Save
 		if(iter >= nburn){
-			if((iter - nburn)%thinG == 0){ 
+			if((iter - nburn)%thinG == 0 && it_saved < iter_to_store ){ 
 				SaveK.emplace_back(utils::get_upper_part(K));
+
 				std::vector<bool> adj;
 				if constexpr( ! std::is_same_v<T, bool>){
 					std::vector<T> adj_nobool(G.get_adj_list());
@@ -114,6 +146,21 @@ GGMsampler<GraphStructure, T, RetGraph>::run()
 				else{
 					adj = G.get_adj_list();
 				}
+
+				//Save graphs on file
+				std::vector<unsigned int> adj_file;
+				if constexpr( ! std::is_same_v<T, unsigned int>){
+					std::vector<T> adj_nouint(G.get_adj_list());
+					adj_file.resize(adj_nouint.size());
+					std::transform(adj_nouint.begin(), adj_nouint.end(), adj_file.begin(), [](T x) { return (unsigned int)x;});
+				}
+				else{
+					adj_file = G.get_adj_list();
+				}
+				VecCol UpperK{utils::get_upper_part(K)};
+				HDF5conversion::AddVector(dataset_Prec, UpperK, it_saved);	
+				HDF5conversion::AddUintVector(dataset_Graph, adj_file, it_saved);
+				it_saved++;
 
 				if constexpr( std::is_same_v< RetGraph, std::vector< std::pair< std::vector<bool>, int> > >){
 					auto it = std::find_if(SaveG.begin(), SaveG.end(), [&adj](std::pair< std::vector<bool>, int> const & sg)
@@ -144,6 +191,11 @@ GGMsampler<GraphStructure, T, RetGraph>::run()
 			}
 		}
 	}
+	H5Dclose(dataset_Graph);
+	H5Dclose(dataset_Prec);
+	H5Fclose(file);
+
+	
 	//std::cout<<std::endl<<"FGM sampler has finished"<<std::endl;
 	//std::cout<<"Accepted moves = "<<total_accepted<<std::endl;
 	//std::cout<<"visited graphs = "<<visited<<std::endl;

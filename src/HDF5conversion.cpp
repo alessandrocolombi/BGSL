@@ -1,15 +1,15 @@
 #include "HDF5conversion.h"
 
 namespace HDF5conversion{
-
+	
 	//Takes a bi-dimensional dataset of dimension (p x iter_to_store*n) and adds a column matrix (p x n) starting from position iter
 	void AddMatrix(DatasetType & dataset, MatCol & Mat, unsigned int const & iter) //for Matrices of double (thought for Beta matrices)
 	{
-
+		MatRow Mat2(Mat); //hdf5 stores matrices in C-style that is row-wise. Has to respect that ordering.
 		//dataset has dimension p x iter_to_store*n
 		ScalarType p = static_cast<ScalarType>(Mat.rows());
 		ScalarType n = static_cast<ScalarType>(Mat.cols());
-		double * buffer = Mat.data(); //Mat cannot be const because need to access to its buffer
+		double * buffer = Mat2.data(); //Mat cannot be const because need to access to its buffer
 		ScalarType offset[2] = {0,iter*n}; //initial point in complete matrix
 		ScalarType count [2] = {1,1}; //leave 1,1 for basic usage. Means that only one block is added.
 		ScalarType stride[2] = {1,1}; //leave 1,1 for basic usage. Means that only one block is added.
@@ -46,9 +46,10 @@ namespace HDF5conversion{
 	MatCol ReadMatrix(DatasetType & dataset, unsigned int const & p, unsigned int const & n ,unsigned int const & iter) //for Matrices of double (thought for Beta matrices)
 	{
 		//dataset has dimension p x iter_to_store*n
-		MatCol result(MatCol::Zero(p,n)); //Instantiate space for result matrix
+		//MatCol result(MatCol::Zero(p,n)); //Instantiate space for result matrix //<-----------------
+		MatRow result(MatRow::Zero(p,n)); //Instantiate space for result matrix //<-----------------
 		double * buffer = result.data();
-		ScalarType offset[2] = {0,0}; //initial point in complete matrix
+		ScalarType offset[2] = {0,iter*n}; //initial point in complete matrix
 		ScalarType count [2] = {1,1}; //leave 1,1 for basic usage. Means that only one block is read.
 		ScalarType stride[2] = {1,1}; //leave 1,1 for basic usage. Means that only one block is read.
 		ScalarType block [2] = {p,n}; //sub-matrix
@@ -144,7 +145,7 @@ namespace HDF5conversion{
 	    //std::cout<<"result:"<<std::endl<<result<<std::endl;
 	    return result;
 	}
-
+	
 	//Takes a linear dataset of dimension (iter_to_store) and adds a scalar in position iter
 	void AddScalar(DatasetType & dataset, double & val, unsigned int const & iter)
 	{
@@ -286,9 +287,9 @@ namespace HDF5conversion{
 	// Takes a 2-dimnesional dataset (p x stored_iter*n) and extracts the samples values for the spline_index-th coefficients of the curve_index-th curve
 	// In more abstract terms, gets the element in position (spline_index, curve_index) in all the stored_iter matrices that were saved.
 	// spline_index and curve_index are zero-based defined. The first spline is defined by 0 index. The first curve is defined by 0 index
-	VecCol GetChain_from_Matrix(DataspaceType & dataset, unsigned int const & spline_index, unsigned int const & curve_index, unsigned int const & stored_iter, unsigned int const & n_curves)
+	std::vector<double> GetChain_from_Matrix(DataspaceType & dataset, unsigned int const & spline_index, unsigned int const & curve_index, unsigned int const & stored_iter, unsigned int const & n_curves)
 	{
-		VecCol chain(VecCol::Zero(stored_iter));
+		std::vector<double> chain(stored_iter);
 		double * pchain = chain.data();
 
 		DataspaceType dataspace, mid2; 
@@ -313,6 +314,7 @@ namespace HDF5conversion{
 		auto coord = new ScalarType [stored_iter][2]; /* first dimension is the number of points that will be selected, second argument is the Dataset rank */
 		//std::cout<<"coordinate:"<<std::endl;
 		for(int i = 0; i < stored_iter; ++i){ //fill the array 
+			//coord[i][0] = spline_index; coord[i][1] = curve_index + n_curves*i; //coefficients are the defined with the following notation:
 			coord[i][0] = spline_index; coord[i][1] = curve_index + n_curves*i; //coefficients are the defined with the following notation:
 			//the i-th (first index) of the stored_iter points has spline_index (the assigned value) as first coordinate (the second index)
 			//the i-th (first index) of the stored_iter points has curve_index + n_curves*i (the assigned value) as second coordinate (the second index)
@@ -329,9 +331,9 @@ namespace HDF5conversion{
 	// Takes a 1-dimnesional dataset (p*stored_iter) and extracts the samples values elements in index-th position
 	// In other terms, it gets the element in position (index) in all the stored_iter vectors that were saved.
 	// index is zero-based defined. The first element is defined by 0 index
-	VecCol GetChain_from_Vector(DataspaceType & dataset, unsigned int const & index, unsigned int const & stored_iter, unsigned int const & p)
+	std::vector<double> GetChain_from_Vector(DataspaceType & dataset, unsigned int const & index, unsigned int const & stored_iter, unsigned int const & p)
 	{
-		VecCol chain(VecCol::Zero(stored_iter));
+		std::vector<double> chain(stored_iter);
 		double * pchain = chain.data();
 
 		DataspaceType dataspace, mid2; 

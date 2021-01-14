@@ -5,6 +5,7 @@
 #include "include_helpers.h"
 #include "include_graphs.h"
 #include "ProgressBar.h"
+#include "HDF5conversion.h"
 
 
 struct FLMsamplerTraits{
@@ -62,7 +63,7 @@ class FLMHyperparameters : public FLMsamplerTraits{
 class FLMParameters : public FLMsamplerTraits{
 	public:
 	FLMParameters()=default;
-	FLMParameters(int const & _niter, int const & _nburn, double const & _thin, MatCol const & _PHI, double const & _trGwishSampler = 1e-8):
+	FLMParameters(int const & _niter, int const & _nburn, int const & _thin, MatCol const & _PHI, double const & _trGwishSampler = 1e-8):
 				niter(_niter), nburn(_nburn), thin(_thin), Basemat(_PHI), trGwishSampler(_trGwishSampler)
 	{
 					iter_to_store  = static_cast<unsigned int>((niter - nburn)/thin );

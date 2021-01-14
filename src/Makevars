@@ -10,4 +10,4 @@ HDF5_CFLAG = $(shell pkg-config --cflags hdf5)
 HDF5_LIBS = $(shell pkg-config --libs hdf5)
 
 PKG_CXXFLAGS += -DPARALLELEXEC $(GSL_CFLAGS) $(HDF5_CFLAG) -fopenmp $(NOCRANFLAGS)
-PKG_LIBS +=  $(GSL_LIBS) $(HDF5_LIBS) -fopenmp
+PKG_LIBS +=  $(GSL_LIBS) $(HDF5_LIBS) -lz -fopenmp
