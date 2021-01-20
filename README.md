@@ -5,7 +5,7 @@
 1. [Overview](#Overview)
 2. [Prerequisites](#Prerequisites)
 3. [Installation - Unix](#Installation---Unix)
-4. [Installation - Window](#Installation---Window)
+4. [Installation - Windows](#Installation---Windows)
 
 ## Overview
 
@@ -26,25 +26,17 @@ linear algebra. All matrices, vectors and solvers in **BGSL** makes use of Eigen
 * [GSL](https://www.gnu.org/software/gsl/): the GNU Scientific Library (GSL) provides a wide range of fast mathematical 
 routines. **BGSL** utilizies GSL for generating random numbers, drawing samples from common distributions and for
 the computation of smoothing basis splines (Bsplines).
+* [HDF5](https://www.hdfgroup.org/): is a a C++ library for writing binary files that are architecture independent. 
+**BGSL** uses it to write all sampled values directly on file not to saturate the available memory, which prevents `R` session to abort.
 
 The user should not be worried of dealing with them because they only work under the hood. The only task of the user is
 to be sure to have them installed. Follow instructions in [Installation - Unix](#Installation---Unix) and   
-[Installation - Window](#Installation---Window) to make them available on your operating system.
-#### Note for future developperers
-* The first version of this package was developped using Eigen 3.3.7. As soon as Eigen 3.4 will be released and
-integrated in RcppEigen new useful features will be available. For example slicing and indexing will become standard
-operations, making life much easier when extracting submatrices. 
-See [Slicing and Indexing](https://eigen.tuxfamily.org/dox-devel/group__TutorialSlicingIndexing.html). 
-* `RcppParallel` is used in orded to achive parallelization. The first version on **BGSL** has been build using
-`RcppParallel` 5.0.2. It provides a complete toolkit for creating portable, high-performance parallel algorithms without requiring direct manipulation of operating system threads. In order to achive this task, it includes 
-[Intel(R) TBB](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/onetbb.html). Unfortunately
-right now it includes only version 2016 4.3 which is too old to achive 
-[parallel execution](https://en.cppreference.com/w/cpp/algorithm/execution_policy_tag_t) of STL algorithms. 
-Intel(R) TBB 2018 would be required.
+[Installation - Windows](#Installation---Windows) to make them available on your operating system.
+
 
 ## Installation - Unix
-Installation on Unix systems is straightforward. Note that all the following commands are valid for Ubuntu/Debian users only. 
-On other platforms, should be easy to use the corresponding package managing tool commands. 
+Installation on Unix systems is straightforward. Note that all following commands are valid for Ubuntu/Debian users only. 
+On other platforms, it should be easy to use the corresponding package managing tool commands. 
 ### R - Rstudio - devtools
 First step is to have `R` installed on your computer. If you already have that, make sure that it is at least version 4.0.3 and that `devtool` package is available. In this case go directly to 
 the [next point](#GSL).
@@ -137,13 +129,11 @@ devtools::install_github("alessandrocolombi/BGSL")
 library("BGSL")
 ```
 
-## Installation - Window
+## Installation - Windows
 
-Window users will have to leave their confort zone when installing this package as things get a little more complicated. There are two difficulties here. 
-First of all, note that installing a packege is a non-trivial process, involving making different kinds of documentation, checking `R` code for sanity, compiling `C++`  and so on. All those steps require a whole series of external tools like make, sed, tar, gzip, a C/C++ compiler etc. collectively known as **Rtools**. All those helpers are immediately available in Linux distribution but they are
-not on standard Window boxs and would need to be provided. The second problem will be to make GSL available at linking stage when **BGSL** would be compiled. The issue here is that Unix files and
-directories are organized in a standard way and libraries are usually automatically manged via package managing programms. What has to be done is exploiting the `R` toolchain provided with **Rtools**
-to manage libraries emulating a Unix procedure. 
+Windows users will have to leave their comfort zone when installing this package as things get a little more complicated. There are two difficulties here. 
+First of all, note that installing a package is a non-trivial process, involving making different kinds of documentation, checking `R` code for sanity, compiling `C++`  and so on. All those steps require a whole series of external tools like make, sed, tar, gzip, a C/C++ compiler etc. collectively known as a toolchain. All those helpers are immediately available in Linux distribution but they are not on standard Windows boxes and would need to be provided. The second problem will be to make **GSL** and **HDF5** available at linking stage when **BGSL** would be compiled. The issue here is that Unix files and directories are organized in a standard way and libraries are usually automatically manged via package managing programs. What has to be done is exploiting the `R` toolchain provided with 
+**Rtools** to manage libraries emulating a Unix procedure. 
 
 ### Rtools
 
@@ -161,14 +151,9 @@ install.packages("devtools")
 ### GSL
 
 At linking stage, **BGSL** would need to know where the GNU Scientific Library is. The main reference to make it available is [Rtools Packages](https://github.com/r-windows/rtools-packages).
-It offer an automatized procedure for both 32 and 64 bits architectures.
+It offers an automatized procedure for both 32 and 64 bits architectures.
 
 1. Open a Rtool Bash terminal, you can find it in "C:\rtools40\mingw64.exe" or "C:\rtools40\msys2.exe" or using the shortcut in your Start Menu. Both executables should work fine. <br/>
-**Note** it is in general not equivalent to the default terminal that is available in Rstudio (Alt+Shift+R). That usually opens the Command Prompt or Git Bash. It is suggested to open the correct
-terminal as explained above.
-2. `cd` into [Rtools Packages directory](https://github.com/r-windows/rtools-packages). The easiest way is by cloning it with Git. Make sure if it is already available with
-
-1. Open a Rtool Bash terminal, you can find it in "C:\rtools40\mingw64.exe" or "C:\rtools40\msys2.exe" or using the shortcut in your Start Menu. Both executables should work fine.
 **Note** it is in general not equivalent to the default terminal that is available in Rstudio (Alt+Shift+R). That usually opens the Command Prompt or Git Bash. It is suggested to open the correct
 terminal as explained above.
 2. `cd` into [Rtools Packages directory](https://github.com/r-windows/rtools-packages). The easiest way to that is by cloning it with Git. Make sure if it is already available with
@@ -176,7 +161,7 @@ terminal as explained above.
 $ where git
 C:\Program Files\Git\cmd\git.exe #if so, you already have it
 ```
-otherwise you can get [git for window](https://gitforwindows.org/). It is also suggested to 
+otherwise you can get [git for windows](https://gitforwindows.org/). It is also suggested to 
 [enable version control with Rstudio](https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN). <br/>
 It is now possible to clone the repository 
 ```shell
@@ -206,13 +191,17 @@ If 32-bit version is needed, perform the same test but with "C:\rtools40\mingw32
 
 ### HDF5
 
-Basically, all you have to do now is to repeat the same procedure as for GSL. Open a Rtools Bash terminal as previously explained and go into [Rtools Packages directory](https://github.com/r-windows/rtools-packages). It should now be available  without cloning again.
+All you have to do now is to repeat the same procedure as for GSL. Open a Rtools Bash terminal as previously explained and go into [Rtools Packages directory](https://github.com/r-windows/rtools-packages). It should now be available  without cloning again.
 ```shell
 $ cd rtools-packages
-$ cd mingw-w64-gsl
+$ cd mingw-w64-hdf5
 $ makepkg-mingw --syncdeps --noconfirm
+$ pacman -U mingw-i686-hdf5-1.10.5-9002-any.pkg-tar.xz
+$ pacman -U mingw-x86_64-hdf5-1.10.5-9002-any.pkg-tar.xz
+$ rm -f -r pkg src *.xz *.gz *.bz2 #clean the folder
+$ cd ../
 ```
-
+Building and installing **HDF5** may take a while as well.
 
 ### R depencencies
 
