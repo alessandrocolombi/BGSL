@@ -20,8 +20,10 @@ struct SamplerTraits{
 	using CholTypeRow 		= Eigen::LLT<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>, Eigen::Upper>;
 	using CholTypeCol 		= Eigen::LLT<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>, Eigen::Lower>;
 	using GroupsPtr   		= std::shared_ptr<const Groups>;
+	
+	//Used to save sampled values in memory and not on file
 	using RetBeta	  		= std::vector<MatCol>;
-	using RetMu		  		= std::vector<VecCol>; //Sarebbe meglio salvarli in una matrice pxiter_to_store cosi poi posso fare operazioni rowwise
+	using RetMu		  		= std::vector<VecCol>; 
 	using RetK	 	  		= std::vector<VecCol>; 
 	using RetTaueps	  		= std::vector<double>;
 	//using RetGraph 		= std::unordered_map< std::vector<bool>, int>;

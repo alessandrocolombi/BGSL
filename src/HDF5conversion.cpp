@@ -9,11 +9,11 @@ namespace HDF5conversion{
 		//dataset has dimension p x iter_to_store*n
 		ScalarType p = static_cast<ScalarType>(Mat.rows());
 		ScalarType n = static_cast<ScalarType>(Mat.cols());
-		double * buffer = Mat2.data(); //Mat cannot be const because need to access to its buffer
-		ScalarType offset[2] = {0,iter*n}; //initial point in complete matrix
-		ScalarType count [2] = {1,1}; //leave 1,1 for basic usage. Means that only one block is added.
-		ScalarType stride[2] = {1,1}; //leave 1,1 for basic usage. Means that only one block is added.
-		ScalarType block [2] = {p,n}; //sub-matrix
+		double * buffer = Mat2.data(); 		//Mat cannot be const because need to access to its buffer
+		ScalarType offset[2] = {0,iter*n}; 	//initial point in complete matrix
+		ScalarType count [2] = {1,1}; 		//leave 1,1 for basic usage. Means that only one block is added.
+		ScalarType stride[2] = {1,1}; 		//leave 1,1 for basic usage. Means that only one block is added.
+		ScalarType block [2] = {p,n}; 		//sub-matrix
 		
 		DataspaceType dataspace_sub; //Used to define the part of dataset that has to be modified.
 		dataspace_sub =  H5Dget_space(dataset); // gets dataspace that is defining dataset
@@ -244,7 +244,7 @@ namespace HDF5conversion{
 	    //numel =  H5Sget_select_npoints (memspace); //just a check
 	    //std::cout<<"numel = "<<numel<<std::endl;
 	    
-	    //Write
+	    //Write 
 	    status = H5Dwrite(dataset, H5T_NATIVE_UINT, memspace, dataspace_sub, H5P_DEFAULT, buffer); //H5Dwrite(dataset, type, memspace, dataspace_sub, H5P_DEFAULT, data_buffer);
 	    SURE_ASSERT(status>=0,"Cannot write file. Status"<< status);
 	    //std::cout<<"Write! "<<std::endl;
@@ -390,6 +390,25 @@ namespace HDF5conversion{
 			}
 		}
 		return std::make_tuple(SaveG, GraphSize, visited);
+	}
+
+	//Return vector with information needed to read the file. They are p, n, iter_to_store, iter_to_storeG
+	std::vector< unsigned int > GetInfo(std::string const & file_name)
+	{
+		HDF5conversion::FileType file;
+		HDF5conversion::DatasetType dataset_info;
+		//Open file
+		file=H5Fopen(file_name.data(), H5F_ACC_RDONLY, H5P_DEFAULT); //it is read only
+		SURE_ASSERT(file>0,"Cannot open file, read only mode selected");
+		//Open datasets
+		dataset_info  = H5Dopen(file, "/Info", H5P_DEFAULT);
+		SURE_ASSERT(dataset_info>=0,"Cannot create dataset for Beta");
+
+		std::vector< unsigned int > info(4);
+		unsigned int * buffer = info.data();
+		HDF5conversion::StatusType status = H5Dread(dataset_info, H5T_NATIVE_UINT, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer);
+		SURE_ASSERT(status>=0,"Cannot read file data. Status"<< status);
+		return info;
 	}
 
 }

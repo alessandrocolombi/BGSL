@@ -308,485 +308,6 @@ long double log_Gconstant2(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dy
 }
 
 
-//' Testing all the Gaussian Graphical Models samplers with simulated data
-//'
-//' @param b double, it is shape parameter. It has to be larger than 2 in order to have a well defined distribution.
-//' @param D Eigen Matrix of double stored columnwise. It has to be symmetric and positive definite. 
-//' @param MCiteration unsigned int, the number of iteration for the MonteCarlo approximation. 
-//' @export
-// [[Rcpp::export]]
-Rcpp::List GGM_sim_sampling( int const & p, int const & n, int const & niter, int const & burnin, double const & thin, Eigen::MatrixXd const & D, 
-                            double const & b = 3.0, int const & MCprior = 100, int const & MCpost = 100, double const & threshold = 0.00000001,
-                            Rcpp::String form = "Complete", Rcpp::String prior = "Uniform", Rcpp::String algo = "MH",  
-                            int const & n_groups = 0, int seed = 0, double sparsity = 0.5, double const & Gprior = 0.5, double const & sigmaG = 0.1, 
-                            double const & paddrm = 0.5, bool print_info = true)
-{
-  using MatRow = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
-  Hyperparameters hy(b, D, paddrm, sigmaG, Gprior);
-  Parameters param(niter, burnin, thin, MCprior, MCpost, threshold);
-  if (form == "Complete")
-  {
-    Init<GraphType, unsigned int> init(n,p);
-    //Select the method to be used
-    auto method = SelectMethod_Generic<GraphType, unsigned int>(prior, algo, hy, param);
-    //Simulate data
-    auto [data, Prec_true, G_true] = utils::SimulateDataGGM_Complete(p,n,seed);
-    GraphType<bool> G_true_mat(G_true);
-    //Crete sampler obj
-    GGMsampler  Sampler(data, n, param, hy, init, method, seed, print_info);
-    //Run
-    if(print_info){
-      Rcpp::Rcout<<"GGM Sampler starts:"<<std::endl; 
-    }
-    auto start = std::chrono::high_resolution_clock::now();
-    auto [SampledK, SampledG, accepted, visited] = Sampler.run();
-    auto stop = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> timer = stop - start;
-    if(print_info){
-      Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
-    }
-    //Posterior Analysis
-    auto[MeanK_vec, plinks] = analysis::PointwiseEstimate<decltype(SampledG)>(std::tie(SampledK, SampledG),param.iter_to_storeG);
-    MatRow MeanK(MatRow::Zero(p,p));
-    unsigned int pos{0};
-    for(unsigned int i = 0; i < p; ++i){
-      for(unsigned int j = i; j < p; ++j){
-        MeanK(i,j) = MeanK_vec(pos++);
-      }
-    }
-    //Create Rcpp::List of sampled Graphs
-    std::vector< Rcpp::List > L(SampledG.size());
-    int counter = 0;
-    for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
-      L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
-    }
-    return Rcpp::List::create ( Rcpp::Named("data") = data,
-                                Rcpp::Named("TrueGraph") = G_true_mat.get_graph(),
-                                Rcpp::Named("TruePrecision") = Prec_true,
-                                Rcpp::Named("SampledG") = L,
-                                Rcpp::Named("MeanK")= MeanK, 
-                                Rcpp::Named("plinks")= plinks, 
-                                Rcpp::Named("AcceptedMoves")=accepted, 
-                                Rcpp::Named("VisitedGraphs")=visited  );
-  }
-  else if(form == "Block")
-  {
-    if(n_groups <= 1 || n_groups > p)
-      throw std::runtime_error("Error, invalid number of groups inserted");  
-    std::shared_ptr<const Groups> ptr_gruppi(std::make_shared<const Groups>(n_groups,p));
-    param.ptr_groups = ptr_gruppi;
-    Init<BlockGraph,  unsigned int> init(n,p, ptr_gruppi);
-    //Select the method to be used
-    auto method = SelectMethod_Generic<BlockGraph, unsigned int>(prior, algo, hy, param);
-    //Simulate data
-    auto [data, Prec_true, G_true] = utils::SimulateDataGGM_Block(p,n,ptr_gruppi,seed);
-    BlockGraph<bool> G_true_mat(G_true, ptr_gruppi);
-    //Crete sampler obj
-    GGMsampler<BlockGraph> Sampler(data, n, param, hy, init, method, seed, print_info);
-    //Run
-    if(print_info){
-      Rcpp::Rcout<<"GGM Sampler starts:"<<std::endl; 
-    }
-    auto start = std::chrono::high_resolution_clock::now();
-    auto [SampledK, SampledG, accepted, visited] = Sampler.run();
-    auto stop = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> timer = stop - start;
-    if(print_info){
-      Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
-    }
-    //Posterior Analysis
-    auto[MeanK_vec, plinks] = analysis::PointwiseEstimate<decltype(SampledG)>(std::tie(SampledK, SampledG),param.iter_to_storeG, ptr_gruppi);
-    MatRow MeanK(MatRow::Zero(p,p));
-    unsigned int pos{0};
-    for(unsigned int i = 0; i < p; ++i){
-      for(unsigned int j = i; j < p; ++j){
-        MeanK(i,j) = MeanK_vec(pos++);
-      }
-    }
-    //Create Rcpp::List of sampled Graphs
-    std::vector< Rcpp::List > L(SampledG.size());
-    int counter = 0;
-    for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
-      L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
-    }
-    return Rcpp::List::create ( Rcpp::Named("data") = data,
-                                Rcpp::Named("TrueGraph") = G_true_mat.get_graph(),
-                                Rcpp::Named("TruePrecision") = Prec_true,
-                                Rcpp::Named("SampledG") = L,
-                                Rcpp::Named("MeanK")= MeanK, 
-                                Rcpp::Named("plinks")= plinks,  
-                                Rcpp::Named("AcceptedMoves")=accepted, 
-                                Rcpp::Named("VisitedGraphs")=visited   );
-  }
-  else
-    throw std::runtime_error("Error, the only possible form are: Complete and Block.");
-}
-
-
-
-/*
---------> Manca ancora l'opzione sull'ordine con cui salvare i grafi <------------
-*/
-
-//' Sampler for Guassian Graphical Models
-//'
-//' This function draws samples a posteriori from a Gaussian Graphical Models. NON MI SERVE ESPORTARLA
-//' @param data matrix of size \eqn{p x p} containing \eqn{\sum(Y_i^{T}Y_i)}. Data are required to be zero mean.
-//' @param p non necessario
-//' @param n number of observed data.
-//' @param niter number of total iterations to be performed in the sampling. The number of saved iteration will be \eqn{(niter - burnin)/thin}.
-//' @param burnin number of discarded iterations.
-//' @param thin thining value, it means that only one out of thin itarations is saved.
-//' @param b double, it is prior GWishart shape parameter. It has to be larger than 2 in order to have a well defined distribution.
-//' @param D matrix of double stored columnwise. It is prior GWishart inverse scale parameter. It has to be symmetric and positive definite. 
-//' @param MCprior positive integer, the number of iteration for the MonteCarlo approximation of prior normalizing constant of GWishart distribution. Not needed if algo is set to \code{"DRJ"}. 
-//' @param MCprior positive integer, the number of iteration for the MonteCarlo approximation of posterior normalizing constant of GWishart distribution. Needed only if algo is set to \code{"MH"}.
-//' @param threshold double, threshold for convergence in GWishart sampler.
-//' @param form string that may take as values only \code{"Complete"} of \code{"Block"}. It states if the algorithm has to run with \code{"Block"} or \code{"Complete"} graphs.
-//' @param prior string with the desidered prior for the graph. Possibilities are \code{"Uniform"}, \code{"Bernoulli"} and for \code{"Block"} graphs only \code{"TruncatedBernoulli"} and \code{"TruncatedUniform"} are also available.
-//' @param algo string with the desidered algorithm for sampling from a GGM. Possibilities are \code{"MH"}, \code{"RJ"} and \code{"DRJ"}.
-//' @param n_groups int, number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter. (CHE PER ORA NON ESISTE)
-//' @param seed set 0 for random seed.
-//' @param Gprior double representing the prior probability of inclusion of each link in case \code{"Bernoulli"} prior is selected for the graph. Set 0.5 for uniform prior.
-//' @param sigmaG double, the standard deviation used to perturb elements of precision matrix when constructing the new proposed matrix.
-//' @param paddrm double, probability of proposing a new graph by adding one link.
-//' @param print_info boolean, if \code{TRUE} progress bar and execution time are displayed.
-//' @return This function returns a list with the posterior precision mean, a matrix with the probability of inclusion of each link, the number of accepted moves, the number of visited graphs and the list of all visited graphs.
-// [[Rcpp::export]]
-Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data, 
-                            int const & p, int const & n, int const & niter, int const & burnin, double const & thin, 
-                            Eigen::MatrixXd D, double const & b, 
-                            Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const & G0, Eigen::MatrixXd const & K0,
-                            int const & MCprior = 100, int const & MCpost = 100, double const & threshold = 0.00000001,
-                            Rcpp::String form = "Complete", Rcpp::String prior = "Uniform", Rcpp::String algo = "MH",  
-                            Rcpp::Nullable<Rcpp::List> groups = R_NilValue, int seed = 0, double const & Gprior = 0.5, 
-                            double const & sigmaG = 0.1, double const & paddrm = 0.5, bool print_info = true  )
-{ 
-  using MatRow = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;  
-  Hyperparameters hy(b, D, paddrm, sigmaG, Gprior);
-  Parameters param(niter, burnin, thin, MCprior, MCpost, threshold);
-  if (form == "Complete")
-  {
-    Init<GraphType, unsigned int> init(n,p);
-    init.set_init(MatRow (K0), GraphType<unsigned int> (G0)  );
-    //Select the method to be used
-    auto method = SelectMethod_Generic<GraphType, unsigned>(prior, algo, hy, param);
-    //Crete sampler obj
-    GGMsampler  Sampler(data, n, param, hy, init, method, seed, print_info);
-    //Run
-    if(print_info){
-      Rcpp::Rcout<<"GGM Sampler starts:"<<std::endl; 
-    }
-    auto start = std::chrono::high_resolution_clock::now();
-    auto [SampledK, SampledG, accepted, visited] = Sampler.run();
-    auto stop = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> timer = stop - start;
-    if(print_info){
-      Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
-    }
-    //Posterior Analysis
-    auto[MeanK_vec, plinks] = analysis::PointwiseEstimate<decltype(SampledG)>(std::tie(SampledK, SampledG),param.iter_to_storeG);
-    MatRow MeanK(MatRow::Zero(p,p));
-    unsigned int pos{0};
-    for(unsigned int i = 0; i < p; ++i){
-      for(unsigned int j = i; j < p; ++j){
-        MeanK(i,j) = MeanK_vec(pos++);
-      }
-    } 
-    //Create Rcpp::List of sampled Graphs
-    std::vector< Rcpp::List > L(SampledG.size());
-    int counter = 0;
-    for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
-      L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
-    }
-    return Rcpp::List::create ( Rcpp::Named("MeanK")= MeanK, 
-                                Rcpp::Named("plinks")= plinks,  
-                                Rcpp::Named("AcceptedMoves")= accepted, 
-                                Rcpp::Named("VisitedGraphs")= visited, 
-                                Rcpp::Named("SampledGraphs")= L   );
-  }
-  else if(form == "Block")
-  {
-    if(!groups.isNotNull()){
-      throw std::runtime_error("Error, group list has to be provided if Block form is selected");  
-    }
-    Rcpp::List gr(groups);
-    std::shared_ptr<const Groups> ptr_gruppi = std::make_shared<const Groups>(gr); 
-    param.ptr_groups = ptr_gruppi;
-    Init<BlockGraph,  unsigned int> init(n,p, ptr_gruppi);
-    init.set_init(MatRow (K0),BlockGraph<unsigned int>(G0,ptr_gruppi));
-    //Select the method to be used
-    auto method = SelectMethod_Generic<BlockGraph, unsigned int>(prior, algo, hy, param);
-    //Crete sampler obj
-    GGMsampler<BlockGraph> Sampler(data, n, param, hy, init, method, seed, print_info);
-    //Run
-    if(print_info){
-      Rcpp::Rcout<<"Block GGM Sampler starts:"<<std::endl; 
-    }
-    auto start = std::chrono::high_resolution_clock::now();
-    auto [SampledK, SampledG, accepted, visited] = Sampler.run();
-    auto stop = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> timer = stop - start;
-    if(print_info){
-      Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
-    }
-    //Posterior Analysis
-    auto[MeanK_vec, plinks] = analysis::PointwiseEstimate<decltype(SampledG)>(std::tie(SampledK, SampledG),param.iter_to_storeG, ptr_gruppi);
-    MatRow MeanK(MatRow::Zero(p,p));
-    unsigned int pos{0};
-    for(unsigned int i = 0; i < p; ++i){
-      for(unsigned int j = i; j < p; ++j){
-        MeanK(i,j) = MeanK_vec(pos++);
-      }
-    }
-    //Create Rcpp::List of sampled Graphs
-    std::vector< Rcpp::List > L(SampledG.size());
-    int counter = 0;
-    for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
-      L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
-    }
-    return Rcpp::List::create ( Rcpp::Named("MeanK")= MeanK, 
-                                Rcpp::Named("plinks")= plinks, 
-                                Rcpp::Named("AcceptedMoves")=accepted, 
-                                Rcpp::Named("VisitedGraphs")=visited, 
-                                Rcpp::Named("SampledGraphs")=L );
-  }
-  else
-    throw std::runtime_error("Error, the only possible form are: Complete and Block.");
-}
-
-
-//' Functional Linear model for smoothing
-//'
-//' This function performs a linear regression for functional data, according to model (INSERIRE FORMULA MODELLO). 
-//' It is not a graphical model, indeed the precision matrix for the regression coefficients is chosen diagonal.
-//' @param data matrix of dimension r x n containing the evaluation of n functional data over a grid of r nodes.
-//' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be (niter - burnin)/thin.
-//' @param burnin the number of discarded iterations. 
-//' @param thin the thining value, it means that only one out of thin itarations is saved.
-//' @param BaseMat matrix of dimension r x p containing the evalutation of p Bspline basis over a grid of r nodes
-//' 
-// [[Rcpp::export]]
-Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int const & burnin, double const & thin, Eigen::MatrixXd const & BaseMat,
-                          Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
-                          Eigen::MatrixXd const & Beta0, Eigen::VectorXd const & mu0, double const & tau_eps0, Eigen::VectorXd const & tauK0, Eigen::MatrixXd const & K0,
-                          double const & a_tau_eps, double const & b_tau_eps, double const & sigmamu, double const & aTauK, double const & bTauK, double const & bK, Eigen::MatrixXd const & DK,
-                          bool diagonal_graph = true, 
-                          double const & threshold_GWish = 0.00000001, int seed = 0, bool print_info = true)
-{
-
-  const unsigned int p = BaseMat.cols();
-  const unsigned int n = data.cols();
-  const unsigned int r = BaseMat.rows();
-  if(data.rows() != r)
-    throw std::runtime_error("Dimension of data and BaseMat are incoherent. data has to be (n_grid_points x n), BaseMat is (n_grid_points x p)");
-  
-  if(diagonal_graph){
-    //FLMHyperparameters hy(p);
-    FLMHyperparameters hy(a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK );
-    FLMParameters param(niter, burnin, thin, BaseMat);
-    InitFLM init(n,p);
-    init.set_init(Beta0, mu0, tau_eps0, tauK0);
-    FLMsampler<GraphForm::Diagonal> Sampler(data, param, hy, init, seed, print_info);
-    //Run
-    auto start = std::chrono::high_resolution_clock::now();
-    auto [SaveBeta, SaveMu, SaveTauK, SaveTaueps] = Sampler.run();
-    auto stop = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> timer = stop - start;
-    if(print_info){
-      Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
-    }
-    //Summary
-    auto [MeanBeta, MeanMu, MeanTauK,MeanTaueps] = 
-       analysis::PointwiseEstimate( std::tie(SaveBeta, SaveMu, SaveTauK, SaveTaueps),param.iter_to_store );
-    //Return an Rcpp::List
-    Rcpp::List SampledValues = Rcpp::List::create ( Rcpp::Named("SaveBeta")=SaveBeta, 
-                                                    Rcpp::Named("SaveMu")=SaveMu, 
-                                                    Rcpp::Named("SaveTauK")=SaveTauK ,   
-                                                    Rcpp::Named("SaveTaueps")=SaveTaueps ); 
-
-    Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
-                                                     Rcpp::Named("MeanMu")=MeanMu, 
-                                                     Rcpp::Named("MeanTauK")=MeanTauK ,   
-                                                     Rcpp::Named("MeanTaueps")=MeanTaueps );   
-    /*
-    if(Quantiles){
-      auto[LowerBound, UpperBound] = analysis::QuantileBeta(SaveBeta, lower_qtl, upper_qtl);
-      Rcpp::List Quantiles = Rcpp::List::create( Rcpp::Named("BetaLower")=LowerBound, Rcpp::Named("BetaUpper")=UpperBound );
-      return Rcpp::List::create(Rcpp::Named("SampledValues")=SampledValues,Rcpp::Named("PostMeans")=PosteriorMeans, 
-                                Rcpp::Named("Quantiles")=Quantiles );
-    }
-    else{
-      return Rcpp::List::create(Rcpp::Named("SampledValues")=SampledValues,Rcpp::Named("PostMeans")=PosteriorMeans, 
-                                Rcpp::Named("Quantiles")=R_NilValue );
-    }
-    */
-    return Rcpp::List::create(Rcpp::Named("SampledValues")=SampledValues,Rcpp::Named("PostMeans")=PosteriorMeans);
-  }
-  else{
-    
-    //FLMHyperparameters hy(p);
-    FLMHyperparameters hy(a_tau_eps, b_tau_eps, sigmamu, bK, DK );
-    FLMParameters param(niter, burnin, thin, BaseMat, threshold_GWish);
-    if(G.rows() != G.cols())
-      throw std::runtime_error("Inserted graph is not squared");
-    if(G.rows() != p)
-      throw std::runtime_error("Dimension of graph and BaseMat are incoherent. graph has to be (p x p), BaseMat is (n_grid_points x p)");
-    G.cast<unsigned int>();
-    GraphType<unsigned int> Graph(G);
-    InitFLM init(n,p, Graph);
-    init.set_init(Beta0, mu0, tau_eps0, K0 );
-    FLMsampler<GraphForm::Fix> Sampler(data, param, hy, init, seed, print_info);
-    //Run
-    auto start = std::chrono::high_resolution_clock::now();
-    auto [SaveBeta, SaveMu, SaveK, SaveTaueps] = Sampler.run();
-    auto stop = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double> timer = stop - start;
-    if(print_info){
-      Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
-    }
-    //Summary
-    auto [MeanBeta, MeanMu, MeanK,MeanTaueps] = 
-       analysis::PointwiseEstimate( std::tie(SaveBeta, SaveMu, SaveK, SaveTaueps),param.iter_to_store );
-    //Return an Rcpp::List
-    Rcpp::List SampledValues = Rcpp::List::create ( Rcpp::Named("SaveBeta")=SaveBeta, 
-                                                    Rcpp::Named("SaveMu")=SaveMu, 
-                                                    Rcpp::Named("SaveK")=SaveK ,   
-                                                    Rcpp::Named("SaveTaueps")=SaveTaueps ); 
-
-    Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
-                                                     Rcpp::Named("MeanMu")=MeanMu, 
-                                                     Rcpp::Named("MeanK")=MeanK ,   
-                                                     Rcpp::Named("MeanTaueps")=MeanTaueps );   
-    return Rcpp::List::create(Rcpp::Named("SampledValues")=SampledValues,Rcpp::Named("PostMeans")=PosteriorMeans);
-  }
-}
-
-
-//' Functional Graphical model for smoothing
-//'
-// [[Rcpp::export]]
-Rcpp::List FGM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int const & burnin, double const & thin, double const & thinG,  //data and iterations
-                          Eigen::MatrixXd const & BaseMat,   //Basemat
-
-                          Eigen::MatrixXd const & Beta0, Eigen::VectorXd const & mu0, double const & tau_eps0,  //initial values
-                          Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const & G0, Eigen::MatrixXd const & K0, 
-
-                          double const & a_tau_eps, double const & b_tau_eps, double const & sigmamu,  double const & bK, //hyperparam
-                          Eigen::MatrixXd const & DK, double const & sigmaG, double const & paddrm , double const & Gprior,
-                          
-                          int const & MCprior, int const & MCpost, double const & threshold,  //GGM_parameters
-                          Rcpp::String form = "Complete", Rcpp::String prior = "Uniform", Rcpp::String algo = "MH",  
-                          Rcpp::Nullable<Rcpp::List> groups = R_NilValue, 
-
-                          int seed = 0, bool print_info = true 
-                        )
-{
-
-  const unsigned int p = BaseMat.cols();
-  const unsigned int n = data.cols();
-  const unsigned int r = BaseMat.rows();
-  if(data.rows() != r)
-    throw std::runtime_error("Dimension of data and BaseMat are incoherent. data has to be (n_grid_points x n), BaseMat is (n_grid_points x p)");
-  
- using MatRow = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;  
- Hyperparameters hy(a_tau_eps, b_tau_eps, sigmamu, bK, DK, paddrm, sigmaG, Gprior);
- Parameters param(niter, burnin, thin, thinG, MCprior, MCpost, BaseMat, threshold);
- if (form == "Complete")
- {
-
-   Init<GraphType, unsigned int> init(Beta0, mu0, tau_eps0, MatRow (K0), GraphType<unsigned int> (G0) );
-   //Select the method to be used
-   auto method = SelectMethod_Generic<GraphType, unsigned>(prior, algo, hy, param);
-   //Crete sampler obj
-   FGMsampler  Sampler(data, param, hy, init, method, seed, print_info);
-   //Run
-   if(print_info){
-     Rcpp::Rcout<<"FGM Sampler starts:"<<std::endl; 
-   }
-   auto start = std::chrono::high_resolution_clock::now();
-   auto [SampledBeta, SampledMu, SampledK, SampledG, SampledTaueps] = Sampler.run();
-   auto stop = std::chrono::high_resolution_clock::now();
-   std::chrono::duration<double> timer = stop - start;
-   if(print_info){
-     Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
-   }
-   //Posterior Analysis
-   auto[MeanBeta, MeanMu, MeanK_vec, plinks, MeanTaueps] = analysis::PointwiseEstimate<decltype(SampledG)>(
-                                                          std::tie(SampledBeta, SampledMu, SampledK, SampledG, SampledTaueps), param.iter_to_store, param.iter_to_storeG);
-   MatRow MeanK(MatRow::Zero(p,p));
-   unsigned int pos{0};
-   for(unsigned int i = 0; i < p; ++i){
-     for(unsigned int j = i; j < p; ++j){
-       MeanK(i,j) = MeanK_vec(pos++);
-     }
-   } 
-   //Create Rcpp::List of sampled Graphs
-   std::vector< Rcpp::List > L(SampledG.size());
-   int counter = 0;
-   for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){ //This only works for maps!
-     L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
-   }
-   return Rcpp::List::create ( Rcpp::Named("MeanBeta")      = MeanBeta, 
-                               Rcpp::Named("MeanMu")        = MeanMu,  
-                               Rcpp::Named("MeanK")         = MeanK, 
-                               Rcpp::Named("MeanTaueps")    = MeanTaueps, 
-                               Rcpp::Named("plinks")        = plinks, 
-                               Rcpp::Named("SampledGraphs") = L   ); //NON STO ANCORA RESTITUENDO TUTTE LE CATENE COMPLETE!
- }
- else if(form == "Block")
- {
-   if(!groups.isNotNull()){
-     throw std::runtime_error("Error, group list has to be provided if Block form is selected");  
-   }
-   Rcpp::List gr(groups);
-   std::shared_ptr<const Groups> ptr_gruppi = std::make_shared<const Groups>(gr); 
-   param.ptr_groups = ptr_gruppi;
-   Init<BlockGraph, unsigned int> init(Beta0, mu0, tau_eps0, MatRow (K0), BlockGraph<unsigned int> (G0, ptr_gruppi) );
-   //Select the method to be used
-   auto method = SelectMethod_Generic<BlockGraph, unsigned int>(prior, algo, hy, param);
-   //Crete sampler obj
-   FGMsampler<BlockGraph> Sampler(data, param, hy, init, method, seed, print_info);
-   //Run
-   if(print_info){
-     Rcpp::Rcout<<"Block GGM Sampler starts:"<<std::endl; 
-   }
-   auto start = std::chrono::high_resolution_clock::now();
-   auto [SampledBeta, SampledMu, SampledK, SampledG, SampledTaueps] = Sampler.run();
-   auto stop = std::chrono::high_resolution_clock::now();
-   std::chrono::duration<double> timer = stop - start;
-   if(print_info){
-     Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
-   }
-   //Posterior Analysis
-   auto[MeanBeta, MeanMu, MeanK_vec, plinks, MeanTaueps] = 
-           analysis::PointwiseEstimate<decltype(SampledG)>(std::tie(SampledBeta, SampledMu, SampledK, SampledG, SampledTaueps), param.iter_to_store, param.iter_to_storeG, ptr_gruppi);
-   
-   MatRow MeanK(MatRow::Zero(p,p));
-   unsigned int pos{0};
-   for(unsigned int i = 0; i < p; ++i){
-     for(unsigned int j = i; j < p; ++j){
-       MeanK(i,j) = MeanK_vec(pos++);
-     }
-   }
-   //Create Rcpp::List of sampled Graphs
-   std::vector< Rcpp::List > L(SampledG.size());
-   int counter = 0;
-   for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
-     L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
-   }
-    return Rcpp::List::create ( Rcpp::Named("MeanBeta")        = MeanBeta, 
-                                  Rcpp::Named("MeanMu")        = MeanMu,  
-                                  Rcpp::Named("MeanK")         = MeanK, 
-                                  Rcpp::Named("MeanTaueps")    = MeanTaueps, 
-                                  Rcpp::Named("plinks")        = plinks, 
-                                  Rcpp::Named("SampledGraphs") = L   ); //NON STO ANCORA RESTITUENDO TUTTE LE CATENE COMPLETE!
- }
- else
-   throw std::runtime_error("Error, the only possible form are: Complete and Block.");
-
-}
-
 //' Generates random Graphs
 //'
 //' This function genrates random graph both in \code{"Complete"} or \code{"Block"} form
@@ -800,9 +321,8 @@ Rcpp::List FGM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
 //' @return the adjacency matrix of the randomly generated graph.
 //' @export
 // [[Rcpp::export]]
-Rcpp::List                          //Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>
- Create_RandomGraph ( int const & p, int const & n_groups = 0, Rcpp::String form = "Complete", Rcpp::Nullable<Rcpp::List> groups = R_NilValue,
-                      double sparsity = 0.5, int seed = 0  )
+Rcpp::List Create_RandomGraph ( int const & p, int const & n_groups = 0, Rcpp::String form = "Complete", Rcpp::Nullable<Rcpp::List> groups = R_NilValue,
+                                 double sparsity = 0.5, int seed = 0  )
 {
   if(p <= 0)
     throw std::runtime_error("Wrong dimension inserted, the number of vertrices has to be strictly positive");
@@ -844,7 +364,6 @@ Rcpp::List                          //Eigen::Matrix<unsigned int, Eigen::Dynamic
   else
     throw std::runtime_error("The only possible forms are Complete and Block");
 }
-
 
 //' Sampler for Multivariate Normal random variables
 //'
@@ -1007,8 +526,24 @@ Rcpp::List Generate_Basis_derivatives(int const & n_basis, int const & nderiv, R
 }
 
 
+//' Read information from file
+//'
+//' Read from \code{file_name} some information that are needed to extract data from it. 
+//' @param file_name, string with the name of te file to be open. It has to include the extension, usually \code{.h5}.
+//' @export
+// [[Rcpp::export]]
+Rcpp::List Read_InfoFile( Rcpp::String const & file_name )
+{
+  std::vector< unsigned int > info =  HDF5conversion::GetInfo(file_name);
+  return  Rcpp::List::create ( Rcpp::Named("p") = info[0], 
+                               Rcpp::Named("n") = info[1], 
+                               Rcpp::Named("stored_iter") = info[2],   
+                               Rcpp::Named("stored_iterG") = info[3]
+                             );
+}
 
-//' Compute quantiles of sampled values
+
+//' Compute quantiles of sampled values VECCHIA E DA BUTTARE
 //'
 //' @export
 // [[Rcpp::export]]
@@ -1019,6 +554,151 @@ Rcpp::List Compute_QuantileBeta(std::vector<Eigen::MatrixXd> const & SaveBeta, d
   return Quantiles;
 }
 
+
+//' Compute quantiles of sampled values
+//'
+//' @export
+// [[Rcpp::export]]
+Rcpp::List Compute_Quantiles( Rcpp::String const & file_name, unsigned int const & p, unsigned int const & n, unsigned int const & stored_iterG, unsigned int const & stored_iter = 0, 
+                              bool Beta = false, bool Mu = false, bool TauEps = false, bool Precision = true,
+                              double const & lower_qtl = 0.05, double const & upper_qtl = 0.95 )
+{
+  
+  Rcpp::List Quantiles = Rcpp::List::create( Rcpp::Named("Beta"),      
+                                             Rcpp::Named("Mu"),        
+                                             Rcpp::Named("TauEps"),    
+                                             Rcpp::Named("Precision") 
+                                           );
+  if(Precision){
+    auto [Lower, Upper] =  analysis::Vector_ComputeQuantiles( file_name, stored_iterG, 0.5*p*(p+1), "Precision", lower_qtl, upper_qtl );
+    Quantiles["Precision"] = Rcpp::List::create(Rcpp::Named("Lower")=Lower, Rcpp::Named("Upper")=Upper);
+  }
+  if(Beta){
+    if(stored_iter <= 0)
+      throw std::runtime_error("stored_iter parameter has to be positive");
+    auto [Lower, Upper] =  analysis::Matrix_ComputeQuantiles( file_name, stored_iter, p, n, lower_qtl, upper_qtl );
+    Quantiles["Beta"] = Rcpp::List::create(Rcpp::Named("Lower")=Lower, Rcpp::Named("Upper")=Upper);
+  }
+  if(Mu){
+    if(stored_iter <= 0)
+      throw std::runtime_error("stored_iter parameter has to be positive");
+    auto [Lower, Upper] =  analysis::Vector_ComputeQuantiles( file_name, stored_iter, p, "Mu", lower_qtl, upper_qtl );
+    Quantiles["Mu"] = Rcpp::List::create(Rcpp::Named("Lower")=Lower, Rcpp::Named("Upper")=Upper);
+  }
+  if(TauEps){
+    if(stored_iter <= 0)
+      throw std::runtime_error("stored_iter parameter has to be positive");
+    auto [Lower, Upper] =  analysis::Scalar_ComputeQuantiles( file_name, stored_iter, lower_qtl, upper_qtl );
+    Quantiles["TauEps"] = Rcpp::List::create(Rcpp::Named("Lower")=Lower, Rcpp::Named("Upper")=Upper);
+  }
+  return Quantiles;
+}
+
+//' Compute Posterior means of sampled values
+//'
+//' @export
+// [[Rcpp::export]]
+Rcpp::List Compute_PosteriorMeans( Rcpp::String const & file_name, unsigned int const & p, unsigned int const & n, unsigned int const & stored_iterG, unsigned int const & stored_iter = 0, 
+                                    bool Beta = false, bool Mu = false, bool TauEps = false, bool Precision = true)
+{
+
+  Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta"), 
+                                                   Rcpp::Named("MeanMu"), 
+                                                   Rcpp::Named("MeanK"),   
+                                                   Rcpp::Named("MeanTaueps") );  
+  
+                                        
+  if(Precision){
+    MatRow MeanK(MatRow::Zero(p,p));  
+    VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name, stored_iterG, 0.5*p*(p+1), "Precision" );
+    MeanK. template triangularView<Eigen::Upper>() = MeanK_vett;
+    PosteriorMeans["MeanK"] = MeanK;
+  }
+  if(Beta){
+    if(stored_iter <= 0)
+      throw std::runtime_error("stored_iter parameter has to be positive");
+    MatCol MeanBeta = analysis::Matrix_PointwiseEstimate( file_name, stored_iter, p, n );
+    PosteriorMeans["MeanBeta"] = MeanBeta;
+  }
+  if(Mu){
+    if(stored_iter <= 0)
+      throw std::runtime_error("stored_iter parameter has to be positive");
+    VecCol MeanMu = analysis::Vector_PointwiseEstimate( file_name, stored_iter, p, "Mu" );
+    PosteriorMeans["MeanMu"] = MeanMu;
+  }
+  if(TauEps){
+    if(stored_iter <= 0)
+      throw std::runtime_error("stored_iter parameter has to be positive");
+    double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name, stored_iter );
+    PosteriorMeans["MeanTaueps"] = MeanTaueps;
+  }
+  return PosteriorMeans;
+}
+
+
+//' Extract chain from file
+//'
+//' This function extract the sampled chain for the \code{index1}-th component of variable specified in \code{variable}. For \code{"Beta"} coefficients one has to use also \code{index2}.
+//'
+//'
+//'
+//' @export
+// [[Rcpp::export]]
+Eigen::VectorXd Extract_Chain( Rcpp::String const & file_name, Rcpp::String const & variable, unsigned int const & stored_iter, unsigned int const & n, 
+                                unsigned int const & p, unsigned int const & index1, unsigned int const & index2 = 0 )
+{ 
+
+  if(variable != "Beta" && variable != "Mu" && variable != "Precision" && variable != "TauEps")
+    throw std::runtime_error("Error, only possible values for variable are Beta, Precision, Mu, TauEps");
+
+  HDF5conversion::FileType file;
+  HDF5conversion::DatasetType dataset_rd;
+  std::string file_name_stl{file_name};
+  //Open file
+  file=H5Fopen(file_name_stl.data(), H5F_ACC_RDONLY, H5P_DEFAULT); //it is read only
+  SURE_ASSERT(file>0,"Cannot open file, read only mode selected");
+
+  std::vector<double> chain;
+  if(variable == "Beta"){
+    //Open datasets
+    dataset_rd  = H5Dopen(file, "/Beta", H5P_DEFAULT);
+    SURE_ASSERT(dataset_rd>=0,"Cannot open dataset for Beta");
+    chain = HDF5conversion::GetChain_from_Matrix(dataset_rd, index1, index2, stored_iter, n);
+    H5Dclose(dataset_rd);
+  }
+  else if(variable == "Mu"){
+    //Open datasets
+    dataset_rd  = H5Dopen(file, "/Mu", H5P_DEFAULT);
+    SURE_ASSERT(dataset_rd>=0,"Cannot open dataset for Mu");
+    chain = HDF5conversion::GetChain_from_Vector(dataset_rd, index1, stored_iter, p);
+    H5Dclose(dataset_rd);
+  }
+  else if(variable == "Precision"){
+    //Open datasets
+    dataset_rd  = H5Dopen(file, "/Precision", H5P_DEFAULT);
+    SURE_ASSERT(dataset_rd>=0,"Cannot open dataset for Precision");
+    chain = HDF5conversion::GetChain_from_Vector(dataset_rd, index1, stored_iter, 0.5*p*(p+1));
+    H5Dclose(dataset_rd);
+  }
+  else if(variable == "TauEps"){
+    //Open datasets
+    dataset_rd  = H5Dopen(file, "/TauEps", H5P_DEFAULT);
+    SURE_ASSERT(dataset_rd>=0,"Cannot open dataset for TauEps");
+    chain.resize(stored_iter);
+    double * buffer = chain.data();
+    HDF5conversion::StatusType status = H5Dread(dataset_rd, H5T_NATIVE_DOUBLE, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer);
+    SURE_ASSERT(status>=0,"Cannot read file for TauEps. Status"<< status);
+    H5Dclose(dataset_rd);
+  }
+  else{
+    throw std::runtime_error("Error, only possible values for variable are Beta, Precision, Mu, TauEps");
+  }
+
+  H5Fclose(file);
+
+  Eigen::Map< Eigen::VectorXd > result(&(chain[0]), chain.size());
+  return result;
+}
 
 
 // [[Rcpp::export]]
@@ -1098,16 +778,484 @@ Rcpp::List CreateGroups(unsigned int const & p, unsigned int const & n_groups)
 }
 
 
+//' Sampler for Guassian Graphical Models
+//'
+//' This function draws samples a posteriori from a Gaussian Graphical Models. NON MI SERVE ESPORTARLA
+//' @param data matrix of size \eqn{p x p} containing \eqn{\sum(Y_i^{T}Y_i)}. Data are required to be zero mean.
+//' @param p non necessario
+//' @param n number of observed data.
+//' @param niter number of total iterations to be performed in the sampling. The number of saved iteration will be \eqn{(niter - burnin)/thin}.
+//' @param burnin number of discarded iterations.
+//' @param thin thining value, it means that only one out of thin itarations is saved.
+//' @param b double, it is prior GWishart shape parameter. It has to be larger than 2 in order to have a well defined distribution.
+//' @param D matrix of double stored columnwise. It is prior GWishart inverse scale parameter. It has to be symmetric and positive definite. 
+//' @param MCprior positive integer, the number of iteration for the MonteCarlo approximation of prior normalizing constant of GWishart distribution. Not needed if algo is set to \code{"DRJ"}. 
+//' @param MCprior positive integer, the number of iteration for the MonteCarlo approximation of posterior normalizing constant of GWishart distribution. Needed only if algo is set to \code{"MH"}.
+//' @param threshold double, threshold for convergence in GWishart sampler.
+//' @param form string that may take as values only \code{"Complete"} of \code{"Block"}. It states if the algorithm has to run with \code{"Block"} or \code{"Complete"} graphs.
+//' @param prior string with the desidered prior for the graph. Possibilities are \code{"Uniform"}, \code{"Bernoulli"} and for \code{"Block"} graphs only \code{"TruncatedBernoulli"} and \code{"TruncatedUniform"} are also available.
+//' @param algo string with the desidered algorithm for sampling from a GGM. Possibilities are \code{"MH"}, \code{"RJ"} and \code{"DRJ"}.
+//' @param n_groups int, number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter. (CHE PER ORA NON ESISTE)
+//' @param seed set 0 for random seed.
+//' @param Gprior double representing the prior probability of inclusion of each link in case \code{"Bernoulli"} prior is selected for the graph. Set 0.5 for uniform prior.
+//' @param sigmaG double, the standard deviation used to perturb elements of precision matrix when constructing the new proposed matrix.
+//' @param paddrm double, probability of proposing a new graph by adding one link.
+//' @param print_info boolean, if \code{TRUE} progress bar and execution time are displayed.
+//' @return This function returns a list with the posterior precision mean, a matrix with the probability of inclusion of each link, the number of accepted moves, the number of visited graphs and the list of all visited graphs.
+// [[Rcpp::export]]
+Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data, 
+                            int const & p, int const & n, int const & niter, int const & burnin, double const & thin, Rcpp::String file_name,
+                            Eigen::MatrixXd D, double const & b, 
+                            Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const & G0, Eigen::MatrixXd const & K0,
+                            int const & MCprior = 100, int const & MCpost = 100, double const & threshold = 0.00000001,
+                            Rcpp::String form = "Complete", Rcpp::String prior = "Uniform", Rcpp::String algo = "MH",  
+                            Rcpp::Nullable<Rcpp::List> groups = R_NilValue, int seed = 0, double const & Gprior = 0.5, 
+                            double const & sigmaG = 0.1, double const & paddrm = 0.5, bool print_info = true  )
+{ 
+  using MatRow = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;  
+  Hyperparameters hy(b, D, paddrm, sigmaG, Gprior);
+  Parameters param(niter, burnin, thin, MCprior, MCpost, threshold);
+  Rcpp::String file_name_extension(file_name);
+  file_name_extension += ".h5";
+
+  if (form == "Complete")
+  {
+    Init<GraphType, unsigned int> init(n,p);
+    init.set_init(MatRow (K0), GraphType<unsigned int> (G0)  );
+    //Select the method to be used
+    auto method = SelectMethod_Generic<GraphType, unsigned>(prior, algo, hy, param);
+    //Crete sampler obj
+    GGMsampler  Sampler(data, n, param, hy, init, method, file_name, seed, print_info);
+    //Run
+    if(print_info){
+      Rcpp::Rcout<<"GGM Sampler starts:"<<std::endl; 
+    }
+    auto start = std::chrono::high_resolution_clock::now();
+    int accepted = Sampler.run();
+    //auto [SampledK, SampledG, accepted, visited] = Sampler.run();
+    auto stop = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> timer = stop - start;
+    if(print_info){
+      Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
+    }
+    Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
+    //Posterior Analysis
+    Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
+    VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
+    MatRow MeanK(MatRow::Zero(p,p));
+    MeanK. template triangularView<Eigen::Upper>() = MeanK_vett;
+    std::cout<<"MeanK_vett:"<<std::endl<<MeanK_vett<<std::endl;
+    std::cout<<"MeanK:"<<std::endl<<MeanK<<std::endl;
+    auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p);
+    //Create Rcpp::List of sampled Graphs
+    std::vector< Rcpp::List > L(SampledG.size());
+    int counter = 0;
+    for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
+      L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+    }
+    return Rcpp::List::create ( Rcpp::Named("MeanK")= MeanK, 
+                                Rcpp::Named("plinks")= plinks,  
+                                Rcpp::Named("AcceptedMoves")= accepted, 
+                                Rcpp::Named("VisitedGraphs")= visited, 
+                                Rcpp::Named("TracePlot_Gsize")= TracePlot, 
+                                Rcpp::Named("SampledGraphs")= L   );
+    /*
+    //Posterior Analysis
+    auto[MeanK_vec, plinks] = analysis::PointwiseEstimate<decltype(SampledG)>(std::tie(SampledK, SampledG),param.iter_to_storeG);
+    MatRow MeanK(MatRow::Zero(p,p));
+    unsigned int pos{0};
+    for(unsigned int i = 0; i < p; ++i){
+      for(unsigned int j = i; j < p; ++j){
+        MeanK(i,j) = MeanK_vec(pos++);
+      }
+    } 
+    //Create Rcpp::List of sampled Graphs
+    std::vector< Rcpp::List > L(SampledG.size());
+    int counter = 0;
+    for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
+      L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+    }
+    return Rcpp::List::create ( Rcpp::Named("MeanK")= MeanK, 
+                                Rcpp::Named("plinks")= plinks,  
+                                Rcpp::Named("AcceptedMoves")= accepted, 
+                                Rcpp::Named("VisitedGraphs")= visited, 
+                                Rcpp::Named("SampledGraphs")= L   );*/
+  }
+  else if(form == "Block")
+  {
+    if(!groups.isNotNull()){
+      throw std::runtime_error("Error, group list has to be provided if Block form is selected");  
+    }
+    Rcpp::List gr(groups);
+    std::shared_ptr<const Groups> ptr_gruppi = std::make_shared<const Groups>(gr); 
+    param.ptr_groups = ptr_gruppi;
+    Init<BlockGraph,  unsigned int> init(n,p, ptr_gruppi);
+    init.set_init(MatRow (K0),BlockGraph<unsigned int>(G0,ptr_gruppi));
+    //Select the method to be used
+    auto method = SelectMethod_Generic<BlockGraph, unsigned int>(prior, algo, hy, param);
+    //Crete sampler obj
+    GGMsampler<BlockGraph> Sampler(data, n, param, hy, init, method, file_name, seed, print_info);
+    //Run
+    if(print_info){
+      Rcpp::Rcout<<"Block GGM Sampler starts:"<<std::endl; 
+    }
+    auto start = std::chrono::high_resolution_clock::now();
+    int accepted = Sampler.run();
+    //auto [SampledK, SampledG, accepted, visited] = Sampler.run();
+    auto stop = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> timer = stop - start;
+    if(print_info){
+      Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
+    }
+    Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
+    //Posterior Analysis
+    Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
+    VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
+    MatRow MeanK(MatRow::Zero(p,p));
+    MeanK. template triangularView<Eigen::Upper>() = MeanK_vett;
+    std::cout<<"MeanK_vett:"<<std::endl<<MeanK_vett<<std::endl;
+    std::cout<<"MeanK:"<<std::endl<<MeanK<<std::endl;
+    auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p, ptr_gruppi);
+    //Create Rcpp::List of sampled Graphs
+    std::vector< Rcpp::List > L(SampledG.size());
+    int counter = 0;
+    for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
+      L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+    }
+    return Rcpp::List::create ( Rcpp::Named("MeanK")= MeanK, 
+                                Rcpp::Named("plinks")= plinks,  
+                                Rcpp::Named("AcceptedMoves")= accepted, 
+                                Rcpp::Named("VisitedGraphs")= visited, 
+                                Rcpp::Named("TracePlot_Gsize")= TracePlot, 
+                                Rcpp::Named("SampledGraphs")= L   );
+    /*
+    //Posterior Analysis
+    auto[MeanK_vec, plinks] = analysis::PointwiseEstimate<decltype(SampledG)>(std::tie(SampledK, SampledG),param.iter_to_storeG, ptr_gruppi);
+    MatRow MeanK(MatRow::Zero(p,p));
+    unsigned int pos{0};
+    for(unsigned int i = 0; i < p; ++i){
+      for(unsigned int j = i; j < p; ++j){
+        MeanK(i,j) = MeanK_vec(pos++);
+      }
+    }
+    //Create Rcpp::List of sampled Graphs
+    std::vector< Rcpp::List > L(SampledG.size());
+    int counter = 0;
+    for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
+      L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+    }
+    return Rcpp::List::create ( Rcpp::Named("MeanK")= MeanK, 
+                                Rcpp::Named("plinks")= plinks, 
+                                Rcpp::Named("AcceptedMoves")=accepted, 
+                                Rcpp::Named("VisitedGraphs")=visited, 
+                                Rcpp::Named("SampledGraphs")=L );*/
+  }
+  else
+    throw std::runtime_error("Error, the only possible form are: Complete and Block.");
+}
 
 
+//' Functional Linear model for smoothing
+//'
+//' This function performs a linear regression for functional data, according to model (INSERIRE FORMULA MODELLO). 
+//' It is not a graphical model, indeed the precision matrix for the regression coefficients is chosen diagonal.
+//' @param data matrix of dimension r x n containing the evaluation of n functional data over a grid of r nodes.
+//' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be (niter - burnin)/thin.
+//' @param burnin the number of discarded iterations. 
+//' @param thin the thining value, it means that only one out of thin itarations is saved.
+//' @param BaseMat matrix of dimension r x p containing the evalutation of p Bspline basis over a grid of r nodes
+//' 
+// [[Rcpp::export]]
+Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int const & burnin, double const & thin, Eigen::MatrixXd const & BaseMat,
+                          Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
+                          Eigen::MatrixXd const & Beta0, Eigen::VectorXd const & mu0, double const & tau_eps0, Eigen::VectorXd const & tauK0, Eigen::MatrixXd const & K0,
+                          double const & a_tau_eps, double const & b_tau_eps, double const & sigmamu, double const & aTauK, double const & bTauK, double const & bK, Eigen::MatrixXd const & DK,
+                          Rcpp::String file_name, bool diagonal_graph = true, 
+                          double const & threshold_GWish = 0.00000001, int seed = 0, bool print_info = true)
+{
+
+  const unsigned int p = BaseMat.cols();
+  const unsigned int n = data.cols();
+  const unsigned int r = BaseMat.rows();
+  Rcpp::String file_name_extension(file_name);
+  file_name_extension += ".h5";
+  if(data.rows() != r)
+    throw std::runtime_error("Dimension of data and BaseMat are incoherent. data has to be (n_grid_points x n), BaseMat is (n_grid_points x p)");
+  
+  if(diagonal_graph){
+    //FLMHyperparameters hy(p);
+    FLMHyperparameters hy(a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK );
+    FLMParameters param(niter, burnin, thin, BaseMat);
+    InitFLM init(n,p);
+    init.set_init(Beta0, mu0, tau_eps0, tauK0);
+    FLMsampler<GraphForm::Diagonal> Sampler(data, param, hy, init, file_name, seed, print_info);
+    //Run
+    auto start = std::chrono::high_resolution_clock::now();
+    Sampler.run();
+    //auto [SaveBeta, SaveMu, SaveTauK, SaveTaueps] = Sampler.run();
+    auto stop = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> timer = stop - start;
+    if(print_info){
+      Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
+    }
+    Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
+    Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
+    MatCol MeanBeta   =  analysis::Matrix_PointwiseEstimate( file_name_extension, param.iter_to_store, p, n );
+    VecCol MeanMu     =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Mu" );
+    VecCol MeanTauK   =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Precision" );
+    double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
+    
+    Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
+                                                     Rcpp::Named("MeanMu")=MeanMu, 
+                                                     Rcpp::Named("MeanTauK")=MeanTauK ,   
+                                                     Rcpp::Named("MeanTaueps")=MeanTaueps );   
+    
+    return PosteriorMeans;
+
+        
+          ////Summary
+          //auto [MeanBeta, MeanMu, MeanTauK,MeanTaueps] = 
+            //analysis::PointwiseEstimate( std::tie(SaveBeta, SaveMu, SaveTauK, SaveTaueps),param.iter_to_store );
+          ////Return an Rcpp::List
+          //Rcpp::List SampledValues = Rcpp::List::create ( Rcpp::Named("SaveBeta")=SaveBeta, 
+                                                          //Rcpp::Named("SaveMu")=SaveMu, 
+                                                          //Rcpp::Named("SaveTauK")=SaveTauK ,   
+                                                          //Rcpp::Named("SaveTaueps")=SaveTaueps ); 
+  //
+          //Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
+                                                          //Rcpp::Named("MeanMu")=MeanMu, 
+                                                          //Rcpp::Named("MeanTauK")=MeanTauK ,   
+                                                          //Rcpp::Named("MeanTaueps")=MeanTaueps );   
+  //       
+          //return Rcpp::List::create(Rcpp::Named("SampledValues")=SampledValues,Rcpp::Named("PostMeans")=PosteriorMeans);
+        
+  }
+  else{
+    
+    //FLMHyperparameters hy(p);
+    FLMHyperparameters hy(a_tau_eps, b_tau_eps, sigmamu, bK, DK );
+    FLMParameters param(niter, burnin, thin, BaseMat, threshold_GWish);
+    if(G.rows() != G.cols())
+      throw std::runtime_error("Inserted graph is not squared");
+    if(G.rows() != p)
+      throw std::runtime_error("Dimension of graph and BaseMat are incoherent. graph has to be (p x p), BaseMat is (n_grid_points x p)");
+    G.cast<unsigned int>();
+    GraphType<unsigned int> Graph(G);
+    InitFLM init(n,p, Graph);
+    init.set_init(Beta0, mu0, tau_eps0, K0 );
+    FLMsampler<GraphForm::Fix> Sampler(data, param, hy, init, file_name, seed, print_info);
+    //Run
+    auto start = std::chrono::high_resolution_clock::now();
+    Sampler.run();
+    //auto [SaveBeta, SaveMu, SaveK, SaveTaueps] = Sampler.run();
+    auto stop = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> timer = stop - start;
+    if(print_info){
+      Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
+    }
+    Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
+    Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
+    MatCol MeanBeta   =  analysis::Matrix_PointwiseEstimate( file_name_extension, param.iter_to_store, p, n );
+    VecCol MeanMu     =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Mu" );
+    VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, 0.5*p*(p+1), "Precision" );
+    double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
+    
+    MatRow MeanK(MatRow::Zero(p,p));
+    MeanK. template triangularView<Eigen::Upper>() = MeanK_vett;
+    std::cout<<"MeanK_vett:"<<std::endl<<MeanK_vett<<std::endl;
+    std::cout<<"MeanK:"<<std::endl<<MeanK<<std::endl;
+    Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
+                                                     Rcpp::Named("MeanMu")=MeanMu, 
+                                                     Rcpp::Named("MeanK")=MeanK ,   
+                                                     Rcpp::Named("MeanTaueps")=MeanTaueps );   
+    
+    return PosteriorMeans;
+                  ////Summary
+                  //auto [MeanBeta, MeanMu, MeanK,MeanTaueps] = 
+                    //analysis::PointwiseEstimate( std::tie(SaveBeta, SaveMu, SaveK, SaveTaueps),param.iter_to_store );
+                  ////Return an Rcpp::List
+                  //Rcpp::List SampledValues = Rcpp::List::create ( Rcpp::Named("SaveBeta")=SaveBeta, 
+                                                                  //Rcpp::Named("SaveMu")=SaveMu, 
+                                                                  //Rcpp::Named("SaveK")=SaveK ,   
+                                                                  //Rcpp::Named("SaveTaueps")=SaveTaueps ); 
+              //
+                  //Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
+                                                                  //Rcpp::Named("MeanMu")=MeanMu, 
+                                                                  //Rcpp::Named("MeanK")=MeanK ,   
+                                                                  //Rcpp::Named("MeanTaueps")=MeanTaueps );   
+                  //return Rcpp::List::create(Rcpp::Named("SampledValues")=SampledValues,Rcpp::Named("PostMeans")=PosteriorMeans);
+  }
+}
 
 
+//' Functional Graphical model for smoothing
+//'
+//' prova
+//' @export
+// [[Rcpp::export]]
+Rcpp::List FGM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int const & burnin, double const & thin, double const & thinG,  //data and iterations
+                          Eigen::MatrixXd const & BaseMat, Rcpp::String const & file_name,  //Basemat and name of file 
 
+                          Eigen::MatrixXd const & Beta0, Eigen::VectorXd const & mu0, double const & tau_eps0,  //initial values
+                          Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const & G0, Eigen::MatrixXd const & K0, 
 
+                          double const & a_tau_eps, double const & b_tau_eps, double const & sigmamu,  double const & bK, //hyperparam
+                          Eigen::MatrixXd const & DK, double const & sigmaG, double const & paddrm , double const & Gprior,
+                          
+                          int const & MCprior, int const & MCpost, double const & threshold,  //GGM_parameters
+                          Rcpp::String form = "Complete", Rcpp::String prior = "Uniform", Rcpp::String algo = "MH",  
+                          Rcpp::Nullable<Rcpp::List> groups = R_NilValue, 
 
+                          int seed = 0, bool print_info = true )
+{
+  using MatRow = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;  
 
+  const unsigned int p = BaseMat.cols();
+  const unsigned int n = data.cols();
+  const unsigned int r = BaseMat.rows();
+  Rcpp::String file_name_extension(file_name);
+  file_name_extension += ".h5";
+  if(data.rows() != r)
+    throw std::runtime_error("Dimension of data and BaseMat are incoherent. data has to be (n_grid_points x n), BaseMat is (n_grid_points x p)");
 
+ Hyperparameters hy(a_tau_eps, b_tau_eps, sigmamu, bK, DK, paddrm, sigmaG, Gprior);
+ Parameters param(niter, burnin, thin, thinG, MCprior, MCpost, BaseMat, threshold);
+ if (form == "Complete")
+ {
 
+   Init<GraphType, unsigned int> init(Beta0, mu0, tau_eps0, MatRow (K0), GraphType<unsigned int> (G0) );
+   //Select the method to be used
+   auto method = SelectMethod_Generic<GraphType, unsigned>(prior, algo, hy, param);
+   //Crete sampler obj
+   FGMsampler  Sampler(data, param, hy, init, method, file_name, seed, print_info);
+   //Run
+   if(print_info){
+     Rcpp::Rcout<<"FGM Sampler starts:"<<std::endl; 
+   }
+   auto start = std::chrono::high_resolution_clock::now();
+   int accepted = Sampler.run();
+   //auto [SampledBeta, SampledMu, SampledK, SampledG, SampledTaueps] = Sampler.run();
+   auto stop = std::chrono::high_resolution_clock::now();
+   std::chrono::duration<double> timer = stop - start;
+   if(print_info){
+     Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
+   }
+   //Posterior Analysis
+   Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
+   Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
+   MatCol MeanBeta   =  analysis::Matrix_PointwiseEstimate( file_name_extension, param.iter_to_store, p, n );
+   VecCol MeanMu     =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Mu" );
+   VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
+   double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
+   MatRow MeanK(MatRow::Zero(p,p));
+   MeanK. template triangularView<Eigen::Upper>() = MeanK_vett;
+   //Graph analysis
+   auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p);
+   //Create Rcpp::List of sampled Graphs
+   std::vector< Rcpp::List > L(SampledG.size());
+   int counter = 0;
+   for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
+     L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+   }
+
+   Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
+                                                    Rcpp::Named("MeanMu")=MeanMu, 
+                                                    Rcpp::Named("MeanK")=MeanK ,   
+                                                    Rcpp::Named("MeanTaueps")=MeanTaueps );   
+
+   Rcpp::List GraphAnalysis  = Rcpp::List::create ( Rcpp::Named("plinks")= plinks,  
+                                                    Rcpp::Named("AcceptedMoves")= accepted, 
+                                                    Rcpp::Named("VisitedGraphs")= visited, 
+                                                    Rcpp::Named("TracePlot_Gsize")= TracePlot, 
+                                                    Rcpp::Named("SampledGraphs")= L   );
+
+   return Rcpp::List::create ( Rcpp::Named("PosteriorMeans")=PosteriorMeans, Rcpp::Named("GraphAnalysis")=GraphAnalysis );  
+ }
+ else if(form == "Block")
+ {
+   if(!groups.isNotNull()){
+     throw std::runtime_error("Error, group list has to be provided if Block form is selected");  
+   }
+   Rcpp::List gr(groups);
+   std::shared_ptr<const Groups> ptr_gruppi = std::make_shared<const Groups>(gr); 
+   param.ptr_groups = ptr_gruppi;
+   Init<BlockGraph, unsigned int> init(Beta0, mu0, tau_eps0, MatRow (K0), BlockGraph<unsigned int> (G0, ptr_gruppi) );
+   //Select the method to be used
+   auto method = SelectMethod_Generic<BlockGraph, unsigned int>(prior, algo, hy, param);
+   //Crete sampler obj
+   FGMsampler<BlockGraph, unsigned int> Sampler(data, param, hy, init, method, file_name, seed, print_info);
+   //Run
+   if(print_info){
+     Rcpp::Rcout<<"Block GGM Sampler starts:"<<std::endl; 
+   }
+   auto start = std::chrono::high_resolution_clock::now();
+   int accepted = Sampler.run();
+   //auto [SampledBeta, SampledMu, SampledK, SampledG, SampledTaueps] = Sampler.run();
+   auto stop = std::chrono::high_resolution_clock::now();
+   std::chrono::duration<double> timer = stop - start;
+   if(print_info){
+     Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
+   }
+   //Posterior Analysis
+   Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
+   Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
+   MatCol MeanBeta   =  analysis::Matrix_PointwiseEstimate( file_name_extension, param.iter_to_store, p, n );
+   VecCol MeanMu     =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Mu" );
+   VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
+   double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
+   MatRow MeanK(MatRow::Zero(p,p));
+   MeanK. template triangularView<Eigen::Upper>() = MeanK_vett;
+   //Graph analysis
+   auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p, ptr_gruppi);
+   //Create Rcpp::List of sampled Graphs
+   std::vector< Rcpp::List > L(SampledG.size());
+   int counter = 0;
+   for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
+     L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+   }
+
+   Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
+                                                    Rcpp::Named("MeanMu")=MeanMu, 
+                                                    Rcpp::Named("MeanK")=MeanK ,   
+                                                    Rcpp::Named("MeanTaueps")=MeanTaueps );   
+
+   Rcpp::List GraphAnalysis  = Rcpp::List::create ( Rcpp::Named("plinks")= plinks,  
+                                                    Rcpp::Named("AcceptedMoves")= accepted, 
+                                                    Rcpp::Named("VisitedGraphs")= visited, 
+                                                    Rcpp::Named("TracePlot_Gsize")= TracePlot, 
+                                                    Rcpp::Named("SampledGraphs")= L   );
+
+   return Rcpp::List::create ( Rcpp::Named("PosteriorMeans")=PosteriorMeans, Rcpp::Named("GraphAnalysis")=GraphAnalysis ); 
+ }
+ else
+   throw std::runtime_error("Error, the only possible form are: Complete and Block.");
+}
+//Scrivendo dopo questa non me le metteva nel namespace
+/*
+//Posterior Analysis
+auto[MeanBeta, MeanMu, MeanK_vec, plinks, MeanTaueps] = 
+        analysis::PointwiseEstimate<decltype(SampledG)>(std::tie(SampledBeta, SampledMu, SampledK, SampledG, SampledTaueps), param.iter_to_store, param.iter_to_storeG, ptr_gruppi);
+
+MatRow MeanK(MatRow::Zero(p,p));
+unsigned int pos{0};
+for(unsigned int i = 0; i < p; ++i){
+  for(unsigned int j = i; j < p; ++j){
+    MeanK(i,j) = MeanK_vec(pos++);
+  }
+}
+//Create Rcpp::List of sampled Graphs
+std::vector< Rcpp::List > L(SampledG.size());
+int counter = 0;
+for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
+  L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+}
+ return Rcpp::List::create ( Rcpp::Named("MeanBeta")        = MeanBeta, 
+                               Rcpp::Named("MeanMu")        = MeanMu,  
+                               Rcpp::Named("MeanK")         = MeanK, 
+                               Rcpp::Named("MeanTaueps")    = MeanTaueps, 
+                               Rcpp::Named("plinks")        = plinks, 
+                               Rcpp::Named("SampledGraphs") = L   ); //NON STO ANCORA RESTITUENDO TUTTE LE CATENE COMPLETE!
+*/
 
 
 #endif

@@ -23,6 +23,7 @@ FLM_sampling_c(
   bTauK,
   bK,
   DK,
+  file_name,
   diagonal_graph = TRUE,
   threshold_GWish = 1e-08,
   seed = 0L,

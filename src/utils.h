@@ -5,12 +5,7 @@
 #include "include_graphs.h"
 #include "GSLwrappers.h"
 #include <gsl/gsl_sf_log.h>
-//StatsLib
-//#ifndef STATS_ENABLE_EIGEN_WRAPPERS
-//#define STATS_ENABLE_EIGEN_WRAPPERS
-//#define STATS_USE_OPENMP --> mi sa che è buggato il codice della libreria su sta cosa
-//#include "stats.h"
-//#endif
+
 
 namespace utils{
 
@@ -131,7 +126,8 @@ namespace utils{
 	// The implement a way to easily select submatrices in Matlab fashion, i.e A([1,2,5],[0,3,6]). They are much more general with respect to SubMatrix_old and
 	// way more options are available. For the needs of rgwish_core they actually do not perform much better than the old version.
 	// Right now there is a problem, Neighbourhood is map< vector<unsigned int> > which means that all the nbds need to be mapped into an eigen type. The overhead of Eigen::Map
-	// should be minimal but that function directly works on the buffer. This means that it is not possible to declare nbds as const. Moreover, removing the const adornal, it is 
+	// should be minimal but that function directly works on the buffer. This means that it is not possible to declare nbds as const. --> that was solved
+	// Moreover, removing the const adornal, it is 
 	// now no longer possible to pass r-value references, i.e SubMatrix({0,1},M) is not possible.
 	template<class ArgType, class RowIndexType, class ColIndexType>
 	class indexing_functor {
@@ -1534,7 +1530,7 @@ namespace utils{
 						};
 						//Step 3: Complete Psi (upper part)
 						//- If i==0 -> formula 1
-						// Sums is a NxN-1 matrix (probabilmente il numero di righe sarà N-1 ma vabbe) such that Sums(a,b) = CumSum(a,b+1), i.e CumSum(a,b) = Sums(a,b-1)
+						// Sums is a NxN-1 matrix (number of computed rows is actually) such that Sums(a,b) = CumSum(a,b+1), i.e CumSum(a,b) = Sums(a,b-1)
 						Psi(0,0) = *it_fe;
 						it_fe++;
 						MatRow Sums(MatRow::Zero(N,N-1));

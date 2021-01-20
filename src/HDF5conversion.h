@@ -22,6 +22,7 @@
 * matrices of double and ColumnVector of double. Moreover the graph has to store unsigned integers as values. 
 * This is for sure not a fully satisfactory results, still there are a lot of troubles in templatazing this class, because it works directly with the buffer of data and for setting the type of storage
 * hdf5-native types are used. It was not the only possibility but for sure it was the simplest one.
+*
 */
 
 namespace HDF5conversion{
@@ -76,6 +77,9 @@ namespace HDF5conversion{
 	//map with visited graphs and how many times where visited; Vector with the dimension of the visited graph; number of visited graphs;
 	std::tuple<SampledGraphs, VecCol, int>
 	GetGraphsChain(DatasetType & dataset, unsigned int const & n_elem, unsigned int const & stored_iter);
+
+	//Return vector with information needed to read the file. They are p, n, iter_to_store, iter_to_storeG
+	std::vector< unsigned int > GetInfo(std::string const & file_name);
 	
 }
 

@@ -1627,7 +1627,7 @@ ReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsigned i
 	//2) Perform RJ according to the proposed move and graph
 	CompleteType Gnew_complete(Gnew.completeview());
 	CompleteType Gold_complete(Gold.completeview());
-	auto [Knew_prior, log_rj_proposal, log_jacobian_mv ] = this->RJ_new(Gnew_complete, this->Kprior, mv_type, engine) ;	
+	auto [Knew_prior, log_rj_proposal, log_jacobian_mv] = this->RJ_new(Gnew_complete, this->Kprior, mv_type, engine) ;	
 	//auto [Knew_prior, log_rj_proposal, log_jacobian_mv ] = this->RJ(Gnew_complete, this->Kprior, mv_type) ;	
 				//std::cout<<"Kold_prior.get_matrix():"<<std::endl<<this->Kprior.get_matrix()<<std::endl;
 				//std::cout<<"Knew_prior.get_matrix():"<<std::endl<<Knew_prior.get_matrix()<<std::endl;

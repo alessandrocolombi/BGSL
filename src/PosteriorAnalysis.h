@@ -264,6 +264,7 @@ namespace analysis{
 	//------------------------------------------------------------------------------------------------------------------------------------------------------
 	//Reading values from file
 
+
 	//This function is thought for Beta matrices. file_name has to containg also the extension (name.h5). The file has to contain a dataset called /Beta.
 	//It then returns a (p x n) matrix containing the mean values of every Beta
 	MatCol Matrix_PointwiseEstimate( std::string const & file_name, const int& saved_iter, const unsigned int & p, const unsigned int & n )
@@ -466,7 +467,6 @@ namespace analysis{
 		else{ //Assume it is a block Graph
 			n_elem = 0.5*groups->get_n_groups()*(groups->get_n_groups() + 1) - groups->get_n_singleton();
 		}
-		std::cout<<"n_elem = "<<n_elem<<std::endl;
 
 		HDF5conversion::SampledGraphs Glist;
 		VecCol traceplot_size;

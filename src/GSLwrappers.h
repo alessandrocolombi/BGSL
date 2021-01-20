@@ -86,16 +86,15 @@ namespace sample{
 			inline unsigned int get_seed() const{
 				return seed;
 			}
-			//It is public
-			gsl_rng * r;
 		private:
+			gsl_rng * r; //put it priviate
 			unsigned int seed;
 	};
 
 	struct runif
 	{
 		double operator()(GSL_RNG const & engine)const{
-			return gsl_rng_uniform(engine.r); //gsl_rng_uniform is a function, nothing has to be de-allocated
+			return gsl_rng_uniform(engine()); //gsl_rng_uniform is a function, nothing has to be de-allocated
 		}
 		double operator()()const{
 			return runif()(GSL_RNG ());
@@ -105,7 +104,7 @@ namespace sample{
 	struct runif_int //This function returns a random integer from 0 to N-1
 	{
 		unsigned int operator()(GSL_RNG const & engine, unsigned int const & N)const{
-			return gsl_rng_uniform_int(engine.r, N); //gsl_rng_uniform_int is a function, nothing has to be de-allocated.
+			return gsl_rng_uniform_int(engine(), N); //gsl_rng_uniform_int is a function, nothing has to be de-allocated.
 		}
 		unsigned int operator()(unsigned int const & N)const{
 			return runif_int()(GSL_RNG (), N);
@@ -623,6 +622,7 @@ namespace sample{
 	//3) Creation at fly exploiting default value type
 		//res_GSL_col = sample::rwish()(engine_gsl, 3, D);
 
+	//Follows shape-Scale parametrization
 	template<typename RetType = MatCol, isChol isCholType = isChol::False>
 	struct rwish{
 		template<typename EigenType>
@@ -639,7 +639,7 @@ namespace sample{
 			gsl_matrix result;												//gsl_matrix where the sampled values will be stored. 
 			result.size1   = Psi.rows();									//row of the matrix
 			result.size2   = Psi.cols();									//cols of the matrix
-			result.tda 	= Psi.rows();										//it is not a submatrix, so this parameter is equal to the number of rows.
+			result.tda 	  = Psi.rows();										//it is not a submatrix, so this parameter is equal to the number of rows.
 			result.owner  = 0;												//result does not own the buffer where data are stored 
 			result.data   = return_obj.data();								//set data buffer of gsl_matrix to be exactly the same of the Eigen matrix. 
 															 				//From now on they share the same buffer, writing on result.data is like writing on return_obj.data() and viceversa
@@ -728,7 +728,7 @@ namespace sample{
 
 
 
-//Per il momento non è un template perché immagino che questa scelta si faccia una volta e basta
+//It is not a template because this choice is done one and for all
 namespace spline{
 	using MatRow  = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 	using MatCol  = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;

@@ -105,8 +105,8 @@ class GGM : public GGMTraits<GraphStructure, T> {
 			std::iota(positions.begin(), positions.end(), 0); //fill with increasing values
 		}
 
-		//This method taks the current graph (both form are accepted) and the probability of selecting an addition and return a tuple,
-		//the proposed new graph, a double that is the (log) proposal ratio and the type of selected move
+		//This method takes the current graph (both form are accepted) and the probability of selecting an addition and return a tuple,
+		//with the proposed new graph, a double that is the (log) proposal ratio and the type of selected move
 		std::tuple<Graph, double, MoveType>  propose_new_graph(Graph & Gold, double alpha, sample::GSL_RNG const & engine = sample::GSL_RNG()); 
 		
 		virtual ReturnType operator()(MatCol const & data, unsigned int const & n, Graph & Gold, double alpha, sample::GSL_RNG const & engine = sample::GSL_RNG()) = 0;

@@ -2,10 +2,10 @@
 % Please edit documentation in R/RcppExports.R
 \name{Compute_QuantileBeta}
 \alias{Compute_QuantileBeta}
-\title{Compute quantiles of sampled values}
+\title{Compute quantiles of sampled values VECCHIA E DA BUTTARE}
 \usage{
 Compute_QuantileBeta(SaveBeta, lower_qtl = 0.05, upper_qtl = 0.95)
 }
 \description{
-Compute quantiles of sampled values
+Compute quantiles of sampled values VECCHIA E DA BUTTARE
 }

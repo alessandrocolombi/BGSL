@@ -3,9 +3,11 @@
 
 #include "SamplerOptions.h"
 
-//Template possibilities for storing graphs are:
+//Old version of this function let the user chose the return container for the graphs. Template possibilities for storing graphs are:
 // std::unordered_map< std::vector<bool>, int> / std::map< std::vector<bool>, int> / std::vector< std::pair< std::vector<bool>, int> >
-template<template <typename> class GraphStructure = GraphType, typename T = unsigned int, class RetGraph = std::unordered_map< std::vector<bool>, int>>
+
+
+template<template <typename> class GraphStructure = GraphType, typename T = unsigned int /*, class RetGraph = std::unordered_map< std::vector<bool>, int>*/ >
 class FGMsampler : public SamplerTraits
 {
 	public:
@@ -13,10 +15,10 @@ class FGMsampler : public SamplerTraits
 	using CompleteType  = typename GGMTraits<GraphStructure, T>::CompleteType;
 	using PrecisionType = typename GGMTraits<GraphStructure, T>::PrecisionType;
 	using GGMType 	    = std::unique_ptr<GGM<GraphStructure, T>>;
-	using RetType 	    = std::tuple<RetBeta, RetMu, RetK, RetGraph, RetTaueps>;
+	//using RetType 	    = std::tuple<RetBeta, RetMu, RetK, RetGraph, RetTaueps>;
 
 	FGMsampler( MatCol const & _data, Parameters const & _params, Hyperparameters const & _hy_params, 
-			    Init<GraphStructure, T> const & _init, GGMType & _GGM_method, unsigned int _seed = 0, bool _print_pb = true, std::string const & _file_name = "FGMresult"):
+			    Init<GraphStructure, T> const & _init, GGMType & _GGM_method, std::string const & _file_name = "FGMresult", unsigned int _seed = 0, bool _print_pb = true ):
 			    data(_data), params(_params), hy_params(_hy_params), ptr_GGM_method(std::move(_GGM_method)) ,init(_init),
 				p(_init.Beta0.rows()), n(_init.Beta0.cols()), grid_pts(_params.Basemat.rows()), engine(_seed), print_pb(_print_pb), file_name(_file_name)
 	{
@@ -24,7 +26,7 @@ class FGMsampler : public SamplerTraits
 	 	file_name += ".h5";
 	} 
 
-	RetType run();
+	int run();
 
 	private:
 	void check() const;
@@ -45,8 +47,8 @@ class FGMsampler : public SamplerTraits
 };
 
 
-template<template <typename> class GraphStructure, typename T, class RetGraph>
-void FGMsampler<GraphStructure, T, RetGraph>::check() const{
+template<template <typename> class GraphStructure, typename T /*, class RetGraph*/ >
+void FGMsampler<GraphStructure, T /*, RetGraph*/ >::check() const{
 	if(data.rows() != grid_pts) //check for grid_pts
 		throw std::runtime_error("Error, incoerent number of grid points");
 	if(data.cols() != n) //check for n
@@ -58,10 +60,9 @@ void FGMsampler<GraphStructure, T, RetGraph>::check() const{
 }
 
 
-//Potrebbe essere buggato. Avevo ancora lasiato la parametrizzazione sbagliata per la rgamma, paragona bene con GibbsSamplerDebug
-template<template <typename> class GraphStructure, typename T, class RetGraph >
-typename FGMsampler<GraphStructure, T, RetGraph>::RetType 
-FGMsampler<GraphStructure, T, RetGraph>::run()
+template<template <typename> class GraphStructure, typename T /*, class RetGraph*/ >
+//typename FGMsampler<GraphStructure, T /*, RetGraph*/ >::RetType 
+int FGMsampler<GraphStructure, T /*, RetGraph*/ >::run()
 {
 
 	if(print_pb){
@@ -109,25 +110,37 @@ FGMsampler<GraphStructure, T, RetGraph>::run()
 	const MatRow Irow(MatRow::Identity(p,p));
 	const MatRow one_over_sigma_mu((1/sigma_mu)*Irow);
 	//Structure for return
-	RetBeta	  SaveBeta;
-	RetMu	  SaveMu;	 
-	RetK	  SaveK; 	 
-	RetGraph  SaveG;
-	RetTaueps SaveTaueps;
+									//RetBeta	  SaveBeta;
+									//RetMu	  SaveMu;	 
+									//RetK	  SaveK; 	 
+									//RetGraph  SaveG;
+									//RetTaueps SaveTaueps;
 
-	SaveBeta.reserve(iter_to_store);
-	SaveMu.reserve(iter_to_store);
-	SaveK.reserve(iter_to_storeG);
-	SaveTaueps.reserve(iter_to_store);
+									//SaveBeta.reserve(iter_to_store);
+									//SaveMu.reserve(iter_to_store);
+									//SaveK.reserve(iter_to_storeG);
+									//SaveTaueps.reserve(iter_to_store);
 
 	//Open file
 	HDF5conversion::FileType file;
 	file = H5Fcreate(file_name.data(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT); 
 	SURE_ASSERT(file>0,"Cannot create file ");
-	//Create dataspaces
-	HDF5conversion::DataspaceType dataspace_Beta, dataspace_Mu, dataspace_Prec, dataspace_TauEps, dataspace_Graph;
 	int bi_dim_rank = 2; //for 2-dim datasets. Beta are matrices
 	int one_dim_rank = 1;//for 1-dim datasets. All other quantities
+	//Print info file
+	HDF5conversion::DataspaceType dataspace_info;
+	HDF5conversion::ScalarType Dim_info = 4;
+	dataspace_info = H5Screate_simple(one_dim_rank, &Dim_info, NULL);
+	HDF5conversion::DatasetType  dataset_info;
+	dataset_info  = H5Dcreate(file,"/Info", H5T_NATIVE_UINT, dataspace_info, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	SURE_ASSERT(dataset_info>=0,"Cannot create dataset for Info");
+	{
+		std::vector< unsigned int > info{p,n,iter_to_store,iter_to_storeG};
+		unsigned int * buffer_info = info.data();		
+		HDF5conversion::StatusType status = H5Dwrite(dataset_info, H5T_NATIVE_UINT, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer_info);
+	}
+	//Create dataspaces
+	HDF5conversion::DataspaceType dataspace_Beta, dataspace_Mu, dataspace_Prec, dataspace_TauEps, dataspace_Graph;
 	HDF5conversion::ScalarType Dim_beta_ds[2] = {p, n*iter_to_store}; 
 	HDF5conversion::ScalarType Dim_mu_ds = p*iter_to_store;
 	HDF5conversion::ScalarType Dim_K_ds = prec_elem*iter_to_storeG;
@@ -206,9 +219,9 @@ FGMsampler<GraphStructure, T, RetGraph>::run()
 		if(iter >= nburn){
 			if((iter - nburn)%thin == 0 && it_saved < iter_to_store){
 
-				SaveBeta.emplace_back(Beta);
-				SaveMu.emplace_back(mu);
-				SaveTaueps.emplace_back(tau_eps);
+										//SaveBeta.emplace_back(Beta);
+										//SaveMu.emplace_back(mu);
+										//SaveTaueps.emplace_back(tau_eps);
 				//Save on file
 				HDF5conversion::AddMatrix(dataset_Beta,   Beta,    it_saved);	
 				HDF5conversion::AddVector(dataset_Mu,     mu,      it_saved);	
@@ -219,45 +232,45 @@ FGMsampler<GraphStructure, T, RetGraph>::run()
 			if((iter - nburn)%thinG == 0 && it_savedG < iter_to_storeG){
 
 
-				SaveK.emplace_back(utils::get_upper_part(K));
-				std::vector<bool> adj;
-				if constexpr( ! std::is_same_v<T, bool>){
-					std::vector<T> adj_nobool(G.get_adj_list());
-					adj.resize(adj_nobool.size());
-					std::transform(adj_nobool.begin(), adj_nobool.end(), adj.begin(), [](T x) { return (bool)x;});
-				}else{
-					adj = G.get_adj_list();
-				}
-
-				if constexpr( std::is_same_v< RetGraph, std::vector< std::pair< std::vector<bool>, int> > >){
-					auto it = std::find_if(SaveG.begin(), SaveG.end(), [&adj](std::pair< std::vector<bool>, int> const & sg)
-														 {return sg.first == adj;});
-					if(it == SaveG.end()){
-						SaveG.emplace_back(std::make_pair(adj, 1)); 
-						visited++;
-					}
-					else
-						it->second++;
-				}
-				else if constexpr (std::is_same_v< RetGraph, std::map< std::vector<bool>, int> > || 
-								   std::is_same_v< RetGraph, std::unordered_map< std::vector<bool>, int> >) 
-				{
-					auto it = SaveG.find(adj);
-					if(it == SaveG.end()){
-						SaveG.insert(std::make_pair(adj, 1));
-						visited++;
-					}
-					else
-						it->second++;
-
-					//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-					// In constexpr if clause the false part is not instanziated only if the argument of the if  
-					// statement is a template parameter
-					//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				}		
+											//SaveK.emplace_back(utils::get_upper_part(K));
+											//std::vector<bool> adj;
+											//if constexpr( ! std::is_same_v<T, bool>){
+												//std::vector<T> adj_nobool(G.get_adj_list());
+												//adj.resize(adj_nobool.size());
+												//std::transform(adj_nobool.begin(), adj_nobool.end(), adj.begin(), [](T x) { return (bool)x;});
+											//}else{
+												//adj = G.get_adj_list();
+											//}
+							
+											//if constexpr( std::is_same_v< RetGraph, std::vector< std::pair< std::vector<bool>, int> > >){
+												//auto it = std::find_if(SaveG.begin(), SaveG.end(), [&adj](std::pair< std::vector<bool>, int> const & sg)
+														 							//{return sg.first == adj;});
+												//if(it == SaveG.end()){
+													//SaveG.emplace_back(std::make_pair(adj, 1)); 
+													//visited++;
+												//}
+												//else
+													//it->second++;
+											//}
+											//else if constexpr (std::is_same_v< RetGraph, std::map< std::vector<bool>, int> > || 
+								   							//std::is_same_v< RetGraph, std::unordered_map< std::vector<bool>, int> >) 
+											//{
+												//auto it = SaveG.find(adj);
+												//if(it == SaveG.end()){
+													//SaveG.insert(std::make_pair(adj, 1));
+													//visited++;
+												//}
+												//else
+													//it->second++;
+							
+												////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+												//// In constexpr if clause the false part is not instanziated only if the argument of the if  
+												//// statement is a template parameter
+												////!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+											//}		
 				
 
-				//Save graphs on file
+				//Save on file
 				std::vector<unsigned int> adj_file;
 				if constexpr( ! std::is_same_v<T, unsigned int>){
 					std::vector<T> adj_nouint(G.get_adj_list());
@@ -286,7 +299,8 @@ FGMsampler<GraphStructure, T, RetGraph>::run()
 	std::cout<<std::endl<<"FGM sampler has finished"<<std::endl;
 	std::cout<<"Accepted moves = "<<total_accepted<<std::endl;
 	std::cout<<"visited graphs = "<<visited<<std::endl;
-	return std::make_tuple(SaveBeta, SaveMu, SaveK, SaveG, SaveTaueps);
+	return total_accepted;
+	//return std::make_tuple(SaveBeta, SaveMu, SaveK, SaveG, SaveTaueps);
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------

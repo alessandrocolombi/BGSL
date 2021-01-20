@@ -38,7 +38,7 @@ struct GWishartTraits{
 	   ensure that. 
 */
 
-class GWishart : GWishartTraits{
+class GWishart : public GWishartTraits{
 	public:
 		//Constructors
 		GWishart()=default;

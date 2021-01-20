@@ -102,64 +102,6 @@ log_Gconstant2 <- function(G, b, D, MCiteration = 100L, groups = NULL, seed = 0L
     .Call(`_BGSL_log_Gconstant2`, G, b, D, MCiteration, groups, seed)
 }
 
-#' Testing all the Gaussian Graphical Models samplers with simulated data
-#'
-#' @param b double, it is shape parameter. It has to be larger than 2 in order to have a well defined distribution.
-#' @param D Eigen Matrix of double stored columnwise. It has to be symmetric and positive definite. 
-#' @param MCiteration unsigned int, the number of iteration for the MonteCarlo approximation. 
-#' @export
-GGM_sim_sampling <- function(p, n, niter, burnin, thin, D, b = 3.0, MCprior = 100L, MCpost = 100L, threshold = 0.00000001, form = "Complete", prior = "Uniform", algo = "MH", n_groups = 0L, seed = 0L, sparsity = 0.5, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5, print_info = TRUE) {
-    .Call(`_BGSL_GGM_sim_sampling`, p, n, niter, burnin, thin, D, b, MCprior, MCpost, threshold, form, prior, algo, n_groups, seed, sparsity, Gprior, sigmaG, paddrm, print_info)
-}
-
-#' Sampler for Guassian Graphical Models
-#'
-#' This function draws samples a posteriori from a Gaussian Graphical Models. NON MI SERVE ESPORTARLA
-#' @param data matrix of size \eqn{p x p} containing \eqn{\sum(Y_i^{T}Y_i)}. Data are required to be zero mean.
-#' @param p non necessario
-#' @param n number of observed data.
-#' @param niter number of total iterations to be performed in the sampling. The number of saved iteration will be \eqn{(niter - burnin)/thin}.
-#' @param burnin number of discarded iterations.
-#' @param thin thining value, it means that only one out of thin itarations is saved.
-#' @param b double, it is prior GWishart shape parameter. It has to be larger than 2 in order to have a well defined distribution.
-#' @param D matrix of double stored columnwise. It is prior GWishart inverse scale parameter. It has to be symmetric and positive definite. 
-#' @param MCprior positive integer, the number of iteration for the MonteCarlo approximation of prior normalizing constant of GWishart distribution. Not needed if algo is set to \code{"DRJ"}. 
-#' @param MCprior positive integer, the number of iteration for the MonteCarlo approximation of posterior normalizing constant of GWishart distribution. Needed only if algo is set to \code{"MH"}.
-#' @param threshold double, threshold for convergence in GWishart sampler.
-#' @param form string that may take as values only \code{"Complete"} of \code{"Block"}. It states if the algorithm has to run with \code{"Block"} or \code{"Complete"} graphs.
-#' @param prior string with the desidered prior for the graph. Possibilities are \code{"Uniform"}, \code{"Bernoulli"} and for \code{"Block"} graphs only \code{"TruncatedBernoulli"} and \code{"TruncatedUniform"} are also available.
-#' @param algo string with the desidered algorithm for sampling from a GGM. Possibilities are \code{"MH"}, \code{"RJ"} and \code{"DRJ"}.
-#' @param n_groups int, number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter. (CHE PER ORA NON ESISTE)
-#' @param seed set 0 for random seed.
-#' @param Gprior double representing the prior probability of inclusion of each link in case \code{"Bernoulli"} prior is selected for the graph. Set 0.5 for uniform prior.
-#' @param sigmaG double, the standard deviation used to perturb elements of precision matrix when constructing the new proposed matrix.
-#' @param paddrm double, probability of proposing a new graph by adding one link.
-#' @param print_info boolean, if \code{TRUE} progress bar and execution time are displayed.
-#' @return This function returns a list with the posterior precision mean, a matrix with the probability of inclusion of each link, the number of accepted moves, the number of visited graphs and the list of all visited graphs.
-GGM_sampling_c <- function(data, p, n, niter, burnin, thin, D, b, G0, K0, MCprior = 100L, MCpost = 100L, threshold = 0.00000001, form = "Complete", prior = "Uniform", algo = "MH", groups = NULL, seed = 0L, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5, print_info = TRUE) {
-    .Call(`_BGSL_GGM_sampling_c`, data, p, n, niter, burnin, thin, D, b, G0, K0, MCprior, MCpost, threshold, form, prior, algo, groups, seed, Gprior, sigmaG, paddrm, print_info)
-}
-
-#' Functional Linear model for smoothing
-#'
-#' This function performs a linear regression for functional data, according to model (INSERIRE FORMULA MODELLO). 
-#' It is not a graphical model, indeed the precision matrix for the regression coefficients is chosen diagonal.
-#' @param data matrix of dimension r x n containing the evaluation of n functional data over a grid of r nodes.
-#' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be (niter - burnin)/thin.
-#' @param burnin the number of discarded iterations. 
-#' @param thin the thining value, it means that only one out of thin itarations is saved.
-#' @param BaseMat matrix of dimension r x p containing the evalutation of p Bspline basis over a grid of r nodes
-#' 
-FLM_sampling_c <- function(data, niter, burnin, thin, BaseMat, G, Beta0, mu0, tau_eps0, tauK0, K0, a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK, bK, DK, diagonal_graph = TRUE, threshold_GWish = 0.00000001, seed = 0L, print_info = TRUE) {
-    .Call(`_BGSL_FLM_sampling_c`, data, niter, burnin, thin, BaseMat, G, Beta0, mu0, tau_eps0, tauK0, K0, a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK, bK, DK, diagonal_graph, threshold_GWish, seed, print_info)
-}
-
-#' Functional Graphical model for smoothing
-#'
-FGM_sampling_c <- function(data, niter, burnin, thin, thinG, BaseMat, Beta0, mu0, tau_eps0, G0, K0, a_tau_eps, b_tau_eps, sigmamu, bK, DK, sigmaG, paddrm, Gprior, MCprior, MCpost, threshold, form = "Complete", prior = "Uniform", algo = "MH", groups = NULL, seed = 0L, print_info = TRUE) {
-    .Call(`_BGSL_FGM_sampling_c`, data, niter, burnin, thin, thinG, BaseMat, Beta0, mu0, tau_eps0, G0, K0, a_tau_eps, b_tau_eps, sigmamu, bK, DK, sigmaG, paddrm, Gprior, MCprior, MCpost, threshold, form, prior, algo, groups, seed, print_info)
-}
-
 #' Generates random Graphs
 #'
 #' This function genrates random graph both in \code{"Complete"} or \code{"Block"} form
@@ -246,11 +188,45 @@ Generate_Basis_derivatives <- function(n_basis, nderiv, range, n_points = 0L, gr
     .Call(`_BGSL_Generate_Basis_derivatives`, n_basis, nderiv, range, n_points, grid_points, order)
 }
 
-#' Compute quantiles of sampled values
+#' Read information from file
+#'
+#' Read from \code{file_name} some information that are needed to extract data from it. 
+#' @param file_name, string with the name of te file to be open. It has to include the extension, usually \code{.h5}.
+#' @export
+Read_InfoFile <- function(file_name) {
+    .Call(`_BGSL_Read_InfoFile`, file_name)
+}
+
+#' Compute quantiles of sampled values VECCHIA E DA BUTTARE
 #'
 #' @export
 Compute_QuantileBeta <- function(SaveBeta, lower_qtl = 0.05, upper_qtl = 0.95) {
     .Call(`_BGSL_Compute_QuantileBeta`, SaveBeta, lower_qtl, upper_qtl)
+}
+
+#' Compute quantiles of sampled values
+#'
+#' @export
+Compute_Quantiles <- function(file_name, p, n, stored_iterG, stored_iter = 0L, Beta = FALSE, Mu = FALSE, TauEps = FALSE, Precision = TRUE, lower_qtl = 0.05, upper_qtl = 0.95) {
+    .Call(`_BGSL_Compute_Quantiles`, file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision, lower_qtl, upper_qtl)
+}
+
+#' Compute Posterior means of sampled values
+#'
+#' @export
+Compute_PosteriorMeans <- function(file_name, p, n, stored_iterG, stored_iter = 0L, Beta = FALSE, Mu = FALSE, TauEps = FALSE, Precision = TRUE) {
+    .Call(`_BGSL_Compute_PosteriorMeans`, file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision)
+}
+
+#' Extract chain from file
+#'
+#' This function extract the sampled chain for the \code{index1}-th component of variable specified in \code{variable}. For \code{"Beta"} coefficients one has to use also \code{index2}.
+#'
+#'
+#'
+#' @export
+Extract_Chain <- function(file_name, variable, stored_iter, n, p, index1, index2 = 0L) {
+    .Call(`_BGSL_Extract_Chain`, file_name, variable, stored_iter, n, p, index1, index2)
 }
 
 SimulateData_GGM_c <- function(p, n, n_groups, form, graph, adj_mat, seed, mean_null, sparsity, groups = NULL) {
@@ -264,6 +240,56 @@ SimulateData_GGM_c <- function(p, n, n_groups, form, graph, adj_mat, seed, mean_
 #' @export
 CreateGroups <- function(p, n_groups) {
     .Call(`_BGSL_CreateGroups`, p, n_groups)
+}
+
+#' Sampler for Guassian Graphical Models
+#'
+#' This function draws samples a posteriori from a Gaussian Graphical Models. NON MI SERVE ESPORTARLA
+#' @param data matrix of size \eqn{p x p} containing \eqn{\sum(Y_i^{T}Y_i)}. Data are required to be zero mean.
+#' @param p non necessario
+#' @param n number of observed data.
+#' @param niter number of total iterations to be performed in the sampling. The number of saved iteration will be \eqn{(niter - burnin)/thin}.
+#' @param burnin number of discarded iterations.
+#' @param thin thining value, it means that only one out of thin itarations is saved.
+#' @param b double, it is prior GWishart shape parameter. It has to be larger than 2 in order to have a well defined distribution.
+#' @param D matrix of double stored columnwise. It is prior GWishart inverse scale parameter. It has to be symmetric and positive definite. 
+#' @param MCprior positive integer, the number of iteration for the MonteCarlo approximation of prior normalizing constant of GWishart distribution. Not needed if algo is set to \code{"DRJ"}. 
+#' @param MCprior positive integer, the number of iteration for the MonteCarlo approximation of posterior normalizing constant of GWishart distribution. Needed only if algo is set to \code{"MH"}.
+#' @param threshold double, threshold for convergence in GWishart sampler.
+#' @param form string that may take as values only \code{"Complete"} of \code{"Block"}. It states if the algorithm has to run with \code{"Block"} or \code{"Complete"} graphs.
+#' @param prior string with the desidered prior for the graph. Possibilities are \code{"Uniform"}, \code{"Bernoulli"} and for \code{"Block"} graphs only \code{"TruncatedBernoulli"} and \code{"TruncatedUniform"} are also available.
+#' @param algo string with the desidered algorithm for sampling from a GGM. Possibilities are \code{"MH"}, \code{"RJ"} and \code{"DRJ"}.
+#' @param n_groups int, number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter. (CHE PER ORA NON ESISTE)
+#' @param seed set 0 for random seed.
+#' @param Gprior double representing the prior probability of inclusion of each link in case \code{"Bernoulli"} prior is selected for the graph. Set 0.5 for uniform prior.
+#' @param sigmaG double, the standard deviation used to perturb elements of precision matrix when constructing the new proposed matrix.
+#' @param paddrm double, probability of proposing a new graph by adding one link.
+#' @param print_info boolean, if \code{TRUE} progress bar and execution time are displayed.
+#' @return This function returns a list with the posterior precision mean, a matrix with the probability of inclusion of each link, the number of accepted moves, the number of visited graphs and the list of all visited graphs.
+GGM_sampling_c <- function(data, p, n, niter, burnin, thin, file_name, D, b, G0, K0, MCprior = 100L, MCpost = 100L, threshold = 0.00000001, form = "Complete", prior = "Uniform", algo = "MH", groups = NULL, seed = 0L, Gprior = 0.5, sigmaG = 0.1, paddrm = 0.5, print_info = TRUE) {
+    .Call(`_BGSL_GGM_sampling_c`, data, p, n, niter, burnin, thin, file_name, D, b, G0, K0, MCprior, MCpost, threshold, form, prior, algo, groups, seed, Gprior, sigmaG, paddrm, print_info)
+}
+
+#' Functional Linear model for smoothing
+#'
+#' This function performs a linear regression for functional data, according to model (INSERIRE FORMULA MODELLO). 
+#' It is not a graphical model, indeed the precision matrix for the regression coefficients is chosen diagonal.
+#' @param data matrix of dimension r x n containing the evaluation of n functional data over a grid of r nodes.
+#' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be (niter - burnin)/thin.
+#' @param burnin the number of discarded iterations. 
+#' @param thin the thining value, it means that only one out of thin itarations is saved.
+#' @param BaseMat matrix of dimension r x p containing the evalutation of p Bspline basis over a grid of r nodes
+#' 
+FLM_sampling_c <- function(data, niter, burnin, thin, BaseMat, G, Beta0, mu0, tau_eps0, tauK0, K0, a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK, bK, DK, file_name, diagonal_graph = TRUE, threshold_GWish = 0.00000001, seed = 0L, print_info = TRUE) {
+    .Call(`_BGSL_FLM_sampling_c`, data, niter, burnin, thin, BaseMat, G, Beta0, mu0, tau_eps0, tauK0, K0, a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK, bK, DK, file_name, diagonal_graph, threshold_GWish, seed, print_info)
+}
+
+#' Functional Graphical model for smoothing
+#'
+#' prova
+#' @export
+FGM_sampling_c <- function(data, niter, burnin, thin, thinG, BaseMat, file_name, Beta0, mu0, tau_eps0, G0, K0, a_tau_eps, b_tau_eps, sigmamu, bK, DK, sigmaG, paddrm, Gprior, MCprior, MCpost, threshold, form = "Complete", prior = "Uniform", algo = "MH", groups = NULL, seed = 0L, print_info = TRUE) {
+    .Call(`_BGSL_FGM_sampling_c`, data, niter, burnin, thin, thinG, BaseMat, file_name, Beta0, mu0, tau_eps0, G0, K0, a_tau_eps, b_tau_eps, sigmamu, bK, DK, sigmaG, paddrm, Gprior, MCprior, MCpost, threshold, form, prior, algo, groups, seed, print_info)
 }
 
 #' Function for testing properties of Graph classes

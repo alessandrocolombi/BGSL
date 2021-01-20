@@ -6,7 +6,7 @@
 #include "include_helpers.h"
 
 
-//Graph may be: GraphType / BlockGraph / BlockGraphAdj
+
 template<template <typename> class GraphStructure = GraphType, typename T = unsigned int >
 class GraphPrior
 {

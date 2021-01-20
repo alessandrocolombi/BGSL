@@ -11,6 +11,7 @@ GGM_sampling_c(
   niter,
   burnin,
   thin,
+  file_name,
   D,
   b,
   G0,

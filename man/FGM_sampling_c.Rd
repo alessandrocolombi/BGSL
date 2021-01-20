@@ -11,6 +11,7 @@ FGM_sampling_c(
   thin,
   thinG,
   BaseMat,
+  file_name,
   Beta0,
   mu0,
   tau_eps0,
@@ -36,5 +37,5 @@ FGM_sampling_c(
 )
 }
 \description{
-Functional Graphical model for smoothing
+prova
 }
