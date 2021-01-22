@@ -13,7 +13,8 @@ Compute_PosteriorMeans(
   Beta = FALSE,
   Mu = FALSE,
   TauEps = FALSE,
-  Precision = TRUE
+  Precision = FALSE,
+  prec_elem = 0L
 )
 }
 \description{

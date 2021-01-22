@@ -4,7 +4,16 @@
 \alias{Extract_Chain}
 \title{Extract chain from file}
 \usage{
-Extract_Chain(file_name, variable, stored_iter, n, p, index1, index2 = 0L)
+Extract_Chain(
+  file_name,
+  variable,
+  stored_iter,
+  n,
+  p,
+  index1 = 0L,
+  index2 = 0L,
+  prec_elem = 0L
+)
 }
 \description{
 This function extract the sampled chain for the \code{index1}-th component of variable specified in \code{variable}. For \code{"Beta"} coefficients one has to use also \code{index2}.
