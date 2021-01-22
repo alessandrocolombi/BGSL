@@ -561,6 +561,9 @@ class CompleteView{
     inline unsigned int get_n_links()const{
       return G.get_n_links();
     }
+    inline Groups get_groups()const{
+      return G.get_groups();
+    }
     inline unsigned int get_n_groups() const{ 
         return G.get_size();
     }
