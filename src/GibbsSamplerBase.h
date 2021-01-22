@@ -294,6 +294,7 @@ int FGMsampler<GraphStructure, T /*, RetGraph*/ >::run()
 	H5Dclose(dataset_TauEps);
 	H5Dclose(dataset_Prec);
 	H5Dclose(dataset_Mu);
+	H5Dclose(dataset_info);
 	H5Fclose(file);
 
 	std::cout<<std::endl<<"FGM sampler has finished"<<std::endl;

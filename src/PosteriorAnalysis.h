@@ -483,6 +483,8 @@ namespace analysis{
 
 		std::tie(Glist, traceplot_size, visited) = HDF5conversion::GetGraphsChain(dataset_rd, n_elem, stored_iter);
 		MatRow plinks = Compute_plinks<decltype(Glist), unsigned int>(Glist, stored_iter, groups);
+		H5Dclose(dataset_rd);
+		H5Fclose(file);
 		return std::make_tuple(plinks, Glist, traceplot_size, visited);
 	}
 

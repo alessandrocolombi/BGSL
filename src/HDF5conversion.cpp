@@ -408,6 +408,8 @@ namespace HDF5conversion{
 		unsigned int * buffer = info.data();
 		HDF5conversion::StatusType status = H5Dread(dataset_info, H5T_NATIVE_UINT, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer);
 		SURE_ASSERT(status>=0,"Cannot read file data. Status"<< status);
+		H5Fclose(file);
+		H5Dclose(dataset_info);
 		return info;
 	}
 

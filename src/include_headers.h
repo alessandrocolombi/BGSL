@@ -34,5 +34,4 @@
 //Parallel
 #include <omp.h>
 
-
 #endif

@@ -966,7 +966,7 @@ Sensitivity_analysis = function (PL, G_true, tol = seq(0.1, 1, by = 0.01), ROC =
   result[[2]] = best_soglia
   result[[3]] = best_confusion
   result[[4]] = best_graph
-  result[[5]] = 1#compute_AUC(one_minus_specificity, sensitivity)
+  result[[5]] = Compute_AUC(one_minus_specificity, sensitivity)
   names(result) = c("all_confusion", "best_threshold", "best_confusion",
                     "best_truncated_graph", "AUC")
   return(result)

@@ -96,8 +96,12 @@ int GGMsampler<GraphStructure, T /*, RetGraph*/ >::run()
 
 	//Open file
 	HDF5conversion::FileType file;
-	file = H5Fcreate(file_name.data(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT); 
-	SURE_ASSERT(file > 0,"Cannot create file ");
+	H5E_BEGIN_TRY{
+		file = H5Fcreate(file_name.data(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+	}H5E_END_TRY;
+	if(file < 0)
+		throw std::runtime_error("Cannot open the file. PLEASE DO NOT ABORT");
+	//SURE_ASSERT(file > 0,"Cannot create file ");
 	int one_dim_rank = 1;//for 1-dim datasets. All other quantities
 	//Print info file
 	HDF5conversion::DataspaceType dataspace_info;
@@ -207,6 +211,7 @@ int GGMsampler<GraphStructure, T /*, RetGraph*/ >::run()
 	}
 	H5Dclose(dataset_Graph);
 	H5Dclose(dataset_Prec);
+	H5Dclose(dataset_info);
 	H5Fclose(file);
 
 	

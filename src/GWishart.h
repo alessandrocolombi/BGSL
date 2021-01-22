@@ -79,10 +79,10 @@ class GWishart : public GWishartTraits{
 			else
 				chol_invD = cholD.solve(InvScale::Identity(G.get_size(),G.get_size())).llt().matrixU();
 			//Check structure
-			if(!this->check_structure(G)){
-				std::cout<<"Structures of matrix and graph are not compatible"<<std::endl;
-				//throw std::runtime_error("Structures of matrix and graph are not compatible");
-			}
+			//if(!this->check_structure(G)){
+				//std::cout<<"Structures of matrix and graph are not compatible"<<std::endl;
+				////throw std::runtime_error("Structures of matrix and graph are not compatible");
+			//}
 		}
 
 		template< typename Derived >
@@ -112,10 +112,10 @@ class GWishart : public GWishartTraits{
 				throw std::runtime_error("Inv_Scale matrix is not symetric");
 			}
 			//Check structure
-			if(!this->check_structure(G)){
-				std::cout<<"Structures of matrix and graph are not compatible"<<std::endl;
-				//throw std::runtime_error("Structures of matrix and graph are not compatible");
-			}
+			//if(!this->check_structure(G)){
+				//std::cout<<"Structures of matrix and graph are not compatible"<<std::endl;
+				////throw std::runtime_error("Structures of matrix and graph are not compatible");
+			//}
 		}
 
 		template< typename Derived>
@@ -184,10 +184,10 @@ class GWishart : public GWishartTraits{
 				throw std::runtime_error("Non squared matrix inserted");
 			data = Mat.selfadjointView<Eigen::Upper>();
 			//Check structure
-			if(!this->check_structure(G)){
-				std::cout<<"Setting a new matrix: Structures of matrix and graph are not compatible"<<std::endl;
-				//throw std::runtime_error("Structures of matrix and graph are not compatible");
-			}
+			//if(!this->check_structure(G)){
+				//std::cout<<"Setting a new matrix: Structures of matrix and graph are not compatible"<<std::endl;
+				////throw std::runtime_error("Structures of matrix and graph are not compatible");
+			//}
 			//compute_Chol();
 			isFactorized = false;
 		}

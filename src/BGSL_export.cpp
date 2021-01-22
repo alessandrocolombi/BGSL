@@ -700,6 +700,32 @@ Eigen::VectorXd Extract_Chain( Rcpp::String const & file_name, Rcpp::String cons
   return result;
 }
 
+//' Graph summary 
+//'
+//' Read from file informations about the file
+//'
+//' @export
+// [[Rcpp::export]]
+Rcpp::List Summary_Graph(Rcpp::String const & file_name, unsigned int const & stored_iterG, unsigned int const & p, Rcpp::Nullable<Rcpp::List> groups = R_NilValue)
+{
+
+  std::shared_ptr<const Groups> ptr_gruppi = nullptr;
+  if (groups.isNotNull()){ //Assume it is a BlockGraph
+    Rcpp::List gr(groups);
+    ptr_gruppi = std::make_shared<const Groups>(gr); 
+  }
+  auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name, stored_iterG, p, ptr_gruppi);
+  //Create Rcpp::List of sampled Graphs
+  std::vector< Rcpp::List > L(SampledG.size());
+  int counter = 0;
+  for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
+    L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+  }
+  return Rcpp::List::create ( Rcpp::Named("plinks")= plinks,  
+                              Rcpp::Named("VisitedGraphs")= visited, 
+                              Rcpp::Named("TracePlot_Gsize")= TracePlot, 
+                              Rcpp::Named("SampledGraphs")= L   );
+}
 
 // [[Rcpp::export]]
 Rcpp::List SimulateData_GGM_c(unsigned int const & p, unsigned int const & n, unsigned int const & n_groups, Rcpp::String const & form, 
@@ -843,9 +869,14 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
     Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
     VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
     MatRow MeanK(MatRow::Zero(p,p));
-    MeanK. template triangularView<Eigen::Upper>() = MeanK_vett;
-    std::cout<<"MeanK_vett:"<<std::endl<<MeanK_vett<<std::endl;
-    std::cout<<"MeanK:"<<std::endl<<MeanK<<std::endl;
+    unsigned int pos{0};
+    for(unsigned int i = 0; i < p; ++i){
+      for(unsigned int j = i; j < p; ++j){
+        MeanK(i,j) = MeanK_vett(pos++);
+      }
+    }
+    //std::cout<<"MeanK_vett:"<<std::endl<<MeanK_vett<<std::endl;
+    //std::cout<<"MeanK:"<<std::endl<<MeanK<<std::endl;
     auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p);
     //Create Rcpp::List of sampled Graphs
     std::vector< Rcpp::List > L(SampledG.size());
@@ -912,9 +943,12 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
     Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
     VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
     MatRow MeanK(MatRow::Zero(p,p));
-    MeanK. template triangularView<Eigen::Upper>() = MeanK_vett;
-    std::cout<<"MeanK_vett:"<<std::endl<<MeanK_vett<<std::endl;
-    std::cout<<"MeanK:"<<std::endl<<MeanK<<std::endl;
+    unsigned int pos{0};
+    for(unsigned int i = 0; i < p; ++i){
+      for(unsigned int j = i; j < p; ++j){
+        MeanK(i,j) = MeanK_vett(pos++);
+      }
+    }
     auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p, ptr_gruppi);
     //Create Rcpp::List of sampled Graphs
     std::vector< Rcpp::List > L(SampledG.size());

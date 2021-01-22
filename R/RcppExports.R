@@ -229,6 +229,15 @@ Extract_Chain <- function(file_name, variable, stored_iter, n, p, index1, index2
     .Call(`_BGSL_Extract_Chain`, file_name, variable, stored_iter, n, p, index1, index2)
 }
 
+#' Graph summary 
+#'
+#' Read from file informations about the file
+#'
+#' @export
+Summary_Graph <- function(file_name, stored_iterG, p, groups = NULL) {
+    .Call(`_BGSL_Summary_Graph`, file_name, stored_iterG, p, groups)
+}
+
 SimulateData_GGM_c <- function(p, n, n_groups, form, graph, adj_mat, seed, mean_null, sparsity, groups = NULL) {
     .Call(`_BGSL_SimulateData_GGM_c`, p, n, n_groups, form, graph, adj_mat, seed, mean_null, sparsity, groups)
 }

@@ -261,6 +261,20 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Summary_Graph
+Rcpp::List Summary_Graph(Rcpp::String const& file_name, unsigned int const& stored_iterG, unsigned int const& p, Rcpp::Nullable<Rcpp::List> groups);
+RcppExport SEXP _BGSL_Summary_Graph(SEXP file_nameSEXP, SEXP stored_iterGSEXP, SEXP pSEXP, SEXP groupsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::String const& >::type file_name(file_nameSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type stored_iterG(stored_iterGSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::List> >::type groups(groupsSEXP);
+    rcpp_result_gen = Rcpp::wrap(Summary_Graph(file_name, stored_iterG, p, groups));
+    return rcpp_result_gen;
+END_RCPP
+}
 // SimulateData_GGM_c
 Rcpp::List SimulateData_GGM_c(unsigned int const& p, unsigned int const& n, unsigned int const& n_groups, Rcpp::String const& form, Rcpp::String const& graph, Eigen::Matrix<bool, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const& adj_mat, unsigned int seed, bool mean_null, double const& sparsity, Rcpp::Nullable<Rcpp::List> groups);
 RcppExport SEXP _BGSL_SimulateData_GGM_c(SEXP pSEXP, SEXP nSEXP, SEXP n_groupsSEXP, SEXP formSEXP, SEXP graphSEXP, SEXP adj_matSEXP, SEXP seedSEXP, SEXP mean_nullSEXP, SEXP sparsitySEXP, SEXP groupsSEXP) {
@@ -425,6 +439,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BGSL_Compute_Quantiles", (DL_FUNC) &_BGSL_Compute_Quantiles, 11},
     {"_BGSL_Compute_PosteriorMeans", (DL_FUNC) &_BGSL_Compute_PosteriorMeans, 9},
     {"_BGSL_Extract_Chain", (DL_FUNC) &_BGSL_Extract_Chain, 7},
+    {"_BGSL_Summary_Graph", (DL_FUNC) &_BGSL_Summary_Graph, 4},
     {"_BGSL_SimulateData_GGM_c", (DL_FUNC) &_BGSL_SimulateData_GGM_c, 10},
     {"_BGSL_CreateGroups", (DL_FUNC) &_BGSL_CreateGroups, 2},
     {"_BGSL_GGM_sampling_c", (DL_FUNC) &_BGSL_GGM_sampling_c, 23},
