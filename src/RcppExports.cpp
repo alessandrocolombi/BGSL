@@ -226,8 +226,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // Compute_PosteriorMeans
-Rcpp::List Compute_PosteriorMeans(Rcpp::String const& file_name, unsigned int const& p, unsigned int const& n, unsigned int const& stored_iterG, unsigned int const& stored_iter, bool Beta, bool Mu, bool TauEps, bool Precision);
-RcppExport SEXP _BGSL_Compute_PosteriorMeans(SEXP file_nameSEXP, SEXP pSEXP, SEXP nSEXP, SEXP stored_iterGSEXP, SEXP stored_iterSEXP, SEXP BetaSEXP, SEXP MuSEXP, SEXP TauEpsSEXP, SEXP PrecisionSEXP) {
+Rcpp::List Compute_PosteriorMeans(Rcpp::String const& file_name, unsigned int const& p, unsigned int const& n, unsigned int const& stored_iterG, unsigned int const& stored_iter, bool Beta, bool Mu, bool TauEps, bool Precision, unsigned int const& prec_elem);
+RcppExport SEXP _BGSL_Compute_PosteriorMeans(SEXP file_nameSEXP, SEXP pSEXP, SEXP nSEXP, SEXP stored_iterGSEXP, SEXP stored_iterSEXP, SEXP BetaSEXP, SEXP MuSEXP, SEXP TauEpsSEXP, SEXP PrecisionSEXP, SEXP prec_elemSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -240,13 +240,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type Mu(MuSEXP);
     Rcpp::traits::input_parameter< bool >::type TauEps(TauEpsSEXP);
     Rcpp::traits::input_parameter< bool >::type Precision(PrecisionSEXP);
-    rcpp_result_gen = Rcpp::wrap(Compute_PosteriorMeans(file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision));
+    Rcpp::traits::input_parameter< unsigned int const& >::type prec_elem(prec_elemSEXP);
+    rcpp_result_gen = Rcpp::wrap(Compute_PosteriorMeans(file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision, prec_elem));
     return rcpp_result_gen;
 END_RCPP
 }
 // Extract_Chain
-Eigen::VectorXd Extract_Chain(Rcpp::String const& file_name, Rcpp::String const& variable, unsigned int const& stored_iter, unsigned int const& n, unsigned int const& p, unsigned int const& index1, unsigned int const& index2);
-RcppExport SEXP _BGSL_Extract_Chain(SEXP file_nameSEXP, SEXP variableSEXP, SEXP stored_iterSEXP, SEXP nSEXP, SEXP pSEXP, SEXP index1SEXP, SEXP index2SEXP) {
+Eigen::VectorXd Extract_Chain(Rcpp::String const& file_name, Rcpp::String const& variable, unsigned int const& stored_iter, unsigned int const& n, unsigned int const& p, unsigned int const& index1, unsigned int const& index2, unsigned int const& prec_elem);
+RcppExport SEXP _BGSL_Extract_Chain(SEXP file_nameSEXP, SEXP variableSEXP, SEXP stored_iterSEXP, SEXP nSEXP, SEXP pSEXP, SEXP index1SEXP, SEXP index2SEXP, SEXP prec_elemSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -257,7 +258,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< unsigned int const& >::type p(pSEXP);
     Rcpp::traits::input_parameter< unsigned int const& >::type index1(index1SEXP);
     Rcpp::traits::input_parameter< unsigned int const& >::type index2(index2SEXP);
-    rcpp_result_gen = Rcpp::wrap(Extract_Chain(file_name, variable, stored_iter, n, p, index1, index2));
+    Rcpp::traits::input_parameter< unsigned int const& >::type prec_elem(prec_elemSEXP);
+    rcpp_result_gen = Rcpp::wrap(Extract_Chain(file_name, variable, stored_iter, n, p, index1, index2, prec_elem));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -437,8 +439,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BGSL_Read_InfoFile", (DL_FUNC) &_BGSL_Read_InfoFile, 1},
     {"_BGSL_Compute_QuantileBeta", (DL_FUNC) &_BGSL_Compute_QuantileBeta, 3},
     {"_BGSL_Compute_Quantiles", (DL_FUNC) &_BGSL_Compute_Quantiles, 11},
-    {"_BGSL_Compute_PosteriorMeans", (DL_FUNC) &_BGSL_Compute_PosteriorMeans, 9},
-    {"_BGSL_Extract_Chain", (DL_FUNC) &_BGSL_Extract_Chain, 7},
+    {"_BGSL_Compute_PosteriorMeans", (DL_FUNC) &_BGSL_Compute_PosteriorMeans, 10},
+    {"_BGSL_Extract_Chain", (DL_FUNC) &_BGSL_Extract_Chain, 8},
     {"_BGSL_Summary_Graph", (DL_FUNC) &_BGSL_Summary_Graph, 4},
     {"_BGSL_SimulateData_GGM_c", (DL_FUNC) &_BGSL_SimulateData_GGM_c, 10},
     {"_BGSL_CreateGroups", (DL_FUNC) &_BGSL_CreateGroups, 2},

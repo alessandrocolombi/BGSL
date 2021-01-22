@@ -2,7 +2,6 @@
 #define __RjMH_HPP__
 
 #include "GGM.h"
-
 /*
 //This is for block graphs
 template<template <typename> class GraphStructure = GraphType, typename T = unsigned int >
@@ -1013,6 +1012,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStruct
 		//2) Find all the links that are changing in Complete form 
 		const std::pair<unsigned int, unsigned int>& changed_link = this->selected_link; //For lighter notation
 		const std::vector<unsigned int> A_l0(Gnew_CompleteView.get_group(changed_link.first));
+		const unsigned int sizeAl0{static_cast<unsigned int>(A_l0.size())};
 		unsigned int pos_Al0{0};
 
 			//std::cout<<"A_l0"<<std::endl;
@@ -1069,7 +1069,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStruct
 					Phi_new(0,j) = Phi_old(0,j);
 			}
 		}	
-		if(A_l0[pos_Al0] == 0){
+		if(pos_Al0 < sizeAl0 && A_l0[pos_Al0] == 0){
 			log_jacobian += build_jacobian_esponent(pos_Al0) * std::log(Phi_new(0,0));
 			pos_Al0++;
 		}
@@ -1101,7 +1101,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStruct
 					Phi_new(1,j) = Phi_old(1,j);
 			}
 		}
-		if(A_l0[pos_Al0] == 1){
+		if(pos_Al0 < sizeAl0 && A_l0[pos_Al0] == 1){
 			log_jacobian += build_jacobian_esponent(pos_Al0) * std::log(Phi_new(1,1));
 			pos_Al0++;
 		}
@@ -1139,7 +1139,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStruct
 				}
 			}
 
-			if(A_l0[pos_Al0] == i){
+			if(pos_Al0 < sizeAl0 && A_l0[pos_Al0] == i){
 				log_jacobian += build_jacobian_esponent(pos_Al0) * std::log(Phi_new(i,i));
 				pos_Al0++;
 			}
@@ -1147,7 +1147,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ( typename ReversibleJumpsMH<GraphStruct
 					//std::cout<<"Phi_new:"<<std::endl<<Phi_new<<std::endl;
 		}
 		Phi_new(p-1,p-1) = Phi_old(p-1,p-1); //Last element
-		if(A_l0[pos_Al0] == p-1){
+		if(pos_Al0 < sizeAl0 && A_l0[pos_Al0] == p-1){
 			log_jacobian += build_jacobian_esponent(pos_Al0) * std::log(Phi_new(p-1,p-1));
 			pos_Al0++;
 		}
@@ -1306,7 +1306,8 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphSt
 					//std::cout<<"p = "<<p<<std::endl;
 		//2) Find all the links that are changing in Complete form 
 		const std::pair<unsigned int, unsigned int>& changed_link = this->selected_link; //For lighter notation
-		const std::vector<unsigned int> A_l0(Gnew_CompleteView.get_group(changed_link.first));
+		const std::vector<unsigned int> A_l0 = Gnew_CompleteView.get_group(changed_link.first);
+		const unsigned int sizeAl0{static_cast<unsigned int>(A_l0.size())};
 		unsigned int pos_Al0{0};
 
 			//std::cout<<"A_l0"<<std::endl;
@@ -1363,7 +1364,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphSt
 					Phi_new(0,j) = Phi_old(0,j);
 			}
 		}	
-		if(A_l0[pos_Al0] == 0){
+		if(pos_Al0 < sizeAl0 && A_l0[pos_Al0] == 0){
 			log_jacobian += build_jacobian_esponent(pos_Al0) * std::log(Phi_new(0,0));
 			pos_Al0++;
 		}
@@ -1397,7 +1398,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphSt
 					Phi_new(1,j) = Phi_old(1,j);
 			}
 		}
-		if(A_l0[pos_Al0] == 1){
+		if(pos_Al0 < sizeAl0 && A_l0[pos_Al0] == 1){
 			log_jacobian += build_jacobian_esponent(pos_Al0) * std::log(Phi_new(1,1));
 			pos_Al0++;
 		}
@@ -1436,8 +1437,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphSt
 						Phi_new(i,j) = Phi_old(i,j);
 				}
 			}
-
-			if(A_l0[pos_Al0] == i){
+			if(pos_Al0 < sizeAl0 && A_l0[pos_Al0] == i){
 				log_jacobian += build_jacobian_esponent(pos_Al0) * std::log(Phi_new(i,i));
 				pos_Al0++;
 			}
@@ -1445,7 +1445,7 @@ ReversibleJumpsMH<GraphStructure, T>::RJ_new( typename ReversibleJumpsMH<GraphSt
 					//std::cout<<"Phi_new:"<<std::endl<<Phi_new<<std::endl;
 		}
 		Phi_new(p-1,p-1) = Phi_old(p-1,p-1); //Last element
-		if(A_l0[pos_Al0] == p-1){
+		if(pos_Al0 < sizeAl0 && A_l0[pos_Al0] == p-1){
 			log_jacobian += build_jacobian_esponent(pos_Al0) * std::log(Phi_new(p-1,p-1));
 			pos_Al0++;
 		}
