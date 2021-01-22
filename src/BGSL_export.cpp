@@ -570,24 +570,28 @@ Rcpp::List Compute_Quantiles( Rcpp::String const & file_name, unsigned int const
                                              Rcpp::Named("Precision") 
                                            );
   if(Precision){
+    Rcpp::Rcout<<"Compute Precision quantiles..."<<std::endl;
     auto [Lower, Upper] =  analysis::Vector_ComputeQuantiles( file_name, stored_iterG, 0.5*p*(p+1), "Precision", lower_qtl, upper_qtl );
     Quantiles["Precision"] = Rcpp::List::create(Rcpp::Named("Lower")=Lower, Rcpp::Named("Upper")=Upper);
   }
   if(Beta){
     if(stored_iter <= 0)
       throw std::runtime_error("stored_iter parameter has to be positive");
+    Rcpp::Rcout<<"Compute Beta quantiles..."<<std::endl;
     auto [Lower, Upper] =  analysis::Matrix_ComputeQuantiles( file_name, stored_iter, p, n, lower_qtl, upper_qtl );
     Quantiles["Beta"] = Rcpp::List::create(Rcpp::Named("Lower")=Lower, Rcpp::Named("Upper")=Upper);
   }
   if(Mu){
     if(stored_iter <= 0)
       throw std::runtime_error("stored_iter parameter has to be positive");
+    Rcpp::Rcout<<"Compute Mu quantiles..."<<std::endl;
     auto [Lower, Upper] =  analysis::Vector_ComputeQuantiles( file_name, stored_iter, p, "Mu", lower_qtl, upper_qtl );
     Quantiles["Mu"] = Rcpp::List::create(Rcpp::Named("Lower")=Lower, Rcpp::Named("Upper")=Upper);
   }
   if(TauEps){
     if(stored_iter <= 0)
       throw std::runtime_error("stored_iter parameter has to be positive");
+    Rcpp::Rcout<<"Compute TauEps quantiles..."<<std::endl;
     auto [Lower, Upper] =  analysis::Scalar_ComputeQuantiles( file_name, stored_iter, lower_qtl, upper_qtl );
     Quantiles["TauEps"] = Rcpp::List::create(Rcpp::Named("Lower")=Lower, Rcpp::Named("Upper")=Upper);
   }
@@ -599,7 +603,7 @@ Rcpp::List Compute_Quantiles( Rcpp::String const & file_name, unsigned int const
 //' @export
 // [[Rcpp::export]]
 Rcpp::List Compute_PosteriorMeans( Rcpp::String const & file_name, unsigned int const & p, unsigned int const & n, unsigned int const & stored_iterG, unsigned int const & stored_iter = 0, 
-                                    bool Beta = false, bool Mu = false, bool TauEps = false, bool Precision = true)
+                                    bool Beta = false, bool Mu = false, bool TauEps = false, bool Precision = false, unsigned int const & prec_elem = 0)
 {
 
   Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta"), 
@@ -609,9 +613,16 @@ Rcpp::List Compute_PosteriorMeans( Rcpp::String const & file_name, unsigned int 
   
                                         
   if(Precision){
+    if(prec_elem <= 0)
+      throw std::runtime_error("Need to specify the number of elements of the precision matrix in prec_elem parameter");
     MatRow MeanK(MatRow::Zero(p,p));  
-    VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name, stored_iterG, 0.5*p*(p+1), "Precision" );
-    MeanK. template triangularView<Eigen::Upper>() = MeanK_vett;
+    VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name, stored_iterG, prec_elem, "Precision" );
+    unsigned int pos{0};
+    for(unsigned int i = 0; i < p; ++i){
+      for(unsigned int j = i; j < p; ++j){
+        MeanK(i,j) = MeanK_vett(pos++);
+      }
+    }
     PosteriorMeans["MeanK"] = MeanK;
   }
   if(Beta){
@@ -645,7 +656,7 @@ Rcpp::List Compute_PosteriorMeans( Rcpp::String const & file_name, unsigned int 
 //' @export
 // [[Rcpp::export]]
 Eigen::VectorXd Extract_Chain( Rcpp::String const & file_name, Rcpp::String const & variable, unsigned int const & stored_iter, unsigned int const & n, 
-                                unsigned int const & p, unsigned int const & index1, unsigned int const & index2 = 0 )
+                                unsigned int const & p, unsigned int const & index1 = 0, unsigned int const & index2 = 0, unsigned int const & prec_elem = 0  )
 { 
 
   if(variable != "Beta" && variable != "Mu" && variable != "Precision" && variable != "TauEps")
@@ -674,10 +685,12 @@ Eigen::VectorXd Extract_Chain( Rcpp::String const & file_name, Rcpp::String cons
     H5Dclose(dataset_rd);
   }
   else if(variable == "Precision"){
+    if(prec_elem <= 0)
+      throw std::runtime_error("Need to specify the number of elements of the precision matrix in prec_elem parameter");
     //Open datasets
     dataset_rd  = H5Dopen(file, "/Precision", H5P_DEFAULT);
     SURE_ASSERT(dataset_rd>=0,"Cannot open dataset for Precision");
-    chain = HDF5conversion::GetChain_from_Vector(dataset_rd, index1, stored_iter, 0.5*p*(p+1));
+    chain = HDF5conversion::GetChain_from_Vector(dataset_rd, index1, stored_iter, prec_elem);
     H5Dclose(dataset_rd);
   }
   else if(variable == "TauEps"){
@@ -1095,9 +1108,12 @@ Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
     double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
     
     MatRow MeanK(MatRow::Zero(p,p));
-    MeanK. template triangularView<Eigen::Upper>() = MeanK_vett;
-    std::cout<<"MeanK_vett:"<<std::endl<<MeanK_vett<<std::endl;
-    std::cout<<"MeanK:"<<std::endl<<MeanK<<std::endl;
+    unsigned int pos{0};
+        for(unsigned int i = 0; i < p; ++i){
+          for(unsigned int j = i; j < p; ++j){
+            MeanK(i,j) = MeanK_vett(pos++);
+          }
+        }
     Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
                                                      Rcpp::Named("MeanMu")=MeanMu, 
                                                      Rcpp::Named("MeanK")=MeanK ,   
@@ -1182,7 +1198,12 @@ Rcpp::List FGM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
    VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
    double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
    MatRow MeanK(MatRow::Zero(p,p));
-   MeanK. template triangularView<Eigen::Upper>() = MeanK_vett;
+   unsigned int pos{0};
+       for(unsigned int i = 0; i < p; ++i){
+         for(unsigned int j = i; j < p; ++j){
+           MeanK(i,j) = MeanK_vett(pos++);
+         }
+       }
    //Graph analysis
    auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p);
    //Create Rcpp::List of sampled Graphs
@@ -1220,7 +1241,7 @@ Rcpp::List FGM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
    FGMsampler<BlockGraph, unsigned int> Sampler(data, param, hy, init, method, file_name, seed, print_info);
    //Run
    if(print_info){
-     Rcpp::Rcout<<"Block GGM Sampler starts:"<<std::endl; 
+     Rcpp::Rcout<<"Block FGM Sampler starts:"<<std::endl; 
    }
    auto start = std::chrono::high_resolution_clock::now();
    int accepted = Sampler.run();
@@ -1238,7 +1259,12 @@ Rcpp::List FGM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
    VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
    double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
    MatRow MeanK(MatRow::Zero(p,p));
-   MeanK. template triangularView<Eigen::Upper>() = MeanK_vett;
+   unsigned int pos{0};
+       for(unsigned int i = 0; i < p; ++i){
+         for(unsigned int j = i; j < p; ++j){
+           MeanK(i,j) = MeanK_vett(pos++);
+         }
+       }
    //Graph analysis
    auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p, ptr_gruppi);
    //Create Rcpp::List of sampled Graphs
