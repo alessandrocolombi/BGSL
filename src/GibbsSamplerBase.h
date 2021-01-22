@@ -194,15 +194,15 @@ int FGMsampler<GraphStructure, T /*, RetGraph*/ >::run()
 		//Quantities needed down the road
 		MatCol U(MatCol::Zero(p,p)); //Has to be ColMajor
 		double b_tau_eps_post(Sdata_btaueps);
-		#pragma omp parallel for shared(Beta, U), reduction(+ : b_tau_eps_post)
+		//#pragma omp parallel for shared(Beta, U), reduction(+ : b_tau_eps_post)
 		for(unsigned int i = 0; i < n; ++i){
 			VecCol bn_i = Bn*(tau_eps*tbase_data.col(i) + Kmu); 
 			VecCol beta_i = rmv(engine, bn_i, Bn); //Since it has to be used in some calculations, save it so that it won't be necessary to find it later
-			#pragma omp critical 
-			{
+			//#pragma omp critical 
+			//{
 				Beta.col(i) = beta_i;
 				U += (beta_i - mu)*(beta_i - mu).transpose();
-			}
+			//}
 			b_tau_eps_post += beta_i.dot(tbase_base*beta_i) - 2*beta_i.dot(tbase_data.col(i));  
 		}
 		//Precision tau

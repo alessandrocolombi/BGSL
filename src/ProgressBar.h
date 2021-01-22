@@ -4,7 +4,7 @@
 #include "include_headers.h"
 
 
-
+#include <Rcpp.h>
 class pBar {
 public:
     pBar(double _neededProgress = 100):neededProgress(_neededProgress){}
@@ -16,9 +16,9 @@ public:
     void print() {
 
         
-        //auto& str = Rcpp::Rcout;
+        auto& str = Rcpp::Rcout;
         
-        auto& str = std::cout;
+        //auto& str = std::cout;
         
         currUpdateVal %= pBarUpdater.length();
         str << "\r" //Bring cursor to start of line

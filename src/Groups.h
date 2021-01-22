@@ -71,6 +71,7 @@ public:
     return (*this)[i].size();
   }
   InnerContainer get_pos_singleton() const;
+
   std::vector<unsigned int> get_group(IdxType const & i) const{
     if(i > this->get_n_groups())
       throw std::runtime_error("Invalid group index request");
