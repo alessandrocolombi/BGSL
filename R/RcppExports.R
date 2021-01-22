@@ -214,8 +214,8 @@ Compute_Quantiles <- function(file_name, p, n, stored_iterG, stored_iter = 0L, B
 #' Compute Posterior means of sampled values
 #'
 #' @export
-Compute_PosteriorMeans <- function(file_name, p, n, stored_iterG, stored_iter = 0L, Beta = FALSE, Mu = FALSE, TauEps = FALSE, Precision = TRUE) {
-    .Call(`_BGSL_Compute_PosteriorMeans`, file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision)
+Compute_PosteriorMeans <- function(file_name, p, n, stored_iterG, stored_iter = 0L, Beta = FALSE, Mu = FALSE, TauEps = FALSE, Precision = FALSE, prec_elem = 0L) {
+    .Call(`_BGSL_Compute_PosteriorMeans`, file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision, prec_elem)
 }
 
 #' Extract chain from file
@@ -225,8 +225,8 @@ Compute_PosteriorMeans <- function(file_name, p, n, stored_iterG, stored_iter = 
 #'
 #'
 #' @export
-Extract_Chain <- function(file_name, variable, stored_iter, n, p, index1, index2 = 0L) {
-    .Call(`_BGSL_Extract_Chain`, file_name, variable, stored_iter, n, p, index1, index2)
+Extract_Chain <- function(file_name, variable, stored_iter, n, p, index1 = 0L, index2 = 0L, prec_elem = 0L) {
+    .Call(`_BGSL_Extract_Chain`, file_name, variable, stored_iter, n, p, index1, index2, prec_elem)
 }
 
 #' Graph summary 
