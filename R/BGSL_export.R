@@ -310,9 +310,10 @@ smooth_curves = function( beta, BaseMat, n_plot = 0, range = NULL, grid_points =
                  internal_knots,
                  range[2] - (range[2]-internal_knots[length(internal_knots)])/2,
                  range[2] )
-        names <- rep("", length(knots))
-        for (i in 1:length(knots)) {
-          names[i] <- paste0(knots[i])
+        knots_for_plot = round(knots, digits = 2)
+        names <- rep("", length(knots_for_plot))
+        for (i in 1:length(knots_for_plot)) {
+          names[i] <- paste0(knots_for_plot[i])
         }
         names_y = round(seq(min(result[1:n_plot,]), max(result[1:n_plot,]), length.out = 10), digits = 2)
         if(n_plot > 1){
@@ -378,9 +379,9 @@ smooth_curves = function( beta, BaseMat, n_plot = 0, range = NULL, grid_points =
 #' @param ytitle the title of the x-axis.
 #'
 #' @export
-smooth_curves_credible_bands = function( beta, betaLower, betaUpper, BaseMat, n_plot = 0, range = NULL, grid_points = NULL,
+smooth_curves_credible_bands = function(  beta, betaLower, betaUpper, BaseMat, n_plot = 0, range = NULL, grid_points = NULL,
                                           internal_knots = NULL, highlight_band1 = NULL, highlight_band2 = NULL,
-                                          title_plot = "Smoothed Curves", xtitle = " ", ytitle = " ")
+                                          title_plot = "Smoothed Curves", xtitle = " ", ytitle = " ", data = NULL)
 {
   if (!is.matrix(beta)) {
     stop("Beta should be a (p x n) matrix")
@@ -400,7 +401,7 @@ smooth_curves_credible_bands = function( beta, betaLower, betaUpper, BaseMat, n_
     Yupper[i, ] = BaseMat %*% betaUpper[,i]
   }
   #Plot
-  if(n_plot > 0) #Plot n_plot curves
+  if(n_plot > 0 & is.null(data)) #Plot n_plot curves
   {
     #Check dimensions
     if(is.null(range))
@@ -448,9 +449,10 @@ smooth_curves_credible_bands = function( beta, betaLower, betaUpper, BaseMat, n_
                  internal_knots,
                  range[2] - (range[2]-internal_knots[length(internal_knots)])/2,
                  range[2] )
-        names <- rep("", length(knots))
-        for (i in 1:length(knots)) {
-          names[i] <- paste0(knots[i])
+        knots_for_plot = round(knots, digits = 2)
+        names <- rep("", length(knots_for_plot))
+        for (i in 1:length(knots_for_plot)) {
+          names[i] <- paste0(knots_for_plot[i])
         }
         names_y = round(seq(min(Ymean[1:n_plot,]), max(Ymean[1:n_plot,]), length.out = 10), digits = 2)
         if(n_plot > 1){
@@ -487,6 +489,117 @@ smooth_curves_credible_bands = function( beta, betaLower, betaUpper, BaseMat, n_
                       col = c('gray50','gray70','gray40'), lwd = 3, add = T)
               matplot( x = X, (Yupper[1:n_plot,]), type = 'l', lty = 1,
                       col = c('gray50','gray70','gray40'), lwd = 3, add = T)
+              abline(v = knots, lty = 2, col = 'black')
+                  if(!is.null(highlight_band1)){
+                    for(i in c(highlight_band1, highlight_band1[length(highlight_band1)]+1) )
+                      abline(v = knots[i], lty = 2, col = 'red')
+                  }
+                  if(!is.null(highlight_band2)){
+                    for(i in c(highlight_band2[1]-1,highlight_band2) )
+                      abline(v = knots[i], lty = 2, col = 'red')
+                  }
+              mtext(text = names, side=1, line=0.3, at = knots , las=2, cex=0.7)
+              mtext(text = names_y, side=2, line=0.3, at=names_y, las=1, cex=0.9)
+        }
+    }
+  }else if(n_plot > 0 & !is.null(data) ) #Plot n_plot curves and data
+  {
+    #Check dimensions
+    if(is.null(range))
+      stop("The range has to be provided in order to plot the curves.")
+    if(!(length(range)==2 && range[1] < range[2]))
+      stop("Invalid range, it has to be a vector of length 2 containing first the lower bound of the interval and then the upper bound.")
+    if(!(dim(data)[1]==n && dim(data)[2]==r))
+      stop("data matrix has to be n x r.")
+    #Computes grid_points
+    if(!is.null(grid_points)){
+      if(grid_points != r)
+        stop("The number of points provided in grid_points is not equal to the size of BaseMat.")
+      X = grid_points;
+    }else{
+      X = seq(range[1], range[2], length.out = r)
+    }
+    #Classical plot, does not depend on the size of the graph
+    if(is.null(internal_knots)){
+      if(n_plot > 1){
+        x11(height=4)
+        matplot( x = X, t(Ymean[1:n_plot,]), type = 'l', lty = 2,
+                col = c('steelblue','steelblue1','skyblue3', 'lightsteelblue1'),
+                lwd = 3, ylim = c(min(Ylower[1:n_plot,]),max(Yupper[1:n_plot,])), axes = T,
+                main = title_plot, xlab = xtitle,
+                ylab = ytitle)
+        matplot( x = X, t(Ylower[1:n_plot,]), type = 'l', lty = 1,
+                col = c('gray50','gray70','gray40'), lwd = 3, add = T)
+        matplot( x = X, t(Yupper[1:n_plot,]), type = 'l', lty = 1,
+                col = c('gray50','gray70','gray40'), lwd = 3, add = T)
+        matplot( x = X, t(data[1:n_plot,]), type = 'l', lty = 1,
+                col = c('darkolivegreen','darkgreen','darkolivegreen4','forestgreen'), lwd = 3, add = T)
+      }
+      else if(n_plot == 1){
+        x11(height=4)
+        matplot( x = X, (Ymean[1:n_plot,]), type = 'l', lty = 2,
+                col = c('steelblue','steelblue1','skyblue3', 'lightsteelblue1'),
+                lwd = 3, ylim = c(min(Ylower[1:n_plot,]),max(Yupper[1:n_plot,])), axes = T,
+                main = title_plot, xlab = xtitle,
+                ylab = ytitle)
+        matplot( x = X, (Ylower[1:n_plot,]), type = 'l', lty = 1,
+                col = c('gray50','gray70','gray40'), lwd = 3, add = T)
+        matplot( x = X, (Yupper[1:n_plot,]), type = 'l', lty = 1,
+                col = c('gray50','gray70','gray40'), lwd = 3, add = T)
+        matplot( x = X, (data[1:n_plot,]), type = 'l', lty = 1,
+                col = c('darkolivegreen','darkgreen','darkolivegreen4','forestgreen'), lwd = 3, add = T)
+      }
+    }
+    else{ #Plot with bands representing the domanin of the spline
+        knots <- c(range[1],
+                 range[1] + (internal_knots[1]-range[1])/2,
+                 internal_knots,
+                 range[2] - (range[2]-internal_knots[length(internal_knots)])/2,
+                 range[2] )
+        knots_for_plot = round(knots, digits = 2)
+        names <- rep("", length(knots_for_plot))
+        for (i in 1:length(knots_for_plot)) {
+          names[i] <- paste0(knots_for_plot[i])
+        }
+        names_y = round(seq(min(Ymean[1:n_plot,]), max(Ymean[1:n_plot,]), length.out = 10), digits = 2)
+        if(n_plot > 1){
+          x11(height=4)
+            matplot(x = X, t(Ymean[1:n_plot,]), type = 'l', lty = 2,
+                    col = c('steelblue','steelblue1','skyblue3', 'lightsteelblue1'),
+                    lwd = 3, ylim = c(min(Ylower[1:n_plot,]),max(Yupper[1:n_plot,])), axes = F,
+                    main = title_plot, xlab = xtitle,
+                    ylab = ytitle)
+            matplot( x = X, t(Ylower[1:n_plot,]), type = 'l', lty = 1,
+                    col = c('gray50','gray70','gray40'), lwd = 3, add = T)
+            matplot( x = X, t(Yupper[1:n_plot,]), type = 'l', lty = 1,
+                    col = c('gray50','gray70','gray40'), lwd = 3, add = T)
+            matplot( x = X, t(data[1:n_plot,]), type = 'l', lty = 1,
+                    col = c('darkolivegreen','darkgreen','darkolivegreen4','forestgreen'), lwd = 3, add = T)
+            abline(v = knots, lty = 2, col = 'black')
+                if(!is.null(highlight_band1)){
+                  for(i in c(highlight_band1, highlight_band1[length(highlight_band1)]+1) )
+                    abline(v = knots[i], lty = 2, col = 'red')
+                }
+                if(!is.null(highlight_band2)){
+                  for(i in c(highlight_band2[1]-1,highlight_band2) )
+                    abline(v = knots[i], lty = 2, col = 'red')
+                }
+            mtext(text = names, side=1, line=0.3, at = knots , las=2, cex=0.7)
+            mtext(text = names_y, side=2, line=0.3, at=names_y, las=1, cex=0.9)
+        }
+        else if(n_plot == 1){
+            x11(height=4)
+              matplot(x = X, (Ymean[1:n_plot,]), type = 'l', lty = 2,
+                      col = c('steelblue','steelblue1','skyblue3', 'lightsteelblue1'),
+                      lwd = 3, ylim = c(min(Ylower[1:n_plot,]),max(Yupper[1:n_plot,])), axes = F,
+                      main = title_plot, xlab = xtitle,
+                      ylab = ytitle)
+              matplot( x = X, (Ylower[1:n_plot,]), type = 'l', lty = 1,
+                      col = c('gray50','gray70','gray40'), lwd = 3, add = T)
+              matplot( x = X, (Yupper[1:n_plot,]), type = 'l', lty = 1,
+                      col = c('gray50','gray70','gray40'), lwd = 3, add = T)
+              matplot( x = X, t(data[1:n_plot,]), type = 'l', lty = 2,
+                    col = c('darkolivegreen','darkgreen','darkolivegreen4','forestgreen'), lwd = 3, add = T)
               abline(v = knots, lty = 2, col = 'black')
                   if(!is.null(highlight_band1)){
                     for(i in c(highlight_band1, highlight_band1[length(highlight_band1)]+1) )
@@ -582,9 +695,10 @@ plot_curves = function( data1, data2 = NULL, range, n_plot = 1, grid_points = NU
                  internal_knots,
                  range[2] - (range[2]-internal_knots[length(internal_knots)])/2,
                  range[2] )
-        names <- rep("", length(knots))
-        for (i in 1:length(knots)) {
-          names[i] <- paste0(knots[i])
+        knots_name = round(knots, digits = 2)
+        names <- rep("", length(knots_name))
+        for (i in 1:length(knots_name)) {
+          names[i] <- paste0(knots_name[i])
         }
         names_y = round(seq(min(data1[1:n_plot,]), max(data1[1:n_plot,]), length.out = 10), digits = 2)
         if(n_plot > 1){
@@ -735,7 +849,7 @@ FLM_sampling = function( p, data, niter = 100000, burnin = niter/2, thin = 1, di
 #' containing the evaluation of all the splines in all the grid points. Finally it also returns the interal knots used in the creation of the splines.
 #' @export
 simulate_curves = function( p = 10, n = 300, r = 235,range_x = c(100,200), G = NULL, K = NULL, b = 3, D = NULL, tau_eps = 0, spline_order = 3,
-                            n_picks = 1, height1 = 1, height2 = 1, width1 = 36, width2 = 24, position1 = 10, position2 = 2,
+                            n_picks = 1, height1 = 1, height2 = 1, width1 = 36, width2 = 24, position1 = 10, position2 = 2, rate = 0.01/2,
                             n_plot = n, highlight_band1 = NULL, highlight_band2 = NULL, title_plot = "Curves", xtitle = " ", ytitle = " ",
                             seed = 1212)
 {
@@ -769,7 +883,7 @@ simulate_curves = function( p = 10, n = 300, r = 235,range_x = c(100,200), G = N
   if(!(length(range_x)==2 || range_x[1] < range_x[2]))
     stop("Invalid range inserted. It has to be of length 2 containing first the lower bound of the interval and then the upper bound.")
   X = seq(range_x[1], range_x[2], length.out = r)
-  basis = Generate_Basis(n_basis = p, range = range_x, n_points = r, order = spline_order )
+  basis = BGSL:::Generate_Basis(n_basis = p, range = range_x, n_points = r, order = spline_order )
   basemat = basis$BaseMat
   internal_knots = basis$InternalKnots
   knots <- c( range_x[1],
@@ -783,23 +897,25 @@ simulate_curves = function( p = 10, n = 300, r = 235,range_x = c(100,200), G = N
   }
   if(is.null(G)){
     G = diag(p)
+    tauK = rgamma(n = p, shape = 10/2, rate = rate)
+    K = diag(tauK)
   }
   if(is.null(D)){
     D = 0.01*diag(p)
   }
   if(is.null(K)){
-    set.seed(seed)
-    K = rgwish(adj = G, b = b, D = D)
+    K = BGSL:::rGwish(G = G, b = b, D = D, threshold_conv = 1e-16, seed = 0)$Matrix
+    #K = BDgraph::rgwish(adj = G, b = b, D = D)
   }
   beta <- matrix(0, nrow = n, ncol = p)
   data <- matrix(0, nrow = n, ncol = r)
   for (i in 1:n) {
-    set.seed(seed + i)
-    beta[i, ] <- rmvnormal(mean = mu, Mat = K, isPrec = T)
+    seed = 0
+    beta[i, ] <- BGSL:::rmvnormal(mean = mu, Mat = K, isPrec = T, seed = seed)
     if(tau_eps == 0){
       data[i, ] <- basemat %*% beta[i, ]
     }else{
-      data[i, ] <- basemat %*% beta[i, ] + rmvnormal(mean = rep(0,r), Mat = tau_eps*diag(r), isPrec = T)
+      data[i, ] <- basemat %*% beta[i, ] + BGSL:::rmvnormal(mean = rep(0,r), Mat = tau_eps*diag(r), isPrec = T, seed = seed)
     }
 
   }
