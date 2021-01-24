@@ -22,6 +22,7 @@ simulate_curves(
   width2 = 24,
   position1 = 10,
   position2 = 2,
+  rate = 0.01/2,
   n_plot = n,
   highlight_band1 = NULL,
   highlight_band2 = NULL,

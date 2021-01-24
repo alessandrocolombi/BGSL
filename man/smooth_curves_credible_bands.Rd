@@ -17,7 +17,8 @@ smooth_curves_credible_bands(
   highlight_band2 = NULL,
   title_plot = "Smoothed Curves",
   xtitle = " ",
-  ytitle = " "
+  ytitle = " ",
+  data = NULL
 )
 }
 \arguments{
