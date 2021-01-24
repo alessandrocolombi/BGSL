@@ -1013,16 +1013,16 @@ namespace utils{
 		sample::rchisq  rchisq;
 
 		//Step 0: If the Graph is empty, sample only diagonal values and return.
-		if(n_links == 0)
-		{
+		//if(n_links == 0)
+		//{
 				//std::cout<<"Empty Graph"<<std::endl;
-			Eigen::VectorXd diag(Eigen::VectorXd::Zero(N));
-			for(unsigned int i = 0; i < N; ++i){  //---> si puo fare con nullaryExpr https://eigen.tuxfamily.org/dox/classEigen_1_1DenseBase.html#title55 ?
-				diag(i) = std::sqrt(rchisq(engine, (double)(b + N - i - 1))  );
-				//K_return(i,i) = std::sqrt(  rchisq(engine, (double)(b + N - i - 1))  );
-			}
-			return std::make_tuple(diag.asDiagonal(), true, 0);
-		}
+			//Eigen::VectorXd diag(Eigen::VectorXd::Zero(N));
+			//for(unsigned int i = 0; i < N; ++i){  //---> si puo fare con nullaryExpr https://eigen.tuxfamily.org/dox/classEigen_1_1DenseBase.html#title55 ?
+				//diag(i) = std::sqrt(rchisq(engine, (double)(b + N - i - 1))  );
+				////K_return(i,i) = std::sqrt(  rchisq(engine, (double)(b + N - i - 1))  );
+			//}
+			//return std::make_tuple(diag.asDiagonal(), true, 0);
+		//}
 
 		//Step 1: Draw K from Wish(b,D) = wish(D^-1, b+N-1)
 			//D matrix can be passed in different form. Usually D is an Inverse_scale parameter, however for sampling from Wishart distribution one need a Scale

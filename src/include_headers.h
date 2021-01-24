@@ -33,5 +33,6 @@
 //#include <Eigen/Sparse>
 //Parallel
 #include <omp.h>
-
+//Rcpp -> decomment for using pure c++ code. It is used in progress bar, samplers and Groups
+#include <Rcpp.h>
 #endif
