@@ -13,7 +13,8 @@ Compute_Quantiles(
   Beta = FALSE,
   Mu = FALSE,
   TauEps = FALSE,
-  Precision = TRUE,
+  Precision = FALSE,
+  prec_elem = 0L,
   lower_qtl = 0.05,
   upper_qtl = 0.95
 )

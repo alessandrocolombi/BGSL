@@ -207,8 +207,8 @@ Compute_QuantileBeta <- function(SaveBeta, lower_qtl = 0.05, upper_qtl = 0.95) {
 #' Compute quantiles of sampled values
 #'
 #' @export
-Compute_Quantiles <- function(file_name, p, n, stored_iterG, stored_iter = 0L, Beta = FALSE, Mu = FALSE, TauEps = FALSE, Precision = TRUE, lower_qtl = 0.05, upper_qtl = 0.95) {
-    .Call(`_BGSL_Compute_Quantiles`, file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision, lower_qtl, upper_qtl)
+Compute_Quantiles <- function(file_name, p, n, stored_iterG, stored_iter = 0L, Beta = FALSE, Mu = FALSE, TauEps = FALSE, Precision = FALSE, prec_elem = 0L, lower_qtl = 0.05, upper_qtl = 0.95) {
+    .Call(`_BGSL_Compute_Quantiles`, file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision, prec_elem, lower_qtl, upper_qtl)
 }
 
 #' Compute Posterior means of sampled values
