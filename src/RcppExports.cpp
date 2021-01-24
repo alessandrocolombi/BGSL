@@ -205,8 +205,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // Compute_Quantiles
-Rcpp::List Compute_Quantiles(Rcpp::String const& file_name, unsigned int const& p, unsigned int const& n, unsigned int const& stored_iterG, unsigned int const& stored_iter, bool Beta, bool Mu, bool TauEps, bool Precision, double const& lower_qtl, double const& upper_qtl);
-RcppExport SEXP _BGSL_Compute_Quantiles(SEXP file_nameSEXP, SEXP pSEXP, SEXP nSEXP, SEXP stored_iterGSEXP, SEXP stored_iterSEXP, SEXP BetaSEXP, SEXP MuSEXP, SEXP TauEpsSEXP, SEXP PrecisionSEXP, SEXP lower_qtlSEXP, SEXP upper_qtlSEXP) {
+Rcpp::List Compute_Quantiles(Rcpp::String const& file_name, unsigned int const& p, unsigned int const& n, unsigned int const& stored_iterG, unsigned int const& stored_iter, bool Beta, bool Mu, bool TauEps, bool Precision, unsigned int const& prec_elem, double const& lower_qtl, double const& upper_qtl);
+RcppExport SEXP _BGSL_Compute_Quantiles(SEXP file_nameSEXP, SEXP pSEXP, SEXP nSEXP, SEXP stored_iterGSEXP, SEXP stored_iterSEXP, SEXP BetaSEXP, SEXP MuSEXP, SEXP TauEpsSEXP, SEXP PrecisionSEXP, SEXP prec_elemSEXP, SEXP lower_qtlSEXP, SEXP upper_qtlSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -219,9 +219,10 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type Mu(MuSEXP);
     Rcpp::traits::input_parameter< bool >::type TauEps(TauEpsSEXP);
     Rcpp::traits::input_parameter< bool >::type Precision(PrecisionSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type prec_elem(prec_elemSEXP);
     Rcpp::traits::input_parameter< double const& >::type lower_qtl(lower_qtlSEXP);
     Rcpp::traits::input_parameter< double const& >::type upper_qtl(upper_qtlSEXP);
-    rcpp_result_gen = Rcpp::wrap(Compute_Quantiles(file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision, lower_qtl, upper_qtl));
+    rcpp_result_gen = Rcpp::wrap(Compute_Quantiles(file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision, prec_elem, lower_qtl, upper_qtl));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -438,7 +439,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BGSL_Generate_Basis_derivatives", (DL_FUNC) &_BGSL_Generate_Basis_derivatives, 6},
     {"_BGSL_Read_InfoFile", (DL_FUNC) &_BGSL_Read_InfoFile, 1},
     {"_BGSL_Compute_QuantileBeta", (DL_FUNC) &_BGSL_Compute_QuantileBeta, 3},
-    {"_BGSL_Compute_Quantiles", (DL_FUNC) &_BGSL_Compute_Quantiles, 11},
+    {"_BGSL_Compute_Quantiles", (DL_FUNC) &_BGSL_Compute_Quantiles, 12},
     {"_BGSL_Compute_PosteriorMeans", (DL_FUNC) &_BGSL_Compute_PosteriorMeans, 10},
     {"_BGSL_Extract_Chain", (DL_FUNC) &_BGSL_Extract_Chain, 8},
     {"_BGSL_Summary_Graph", (DL_FUNC) &_BGSL_Summary_Graph, 4},

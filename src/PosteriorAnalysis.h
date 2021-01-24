@@ -384,6 +384,7 @@ namespace analysis{
 				LowerBound(i,j) = gsl_stats_quantile_from_sorted_data(&chain.data()[0], 1, chain.size(), alpha_lower);
 				UpperBound(i,j) = gsl_stats_quantile_from_sorted_data(&chain.data()[0], 1, chain.size(), alpha_upper);
 			}
+			std::cout<<"Finihed p = "<<i<<std::endl;
 		}
 
 		H5Dclose(dataset_rd);

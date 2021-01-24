@@ -4,7 +4,6 @@
 #include "include_headers.h"
 
 
-#include <Rcpp.h>
 class pBar {
 public:
     pBar(double _neededProgress = 100):neededProgress(_neededProgress){}
