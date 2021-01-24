@@ -560,8 +560,8 @@ Rcpp::List Compute_QuantileBeta(std::vector<Eigen::MatrixXd> const & SaveBeta, d
 //' @export
 // [[Rcpp::export]]
 Rcpp::List Compute_Quantiles( Rcpp::String const & file_name, unsigned int const & p, unsigned int const & n, unsigned int const & stored_iterG, unsigned int const & stored_iter = 0, 
-                              bool Beta = false, bool Mu = false, bool TauEps = false, bool Precision = true,
-                              double const & lower_qtl = 0.05, double const & upper_qtl = 0.95 )
+                              bool Beta = false, bool Mu = false, bool TauEps = false, bool Precision = false, unsigned int const & prec_elem = 0,
+                              double const & lower_qtl = 0.05, double const & upper_qtl = 0.95  )
 {
   
   Rcpp::List Quantiles = Rcpp::List::create( Rcpp::Named("Beta"),      
@@ -570,6 +570,10 @@ Rcpp::List Compute_Quantiles( Rcpp::String const & file_name, unsigned int const
                                              Rcpp::Named("Precision") 
                                            );
   if(Precision){
+    if(prec_elem <= 0)
+      throw std::runtime_error("Need to specify the number of elements of the precision matrix in prec_elem parameter");
+    if(prec_elem != p && prec_elem != 0.5*p*(p+1))
+      throw std::runtime_error("prec_elem can only be p or 0.5*p*(p+1)");
     Rcpp::Rcout<<"Compute Precision quantiles..."<<std::endl;
     auto [Lower, Upper] =  analysis::Vector_ComputeQuantiles( file_name, stored_iterG, 0.5*p*(p+1), "Precision", lower_qtl, upper_qtl );
     Quantiles["Precision"] = Rcpp::List::create(Rcpp::Named("Lower")=Lower, Rcpp::Named("Upper")=Upper);

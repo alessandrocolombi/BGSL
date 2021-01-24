@@ -123,8 +123,10 @@ int FGMsampler<GraphStructure, T /*, RetGraph*/ >::run()
 
 	//Open file
 	HDF5conversion::FileType file;
-	file = H5Fcreate(file_name.data(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT); 
-	SURE_ASSERT(file>0,"Cannot create file ");
+	file = H5Fcreate(file_name.data(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT);
+	if(file < 0)
+		throw std::runtime_error("Cannot create file"); 
+	//SURE_ASSERT(file>0,"Cannot create file ");
 	int bi_dim_rank = 2; //for 2-dim datasets. Beta are matrices
 	int one_dim_rank = 1;//for 1-dim datasets. All other quantities
 	//Print info file
@@ -213,7 +215,10 @@ int FGMsampler<GraphStructure, T /*, RetGraph*/ >::run()
 		std::tie(K, accepted_mv) = GGM_method(U, n, G, p_addrm, engine); //G is modified inside the function.
 		total_accepted += accepted_mv;
 
-
+		//Check for user interruption
+		if(iter%1000 == 0){
+			Rcpp::checkUserInterrupt(); //files are not closed 
+		}
 		
 		//Save
 		if(iter >= nburn){
@@ -299,7 +304,6 @@ int FGMsampler<GraphStructure, T /*, RetGraph*/ >::run()
 
 	std::cout<<std::endl<<"FGM sampler has finished"<<std::endl;
 	std::cout<<"Accepted moves = "<<total_accepted<<std::endl;
-	std::cout<<"visited graphs = "<<visited<<std::endl;
 	return total_accepted;
 	//return std::make_tuple(SaveBeta, SaveMu, SaveK, SaveG, SaveTaueps);
 }

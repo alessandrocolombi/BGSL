@@ -93,6 +93,8 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 			res += A.row(i)*B.col(i);
 		return( -0.5*res );
 	}; //This lambda function computes trace(A*B)
+
+	//Check if data is changing or not. if not, do not need to factorize every time
 	if(!this->data_factorized){
 		this->D_plus_U = this->Kprior.get_inv_scale() + data;	
 		this->chol_inv_DplusU = this->D_plus_U.llt().solve(MatCol::Identity(data.rows(),data.rows())).llt().matrixU();
