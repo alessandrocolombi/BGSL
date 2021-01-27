@@ -23,3 +23,6 @@ LinkingTo:
 Imports: 
     Rcpp,
     mathjaxr (>= 1.0-1)
+Suggests: 
+    plot.matrix (>= 1.5.2),
+    fields (>= 11.6)

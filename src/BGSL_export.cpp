@@ -105,7 +105,6 @@ Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Ei
 //'
 //' \loadmathjax This function computes the logarithm of the normalizing constant of GWishart distribution. Its distribution, taking into account a Shape-Inverse Scale parametrization, is the following:
 //' \mjsdeqn{p\left(K~\lvert~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} \lvert K\rvert^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
-
 //' The Monte Carlo method, developed by Atay-Kayis and Massam (2005), is implemented. It works with both decomposable and non decomposable graphs. 
 //' In particular it is possible to provide a graph in block form. 
 //' @param G matrix representing the desired graph. It has to be a \mjseqn{p \times p} matrix if the graph is in block form, i.e if groups is non null, 

@@ -24,12 +24,12 @@ This package makes use of the following libraries:
 * [Eigen](http://eigen.tuxfamily.org/index.php?title=Main_Page): it is an highly optimized C++ template library for
 linear algebra. All matrices, vectors and solvers in **BGSL** makes use of Eigen. 
 * [GSL](https://www.gnu.org/software/gsl/): the GNU Scientific Library (GSL) provides a wide range of fast mathematical 
-routines. **BGSL** utilizies GSL for generating random numbers, drawing samples from common distributions and for
+routines. **BGSL** utilizies **GSL** for generating random numbers, drawing samples from common distributions and for
 the computation of smoothing basis splines (Bsplines).
-* [HDF5](https://www.hdfgroup.org/): is a a C++ library for writing binary files that are architecture independent. 
+* [HDF5](https://www.hdfgroup.org/): is a C++ library for writing binary files that are architecture independent. 
 **BGSL** uses it to write all sampled values directly on file not to saturate the available memory, which prevents `R` session to abort.
 
-The user should not be worried of dealing with them because they only work under the hood. The only task of the user is
+The user should not be worried of dealing with them because they only work under the hood. Its only task is
 to be sure to have them installed. Follow instructions in [Installation - Unix](#Installation---Unix) and   
 [Installation - Windows](#Installation---Windows) to make them available on your operating system.
 
@@ -38,7 +38,7 @@ to be sure to have them installed. Follow instructions in [Installation - Unix](
 Installation on Unix systems is straightforward. Note that all following commands are valid for Ubuntu/Debian users only. 
 On other platforms, it should be easy to use the corresponding package managing tool commands. 
 ### R - Rstudio - devtools
-First step is to have `R` installed on your computer. If you already have that, make sure that it is at least version 4.0.3 and that `devtool` package is available. In this case go directly to 
+First step is to have `R` installed on your computer. If you already have that, make sure that it is at least version 4.0.2 and that `devtool` package is available. In this case go directly to 
 the [next point](#GSL).
 Otherwise, follow instruction in [r-project](https://cloud.r-project.org/) to download the right version of `R` according to your distribution. Ubuntu users may get lost or get into trouble because of an issue with the key signing Ubuntu archives on CRAN.
 This [guide](https://cran.r-project.org/bin/linux/ubuntu/) is very well done and should clarify all doubts. 
@@ -49,7 +49,7 @@ The longest and safest way to proceed is summarized below. For sake of brevity, 
 ```shell
 $ sudo apt-key add key.txt
 ```
-4. Go to etc/apt folder and open source.list file with your prefered text editor, let's say sublime
+4. Go to etc/apt folder and open source.list file with your prefered text editor, let us say sublime
 ```shell
 $ cd /etc/apt
 $ sudo subl sources.list
@@ -66,7 +66,7 @@ $ sudo apt-get update
 $ sudo apt-get install r-base-dev
 $ R
 ```
-The last instruction should launch the program and display the downloaded version that should be at least 4.0.3.
+The last instruction should launch the program and display the downloaded version that should be at least 4.0.2.
 7. Install [Rstudio](https://rstudio.com/products/rstudio/download/#download) as IDE for `R`. It is not the only possibility but it is a standard choice and highly recommended. 
 
 The very last step is to install the `devtools` package. This installation may take few minutes since has many dependencies that rely on external libraries. It is indeed suggested to install them at this stage simply typing 
@@ -93,11 +93,11 @@ $ gsl-config --libs
 ```
 
 ### HDF5
-It can be directly download from your package manager with
+Like **GSL**, also this library can be directly downloaded from the package manager with
 ```shell
 $ sudo apt-get install libhdf5-dev
 ```
-It is probably going to ask if it fine to install some auxiliary packeges. Say yes and continue. As before, if everything is fine, something like this should be displayed
+It is probably going to ask to install some auxiliary packeges. Say yes and continue. As before, if everything is fine, something like this should be displayed
 ```shell
 $ pkg-config --cflags hdf5
 -I/usr/include/hdf5/serial #where the header files are
@@ -108,22 +108,18 @@ $ pkg-config --libs hdf5
 ### R depencencies
 
 **BGSL**'s core code is all written in `C++` language and exploits the `Rcpp` package to interfece with `R` which allow to map many `R` data types and objects back and forth to their `C++` equivalents.
-`Rcpp` by itself does not map matrices and vectors in Eigen types, for that the `RcppEigen` package has to be used. It provides all the necessary header files of the 
+`Rcpp` by itself does not map matrices and vectors in **Eigen** types, for that the `RcppEigen` package has to be used. It provides all the necessary header files of the 
 [Eigen library](http://eigen.tuxfamily.org/index.php?title=Main_Page). Finally, the last requirement is to install the [`RcppParallel`](http://rcppcore.github.io/RcppParallel/) package. It is used to
 achive cheap and portable parallelization via [Intel(R) TBB](https://software.intel.com/content/www/us/en/develop/tools/oneapi/components/onetbb.html). 
-Other useful packages are `fields` and `plot.matrix`, used to plot matrices.
+The last mandatory package to be installed is `mathjaxr`. It is needed to improve the style mathematical forumals are written in the documentation.
+Other useful packages are `fields` and `plot.matrix`, used to plot matrices. It is not mandatory to install them, it is just a suggestion to visualize the graphs.
 All those packages can be installed directly from the `R` console via
 ```R
 install.packages(c("Rcpp", "RcppEigen", "RcppParallel", "fields", "plot.matrix", "mathjaxr"))
 ```
 
 ### BGSL
-Once all dependencies have been installed, the SPMIX is extremely simple to install. To do so, open R and simply type
-
-devtools::install_github("TeoGiane/SPMIX")
-This command will automatically download, build and install SPMIX in your package library. Once installed, you can import it in your workflow as a standard package with library("SPMIX").
-
-You are now ready to dowload, build and install **BGSL**. Open `R` and run 
+You are now ready to download, build and install **BGSL**. Open `R` and run 
 ```R
 devtools::install_github("alessandrocolombi/BGSL")
 library("BGSL")
@@ -132,19 +128,18 @@ library("BGSL")
 ## Installation - Windows
 
 Windows users will have to leave their comfort zone when installing this package as things get a little more complicated. There are two difficulties here. 
-First of all, note that installing a package is a non-trivial process, involving making different kinds of documentation, checking `R` code for sanity, compiling `C++`  and so on. All those steps require a whole series of external tools like make, sed, tar, gzip, a C/C++ compiler etc. collectively known as a toolchain. All those helpers are immediately available in Linux distribution but they are not on standard Windows boxes and would need to be provided. The second problem will be to make **GSL** and **HDF5** available at linking stage when **BGSL** would be compiled. The issue here is that Unix files and directories are organized in a standard way and libraries are usually automatically manged via package managing programs. What has to be done is exploiting the `R` toolchain provided with 
-**Rtools** to manage libraries emulating a Unix procedure. 
+First of all, note that installing a package is a non-trivial process, involving making different kinds of documentation, checking `R` code for sanity, compiling `C++`  and so on. All those steps require a whole series of external tools like make, sed, tar, gzip, a C/C++ compiler etc. collectively known as a toolchain. All those helpers are immediately available in Linux distribution but they are not on standard Windows boxes and would need to be provided. The second problem will be to make **GSL** and **HDF5** available at linking stage when **BGSL** would be compiled. The issue here is that Unix files and directories are organized in a standard way and libraries are usually automatically manged via package managing programs. What has to be done is exploiting the `R` toolchain provided with **Rtools** to manage libraries emulating a Unix procedure. 
 
 ### Rtools
 
 First step is to have `R` installed on your computer and integrated with [Rstudio](https://rstudio.com/products/rstudio/download/#download) as IDE. If you do not have it already install, this should
-be easy, just follow [these instructions](https://cran.r-project.org/bin/windows/base/). In case you already have it available, make sure it is at least version 4.0.3. <br/>
+be easy, just follow [these instructions](https://cran.r-project.org/bin/windows/base/). In case you already have it available, make sure it is at least version 4.0.2. <br/>
 The second step is to make [Rtools40](https://cran.r-project.org/bin/windows/Rtools/) work. It is likely that you already have it available, just check by typing in `R` console
 ```R
 Sys.which("make")
 > "C:\\rtools40\\usr\\bin\\make.exe" 
 ```
-If that output is displayed, you are good to go. If not, instructions given in the link above should guide in installation process. Once you have done install `devtools` and all its dependencies with
+If that output is displayed, you are good to go. If not, instructions given in the link above should guide in installation process. Once you have done, install `devtools` and all its dependencies with
 ```R
 install.packages("devtools")
 ```
@@ -211,11 +206,6 @@ install.packages(c("Rcpp", "RcppEigen", "RcppParallel", "fields", "plot.matrix",
 ```
 
 ### BGSL
-Once all dependencies have been installed, the SPMIX is extremely simple to install. To do so, open R and simply type
-
-devtools::install_github("TeoGiane/SPMIX")
-This command will automatically download, build and install SPMIX in your package library. Once installed, you can import it in your workflow as a standard package with library("SPMIX").
-
 You are now ready to dowload, build and install **BGSL**. Open `R` and run 
 ```R
 devtools::install_github("alessandrocolombi/BGSL")

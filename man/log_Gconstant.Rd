@@ -2,8 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{log_Gconstant}
 \alias{log_Gconstant}
-\title{The Monte Carlo method, developed by Atay-Kayis and Massam (2005), is implemented. It works with both decomposable and non decomposable graphs.
-In particular it is possible to provide a graph in block form.}
+\title{Normalizing constant for GWishart distribution}
 \usage{
 log_Gconstant(G, b, D, MCiteration = 500L, groups = NULL, seed = 0L)
 }
@@ -26,6 +25,8 @@ i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. L
 log of the normalizing constant of GWishart distribution.
 }
 \description{
+\loadmathjax This function computes the logarithm of the normalizing constant of GWishart distribution. Its distribution, taking into account a Shape-Inverse Scale parametrization, is the following:
+\mjsdeqn{p\left(K~\lvert~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} \lvert K\rvert^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
 The Monte Carlo method, developed by Atay-Kayis and Massam (2005), is implemented. It works with both decomposable and non decomposable graphs.
 In particular it is possible to provide a graph in block form.
 }
