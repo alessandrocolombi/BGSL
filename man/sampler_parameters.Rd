@@ -18,7 +18,7 @@ sampler_parameters(
 
 \item{BaseMat}{matrix of dimension \mjseqn{n\_grid\_points \times n\_basis} containing the evaluation of all the \mjseqn{n\_basis} B-spine basis function in all the grid points.
 May be defaulted as \code{NULL} but note this case it is not automatically generated.
-Note that it is not needed by \code{\link{GGM_samplinig}} but is mandatory in \code{\link{FGM_sampling}} and \code{\link{FLM_samplinig}}. For those cases,
+Note that it is not needed by \code{\link{GGM_samplinig}} but is mandatory in \code{\link{FGM_sampling}} and \code{\link{FLM_sampling}}. For those cases,
 use \code{\link{Generate_Basis}} to generete it.}
 
 \item{threshold}{threshold for convergence in GWishart sampler. It is not needed only in \code{FLM} sampler with diagonal graph.}

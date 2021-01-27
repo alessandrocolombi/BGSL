@@ -63,15 +63,15 @@ simulate_curves(
 
 \item{width2}{Set how large the second pick has to be. This parameter acts like a standard deviation of a Normal distribution, so the larger it is, the thinner is the pick.}
 
-\item{position1}{Set where the first pick has to be located. Position is then computed as \mjseqn{range_x\link{1} + (range_x\link{2}-range_x\link{1})/position1}.}
+\item{position1}{Set where the first pick has to be located. Position is then computed as \mjseqn{range\_x[1] + (range\_x[2]-range\_x[1])/position1}.}
 
-\item{position2}{Set where the second pick has to be located. Position is then computed as \mjseqn{range_x\link{2} - (range_x\link{2}-range_x\link{1})/position2}. Set 2 to place it in the middle.}
+\item{position2}{Set where the second pick has to be located. Position is then computed as \mjseqn{range\_x[2] - (range\_x[2]-range\_x[1])/position2}. Set 2 to place it in the middle.}
 
 \item{n_plot}{the number of curves to be plotted. Set 0 for no plot.}
 
-\item{highlight_band1}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\link[=1,n\\_basis]{1,n\_basis}}.}
+\item{highlight_band1}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.}
 
-\item{highlight_band2}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\link[=1,n\\_basis]{1,n\_basis}}.}
+\item{highlight_band2}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.}
 
 \item{title_plot}{the title of the plot.}
 

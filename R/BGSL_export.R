@@ -236,16 +236,16 @@ GWish_PostConst_tuning = function(p, n, b=3, D = diag(p), nrep = 100, MCiter_lis
 
 #' Computes and plot smoothed curves
 #'
-#' #' \loadmathjax This function gets the regression coefficients and the evaluated splines and builds the smooted curves. It may also plot the curves.
+#' \loadmathjax This function gets the regression coefficients and the evaluated splines and builds the smooted curves. It may also plot the curves.
 #' @param beta matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the values of regression coefficients.
 #' @param BaseMat matrix of dimension \mjseqn{n\_grid\_points \times n\_basis} containing the evaluation of all the \mjseqn{n\_basis} B-spine basis function in all the grid points.
 #' @param n_plot the number of curves to be plotted. Set 0 for no plot.
 #' @param range the range where the curves has to be plotted. Not needed if \code{n_plot} is 0.
-#' @param grid_points vector of size \mjseqn{n_\grid\_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
+#' @param grid_points vector of size \mjseqn{n\_grid\_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
 #' @param internal_knots vector with the internal knots used to construct the splines. Can be obtained as return value of function \code{\link{Generate_Basis}}. Default is null.
 #' If provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval represents the segment where the \code{k}-th spline dominates the others.
-#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
-#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
+#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\[1,n\_basis\]}.
+#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\[1,n\_basis\]}.
 #' @param title_plot the title of the plot.
 #' @param xtitle the title of the x-axis.
 #' @param ytitle the title of the x-axis.
@@ -363,18 +363,18 @@ smooth_curves = function( beta, BaseMat, n_plot = 0, range = NULL, grid_points =
 #' Computes and plot smoothed curves with credible bands
 #'
 #' \loadmathjax This function gets the mean values of the regression coefficients as well as the lower and upper quantiles and builds the smooted curves with their credible bands.
-#' It does not computes the quantiles nor the mean starting from all the sampled values, they have to be previously computed using \code{\link{Compute_QuantileBeta}} function.
+#' It does not computes the quantiles nor the mean starting from all the sampled values, they have to be previously computed using \code{\link{Compute_Quantiles}} function.
 #' @param beta matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the values of regression coefficients.
-#' @param betaLower matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the lower quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.
-#' @param betaUpper matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the upper quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.
+#' @param betaLower matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the lower quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_Quantiles}} function.
+#' @param betaUpper matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the upper quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_Quantiles}} function.
 #' @param BaseMat matrix of dimension \mjseqn{n\_grid\_points \times n\_basis} containing the evaluation of all the \mjseqn{n\_basis} B-spine basis function in all the grid points.
 #' @param n_plot the number of curves to be plotted. Set 0 for no plot.
 #' @param range the range where the curves has to be plotted. Not needed if \code{n_plot} is 0.
-#' @param grid_points vector of size \mjseqn{n_\grid\_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
+#' @param grid_points vector of size \mjseqn{n\_grid\_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
 #' @param internal_knots vector with the internal knots used to construct the splines. Can be obtained as return value of function \code{\link{Generate_Basis}}. Default is null.
 #' If provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval represents the segment where the \code{k}-th spline dominates the others.
-#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
-#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
+#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\[1,n\_basis\]}.
+#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\[1,n\_basis\]}.
 #' @param title_plot the title of the plot.
 #' @param xtitle the title of the x-axis.
 #' @param ytitle the title of the x-axis.
@@ -634,11 +634,11 @@ smooth_curves_credible_bands = function(  beta, betaLower, betaUpper, BaseMat, n
 #' @param data2 matrix of dimension \mjseqn{n\_curves \times n\_grid\_points} representing the second dataset to be plotted, if needed.
 #' @param range the range where the curves has to be plotted. Not needed if \code{n_plot} is 0.
 #' @param n_plot the number of curves to be plotted. Set 0 for no plot.
-#' @param grid_points vector of size \mjseqn{n_\grid\_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
+#' @param grid_points vector of size \mjseqn{n\_grid\_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
 #' @param internal_knots vector with the internal knots used to construct the splines. Can be obtained as return value of function \code{\link{Generate_Basis}}. Default is null.
 #' If provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval represents the segment where the \code{k}-th spline dominates the others.
-#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
-#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
+#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\[1,n\_basis\]}.
+#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\[1,n\_basis\]}.
 #' @param title_plot the title of the plot.
 #' @param xtitle the title of the x-axis.
 #' @param ytitle the title of the x-axis.
@@ -774,7 +774,7 @@ plot_curves = function( data1, data2 = NULL, range, n_plot = 1, grid_points = NU
 #' @param G matrix of size \mjseqn{p \times p} representing the graphical part of the model that would remain fixed through out the sampling. Needed only if \code{diagonal_graph} is set to \code{FALSE}.
 #' @param Param list containing parameters needed by the sampler. It has to follow the same notation of the one generated by \code{\link{sampler_parameters}} function. 
 #' It is indeed recommended to build it through that particular function. It is important to remember that \code{BaseMat} field is needed and cannot be defaulted. Use \code{\link{Generate_Basis}} to create it.
-#' It has to be a matrix of dimension \mjseqn{n_grid_points \times p} containing the evalutation of \code{p} Bspline basis over a grid of \code{n_grid_points} nodes.
+#' It has to be a matrix of dimension \mjseqn{n\_grid\_points \times p} containing the evalutation of \code{p} Bspline basis over a grid of \code{n_grid_points} nodes.
 #' @param HyParam list containing hyperparameters needed by the sampler. It has to follow the same notation of the one generated by \code{\link{LM_hyperparameters}} function. It is indeed recommended to build it through that particular function.
 #' @param Init list containig initial values for Markov chain. It has to follow the same notation of the one generated by \code{\link{LM_init}} function. It is indeed recommended to build it through that particular function.
 #' @param print_info boolean, set \code{TRUE} to display the progress bar.
@@ -844,11 +844,11 @@ FLM_sampling = function( p, data, niter = 100000, burnin = niter/2, thin = 1, di
 #' @param height2 Heigth of the pick of the second Gaussian.
 #' @param width1 Set how large the first pick has to be. This parameter acts like a standard deviation of a Normal distribution, so the larger it is, the thinner is the pick.
 #' @param width2 Set how large the second pick has to be. This parameter acts like a standard deviation of a Normal distribution, so the larger it is, the thinner is the pick.
-#' @param position1 Set where the first pick has to be located. Position is then computed as \mjseqn{range_x[1] + (range_x[2]-range_x[1])/position1}.
-#' @param position2 Set where the second pick has to be located. Position is then computed as \mjseqn{range_x[2] - (range_x[2]-range_x[1])/position2}. Set 2 to place it in the middle.
+#' @param position1 Set where the first pick has to be located. Position is then computed as \mjseqn{range\_x\[1\] + (range\_x\[2\]-range\_x\[1\])/position1}.
+#' @param position2 Set where the second pick has to be located. Position is then computed as \mjseqn{range\_x\[2\] - (range\_x\[2\]-range\_x\[1\])/position2}. Set 2 to place it in the middle.
 #' @param n_plot the number of curves to be plotted. Set 0 for no plot.
-#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
-#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
+#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\[1,n\_basis\]}.
+#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\[1,n\_basis\]}.
 #' @param title_plot the title of the plot.
 #' @param xtitle the title of the x-axis.
 #' @param ytitle the title of the x-axis.
@@ -856,9 +856,6 @@ FLM_sampling = function( p, data, niter = 100000, burnin = niter/2, thin = 1, di
 #'
 #' @return It returns a list composed of: all simulated curves in \code{data}, all underlying parameters, called \code{Beta}, \code{mu}, \code{K} and the true graph \code{G}. 
 #' It also return the design matrix \code{basemat}, generated by \code{\link{Generate_Basis}} and the vector of the internal knots generating the splines, see \code{\link{Generate_Basis}}.
-
-#It returns a list with the simulated curves as well as all the other underlying parameters, that are Beta, mu, G, K. It then returns the (n_grid_points x p) design matrix
-# containing the evaluation of all the splines in all the grid points. Finally it also returns the interal knots used in the creation of the splines.
 #' @export
 simulate_curves = function( p = 10, n = 300, r = 235,range_x = c(100,200), G = NULL, K = NULL, b = 3, D = NULL, tau_eps = 0, rate = 0.01/2,
                             spline_order = 3, n_picks = 1, height1 = 1, height2 = 1, width1 = 36, width2 = 24, position1 = 10, position2 = 2, 
@@ -1308,7 +1305,7 @@ LM_hyperparameters = function( p, a_tau_eps = 20, b_tau_eps = 0.002, sigma_mu = 
 #' @param MCpost integer, the number of iteration for the MonteCarlo approximation of posterior normalizing constant of GWishart distribution. Needed only in \code{"MH"} algorithms.
 #' @param BaseMat matrix of dimension \mjseqn{n\_grid\_points \times n\_basis} containing the evaluation of all the \mjseqn{n\_basis} B-spine basis function in all the grid points.
 #' May be defaulted as \code{NULL} but note this case it is not automatically generated. 
-#' Note that it is not needed by \code{\link{GGM_samplinig}} but is mandatory in \code{\link{FGM_sampling}} and \code{\link{FLM_samplinig}}. For those cases,
+#' Note that it is not needed by \code{\link{GGM_samplinig}} but is mandatory in \code{\link{FGM_sampling}} and \code{\link{FLM_sampling}}. For those cases,
 #' use \code{\link{Generate_Basis}} to generete it. 
 #' @param threshold threshold for convergence in GWishart sampler. It is not needed only in \code{FLM} sampler with diagonal graph.
 #' @return A list with all parameters described as possible inputs.
@@ -1514,7 +1511,7 @@ LM_init = function(p ,n, empty = TRUE, K0 = NULL, Beta0 = NULL, mu0 = NULL, tau_
 #' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. If \code{NULL}, \code{n_groups} are automatically generated. Not needed if form is set to \code{"Complete"}.
 #' @return plots the mean acceptance ratio for each \code{sigmaG} and returns the highest one.
 sigmaG_GGM_tuning = function( data, n, niter = 1000, sigmaG_list = seq(0.05, 0.55, by = 0.05), Nrep = 10,
-							  Param = NULL, HyParam = NULL, form = "Complete", prior = "Uniform", algo = "RJ", n_groups = 0, groups = NULL  )
+							                Param = NULL, HyParam = NULL, form = "Complete", prior = "Uniform", algo = "RJ", n_groups = 0, groups = NULL  )
 {
 	nburn = niter-1
 	thin  = 1
@@ -1589,8 +1586,6 @@ Block2Complete = function(Gblock, groups)
   return(G)
 }
 
-#This utility implements an hybrid Gibbs Sampler strategy in order to sample the posterior distribution of the parameters βi, μ, K, G, τε of the Functional Graphical Model 
-#for the spectrometric data analysis performed.
 
 #' Functional Graphical model for smoothing
 #'

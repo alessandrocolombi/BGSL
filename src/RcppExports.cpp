@@ -356,15 +356,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// GraphTest
-void GraphTest();
-RcppExport SEXP _BGSL_GraphTest() {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    GraphTest();
-    return R_NilValue;
-END_RCPP
-}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BGSL_rGwish", (DL_FUNC) &_BGSL_rGwish, 11},
@@ -385,7 +376,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BGSL_GGM_sampling_c", (DL_FUNC) &_BGSL_GGM_sampling_c, 23},
     {"_BGSL_FLM_sampling_c", (DL_FUNC) &_BGSL_FLM_sampling_c, 23},
     {"_BGSL_FGM_sampling_c", (DL_FUNC) &_BGSL_FGM_sampling_c, 29},
-    {"_BGSL_GraphTest", (DL_FUNC) &_BGSL_GraphTest, 0},
     {NULL, NULL, 0}
 };
 

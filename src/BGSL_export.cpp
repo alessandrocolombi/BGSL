@@ -245,7 +245,7 @@ rmvnormal(Eigen::VectorXd mean, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dyn
 //' Sampler for Wishart random variables
 //'
 //' \loadmathjax This function draws random samples from Wishart distribution. We use a Shape-Inverse Scale parametrization, the corresponding density is reported below
-//' \mjsdeqn{ f(X) = \frac{\lvert X \lvert^{(b-2)/2}~~\exp\left( - \frac{1}{2}tr\left(X~D\right)\right)}{2^{p(b+p-1)/2}~\lvertD^{-1}\lvert^{(b+p-1)/2}~\Gamma_{p}((b+p-1)/2)}}
+//' \mjsdeqn{ f(X) = \frac{\lvert X \lvert^{(b-2)/2}~~\exp\left( - \frac{1}{2}tr\left(X~D\right)\right)}{2^{p(b+p-1)/2}~\lvert D^{-1}\lvert^{(b+p-1)/2}~\Gamma_{p}((b+p-1)/2)}}
 //' It is also possible to pass directly the Cholesky decomposition of the Inverse Scale matrix if it is available before the call.
 //' @param b it is Shape parameter. 
 //' @param D Inverse-Scale matrix of size \mjseqn{p \times p}. It may represent its Cholesky decomposition.
@@ -275,12 +275,13 @@ rwishart(double const & b, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic,
 }
 
 //' Sampler for Normal distribution
-//' \loadmathjax This function draw a sample from the Gaussian distribution.
+//' 
+//' This function draw a sample from the Gaussian distribution.
 //' @param mean the mean value.
 //' @param sd the standard deviation.
 //' @param seed integer, seeding value. Set 0 for random seed.
 //'
-//' @return A single drawn values from N(mean, \mjseqn{sd^{2}})
+//' @return A single drawn values from N(mean,sd*sd).
 //' @export
 // [[Rcpp::export]]
 double rnormal(double const & mean = 0.0, double const & sd = 1.0, int seed = 0){
@@ -291,7 +292,7 @@ double rnormal(double const & mean = 0.0, double const & sd = 1.0, int seed = 0)
 
 //' Generate Bspine basis 
 //' 
-//' \loadmathjax This function creates a truncated Bspline basis in the interval \mjseqn{[range(1),range(2)]} and evaluate them over a grid of points.
+//' \loadmathjax This function creates a truncated Bspline basis in the interval \mjseqn{\[range(1),range(2)\]} and evaluate them over a grid of points.
 //' It assumes uniformly spaced breakpoints and constructs the corresponding knot vector using a number of breaks equal to \mjseqn{n\_basis + 2 - order}.
 //' @param n_basis the number of basis functions.
 //' @param range vector of two elements containing first the lower and then the upper bound of the interval.
@@ -324,7 +325,7 @@ Rcpp::List Generate_Basis(int const & n_basis, Rcpp::NumericVector range, int n_
 
 //' Generate Bspine basis and its derivatives
 //'
-//' \loadmathjax This function creates a truncated Bspline basis in the interval \mjseqn{[range(1),range(2)]} and evaluate them over a grid of points up to derivative of order \code{nderiv}.
+//' \loadmathjax This function creates a truncated Bspline basis in the interval \mjseqn{\[range(1),range(2)\]} and evaluate them over a grid of points up to derivative of order \code{nderiv}.
 //' For convention, derivatives of order 0 are the splines themselves. This implimes that the first returned element is always equal to the output of the function \code{\link{Generate_Basis}}.
 //' @param n_basis the number of basis functions.
 //' @param nderiv number of derivates that have to be computed. It can also be 0.
@@ -396,7 +397,7 @@ Rcpp::List Read_InfoFile( Rcpp::String const & file_name )
 //' @param stored_iterG integer, the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix. Required only if \code{Precision} parameter is \code{TRUE}.
 //' @param stored_iter integer, the number of saved iterations for the regression parameters, i.e \mjseqn{\beta}s, \mjseqn{\mu} and \mjseqn{\tau_{\epsilon}}. 
 //' Required if at least one of \code{Beta}, \code{Mu},  \code{TauEps} parameter is \code{TRUE}.
-//' @param Beta boolean, set \code{TRUE} to compute the quantiles for all \mjseqn{p*n} \mjseqn{\beta} coefficients. It may require long time.
+//' @param Beta boolean, set \code{TRUE} to compute the quantiles for all \code{p*n} \mjseqn{\beta} coefficients. It may require long time.
 //' @param Mu boolean, set \code{TRUE} to compute the quantiles for all \mjseqn{p} parameters. 
 //' @param TauEps boolean, set \code{TRUE} to compute the quantiles of \mjseqn{\tau_{\epsilon}} parameter.
 //' @param Precision boolean, set \code{TRUE} to compute the quantiles for all the elements of the precision matrix. Some care is requested. 
@@ -464,7 +465,7 @@ Rcpp::List Compute_Quantiles( Rcpp::String const & file_name, unsigned int const
 //' @param stored_iterG integer, the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix. Required only if \code{Precision} parameter is \code{TRUE}.
 //' @param stored_iter integer, the number of saved iterations for the regression parameters, i.e \mjseqn{\beta}s, \mjseqn{\mu} and \mjseqn{\tau_{\epsilon}}.
 //' Required if at least one of \code{Beta}, \code{Mu},  \code{TauEps} parameter is \code{TRUE}.
-//' @param Beta boolean, set \code{TRUE} to compute the mean for all \mjseqn{p*n} \mjseqn{\beta} coefficients. It may require long time.
+//' @param Beta boolean, set \code{TRUE} to compute the mean for all \code{p*n} \mjseqn{\beta} coefficients. It may require long time.
 //' @param Mu boolean, set \code{TRUE} to compute the mean for all \mjseqn{p} parameters. 
 //' @param TauEps boolean, set \code{TRUE} to compute the mean of \mjseqn{\tau_{\epsilon}} parameter.
 //' @param Precision boolean, set \code{TRUE} to compute the mean for all the elements of the precision matrix. Some care is requested. 

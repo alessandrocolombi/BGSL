@@ -27,14 +27,14 @@ smooth_curves(
 
 \item{range}{the range where the curves has to be plotted. Not needed if \code{n_plot} is 0.}
 
-\item{grid_points}{vector of size \mjseqn{n_\grid\_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.}
+\item{grid_points}{vector of size \mjseqn{n\_grid\_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.}
 
 \item{internal_knots}{vector with the internal knots used to construct the splines. Can be obtained as return value of function \code{\link{Generate_Basis}}. Default is null.
 If provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval represents the segment where the \code{k}-th spline dominates the others.}
 
-\item{highlight_band1}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\link[=1,n\\_basis]{1,n\_basis}}.}
+\item{highlight_band1}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.}
 
-\item{highlight_band2}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\link[=1,n\\_basis]{1,n\_basis}}.}
+\item{highlight_band2}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.}
 
 \item{title_plot}{the title of the plot.}
 
@@ -46,5 +46,5 @@ If provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval 
 It returns a \mjseqn{n\_curves \times n\_grid\_points} matrix containing the values of the smoothed curves.
 }
 \description{
-#' \loadmathjax This function gets the regression coefficients and the evaluated splines and builds the smooted curves. It may also plot the curves.
+\loadmathjax This function gets the regression coefficients and the evaluated splines and builds the smooted curves. It may also plot the curves.
 }

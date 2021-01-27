@@ -24,9 +24,9 @@ smooth_curves_credible_bands(
 \arguments{
 \item{beta}{matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the values of regression coefficients.}
 
-\item{betaLower}{matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the lower quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.}
+\item{betaLower}{matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the lower quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_Quantiles}} function.}
 
-\item{betaUpper}{matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the upper quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.}
+\item{betaUpper}{matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the upper quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_Quantiles}} function.}
 
 \item{BaseMat}{matrix of dimension \mjseqn{n\_grid\_points \times n\_basis} containing the evaluation of all the \mjseqn{n\_basis} B-spine basis function in all the grid points.}
 
@@ -34,14 +34,14 @@ smooth_curves_credible_bands(
 
 \item{range}{the range where the curves has to be plotted. Not needed if \code{n_plot} is 0.}
 
-\item{grid_points}{vector of size \mjseqn{n_\grid\_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.}
+\item{grid_points}{vector of size \mjseqn{n\_grid\_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.}
 
 \item{internal_knots}{vector with the internal knots used to construct the splines. Can be obtained as return value of function \code{\link{Generate_Basis}}. Default is null.
 If provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval represents the segment where the \code{k}-th spline dominates the others.}
 
-\item{highlight_band1}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\link[=1,n\\_basis]{1,n\_basis}}.}
+\item{highlight_band1}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.}
 
-\item{highlight_band2}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\link[=1,n\\_basis]{1,n\_basis}}.}
+\item{highlight_band2}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.}
 
 \item{title_plot}{the title of the plot.}
 
@@ -57,5 +57,5 @@ containing the smoothed curves and their credible bands.
 }
 \description{
 \loadmathjax This function gets the mean values of the regression coefficients as well as the lower and upper quantiles and builds the smooted curves with their credible bands.
-It does not computes the quantiles nor the mean starting from all the sampled values, they have to be previously computed using \code{\link{Compute_QuantileBeta}} function.
+It does not computes the quantiles nor the mean starting from all the sampled values, they have to be previously computed using \code{\link{Compute_Quantiles}} function.
 }

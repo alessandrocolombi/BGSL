@@ -32,7 +32,7 @@ It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \co
 \item{stored_iter}{integer, the number of saved iterations for the regression parameters, i.e \mjseqn{\beta}s, \mjseqn{\mu} and \mjseqn{\tau_{\epsilon}}.
 Required if at least one of \code{Beta}, \code{Mu},  \code{TauEps} parameter is \code{TRUE}.}
 
-\item{Beta}{boolean, set \code{TRUE} to compute the quantiles for all \mjseqn{p*n} \mjseqn{\beta} coefficients. It may require long time.}
+\item{Beta}{boolean, set \code{TRUE} to compute the quantiles for all \code{p*n} \mjseqn{\beta} coefficients. It may require long time.}
 
 \item{Mu}{boolean, set \code{TRUE} to compute the quantiles for all \mjseqn{p} parameters.}
 
