@@ -17,28 +17,31 @@ GM_hyperparameters(
 )
 }
 \arguments{
-\item{p}{integer, dimension of the graph.}
+\item{p}{integer, the dimension of the underlying graph.}
 
-\item{a_tau_eps}{double, shape parameter for gamma prior distribution of \code{tau_eps} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.}
+\item{a_tau_eps}{Shape parameter for gamma prior distribution of \code{tau_eps} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.}
 
-\item{b_tau_eps}{double, inverse scale parameter for gamma prior distribution of \code{tau_eps} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.}
+\item{b_tau_eps}{Rate parameter for gamma prior distribution of \code{tau_eps} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.}
 
-\item{sigma_mu}{double, covariance for normal multivariate distribution of mu parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.}
+\item{sigma_mu}{covariance for normal multivariate distribution of \code{mu} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.}
 
-\item{b_K}{double, it is prior GWishart shape parameter. It has to be larger than 2 in order to have a well defined distribution. Needed in all graphical model, i.e \code{FGM} and \code{GGM} sampler and in \code{FLM} with fixed graph.}
+\item{b_K}{prior GWishart Shape parameter. It has to be larger than 2 in order to have a well defined distribution. Needed in all graphical model, i.e \code{FGM} and \code{GGM} sampler and in \code{FLM} with fixed graph.}
 
-\item{D_K}{matrix of double stored columnwise. It is prior GWishart inverse scale parameter. It has to be symmetric and positive definite. Default is identity matrix but \code{p} has to be provided in that case. Needed in all graphical model, i.e \code{FGM} and \code{GGM} sampler and in \code{FLM} with fixed graph.}
+\item{D_K}{matrix of size \mjseqn{p \times p}, it is prior GWishart Inverse-Scale parameter. It has to be symmetric and positive definite. Default is identity matrix. Needed in all graphical model, i.e \code{FGM} and \code{GGM} sampler and in \code{FLM} with fixed graph.}
 
-\item{p_addrm}{double, probability of proposing a new graph by adding one link. Needed in all graphical model where the graph is random, i.e \code{FGM} and \code{GGM} sampler.}
+\item{p_addrm}{the probability of proposing a new graph by adding one link. It has to be in the range \mjseqn{(0,1)}. Needed in all graphical model where the graph is random, i.e \code{FGM} and \code{GGM} sampler.}
 
-\item{sigmaG}{double, the standard deviation used to perturb elements of precision matrix when constructing the new proposed matrix. Needed in all graphical model where the graph is random, i.e \code{FGM} and \code{GGM} sampler. If algorithm is \code{"MH"} it is not used.}
+\item{sigmaG}{the standard deviation used to perturb elements of precision matrix when constructing the new proposed matrix.
+Needed in all graphical model where the graph is random, i.e \code{FGM} and \code{GGM} sampler. If algorithm is \code{"MH"} it is not used.}
 
-\item{Gprior}{double representing the prior probability of inclusion of each link in case \code{"Bernoulli"} prior is selected for the graph. Set 0.5 for \code{"Uniform"} prior. Needed in all graphical model where the graph is random, i.e \code{FGM} and \code{GGM} sampler.}
+\item{Gprior}{represents the prior probability of inclusion of each link in case \code{"Bernoulli"} prior is selected for the graph. It has to be in the range \mjseqn{(0,1)}.
+Set 0.5 for \code{"Uniform"} prior. Needed in all graphical model where the graph is random, i.e \code{FGM} and \code{GGM} sampler.}
 }
 \value{
-A list with all the inserted hyperparameters.
+A list with all the hyperparameters described as possible inputs. All values that are not explicitely provided are defaulted.
 }
 \description{
-This function simply creates a skeleton for all the hyperparameters that has to be fixed in graphical samplers. All the quantities has a default value,
-moreover some of them may not be needed in some algorithm. The goal of this function is to fix a precise notation that will be used in all the code.
+\loadmathjax This function simply creates a skeleton for all the hyperparameters that has to be fixed in graphical samplers, that are \code{\link{GGM_sampling}} and \code{\link{FGM_sampling}}.
+Prefer to use \code{\link{LM_hyperparameters}} for \code{\link{FLM_sampling}}.
+All the quantities has a default value, moreover some of them may not be needed in some algorithm. The goal of this function is to fix a precise notation that will be used in all the code.
 }

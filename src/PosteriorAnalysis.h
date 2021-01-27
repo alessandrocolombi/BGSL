@@ -467,6 +467,7 @@ namespace analysis{
 		}
 		else{ //Assume it is a block Graph
 			n_elem = 0.5*groups->get_n_groups()*(groups->get_n_groups() + 1) - groups->get_n_singleton();
+			std::cout<<"Sono dentro Summary_Graph, n_elem = "<<n_elem<<std::endl;
 		}
 
 		HDF5conversion::SampledGraphs Glist;

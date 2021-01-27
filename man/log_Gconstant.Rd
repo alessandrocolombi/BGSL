@@ -2,31 +2,30 @@
 % Please edit documentation in R/RcppExports.R
 \name{log_Gconstant}
 \alias{log_Gconstant}
-\title{log of GWishart normalizing constant}
+\title{The Monte Carlo method, developed by Atay-Kayis and Massam (2005), is implemented. It works with both decomposable and non decomposable graphs.
+In particular it is possible to provide a graph in block form.}
 \usage{
-log_Gconstant(G, b, D, MCiteration = 100L, groups = NULL, seed = 0L)
+log_Gconstant(G, b, D, MCiteration = 500L, groups = NULL, seed = 0L)
 }
 \arguments{
-\item{G}{Eigen Matrix of unsigned int stored columnwise. If a standard R matrix is provided, it is automaticaly converted. The lower part
-is not used, the elements is taken in consideration only if the graph is in block form, i.e if \code{groups} is non null.}
+\item{G}{matrix representing the desired graph. It has to be a \mjseqn{p \times p} matrix if the graph is in block form, i.e if groups is non null,
+otherwise it has to be coherent with the number of groups. Only the upper triangular part is needed.}
 
-\item{b}{double, it is shape parameter. It has to be larger than 2 in order to have a well defined distribution.}
+\item{b}{GWishart Shape parameter. It has to be larger than 2 in order to have a well defined distribution.}
 
-\item{D}{Eigen Matrix of double stored columnwise. It has to be symmetric and positive definite.}
+\item{D}{GWishart Inverse-Scale matrix. It has to be of size \mjseqn{p \times p}, symmetric and positive definite.}
 
-\item{MCiteration}{unsigned int, the number of iteration for the MonteCarlo approximation.}
+\item{MCiteration}{the number of iterations for the Monte Carlo approximation.}
 
 \item{groups}{a Rcpp list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
 i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave \code{NULL} if the graph is not in block form.}
 
-\item{seed}{int, the value of the seed. Default value is 0 that implies that a random seed is drawn.}
+\item{seed}{integer, seeding value. Set 0 for random seed.}
 }
 \value{
-long double, the logarithm of the normalizing constant of GWishart distribution.
+log of the normalizing constant of GWishart distribution.
 }
 \description{
-This function computes the logarithm of the normalizing constant of GWishart distribution. It implements the Monte Carlo method, developed by Atay-Kayis and Massam (2005).
-METTERE LA FORMULA
-It also works for non decomposable graphs, actually the exact formula for the decomposable case is not yet implemented.
+The Monte Carlo method, developed by Atay-Kayis and Massam (2005), is implemented. It works with both decomposable and non decomposable graphs.
 In particular it is possible to provide a graph in block form.
 }

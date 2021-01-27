@@ -27,165 +27,32 @@ using MatUnsCol     = Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic
 using VecCol        = Eigen::VectorXd;
 using VecRow        = Eigen::RowVectorXd;
 
-//' Primo esempio di export
-//'
-//' @param Eigen row matrix.
-//' @export
-// [[Rcpp::export]]
-void test_null(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
-               Rcpp::Nullable<Rcpp::List> l = R_NilValue )
-{
-  Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> G2(G);
-  Rcpp::Rcout<<G2<<std::endl;
-  if (l.isNotNull()){
-    Rcpp::List L(l);                          // casting to underlying type List
-    Rcpp::Rcout << "List is not NULL." << std::endl;
-    Groups Gr(L);
-    std::shared_ptr<const Groups> ptr_gr = std::make_shared<const Groups>(L);
-    Rcpp::Rcout<<"Gruppi:"<<std::endl<<Gr<<std::endl;
-    std::vector<int> v1 = L[0];
-    Rcpp::Rcout<<L.size()<<std::endl;
-  }
-  else{
-    Rcpp::Rcout << "List is NULL." << std::endl;
-  }
-  std::vector< std::pair<int, bool> > v(10);
-  v[0] = std::make_pair(10,true);
-  v[1] = std::make_pair(9,false);
-  v[2] = std::make_pair(8,true);
-  std::vector<bool> vett{true, true, false};
-  std::vector< Rcpp::List > L(10);
-  for(int i = 0; i < 2; ++i){
-    L[i] = Rcpp::List::create(Rcpp::Named("key")=vett, Rcpp::Named("value")=v[i].second);
-  }
-}
-
 
 //' A direct sampler for GWishart distributed random variables.  
 //'
-//' This function draws a random matrices, distributed according to the GWishart distribution with shape parameter \code{b} and inverse scale \code{D}, 
-//' with respect to the graph structure \code{G}. METTERE LA FORMULA DELLA DISTRIBUZIONE 
-//' It implements the algorithm described by METTERE CITAZIONI LENKOSKI. It works with both decomposable and non decomposable graphs. 
-//' In particular it is possible to provide a graph in block form. 
-//' @param G Eigen Matrix of unsigned int stored columnwise. If a standard R matrix is provided, it is automaticaly converted. The lower part 
-//' is not used, the elements is taken in consideration only if the graph is in block form, i.e if groups is non null.
-//' @param b double, it is shape parameter. It has to be larger than 2 in order to have a well defined distribution.
-//' @param D Eigen Matrix of double stored columnwise. It has to be symmetric and positive definite. 
+//'\loadmathjax This function draws a random matrices, distributed according to the GWishart distribution with Shape parameter \code{b} and Inverse-Scale matrix \code{D}, 
+//' whose structure is constrained by graph \code{G}. The GWishart distribution, taking into account a Shape-Inverse Scale parametrization, is the following:
+//' \mjsdeqn{p\left(K~\lvert~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} \lvert K\rvert^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
+//' It works with both decomposable and non decomposable graphs. In particular it is possible to provide a graph in block form. 
+//' @param G matrix representing the desired graph. It has to be a \mjseqn{p \times p} matrix if the graph is in block form, i.e if groups is non null, 
+//' otherwise it has to be coherent with the number of groups. Only the upper triangular part is needed.
+//' @param b GWishart Shape parameter. It has to be larger than 2 in order to have a well defined distribution.
+//' @param D It is a \mjseqn{p \times p} matrix. Different parametrizations are possible, they are handled by the \code{form} input parameter.
 //' @param norm String to choose the matrix norm with respect to whom convergence takes place. The available choices are \code{"Mean"}, \code{"Inf"}, \code{"One"} and \code{"Squared"}. 
 //' \code{"Mean"} is the default value and it is also used when a wrong input is provided.
-//' @param groups a Rcpp list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group, 
-//' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave \code{NULL} if the graph is not in block form.
-//' @param max_iter unsigned int, the maximum number of iteration.
-//' @param threshold_check double, the accurancy for checking if the sampled matrix respects the structure of the graph.
-//' @param threshold_conv double, stop algorithm if the difference between two subsequent iterations is less than \code{threshold_conv}.
-//' @param seed int, the value of the seed. Default value is 0 that implies that a random seed is drawn.
-//' @return List containing the sampled matrix as an Eigen RowMajor matrix, a bool that states if the convergence was reached or not and finally an int with the number of performed iterations.
-//' If the graph is empty or complete, no iterations are performed.
-//' @export
-// [[Rcpp::export]]
-Rcpp::List rGwish_old(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
-                  double const & b, Eigen::MatrixXd const & D,
-                  Rcpp::String norm = "Mean", Rcpp::Nullable<Rcpp::List> groups = R_NilValue, 
-                  unsigned int const & max_iter = 500, long double const & threshold_check = 0.00001, long double const & threshold_conv = 0.00000001, int seed = 0)
-{
-
-  if (groups.isNotNull()){ //Assume it is a BlockGraph
-    
-    Rcpp::List L(groups); // casting to underlying type List
-    //Rcpp::Rcout << "List is not NULL." << std::endl;
-    std::shared_ptr<const Groups> ptr_gr = std::make_shared<const Groups>(L); //Create pointer to groups
-    BlockGraph<unsigned int> Graph(G, ptr_gr);
-
-    if(norm == "Mean"){
-      //Rcpp::Rcout<<"Mean norm selected"<<std::endl;
-      auto[Mat, converged, iter] = utils::rgwish_verbose<CompleteView, unsigned int, utils::MeanNorm>(Graph.completeview(), b, D, max_iter, threshold_conv, (unsigned int)seed);
-      return Rcpp::List::create (Rcpp::Named("Matrix")= Mat, Rcpp::Named("Converged")=converged, 
-             Rcpp::Named("iterations")=iter, Rcpp::Named("CheckStructure")=utils::check_structure(Graph.completeview(), Mat, threshold_check)  );
-    }
-    if(norm == "Inf"){
-      //Rcpp::Rcout<<"Inf norm selected"<<std::endl;
-      auto[Mat, converged, iter] = utils::rgwish_verbose<CompleteView, unsigned int, utils::NormInf>(Graph.completeview(), b, D, max_iter, threshold_conv, (unsigned int)seed);
-      return Rcpp::List::create (Rcpp::Named("Matrix")= Mat, Rcpp::Named("Converged")=converged, 
-             Rcpp::Named("iterations")=iter, Rcpp::Named("CheckStructure")=utils::check_structure(Graph.completeview(), Mat, threshold_check)  );
-    }
-    if(norm == "One"){
-      //Rcpp::Rcout<<"One norm selected"<<std::endl;
-      auto[Mat, converged, iter] = utils::rgwish_verbose<CompleteView, unsigned int, utils::Norm1>(Graph.completeview(), b, D, max_iter, threshold_conv, (unsigned int)seed);
-      return Rcpp::List::create (Rcpp::Named("Matrix")= Mat, Rcpp::Named("Converged")=converged, 
-             Rcpp::Named("iterations")=iter, Rcpp::Named("CheckStructure")=utils::check_structure(Graph.completeview(), Mat, threshold_check)   );
-    }
-    if(norm == "Squared"){
-      //Rcpp::Rcout<<"Squared norm selected"<<std::endl;
-      auto[Mat, converged, iter] = utils::rgwish_verbose<CompleteView, unsigned int, utils::NormSq>(Graph.completeview(), b, D, max_iter, threshold_conv, (unsigned int)seed);
-      return Rcpp::List::create (Rcpp::Named("Matrix")= Mat, Rcpp::Named("Converged")=converged, 
-             Rcpp::Named("iterations")=iter, Rcpp::Named("CheckStructure")=utils::check_structure(Graph.completeview(), Mat, threshold_check)   );
-    }
-    else{
-      Rcpp::Rcout<<"The only available norms are Mean, Inf, One and Squared. Run with default type that is Mean"<<std::endl;
-      auto[Mat, converged, iter] = utils::rgwish_verbose<CompleteView, unsigned int, utils::MeanNorm>(Graph.completeview(), b, D, max_iter, threshold_conv,(unsigned int)seed);
-      return Rcpp::List::create (Rcpp::Named("Matrix")= Mat, Rcpp::Named("Converged")=converged, 
-             Rcpp::Named("iterations")=iter, Rcpp::Named("CheckStructure")=utils::check_structure(Graph.completeview(), Mat, threshold_check)    );
-    } 
-  }
-  else{ //Assume it is a Complete Graph
-    //Rcpp::Rcout << "List is NULL." << std::endl;
-    GraphType<unsigned int> Graph(G);
-   if(norm == "Mean"){
-      //Rcpp::Rcout<<"Mean norm selected"<<std::endl;
-      auto[Mat, converged, iter] = utils::rgwish_verbose<GraphType, unsigned int, utils::MeanNorm>(Graph, b, D, max_iter, threshold_conv, (unsigned int)seed);
-      return Rcpp::List::create ( Rcpp::Named("Matrix")= Mat, Rcpp::Named("Converged")=converged, 
-             Rcpp::Named("iterations")=iter, Rcpp::Named("CheckStructure")=utils::check_structure(Graph, Mat, threshold_check)  );
-    }
-     if(norm == "Inf"){
-      //Rcpp::Rcout<<"Inf norm selected"<<std::endl;
-      auto[Mat, converged, iter] = utils::rgwish_verbose<GraphType, unsigned int, utils::NormInf>(Graph, b, D, max_iter, threshold_conv, (unsigned int)seed);
-      return Rcpp::List::create (Rcpp::Named("Matrix")= Mat, Rcpp::Named("Converged")=converged, 
-             Rcpp::Named("iterations")=iter, Rcpp::Named("CheckStructure")=utils::check_structure(Graph, Mat, threshold_check)  );
-    }
-    if(norm == "One"){
-      //Rcpp::Rcout<<"Norm L1 selected"<<std::endl;
-      auto[Mat, converged, iter] = utils::rgwish_verbose<GraphType, unsigned int, utils::Norm1>(Graph, b, D, max_iter, threshold_conv, (unsigned int)seed);
-      return Rcpp::List::create (Rcpp::Named("Matrix")= Mat, Rcpp::Named("Converged")=converged, 
-             Rcpp::Named("iterations")=iter, Rcpp::Named("CheckStructure")=utils::check_structure(Graph, Mat, threshold_check)  );
-    }
-    if(norm == "Squared"){
-      //Rcpp::Rcout<<"Squared norm selected"<<std::endl;
-      auto[Mat, converged, iter] = utils::rgwish_verbose<GraphType, unsigned int, utils::NormSq>(Graph, b, D, max_iter, threshold_conv, (unsigned int)seed);
-      return Rcpp::List::create (Rcpp::Named("Matrix")= Mat, Rcpp::Named("Converged")=converged, 
-             Rcpp::Named("iterations")=iter, Rcpp::Named("CheckStructure")=utils::check_structure(Graph, Mat, threshold_check)  );
-    }
-    else{
-      Rcpp::Rcout<<"The only available norms are Mean, Inf, One and Squared. Run with default type that is Mean"<<std::endl;
-      auto[Mat, converged, iter] = utils::rgwish_verbose(Graph, b, D, max_iter, threshold_conv, (unsigned int)seed);
-      return Rcpp::List::create (Rcpp::Named("Matrix")= Mat, Rcpp::Named("Converged")=converged, 
-             Rcpp::Named("iterations")=iter, Rcpp::Named("CheckStructure")=utils::check_structure(Graph, Mat, threshold_check)  );
-    }
-  }
-}
-
-//' A direct sampler for GWishart distributed random variables.  
-//'
-//'\loadmathjax This function draws a random matrices, distributed according to the GWishart distribution with shape parameter \code{b} and inverse scale \code{D}, 
-//' with respect to the graph structure \code{G}. \mjsdeqn{p\left(K~\lvert~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} \lvert K\rvert^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
-//' It implements the algorithm described by METTERE CITAZIONI LENKOSKI. It works with both decomposable and non decomposable graphs. 
-//' In particular it is possible to provide a graph in block form. 
-//' @param G Matrix of int stored columnwise. If a standard R matrix is provided, it is automaticaly converted. The lower part 
-//' is not used, the elements is taken in consideration only if the graph is in block form, i.e if groups is non null.
-//' @param b double, it is shape parameter. It has to be larger than 2 in order to have a well defined distribution.
-//' @param D Matrix of double stored columnwise. It represents the Scale or Inverse Scale parameter for a GWishart distribution. It is also possibile to provide a lower or upper triangular matrix representing the Cholesky decomposition of Inverse Scale matrix.
-//' @param norm String to choose the matrix norm with respect to whom convergence takes place. The available choices are \code{"Mean"}, \code{"Inf"}, \code{"One"} and \code{"Squared"}. 
-//' \code{"Mean"} is the default value and it is also used when a wrong input is provided.
-//' @param form String, states what type of parameter is represented by \code{D}. Possible values are \code{"Scale"}, \code{"InvScale"}, \code{"CholLower_InvScale"}, \code{"CholUpper_InvScale"}.
-//' Usually GWishart distributions are parametrized with respect to Inverse Scale matrix. However the first step of the sampling requires the Scale matrix parameter or, even better, its Cholesky decomposition. 
+//' @param form String, states what type of parameter is represented by \code{D}. Possible values are \code{"Scale"} for Scale parametrization, 
+//' \code{"InvScale"} for Inverse-Scale parametrization or \code{"CholLower_InvScale"} and \code{"CholUpper_InvScale"} to pass directly the Cholesky factorization of the Inverse-Scale matrix.
+//' Usually GWishart distributions are parametrized with respect to the Inverse Scale matrix. However the first step of the sampling requires the Scale matrix parameter or, even better, its Cholesky decomposition. 
+//' This functions leaves a lot of freedom to the user so that the most efficient available parametrization can be used.
 //' @param groups List representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group, 
 //' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave NULL if the graph is not in block form.
 //' @param check_structure bool, if \code{TRUE} it is checked if the sampled matrix actually respects the structure of the graph.
 //' @param max_iter unsigned int, the maximum number of iteration.
-//' @param threshold_check double, the accurancy for checking if the sampled matrix respects the structure of the graph.
-//' @param threshold_conv double,  the threshold value for the convergence of sampling algorithm from GWishart. Algorithm stops if the difference between two subsequent iterations is less than \code{threshold_conv}.
-//' @param seed int, the value of the seed. Default value is 0 that implies that a random seed is drawn.
-//' @return Rcpp::List containing the sampled matrix as an Eigen RowMajor matrix, a bool that states if the convergence was reached or not and finally an int with the number of performed iterations.
-//' If the graph is empty or complete, no iterations are performed. If check_structure is \code{TRUE}, then the result of that check is also returned.
+//' @param threshold_check the accurancy for checking if the sampled matrix respects the structure of the graph.
+//' @param threshold_conv  the threshold value for the convergence of sampling algorithm from GWishart. Algorithm stops if the difference between two subsequent iterations is less than \code{threshold_conv}.
+//' @param seed integer, seeding value. Set 0 for random seed.
+//' @return A list is returned, it is composed of: \code{Matrix} that contains the random matrix just sampled, \code{Converged} that is a boolean that states if the algorithm reached convergence or not, 
+//' the number performed iterations can be found in \code{iterations} and, if requested in the \code{check_structure} parameters, an additional boolean called \code{CheckStructure} is returned.
 //' @export
 // [[Rcpp::export]]
 Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const & G,
@@ -234,25 +101,26 @@ Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Ei
 }
 
 
-//' log of GWishart normalizing constant
+//' Normalizing constant for GWishart distribution
 //'
-//' This function computes the logarithm of the normalizing constant of GWishart distribution. It implements the Monte Carlo method, developed by Atay-Kayis and Massam (2005).
-//' METTERE LA FORMULA
-//' It also works for non decomposable graphs, actually the exact formula for the decomposable case is not yet implemented. 
+//' \loadmathjax This function computes the logarithm of the normalizing constant of GWishart distribution. Its distribution, taking into account a Shape-Inverse Scale parametrization, is the following:
+//' \mjsdeqn{p\left(K~\lvert~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} \lvert K\rvert^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
+
+//' The Monte Carlo method, developed by Atay-Kayis and Massam (2005), is implemented. It works with both decomposable and non decomposable graphs. 
 //' In particular it is possible to provide a graph in block form. 
-//' @param G Eigen Matrix of unsigned int stored columnwise. If a standard R matrix is provided, it is automaticaly converted. The lower part 
-//' is not used, the elements is taken in consideration only if the graph is in block form, i.e if \code{groups} is non null.
-//' @param b double, it is shape parameter. It has to be larger than 2 in order to have a well defined distribution.
-//' @param D Eigen Matrix of double stored columnwise. It has to be symmetric and positive definite. 
-//' @param MCiteration unsigned int, the number of iteration for the MonteCarlo approximation. 
+//' @param G matrix representing the desired graph. It has to be a \mjseqn{p \times p} matrix if the graph is in block form, i.e if groups is non null, 
+//' otherwise it has to be coherent with the number of groups. Only the upper triangular part is needed.
+//' @param b GWishart Shape parameter. It has to be larger than 2 in order to have a well defined distribution.
+//' @param D GWishart Inverse-Scale matrix. It has to be of size \mjseqn{p \times p}, symmetric and positive definite. 
+//' @param MCiteration the number of iterations for the Monte Carlo approximation. 
 //' @param groups a Rcpp list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group, 
 //' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave \code{NULL} if the graph is not in block form.
-//' @param seed int, the value of the seed. Default value is 0 that implies that a random seed is drawn.
-//' @return long double, the logarithm of the normalizing constant of GWishart distribution.
+//' @param seed integer, seeding value. Set 0 for random seed.
+//' @return log of the normalizing constant of GWishart distribution.
 //' @export
 // [[Rcpp::export]]
 long double log_Gconstant(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const & G,
-                          double const & b, Eigen::MatrixXd const & D,  unsigned int const & MCiteration = 100, 
+                          double const & b, Eigen::MatrixXd const & D,  unsigned int const & MCiteration = 500, 
                           Rcpp::Nullable<Rcpp::List> groups = R_NilValue, int seed = 0)
 {
     sample::GSL_RNG engine( static_cast<unsigned int>(seed) );
@@ -271,54 +139,20 @@ long double log_Gconstant(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dyn
     }
 }
 
-//' Second version of log of GWishart normalizing constant
-//'
-//' This function computes the logarithm of the normalizing constant of GWishart distribution. It implements the Monte Carlo method, developed by Atay-Kayis and Massam (2005).
-//' METTERE LA FORMULA
-//' It also works for non decomposable graphs, actually the exact formula for the decomposable case is not yet implemented. 
-//' In particular it is possible to provide a graph in block form. 
-//' @param G Eigen Matrix of unsigned int stored columnwise. If a standard R matrix is provided, it is automaticaly converted. The lower part 
-//' is not used, the elements is taken in consideration only if the graph is in block form, i.e if groups is non null.
-//' @param b double, it is shape parameter. It has to be larger than 2 in order to have a well defined distribution.
-//' @param D Eigen Matrix of double stored columnwise. It has to be symmetric and positive definite. 
-//' @param MCiteration unsigned int, the number of iteration for the MonteCarlo approximation. 
-//' @param groups a Rcpp list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group, 
-//' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave NULL if the graph is not in block form.
-//' @param seed int, the value of the seed. Default value is 0 that implies that a random seed is drawn.
-//' @return long double, the logarithm of the normalizing constant of GWishart distribution.
-//' @export
-// [[Rcpp::export]]
-long double log_Gconstant2(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
-                          double const & b, Eigen::MatrixXd const & D,  unsigned int const & MCiteration = 100, 
-                          Rcpp::Nullable<Rcpp::List> groups = R_NilValue, int seed = 0)
-{
-    if (groups.isNotNull()){ //Assume it is in block form with respect to the groups given in groups
-      
-      Rcpp::List L(groups); // casting to underlying type List
-      //Rcpp::Rcout << "List is not NULL." << std::endl;
-      std::shared_ptr<const Groups> ptr_gr = std::make_shared<const Groups>(L); //Create pointer to groups
-      BlockGraph<unsigned int> Graph(G, ptr_gr);
-      return utils::log_normalizing_constat2(Graph.completeview(), b, D, MCiteration, seed);
-    }
-    else{ //Assume it is a BlockGraph
-      //Rcpp::Rcout << "List is NULL." << std::endl;
-      GraphType<unsigned int> Graph(G);
-      return utils::log_normalizing_constat2(Graph, b, D, MCiteration, seed);
-    }
-}
 
 
-//' Generates random Graphs
+
+//' Generate a random graph
 //'
-//' This function genrates random graph both in \code{"Complete"} or \code{"Block"} form
-//' @param p int, the dimension of the graph in its complete form.
-//' @param n_groups int, the number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter.
-//' @param form String, the only possibilities are \code{"Complete"} and \code{"Block"}.
+//' \loadmathjax This function genrates random graphs both in \code{"Complete"} or \code{"Block"} form
+//' @param p integer, the dimension of the underlying graph. It has to be provided even if \code{form} is \code{"Block"}.
+//' @param n_groups iinteger, number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered in \code{groups} parameter.
+//' @param form string that may take as values only \code{"Complete"} of \code{"Block"} . It states if the algorithm has to run with \code{"Block"} or \code{"Complete"} graphs.
 //' @param groups List representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group, 
 //' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave \code{NULL} if the graph is not in block form.
-//' @param sparsity double, the desired sparsity of the randomly generated graph. It has to be striclty positive and striclty less than one. It is set to 0.5 otherwise.
-//' @param seed int, the value of the seed. Default value is 0 that implies that a random seed is drawn.
-//' @return the adjacency matrix of the randomly generated graph.
+//' @param sparsity desired sparsity in the graph. It has to be in the range \mjseqn{(0,1)}. 
+//' @param seed integer, seeding value. Set 0 for random seed.
+//' @return A list is returned, it contains the randomly generated graph in \code{G} and its complete form in \code{G_Complete}. Those two coincide if \code{form} is \code{"Complete"}.
 //' @export
 // [[Rcpp::export]]
 Rcpp::List Create_RandomGraph ( int const & p, int const & n_groups = 0, Rcpp::String form = "Complete", Rcpp::Nullable<Rcpp::List> groups = R_NilValue,
@@ -329,7 +163,7 @@ Rcpp::List Create_RandomGraph ( int const & p, int const & n_groups = 0, Rcpp::S
   if(form=="Complete"){
     GraphType Graph(p);
     Graph.fillRandom(sparsity, seed); //Corretness of sparsity is checked inside
-    return Rcpp::List::create( Rcpp::Named("G")=Graph.get_graph() );
+    return Rcpp::List::create( Rcpp::Named("G")=Graph.get_graph(), Rcpp::Named("G_Complete")=Graph.get_graph() );
   } 
   else if (form == "Block"){
 
@@ -367,15 +201,15 @@ Rcpp::List Create_RandomGraph ( int const & p, int const & n_groups = 0, Rcpp::S
 
 //' Sampler for Multivariate Normal random variables
 //'
-//' This function draws random samples from Multivariate Gaussian distribution. It implements both covariance and precision parametrization.
+//' \loadmathjax This function draws random samples from Multivariate Gaussian distribution. It allows for both covariance and precision parametrization.
 //' It is also possible to pass directly the Cholesky decomposition if it is available before the call.
 //' @param mean vector of size \code{p} representig the mean of the Gaussian distribution.
-//' @param Mat matrix of size \eqn{p x p} reprenting the covariance or the precision matrix or their Cholesky decompositions.
+//' @param Mat matrix of size \mjseqn{p \times p} representinf the covariance or the precision matrix or their Cholesky decompositions.
 //' @param isPrec boolean, set \code{TRUE} if Mat parameter is a precision, \code{FALSE} if it is a covariance.
 //' @param isChol boolean, set \code{TRUE} if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance matrix.
 //' @param isUpper boolean, used only if \code{isChol} is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.
-//' @param seed int, works as R function set.seed(). If provived, the same results are always returned. Set 0 for randomly generated seed.
-//' @return It returns a \code{p} dimensional vector with the sampled values.
+//' @param seed integer, seeding value. Set 0 for random seed.
+//' @return It returns a \mjseqn{p}-dimensional vector with the sampled values.
 //' @export
 // [[Rcpp::export]]
 Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
@@ -411,13 +245,15 @@ rmvnormal(Eigen::VectorXd mean, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dyn
 
 //' Sampler for Wishart random variables
 //'
-//' This function draws random samples from Wishart distribution. 
+//' \loadmathjax This function draws random samples from Wishart distribution. We use a Shape-Inverse Scale parametrization, the corresponding density is reported below
+//' \mjsdeqn{ f(X) = \frac{\lvert X \lvert^{(b-2)/2}~~\exp\left( - \frac{1}{2}tr\left(X~D\right)\right)}{2^{p(b+p-1)/2}~\lvertD^{-1}\lvert^{(b+p-1)/2}~\Gamma_{p}((b+p-1)/2)}}
 //' It is also possible to pass directly the Cholesky decomposition of the Inverse Scale matrix if it is available before the call.
-//' @param b double, it is shape parameter. 
-//' @param D matrix of size \eqn{p x p} representig the Inverse Scale parameter. It has to be symmetric and positive definite. 
-//' @param isChol boolean, set \code{TRUE} if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance
-//' @param isUpper boolean, used only if isChol is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.
-//' @return It returns a p x p matrix.
+//' @param b it is Shape parameter. 
+//' @param D Inverse-Scale matrix of size \mjseqn{p \times p}. It may represent its Cholesky decomposition.
+//' @param isChol boolean, set \code{TRUE} if D parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance
+//' @param isUpper boolean, used only if isChol is \code{TRUE}. Set \code{TRUE} if D is upper triangular, \code{FALSE} if lower.
+//' @param seed integer, seeding value. Set 0 for random seed.
+//' @return It returns the \mjseqn{p \times p} sampled matrix.
 //' @export
 // [[Rcpp::export]]
 Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>
@@ -440,7 +276,12 @@ rwishart(double const & b, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic,
 }
 
 //' Sampler for Normal distribution
+//' \loadmathjax This function draw a sample from the Gaussian distribution.
+//' @param mean the mean value.
+//' @param sd the standard deviation.
+//' @param seed integer, seeding value. Set 0 for random seed.
 //'
+//' @return A single drawn values from N(mean, \mjseqn{sd^{2}})
 //' @export
 // [[Rcpp::export]]
 double rnormal(double const & mean = 0.0, double const & sd = 1.0, int seed = 0){
@@ -450,16 +291,16 @@ double rnormal(double const & mean = 0.0, double const & sd = 1.0, int seed = 0)
 
 
 //' Generate Bspine basis 
-//'
-//' This function creates a truncated Bspline basis in the interval \eqn{[range(1),range(2)]} and evaluate them over a grid of points.
-//' It assumes uniformly spaced breakpoints and constructs the corresponding knot vector using a number of breaks equal to \eqn{n_basis + 2 - order}.
-//' @param n_basis number of basis functions.
+//' 
+//' \loadmathjax This function creates a truncated Bspline basis in the interval \mjseqn{[range(1),range(2)]} and evaluate them over a grid of points.
+//' It assumes uniformly spaced breakpoints and constructs the corresponding knot vector using a number of breaks equal to \mjseqn{n\_basis + 2 - order}.
+//' @param n_basis the number of basis functions.
 //' @param range vector of two elements containing first the lower and then the upper bound of the interval.
 //' @param points number of grid points where the basis has to be evaluated. It is not used if the points are directly passed in the \code{grid_points} parameter.
 //' @param grid_points vector of points where the basis has to be evaluated. If defaulted, then \code{n_points} are uniformly generated in the interval.
 //' @param order integer, order of the Bsplines. Set four for cubic splines.
-//' @return a List with a matrix of dimension grid_points.size() x n_basis such that r-th rows contains all the spline computed in grid_points[r] and j-th column
-//' contains the j-th spline evaluated in all points. It also returns a vector of size n_basis + 2 - order containing the internal knots used to create the spline
+//' @return a list containing a matrix of dimension \mjseqn{n\_points \times n\_basis} such that \code{r}-th rows contains all the spline computed in the \code{r}-th point of the grid and \code{j}-th column
+//' contains the \code{j}-th spline evaluated in all grid points. It also returns a vector of size \mjseqn{n\_basis + 2 - order} containing the internal knots used to create the spline.
 //' @export
 // [[Rcpp::export]]
 Rcpp::List Generate_Basis(int const & n_basis, Rcpp::NumericVector range, int n_points = 0, 
@@ -484,16 +325,16 @@ Rcpp::List Generate_Basis(int const & n_basis, Rcpp::NumericVector range, int n_
 
 //' Generate Bspine basis and its derivatives
 //'
-//' This function creates a truncated Bspline basis in the interval \eqn{[range(1),range(2)]} and evaluate them over a grid of points up to derivative of order \code{nderiv}.
+//' \loadmathjax This function creates a truncated Bspline basis in the interval \mjseqn{[range(1),range(2)]} and evaluate them over a grid of points up to derivative of order \code{nderiv}.
 //' For convention, derivatives of order 0 are the splines themselves. This implimes that the first returned element is always equal to the output of the function \code{\link{Generate_Basis}}.
-//' @param n_basis number of basis functions.
-//' @param nderiv number of derivates that have to be computed.
+//' @param n_basis the number of basis functions.
+//' @param nderiv number of derivates that have to be computed. It can also be 0.
 //' @param range vector of two elements containing first the lower and then the upper bound of the interval.
 //' @param points number of grid points where the basis has to be evaluated. It is not used if the points are directly passed in the \code{grid_points} parameter.
 //' @param grid_points vector of points where the basis has to be evaluated. If defaulted, then \code{n_points} are uniformly generated in the interval.
 //' @param order integer, order of the Bsplines. Set four for cubic splines.
-//' @return a List of length nderiv+1 such that each element is a grid_points.size() x n_basis matrix representing the evaluation of 
-//' all the k-th derivative of all the splines in all the grid points. 
+//' @return a list of length nderiv+1 such that each element is a \mjseqn{n\_points \times n\_basis} matrix representing the evaluation of 
+//' the \code{k}-th derivative of all the splines in all the grid points. 
 //' @export
 // [[Rcpp::export]]
 Rcpp::List Generate_Basis_derivatives(int const & n_basis, int const & nderiv, Rcpp::NumericVector range, int n_points = 0,
@@ -528,8 +369,10 @@ Rcpp::List Generate_Basis_derivatives(int const & n_basis, int const & nderiv, R
 
 //' Read information from file
 //'
-//' Read from \code{file_name} some information that are needed to extract data from it. 
-//' @param file_name, string with the name of te file to be open. It has to include the extension, usually \code{.h5}.
+//' \loadmathjax Read from \code{file_name} some information that are needed to extract data from it. 
+//' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
+//' @return It returns a list containing \code{p}, the dimension of the graph, \code{n} the number of observed data, \code{stored_iter} the number of saved iterations for the regression parameters,
+//' \code{stored_iterG} the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix.
 //' @export
 // [[Rcpp::export]]
 Rcpp::List Read_InfoFile( Rcpp::String const & file_name )
@@ -543,23 +386,31 @@ Rcpp::List Read_InfoFile( Rcpp::String const & file_name )
 }
 
 
-//' Compute quantiles of sampled values VECCHIA E DA BUTTARE
-//'
-//' @export
-// [[Rcpp::export]]
-Rcpp::List Compute_QuantileBeta(std::vector<Eigen::MatrixXd> const & SaveBeta, double const & lower_qtl = 0.05, double const & upper_qtl = 0.95)
-{
-  auto[LowerBound, UpperBound] = analysis::QuantileBeta(SaveBeta, lower_qtl, upper_qtl);
-  Rcpp::List Quantiles = Rcpp::List::create( Rcpp::Named("BetaLower")=LowerBound, Rcpp::Named("BetaUpper")=UpperBound );
-  return Quantiles;
-}
-
 
 //' Compute quantiles of sampled values
 //'
+//' \loadmathjax This function reads the sampled values saved in a binary file and computes the quantiles of the desired level.
+//' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
+//' @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
+//' It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
+//' @param n integer, the number of observed data.
+//' @param stored_iterG integer, the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix. Required only if \code{Precision} parameter is \code{TRUE}.
+//' @param stored_iter integer, the number of saved iterations for the regression parameters, i.e \mjseqn{\beta}s, \mjseqn{\mu} and \mjseqn{\tau_{\epsilon}}. 
+//' Required if at least one of \code{Beta}, \code{Mu},  \code{TauEps} parameter is \code{TRUE}.
+//' @param Beta boolean, set \code{TRUE} to compute the quantiles for all \mjseqn{p*n} \mjseqn{\beta} coefficients. It may require long time.
+//' @param Mu boolean, set \code{TRUE} to compute the quantiles for all \mjseqn{p} parameters. 
+//' @param TauEps boolean, set \code{TRUE} to compute the quantiles of \mjseqn{\tau_{\epsilon}} parameter.
+//' @param Precision boolean, set \code{TRUE} to compute the quantiles for all the elements of the precision matrix. Some care is requested. 
+//' If the file represents the output of \code{GGM}, \code{FGM} of \code{FLM} with fixed graph, the sampled precision matrices are of size \mjseqn{p \times p}. In that case set \code{prec_elem} parameter
+//' equal to \mjseqn{\frac{p(p+1)}{2}}. Instead, for outputs coming from \code{FLM} sampler with diagonal graph, only the diagonal of the precision matrix is saved. If so, set \code{prec_ele} eqaul to \mjseqn{p}.
+//' @param prec_elem integer, set equal to \mjseqn{p} if \code{file_name} represents the output of \code{FLM} sampler with diagonal graph. Set \mjseqn{\frac{p(p+1)}{2}} otherwise.
+//' @param lower_qtl the level of the first desired quantile.
+//' @param upper_qtl the level of the second desired quantile.
+//'
+//' @return It returns a list containig the upper and lower quantiles of the requested quantities.
 //' @export
 // [[Rcpp::export]]
-Rcpp::List Compute_Quantiles( Rcpp::String const & file_name, unsigned int const & p, unsigned int const & n, unsigned int const & stored_iterG, unsigned int const & stored_iter = 0, 
+Rcpp::List Compute_Quantiles( Rcpp::String const & file_name, unsigned int const & p, unsigned int const & n, unsigned int const & stored_iterG = 0, unsigned int const & stored_iter = 0, 
                               bool Beta = false, bool Mu = false, bool TauEps = false, bool Precision = false, unsigned int const & prec_elem = 0,
                               double const & lower_qtl = 0.05, double const & upper_qtl = 0.95  )
 {
@@ -570,12 +421,14 @@ Rcpp::List Compute_Quantiles( Rcpp::String const & file_name, unsigned int const
                                              Rcpp::Named("Precision") 
                                            );
   if(Precision){
+    if(stored_iterG <= 0)
+      throw std::runtime_error("stored_iterG parameter has to be positive");
     if(prec_elem <= 0)
       throw std::runtime_error("Need to specify the number of elements of the precision matrix in prec_elem parameter");
     if(prec_elem != p && prec_elem != 0.5*p*(p+1))
       throw std::runtime_error("prec_elem can only be p or 0.5*p*(p+1)");
     Rcpp::Rcout<<"Compute Precision quantiles..."<<std::endl;
-    auto [Lower, Upper] =  analysis::Vector_ComputeQuantiles( file_name, stored_iterG, 0.5*p*(p+1), "Precision", lower_qtl, upper_qtl );
+    auto [Lower, Upper] =  analysis::Vector_ComputeQuantiles( file_name, stored_iterG, prec_elem, "Precision", lower_qtl, upper_qtl );
     Quantiles["Precision"] = Rcpp::List::create(Rcpp::Named("Lower")=Lower, Rcpp::Named("Upper")=Upper);
   }
   if(Beta){
@@ -604,9 +457,26 @@ Rcpp::List Compute_Quantiles( Rcpp::String const & file_name, unsigned int const
 
 //' Compute Posterior means of sampled values
 //'
+//' \loadmathjax This function reads the sampled values saved in a binary file and computes the mean of the requested quantities.
+//' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
+//' @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
+//' It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
+//' @param n integer, the number of observed data.
+//' @param stored_iterG integer, the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix. Required only if \code{Precision} parameter is \code{TRUE}.
+//' @param stored_iter integer, the number of saved iterations for the regression parameters, i.e \mjseqn{\beta}s, \mjseqn{\mu} and \mjseqn{\tau_{\epsilon}}.
+//' Required if at least one of \code{Beta}, \code{Mu},  \code{TauEps} parameter is \code{TRUE}.
+//' @param Beta boolean, set \code{TRUE} to compute the mean for all \mjseqn{p*n} \mjseqn{\beta} coefficients. It may require long time.
+//' @param Mu boolean, set \code{TRUE} to compute the mean for all \mjseqn{p} parameters. 
+//' @param TauEps boolean, set \code{TRUE} to compute the mean of \mjseqn{\tau_{\epsilon}} parameter.
+//' @param Precision boolean, set \code{TRUE} to compute the mean for all the elements of the precision matrix. Some care is requested. 
+//' If the file represents the output of \code{GGM}, \code{FGM} of \code{FLM} with fixed graph, the sampled precision matrices are of size \mjseqn{p \times p}. In that case set \code{prec_elem} parameter
+//' equal to \mjseqn{\frac{p(p+1)}{2}}. Instead, for outputs coming from \code{FLM} sampler with diagonal graph, only the diagonal of the precision matrix is saved. If so, set \code{prec_ele} eqaul to \mjseqn{p}.
+//' @param prec_elem integer, set equal to \mjseqn{p} if \code{file_name} represents the output of \code{FLM} sampler with diagonal graph. Set \mjseqn{\frac{p(p+1)}{2}} otherwise.
+//'
+//' @return It returns a list containig the mean of the requested quantities.
 //' @export
 // [[Rcpp::export]]
-Rcpp::List Compute_PosteriorMeans( Rcpp::String const & file_name, unsigned int const & p, unsigned int const & n, unsigned int const & stored_iterG, unsigned int const & stored_iter = 0, 
+Rcpp::List Compute_PosteriorMeans( Rcpp::String const & file_name, unsigned int const & p, unsigned int const & n, unsigned int const & stored_iterG = 0, unsigned int const & stored_iter = 0, 
                                     bool Beta = false, bool Mu = false, bool TauEps = false, bool Precision = false, unsigned int const & prec_elem = 0)
 {
 
@@ -614,9 +484,9 @@ Rcpp::List Compute_PosteriorMeans( Rcpp::String const & file_name, unsigned int 
                                                    Rcpp::Named("MeanMu"), 
                                                    Rcpp::Named("MeanK"),   
                                                    Rcpp::Named("MeanTaueps") );  
-  
-                                        
   if(Precision){
+    if(stored_iterG <= 0)
+      throw std::runtime_error("stored_iterG parameter has to be positive");
     if(prec_elem <= 0)
       throw std::runtime_error("Need to specify the number of elements of the precision matrix in prec_elem parameter");
     MatRow MeanK(MatRow::Zero(p,p));  
@@ -651,20 +521,42 @@ Rcpp::List Compute_PosteriorMeans( Rcpp::String const & file_name, unsigned int 
 }
 
 
-//' Extract chain from file
+//' Read chain from file
 //'
-//' This function extract the sampled chain for the \code{index1}-th component of variable specified in \code{variable}. For \code{"Beta"} coefficients one has to use also \code{index2}.
+//' \loadmathjax This function read from a binary file the sampled chain for the \code{index1}-th component of variable specified in \code{variable}. The chain is then saved in memory to make it available for further analysis.
+//' Both \code{index1} and \code{index2} start counting from 1, the first element is obtained by settin \code{index1} equal to 1, not 0.
+//' Only \code{"Beta"} coefficients require the usage of \code{index2}. This function allows to extract only one chain at the time. The idea of writing the sampled values on a file is indeed to
+//' avoid to fill the memory. This function has to carefully used.
+//' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
+//' @param variable string, the name of the dataset to be read from the file. Only possibilities are \code{"Beta"}, \code{"Mu"}, \code{"Precision"} and \code{"TauEps"}.
+//' @param stored_iter integer, the number of saved iterations. It can be read from \code{\link{Read_InfoFile}}.
+//' @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
+//' It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
+//' @param n integer, the number of observed data.
+//' @param index1 integer, the index of the element whose chain has to read from the file. The first elements corresponds to \code{index1} equal to 1. 
+//' If \code{variable} is equal to \code{"Precision"} some care is required. If the file represents the output of \code{GGM}, \code{FGM} of \code{FLM} with fixed graph, the sampled precision matrices 
+//' are of size \mjseqn{p \times p} stored row by row. This means that the second diagonal elements corresponds to \code{index1} equal to \mjseqn{p+1}. 
+//' Moreover, in this case set \code{prec_elem} parameter equal to \mjseqn{\frac{p(p+1)}{2}}. 
+//' Instead, for outputs coming from \code{FLM} sampler with diagonal graph, only the diagonal of the precision matrix is saved. If so, \code{index1} ranges from 1 up to \mjseqn{p}. Moreover, set \code{prec_ele} eqaul to \mjseqn{p}.
+//' If \code{variable} is equal to \code{"Beta"}, this index ranges for 1 up to \mjseqn{p}, it represents the spine coefficinet.
+//' @param index2 integer, to be used only if \code{variable} is equal to \code{"Beta"}. It ranges from 1 up to \mjseqn{n}. In this case, the chain for the spline_index-th coefficients of the curve_index-th curve is read.
+//' @param prec_elem integer, set equal to \mjseqn{p} if \code{file_name} represents the output of \code{FLM} sampler with diagonal graph. Set \mjseqn{\frac{p(p+1)}{2}} otherwise.
 //'
-//'
-//'
+//' @return It returns a numeric vector all the sampled values of the required element.
 //' @export
 // [[Rcpp::export]]
-Eigen::VectorXd Extract_Chain( Rcpp::String const & file_name, Rcpp::String const & variable, unsigned int const & stored_iter, unsigned int const & n, 
-                                unsigned int const & p, unsigned int const & index1 = 0, unsigned int const & index2 = 0, unsigned int const & prec_elem = 0  )
+Eigen::VectorXd Extract_Chain( Rcpp::String const & file_name, Rcpp::String const & variable, unsigned int const & stored_iter, unsigned int const & p, 
+                               unsigned int const & n = 0, unsigned int  index1 = 1, unsigned int index2 = 1, unsigned int const & prec_elem = 0  )
 { 
 
   if(variable != "Beta" && variable != "Mu" && variable != "Precision" && variable != "TauEps")
     throw std::runtime_error("Error, only possible values for variable are Beta, Precision, Mu, TauEps");
+
+  if(index1 <= 0 || index2 <= 0)
+    throw std::runtime_error("index1 and index2 parameters start counting from 1, not from 0. The first element corresponds to index 1, not 0. The inserted values has to be strictly positive");
+
+  index1 = index1 - 1;
+  index2 = index2 - 1;
 
   HDF5conversion::FileType file;
   HDF5conversion::DatasetType dataset_rd;
@@ -675,6 +567,8 @@ Eigen::VectorXd Extract_Chain( Rcpp::String const & file_name, Rcpp::String cons
 
   std::vector<double> chain;
   if(variable == "Beta"){
+    if(n <= 0)
+      throw std::runtime_error("The number of observed data n has to be provided to extract the chain for Beta");
     //Open datasets
     dataset_rd  = H5Dopen(file, "/Beta", H5P_DEFAULT);
     SURE_ASSERT(dataset_rd>=0,"Cannot open dataset for Beta");
@@ -717,10 +611,20 @@ Eigen::VectorXd Extract_Chain( Rcpp::String const & file_name, Rcpp::String cons
   return result;
 }
 
-//' Graph summary 
+//' Read the sampled Graph saved on file
 //'
-//' Read from file informations about the file
+//' \loadmathjax This function reads the sampled graphs that are saved on a binary file and performs a summary of all visited graphs.
+//' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
+//' @param stored_iter integer, the number of saved iterations. It can be read from \code{\link{Read_InfoFile}}.
+//' @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
+//' It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
+//' @param groups List representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group, 
+//' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave \code{NULL} if the graph is not in block form.
 //'
+//' @return It returns a list composed of: \code{plinks} that contains the posterior probability of inclusion of each possible link. \code{AcceptedMoves} contains the number of
+//' Metropolis-Hastings moves that were accepted in the sampling, \code{VisitedGraphs} the number of graph that were visited at least once, \code{TracePlot_Gsize} is a vector 
+//' such that each element is equal to the size of the visited graph in that particular iteration and finally \code{SampledGraphs} is a list containing all the visited graphs and their absolute frequence of visit.
+//' To save memory, the graphs are represented only by the upper triangular part, stored row-wise. 
 //' @export
 // [[Rcpp::export]]
 Rcpp::List Summary_Graph(Rcpp::String const & file_name, unsigned int const & stored_iterG, unsigned int const & p, Rcpp::Nullable<Rcpp::List> groups = R_NilValue)
@@ -730,6 +634,7 @@ Rcpp::List Summary_Graph(Rcpp::String const & file_name, unsigned int const & st
   if (groups.isNotNull()){ //Assume it is a BlockGraph
     Rcpp::List gr(groups);
     ptr_gruppi = std::make_shared<const Groups>(gr); 
+    const Groups& gruppi_test = *ptr_gruppi;
   }
   auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name, stored_iterG, p, ptr_gruppi);
   //Create Rcpp::List of sampled Graphs
@@ -805,9 +710,12 @@ Rcpp::List SimulateData_GGM_c(unsigned int const & p, unsigned int const & n, un
 }
 
 //' Create Groups
-//'
-//' This function creates a list with the groups. If possible, groups of equal size are created. The goal of this function is to fix a precise notation that will be used in all the code.
+//' 
+//' \loadmathjax This function creates a list with the groups. If possible, groups of equal size are created. The goal of this function is to fix a precise notation that will be used in all the code.
 //' It is indeed recommended to use this function to create them as they need to follow a precise notation.
+//' @param p integer, the dimension of the underlying graph.
+//' @param n_groups number of desired groups. Has to be greater than \code{p}.
+//' @return list representing the groups of the block form.
 //' @export
 // [[Rcpp::export]]
 Rcpp::List CreateGroups(unsigned int const & p, unsigned int const & n_groups)
@@ -821,30 +729,7 @@ Rcpp::List CreateGroups(unsigned int const & p, unsigned int const & n_groups)
 }
 
 
-//' Sampler for Guassian Graphical Models
-//'
-//' This function draws samples a posteriori from a Gaussian Graphical Models. NON MI SERVE ESPORTARLA
-//' @param data matrix of size \eqn{p x p} containing \eqn{\sum(Y_i^{T}Y_i)}. Data are required to be zero mean.
-//' @param p non necessario
-//' @param n number of observed data.
-//' @param niter number of total iterations to be performed in the sampling. The number of saved iteration will be \eqn{(niter - burnin)/thin}.
-//' @param burnin number of discarded iterations.
-//' @param thin thining value, it means that only one out of thin itarations is saved.
-//' @param b double, it is prior GWishart shape parameter. It has to be larger than 2 in order to have a well defined distribution.
-//' @param D matrix of double stored columnwise. It is prior GWishart inverse scale parameter. It has to be symmetric and positive definite. 
-//' @param MCprior positive integer, the number of iteration for the MonteCarlo approximation of prior normalizing constant of GWishart distribution. Not needed if algo is set to \code{"DRJ"}. 
-//' @param MCprior positive integer, the number of iteration for the MonteCarlo approximation of posterior normalizing constant of GWishart distribution. Needed only if algo is set to \code{"MH"}.
-//' @param threshold double, threshold for convergence in GWishart sampler.
-//' @param form string that may take as values only \code{"Complete"} of \code{"Block"}. It states if the algorithm has to run with \code{"Block"} or \code{"Complete"} graphs.
-//' @param prior string with the desidered prior for the graph. Possibilities are \code{"Uniform"}, \code{"Bernoulli"} and for \code{"Block"} graphs only \code{"TruncatedBernoulli"} and \code{"TruncatedUniform"} are also available.
-//' @param algo string with the desidered algorithm for sampling from a GGM. Possibilities are \code{"MH"}, \code{"RJ"} and \code{"DRJ"}.
-//' @param n_groups int, number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter. (CHE PER ORA NON ESISTE)
-//' @param seed set 0 for random seed.
-//' @param Gprior double representing the prior probability of inclusion of each link in case \code{"Bernoulli"} prior is selected for the graph. Set 0.5 for uniform prior.
-//' @param sigmaG double, the standard deviation used to perturb elements of precision matrix when constructing the new proposed matrix.
-//' @param paddrm double, probability of proposing a new graph by adding one link.
-//' @param print_info boolean, if \code{TRUE} progress bar and execution time are displayed.
-//' @return This function returns a list with the posterior precision mean, a matrix with the probability of inclusion of each link, the number of accepted moves, the number of visited graphs and the list of all visited graphs.
+
 // [[Rcpp::export]]
 Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data, 
                             int const & p, int const & n, int const & niter, int const & burnin, double const & thin, Rcpp::String file_name,
@@ -1006,16 +891,7 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
 }
 
 
-//' Functional Linear model for smoothing
-//'
-//' This function performs a linear regression for functional data, according to model (INSERIRE FORMULA MODELLO). 
-//' It is not a graphical model, indeed the precision matrix for the regression coefficients is chosen diagonal.
-//' @param data matrix of dimension r x n containing the evaluation of n functional data over a grid of r nodes.
-//' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be (niter - burnin)/thin.
-//' @param burnin the number of discarded iterations. 
-//' @param thin the thining value, it means that only one out of thin itarations is saved.
-//' @param BaseMat matrix of dimension r x p containing the evalutation of p Bspline basis over a grid of r nodes
-//' 
+
 // [[Rcpp::export]]
 Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int const & burnin, double const & thin, Eigen::MatrixXd const & BaseMat,
                           Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
@@ -1142,10 +1018,7 @@ Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
 }
 
 
-//' Functional Graphical model for smoothing
-//'
-//' prova
-//' @export
+
 // [[Rcpp::export]]
 Rcpp::List FGM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int const & burnin, double const & thin, double const & thinG,  //data and iterations
                           Eigen::MatrixXd const & BaseMat, Rcpp::String const & file_name,  //Basemat and name of file 
@@ -1294,32 +1167,8 @@ Rcpp::List FGM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
  else
    throw std::runtime_error("Error, the only possible form are: Complete and Block.");
 }
-//Scrivendo dopo questa non me le metteva nel namespace
-/*
-//Posterior Analysis
-auto[MeanBeta, MeanMu, MeanK_vec, plinks, MeanTaueps] = 
-        analysis::PointwiseEstimate<decltype(SampledG)>(std::tie(SampledBeta, SampledMu, SampledK, SampledG, SampledTaueps), param.iter_to_store, param.iter_to_storeG, ptr_gruppi);
 
-MatRow MeanK(MatRow::Zero(p,p));
-unsigned int pos{0};
-for(unsigned int i = 0; i < p; ++i){
-  for(unsigned int j = i; j < p; ++j){
-    MeanK(i,j) = MeanK_vec(pos++);
-  }
-}
-//Create Rcpp::List of sampled Graphs
-std::vector< Rcpp::List > L(SampledG.size());
-int counter = 0;
-for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
-  L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
-}
- return Rcpp::List::create ( Rcpp::Named("MeanBeta")        = MeanBeta, 
-                               Rcpp::Named("MeanMu")        = MeanMu,  
-                               Rcpp::Named("MeanK")         = MeanK, 
-                               Rcpp::Named("MeanTaueps")    = MeanTaueps, 
-                               Rcpp::Named("plinks")        = plinks, 
-                               Rcpp::Named("SampledGraphs") = L   ); //NON STO ANCORA RESTITUENDO TUTTE LE CATENE COMPLETE!
-*/
+
 
 
 #endif

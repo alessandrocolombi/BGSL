@@ -2,19 +2,48 @@
 % Please edit documentation in R/RcppExports.R
 \name{Extract_Chain}
 \alias{Extract_Chain}
-\title{Extract chain from file}
+\title{Read chain from file}
 \usage{
 Extract_Chain(
   file_name,
   variable,
   stored_iter,
-  n,
   p,
-  index1 = 0L,
-  index2 = 0L,
+  n = 0L,
+  index1 = 1L,
+  index2 = 1L,
   prec_elem = 0L
 )
 }
+\arguments{
+\item{file_name, }{string with the name of the file to be open. It has to include the extension, usually \code{.h5}.}
+
+\item{variable}{string, the name of the dataset to be read from the file. Only possibilities are \code{"Beta"}, \code{"Mu"}, \code{"Precision"} and \code{"TauEps"}.}
+
+\item{stored_iter}{integer, the number of saved iterations. It can be read from \code{\link{Read_InfoFile}}.}
+
+\item{p}{integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}.
+It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.}
+
+\item{n}{integer, the number of observed data.}
+
+\item{index1}{integer, the index of the element whose chain has to read from the file. The first elements corresponds to \code{index1} equal to 1.
+If \code{variable} is equal to \code{"Precision"} some care is required. If the file represents the output of \code{GGM}, \code{FGM} of \code{FLM} with fixed graph, the sampled precision matrices
+are of size \mjseqn{p \times p} stored row by row. This means that the second diagonal elements corresponds to \code{index1} equal to \mjseqn{p+1}.
+Moreover, in this case set \code{prec_elem} parameter equal to \mjseqn{\frac{p(p+1)}{2}}.
+Instead, for outputs coming from \code{FLM} sampler with diagonal graph, only the diagonal of the precision matrix is saved. If so, \code{index1} ranges from 1 up to \mjseqn{p}. Moreover, set \code{prec_ele} eqaul to \mjseqn{p}.
+If \code{variable} is equal to \code{"Beta"}, this index ranges for 1 up to \mjseqn{p}, it represents the spine coefficinet.}
+
+\item{index2}{integer, to be used only if \code{variable} is equal to \code{"Beta"}. It ranges from 1 up to \mjseqn{n}. In this case, the chain for the spline_index-th coefficients of the curve_index-th curve is read.}
+
+\item{prec_elem}{integer, set equal to \mjseqn{p} if \code{file_name} represents the output of \code{FLM} sampler with diagonal graph. Set \mjseqn{\frac{p(p+1)}{2}} otherwise.}
+}
+\value{
+It returns a numeric vector all the sampled values of the required element.
+}
 \description{
-This function extract the sampled chain for the \code{index1}-th component of variable specified in \code{variable}. For \code{"Beta"} coefficients one has to use also \code{index2}.
+\loadmathjax This function read from a binary file the sampled chain for the \code{index1}-th component of variable specified in \code{variable}. The chain is then saved in memory to make it available for further analysis.
+Both \code{index1} and \code{index2} start counting from 1, the first element is obtained by settin \code{index1} equal to 1, not 0.
+Only \code{"Beta"} coefficients require the usage of \code{index2}. This function allows to extract only one chain at the time. The idea of writing the sampled values on a file is indeed to
+avoid to fill the memory. This function has to carefully used.
 }

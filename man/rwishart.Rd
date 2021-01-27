@@ -7,18 +7,21 @@
 rwishart(b, D, isChol = FALSE, isUpper = FALSE, seed = 0L)
 }
 \arguments{
-\item{b}{double, it is shape parameter.}
+\item{b}{it is Shape parameter.}
 
-\item{D}{matrix of size \eqn{p x p} representig the Inverse Scale parameter. It has to be symmetric and positive definite.}
+\item{D}{Inverse-Scale matrix of size \mjseqn{p \times p}. It may represent its Cholesky decomposition.}
 
-\item{isChol}{boolean, set \code{TRUE} if Mat parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance}
+\item{isChol}{boolean, set \code{TRUE} if D parameter is a triangular matrix representig the Cholesky decomposition of the precision or covariance}
 
-\item{isUpper}{boolean, used only if isChol is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.}
+\item{isUpper}{boolean, used only if isChol is \code{TRUE}. Set \code{TRUE} if D is upper triangular, \code{FALSE} if lower.}
+
+\item{seed}{integer, seeding value. Set 0 for random seed.}
 }
 \value{
-It returns a p x p matrix.
+It returns the \mjseqn{p \times p} sampled matrix.
 }
 \description{
-This function draws random samples from Wishart distribution.
+\loadmathjax This function draws random samples from Wishart distribution. We use a Shape-Inverse Scale parametrization, the corresponding density is reported below
+\mjsdeqn{ f(X) = \frac{\lvert X \lvert^{(b-2)/2}~~\exp\left( - \frac{1}{2}tr\left(X~D\right)\right)}{2^{p(b+p-1)/2}~\lvertD^{-1}\lvert^{(b+p-1)/2}~\Gamma_{p}((b+p-1)/2)}}
 It is also possible to pass directly the Cholesky decomposition of the Inverse Scale matrix if it is available before the call.
 }

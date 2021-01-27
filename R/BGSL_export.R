@@ -104,7 +104,7 @@ GWish_sampler_tuning = function(p, nrep = 1000, initial_threshold = 1e-2, max_th
 #'
 #' @param p The dimension of the graph in complete form
 #' @param b Shape parameter. It has to be larger than 2 in order to have a well defined distribution.
-#' @param D Inverse scale matrix. It has to be symmetric and positive definite.
+#' @param D Inverse scale matrix of size \mjseqn{p \times p}. It has to be symmetric and positive definite.
 #' @param nrep How many repetitions has to be performed for each possible threshold
 #' @param MCiter_list The list containg the Monte Carlo iterations to be taken into consideration
 #'
@@ -236,20 +236,21 @@ GWish_PostConst_tuning = function(p, n, b=3, D = diag(p), nrep = 100, MCiter_lis
 
 #' Computes and plot smoothed curves
 #'
-#' This function gets the regression coefficients and the evaluated splines and builds the smooted curves.
-#' @param beta matrix of dimension \eqn{n_basis x n_curves} containing the values of regression coefficients.
-#' @param BaseMat matrix of dimension \eqn{n_grid_points x n_basis} containing the evaluation of all the spline in all the grid points.
+#' #' \loadmathjax This function gets the regression coefficients and the evaluated splines and builds the smooted curves. It may also plot the curves.
+#' @param beta matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the values of regression coefficients.
+#' @param BaseMat matrix of dimension \mjseqn{n\_grid\_points \times n\_basis} containing the evaluation of all the \mjseqn{n\_basis} B-spine basis function in all the grid points.
 #' @param n_plot the number of curves to be plotted. Set 0 for no plot.
 #' @param range the range where the curves has to be plotted. Not needed if \code{n_plot} is 0.
-#' @param grid_points vector of size \code{n_grid_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
+#' @param grid_points vector of size \mjseqn{n_\grid\_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
 #' @param internal_knots vector with the internal knots used to construct the splines. Can be obtained as return value of function \code{\link{Generate_Basis}}. Default is null.
-#' but if provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval represents the segment where the \code{k}-th spline dominates the others.
-#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \eqn{[1,n_basis]}
-#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \eqn{[1,n_basis]}
+#' If provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval represents the segment where the \code{k}-th spline dominates the others.
+#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
+#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
 #' @param title_plot the title of the plot.
 #' @param xtitle the title of the x-axis.
 #' @param ytitle the title of the x-axis.
 #'
+#' @return It returns a \mjseqn{n\_curves \times n\_grid\_points} matrix containing the values of the smoothed curves.
 #' @export
 smooth_curves = function( beta, BaseMat, n_plot = 0, range = NULL, grid_points = NULL,
                           internal_knots = NULL, highlight_band1 = NULL, highlight_band2 = NULL,
@@ -361,23 +362,26 @@ smooth_curves = function( beta, BaseMat, n_plot = 0, range = NULL, grid_points =
 
 #' Computes and plot smoothed curves with credible bands
 #'
-#' This function gets the mean values of the regression coefficients as well as the lower and upper quantiles and builds the smooted curves with their credible bands.
+#' \loadmathjax This function gets the mean values of the regression coefficients as well as the lower and upper quantiles and builds the smooted curves with their credible bands.
 #' It does not computes the quantiles nor the mean starting from all the sampled values, they have to be previously computed using \code{\link{Compute_QuantileBeta}} function.
-#' @param beta matrix of dimension \eqn{n_basis x n_curves} containing the mean values of regression coefficients
-#' @param betaLower matrix of dimension \eqn{n_basis x n_curves} containing the lower quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.
-#' @param betaUpper matrix of dimension \eqn{n_basis x n_curves} containing the upper quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.
-#' @param BaseMat matrix of dimension \eqn{n_grid_points x n_basis} containing the evaluation of all the spline in all the grid points.
+#' @param beta matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the values of regression coefficients.
+#' @param betaLower matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the lower quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.
+#' @param betaUpper matrix of dimension \mjseqn{n\_basis \times n\_curves} containing the upper quantiles values of regression coefficients. Can be obtained by \code{\link{Compute_QuantileBeta}} function.
+#' @param BaseMat matrix of dimension \mjseqn{n\_grid\_points \times n\_basis} containing the evaluation of all the \mjseqn{n\_basis} B-spine basis function in all the grid points.
 #' @param n_plot the number of curves to be plotted. Set 0 for no plot.
 #' @param range the range where the curves has to be plotted. Not needed if \code{n_plot} is 0.
-#' @param grid_points vector of size \code{n_grid_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
-#' @param internal_knots vector with the internal knots used to construct the splines. Can be obtained as return value of function \code{\link{Generate_Basis.}} Default is null.
-#' but if provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval represents the segment where the \code{k}-th spline dominates the others.
-#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \eqn{[1,n_basis]}.
-#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \eqn{[1,n_basis]}.
+#' @param grid_points vector of size \mjseqn{n_\grid\_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
+#' @param internal_knots vector with the internal knots used to construct the splines. Can be obtained as return value of function \code{\link{Generate_Basis}}. Default is null.
+#' If provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval represents the segment where the \code{k}-th spline dominates the others.
+#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
+#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
 #' @param title_plot the title of the plot.
 #' @param xtitle the title of the x-axis.
 #' @param ytitle the title of the x-axis.
+#' @param data a \mjseqn{n\_curves \times n\_grid\_points} matrix containing the values of the true curves that are added to the plot if this parameter is not \code{NULL}.
 #'
+#' @return It returns a list composed of three \mjseqn{n\_curves \times n\_grid\_points} matrices called \code{MeanCurves}, \code{LowerBands} and \code{UpperBands}
+#' containing the smoothed curves and their credible bands.
 #' @export
 smooth_curves_credible_bands = function(  beta, betaLower, betaUpper, BaseMat, n_plot = 0, range = NULL, grid_points = NULL,
                                           internal_knots = NULL, highlight_band1 = NULL, highlight_band2 = NULL,
@@ -624,23 +628,24 @@ smooth_curves_credible_bands = function(  beta, betaLower, betaUpper, BaseMat, n
 
 #' Plot curves
 #'
-#' This functions gets one or two dataset representig functional data and plot them. It does not smooth the curves, indeed it requires as input the data, not
+#' \loadmathjax This functions gets one or two dataset representig functional data and plot them. It does not smooth the curves, indeed it requires as input the data, not
 #' the regression coefficients. Use \code{\link{smooth_curves}} function for that.
-#' @param data1 matrix of dimension \eqn{n_curves x n_grid_points} representing the first dataset to be plotted.
-#' @param data2 matrix of dimension \eqn{n_curves x n_grid_points} representing the second dataset to be plotted, if needed.
-#' @param range the range where the curves has to be plotted. Not needed if\code{n_plot} is 0.
+#' @param data1 matrix of dimension \mjseqn{n\_curves \times n\_grid\_points} representing the first functional dataset to be plotted.
+#' @param data2 matrix of dimension \mjseqn{n\_curves \times n\_grid\_points} representing the second dataset to be plotted, if needed.
+#' @param range the range where the curves has to be plotted. Not needed if \code{n_plot} is 0.
 #' @param n_plot the number of curves to be plotted. Set 0 for no plot.
-#' @param grid_points vector of size n_grid_points with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
-#' @param internal_knots vector with the internal knots used to construct the splines. Can be obtained as return value of function \code{\link{Generate_Basis.}}. Default is null.
-#' but if provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval represents the segment where the \code{k}-th spline dominates the others.
-#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \eqn{[1,n_basis]}.
-#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \eqn{[1,n_basis]}.
+#' @param grid_points vector of size \mjseqn{n_\grid\_points} with the points where the splines are evaluated. If defaulted they are uniformly generated. Not needed if \code{n_plot} is 0.
+#' @param internal_knots vector with the internal knots used to construct the splines. Can be obtained as return value of function \code{\link{Generate_Basis}}. Default is null.
+#' If provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval represents the segment where the \code{k}-th spline dominates the others.
+#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
+#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
 #' @param title_plot the title of the plot.
 #' @param xtitle the title of the x-axis.
 #' @param ytitle the title of the x-axis.
-#' @param legend_name1 the name for \code{data1} to be printed in the legend. Used only is two datasets are actually plotted.
-#' @param legend_name2 the name for \code{data2} to be printed in the legend.
+#' @param legend_name1 the name for \code{data1} to be printed in the legend. 
+#' @param legend_name2 the name for \code{data2} to be printed in the legend. Used only is two datasets are actually plotted.
 #'
+#' @return No values are returned.
 #' @export
 plot_curves = function( data1, data2 = NULL, range, n_plot = 1, grid_points = NULL,
                         internal_knots = NULL, highlight_band1 = NULL, highlight_band2 = NULL,
@@ -758,15 +763,15 @@ plot_curves = function( data1, data2 = NULL, range, n_plot = 1, grid_points = NU
 
 #' Functional Linear model for smoothing
 #'
-#' \loadmathjax This function performs a linear regression for functional data, according to model (INSERIRE FORMULA MODELLO).
+#' \loadmathjax This function performs a linear regression for functional data. 
 #' It is not a graphical model, the graph has to be fixed. It is possible to fix both a diagonal graph or a generic graph.
 #' @param p number of basis functions.
-#' @param data matrix of dimension \mjseqn{n_grid_points \times n} containing the evaluation of \code{n} functional data over a grid of \code{n_grid_points} nodes.
-#' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be \code{(niter - burnin)/thin}.
+#' @param data matrix of dimension \mjseqn{n\_curves \times n\_grid\_points} containing the evaluation of \code{n} functional data over a grid of \code{n_grid_points} nodes.
+#' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be \mjseqn{(niter - burnin)/thin}.
 #' @param burnin the number of discarded iterations.
 #' @param thin the thining value, it means that only one out of \code{thin} itarations is saved.
 #' @param diagonal_graph boolean, set true if the graph has to be diagonal. Set false otherwise and pass as input the desired graph through the \code{G} parameter.
-#' @param G matrix of size \code{p x p} representing the graphical part of the model that would remain fixed through out the sampling. Needed only if \code{diagonal_graph} is set to \code{FALSE}.
+#' @param G matrix of size \mjseqn{p \times p} representing the graphical part of the model that would remain fixed through out the sampling. Needed only if \code{diagonal_graph} is set to \code{FALSE}.
 #' @param Param list containing parameters needed by the sampler. It has to follow the same notation of the one generated by \code{\link{sampler_parameters}} function. 
 #' It is indeed recommended to build it through that particular function. It is important to remember that \code{BaseMat} field is needed and cannot be defaulted. Use \code{\link{Generate_Basis}} to create it.
 #' It has to be a matrix of dimension \mjseqn{n_grid_points \times p} containing the evalutation of \code{p} Bspline basis over a grid of \code{n_grid_points} nodes.
@@ -774,8 +779,10 @@ plot_curves = function( data1, data2 = NULL, range, n_plot = 1, grid_points = NU
 #' @param Init list containig initial values for Markov chain. It has to follow the same notation of the one generated by \code{\link{LM_init}} function. It is indeed recommended to build it through that particular function.
 #' @param print_info boolean, set \code{TRUE} to display the progress bar.
 #' @param seed integer, seeding value. Set 0 for random seed.
+#' @param file_name string, the name of the binary \code{".h5"} file where the sampled values are wittern
 #'
-#' @return Two lists are returned, one with all the sampler values and the other with the posterior means.
+#' @return It returns a list with the posterior mean of the sampled values. If \code{diagonal_graph} is \code{TRUE}, \code{p} \mjseqn{\tau_{j}} coefficients are returned, if it is \code{FALSE}  
+#' the full estimated precision matrix is returned. A binary \code{".h5"} file named \code{file_name} is also generated, it contains all the sampled values.
 #' @export
 FLM_sampling = function( p, data, niter = 100000, burnin = niter/2, thin = 1, diagonal_graph = T, G = NULL ,
                          Param = NULL, HyParam = NULL, Init = NULL, print_info = TRUE, seed = 0, file_name = "FLMresults" )
@@ -820,36 +827,41 @@ FLM_sampling = function( p, data, niter = 100000, burnin = niter/2, thin = 1, di
 
 #' Simulate curves
 #'
-#' This function genrates a dataset of n functional curves. Data are generated trying to simulate the shape of one or two Gaussian distributions.
-#' @param p Dimension of the true underlying graph.
-#' @param n Number of curves to be generated.
-#' @param n_grid_points dimension of the grid where the spline are evaluated.
-#' @param range_x vector of length two defining the interval for the curves.
-#' @param G  matrix of size \eqn{p x p} representing the true underlying graph. Default is \code{NULL} that corresponds to a diagonal graph.
-#' @param K  matrix of size \eqn{p x p} representing the true underlying precision matrix. If \code{NULL}, a sample from a GWishart is drawn.
-#' @param b GWishart shape parameter used if the matrix \code{K} has to be drawn. It has to be larger than 2 in order to have a well defined distribution. Default is 3.
-#' @param D GWishart inverse scale matrix parameter used if the matrix \code{K} has to be drawn. It has to be symmetric and positive definite. Default is \code{0.01*diag(p)}.
+#' \loadmathjax This function genrates a dataset of n functional curves. Data are generated trying to simulate the shape of one or two Gaussian distributions.
+#' @param p integer, the number of basis functions. It also represents the dimension of the true underlying graph.
+#' @param n integer, the number of curves to be generated.
+#' @param n_grid_points integer, the dimension of the grid where the spline are evaluated.
+#' @param range_x the range where the curves has to be plotted. Not needed if \code{n_plot} is 0.
+#' @param G  matrix of size \mjseqn{p \times p} representing the true underlying graph. Only the upper triangular part is needed. Default is \code{NULL} that corresponds to a diagonal graph.
+#' @param K  matrix of size \mjseqn{p \times p} representing the true underlying precision matrix. If \code{NULL}, a sample from a GWishart(\code{b}, \code{D}) is drawn.
+#' @param b GWishart Shape parameter used if the matrix \code{K} has to be drawn. It has to be larger than 2 in order to have a well defined distribution. 
+#' @param D GWishart Inverse Scale matrix parameter used if the matrix \code{K} has to be drawn. It has to be \mjseqn{p \times p}, symmetric and positive definite. 
+#' @param tau_eps numerical value, it represents the precision of the Gaussian noise to be added to the curves. Set 0 to have smooth curve, no noise is added in that case.
+#' @param rate If \code{G} is \code{NULL}, only the diagonal elements of \code{K} are generated. They are sampled from a \mjseqn{Gamma(Shape = 5, Rate = rate)}.
 #' @param spline_order order of the Bsplines. Set four for cubic splines.
 #' @param n_picks The number of desired picks in the simulated curves. It may be one for a single, Gaussian like, shape or two for a double Gaussian shape.
 #' @param height1 Heigth of the pick of the first Gaussian.
 #' @param height2 Heigth of the pick of the second Gaussian.
 #' @param width1 Set how large the first pick has to be. This parameter acts like a standard deviation of a Normal distribution, so the larger it is, the thinner is the pick.
 #' @param width2 Set how large the second pick has to be. This parameter acts like a standard deviation of a Normal distribution, so the larger it is, the thinner is the pick.
-#' @param position1 Set where the first pick has to be located. Position is then computed as \code{range_x[1] + (range_x[2]-range_x[1])/position1}. Set 2 to place it in the middle.
-#' @param position2 Set where the second pick has to be located. Position is then computed as \code{range_x[2] - (range_x[2]-range_x[1])/position2}. Set 2 to place it in the middle.
-#' @param n_plot The number of curves to be plotted. If it is set to 0, no curves are displayed.
-#' @param highlight_band1 Vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \code{[1,n_basis]}.
-#' @param highlight_band1 Vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \code{[1,n_basis]}.
-#' @param title_plot Title of the plot.
-#' @param xtitle Title of the x-axis.
-#' @param ytitle Title of the x-axis.
+#' @param position1 Set where the first pick has to be located. Position is then computed as \mjseqn{range_x[1] + (range_x[2]-range_x[1])/position1}.
+#' @param position2 Set where the second pick has to be located. Position is then computed as \mjseqn{range_x[2] - (range_x[2]-range_x[1])/position2}. Set 2 to place it in the middle.
+#' @param n_plot the number of curves to be plotted. Set 0 for no plot.
+#' @param highlight_band1 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
+#' @param highlight_band2 a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.
+#' @param title_plot the title of the plot.
+#' @param xtitle the title of the x-axis.
+#' @param ytitle the title of the x-axis.
 #' @param seed seed used to simulate data. Set 0 for random seed.
 #'
-#' @return It returns a list with the simulated curves as well as all the other underlying parameters, that are Beta, mu, G, K. It then returns the (n_grid_points x p) design matrix
-#' containing the evaluation of all the splines in all the grid points. Finally it also returns the interal knots used in the creation of the splines.
+#' @return It returns a list composed of: all simulated curves in \code{data}, all underlying parameters, called \code{Beta}, \code{mu}, \code{K} and the true graph \code{G}. 
+#' It also return the design matrix \code{basemat}, generated by \code{\link{Generate_Basis}} and the vector of the internal knots generating the splines, see \code{\link{Generate_Basis}}.
+
+#It returns a list with the simulated curves as well as all the other underlying parameters, that are Beta, mu, G, K. It then returns the (n_grid_points x p) design matrix
+# containing the evaluation of all the splines in all the grid points. Finally it also returns the interal knots used in the creation of the splines.
 #' @export
-simulate_curves = function( p = 10, n = 300, r = 235,range_x = c(100,200), G = NULL, K = NULL, b = 3, D = NULL, tau_eps = 0, spline_order = 3,
-                            n_picks = 1, height1 = 1, height2 = 1, width1 = 36, width2 = 24, position1 = 10, position2 = 2, rate = 0.01/2,
+simulate_curves = function( p = 10, n = 300, r = 235,range_x = c(100,200), G = NULL, K = NULL, b = 3, D = NULL, tau_eps = 0, rate = 0.01/2,
+                            spline_order = 3, n_picks = 1, height1 = 1, height2 = 1, width1 = 36, width2 = 24, position1 = 10, position2 = 2, 
                             n_plot = n, highlight_band1 = NULL, highlight_band2 = NULL, title_plot = "Curves", xtitle = " ", ytitle = " ",
                             seed = 1212)
 {
@@ -938,8 +950,9 @@ simulate_curves = function( p = 10, n = 300, r = 235,range_x = c(100,200), G = N
 
 #' Bayesian FDR Analysis
 #'
-#' Given the plinks matrix, this utility computes the False Discovery Rate Index, forcing the false discovery rates to be less than \code{min_rate.}
-#' @param plinks matrix of size \eqn{p x p} containing the posterior inclusion probability for each link. It has to be upper triangular.
+#' \loadmathjax Given the plinks matrix, this utility computes the False Discovery Rate Index, forcing the false discovery rates to be less than \code{min_rate.}
+#' @param plinks matrix containing the posterior inclusion probability for each link. It has to be upper triangular. Its dimension depends on the type of graph it represents. 
+#' It is indeed possible to pass a \mjseqn{p \times p} matrix, or a \mjseqn{n\_groups \times n\_groups}.
 #' @param tol sequence of tolerances to be tested trying to select a graph truncating \code{plinks} at that value.
 #' @param min_rate fix false discoveries to remain under this selected threshold.
 #' @param diag boolean, if the diagonal of \code{plinks} has to be included in the computations. Set \code{FALSE} if the graph is in complete form, set \code{TRUE} for block graphs.
@@ -982,7 +995,7 @@ BFDR_selection = function (plinks, tol = seq(0.1, 1, by = 0.025), min_rate = 0.0
 
 #' Compute AUC Index
 #'
-#' Function to compute the area under ROC curve exploiting trapezoidal rule.
+#' \loadmathjax Function to compute the area under ROC curve exploiting trapezoidal rule.
 #' @param x Numeric vector of length \code{n}.
 #' @param y Numeric vector of length \code{n}.
 #'
@@ -1002,13 +1015,13 @@ Compute_AUC = function (x, y)
 
 #' Bayesian Sensitivity Analysis
 #'
-#' Given the true graph and a \code{plinks} matrix, this utility computes the confusion matrices, plot the ROC curve (if required) and the AUC index,
+#' \loadmathjax Given the true graph and a \code{plinks} matrix, this utility computes the confusion matrices, plot the ROC curve (if requested) and the AUC index,
 #' selects the best threshold according to the number of misclassified links and also return the best graph according to the abovementioned analysis.
 #' @param PL matrix of size \eqn{p x p} containing the posterior inclusion probability for each link. It has to be upper triangular.
 #' @param G_true matrix of size \eqn{p x p} containing the true graph. It has to be upper triangular.
 #' @param tol sequence of tolerances to be tested trying to select a graph truncating \code{plinks} at that value.
 #' @param ROC boolean. If \code{TRUE}, the plot the ROC curve is showed.
-#' @param diag
+#' @param diag boolean, if the diagonal of \code{plinks} has to be included in the computations. Set \code{FALSE} if the graph is in complete form, set \code{TRUE} for block graphs.
 #'
 #' @return A list of 5 elements: all_confusion, a list with all the confusion matrices, one for each tol value. best_threshold, the best value of tol according to this analysis.
 #' best_confusion, the best confusion matrix, the one corresponding to best_threshold. best_truncated_graph, the proposed posterior graph according to the analysis.
@@ -1091,22 +1104,25 @@ Sensitivity_analysis = function (PL, G_true, tol = seq(0.1, 1, by = 0.01), ROC =
 
 #' Simulate data from GGM
 #'
-#' @param p dimension of the response variable that is the dimension of the underlying graph.
-#' @param n number of observations.
-#' @param n_groups number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter.
+#' \loadmathjax This function generates a dataset from a Gaussian Graphical Model where the precision matrix is distributes according to GWishart(3,\mjseqn{I_{p}}).
+#' @param p integer, the dimension of the underlying graph.
+#' @param n integer, number of observations.
+#' @param n_groups number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as \code{group} parameter.
 #' @param form string that states if the true graph has to be in \code{"Block"} or \code{"Complete"} form. Only possibilities are \code{"Complete"} and \code{"Block"}.
 #' @param groups list representing the groups of block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
 #' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave \code{NULL} if the graph is not in block form.
-#' @param adj_mat matrix representing the desired graph. It has to be a (p x p) matrix if form is \code{"Complete"} and has to be coherent with the number of groups if form is \code{"Block"}.
-#' If \code{NULL}, a random graph is generated.
-#' @param seed seed used to simulate data. Set 0 for random seed.
+#' @param adj_mat matrix representing the desired graph. It has to be a \mjseqn{p \times p} matrix if form is \code{"Complete"} and has to be coherent with the number of groups if form is \code{"Block"}.
+#' Only the upper triangular part is needed. If \code{NULL}, a random graph is generated.
+#' @param seed integer, seeding value. Set 0 for random seed.
 #' @param mean_null boolean, set \code{TRUE} if data has to be zero mean.
-#' @param sparsity desired sparsity in the graph. Not used if true graph is provided.
+#' @param sparsity desired sparsity in the graph. It has to be in the range \mjseqn{(0,1)}. Not used if true graph is provided.
 #'
-#' @return a list containing a matrix called U with sum(Y_iY_i), the true precision, the true graph and if Block form is selected, the graph in its complete form is also returned.
+#' @return a list composed of: the covariance matrix of the generated data, it is called \code{U} and contains \mjseqn{\sum_{i=1}^{n}(y_{i}y_{i}^{T})},
+#' the true precision matrix called \code{Prec_true}, and the true graph called \code{G_true}. 
+#' If \code{form} is \code{"Block"}, then \code{G_true} is in block form, i.e a \mjseqn{n\_groups \times n\_groups} matrix and it complete form is also returned, it is called \code{G_complete}.
 #' @export
-SimulateData_GGM = function(p,n,n_groups = 0,form = "Complete",groups = NULL,adj_mat = NULL,
-							seed = 0,mean_null = TRUE, sparsity = 0.3 )
+SimulateData_GGM = function(p, n, n_groups = 0, form = "Complete", groups = NULL, adj_mat = NULL,
+							              seed = 0, mean_null = TRUE, sparsity = 0.3 )
 {
 	if(!(form == "Complete" || form == "Block"))
 		stop("Only possible forms are Complete and Block")
@@ -1132,24 +1148,32 @@ SimulateData_GGM = function(p,n,n_groups = 0,form = "Complete",groups = NULL,adj
 
 #' Sampler for Guassian Graphical Models
 #'
-#' This function draws samples a posteriori from a Gaussian Graphical Models.
-#' @param data matrix of size \eqn{p x p} containing \eqn{\sum(Y_i^{T}Y_i)}. Data are required to be zero mean.
-#' @param n number of observed data.
-#' @param niter number of total iterations to be performed in the sampling. The number of saved iteration will be \code{(niter - burnin)/thin}.
+#' \loadmathjax This function draws samples a posteriori from a Gaussian Graphical Models. The prior chosen for the precision matrix is a GWishart, whose parameters can be fixed in \code{HyParam}.
+#' Diffefent priors are available for the graph, they can be set via \code{prior} input.
+#' @param data two possibilities are available. (1) a \mjseqn{p \times n} matrix corresponding to \code{n} observation of \code{p}-dimensional variables or (2) 
+#' a \mjseqn{p \times p} matrix representing \mjseqn{\sum_{i=1}^{n}(y_{i}y_{i}^{T})}, where \mjseqn{y_{i}} is the \code{i}-th observation of a \code{p}-dimensional variale. 
+#' Data are assumed to be zero mean.
+#' @param n integer, number of observed data.
+#' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be \mjseqn{(niter - burnin)/thin}.
 #' @param burnin number of discarded iterations.
-#' @param thin thining value, it means that only one out of \code{thin} itarations is saved.
+#' @param thin the thining value, it means that only one out of \code{thin} itarations is saved.
 #' @param Param list containing parameters needed by the sampler. It has to follow the same notation of the one generated by \code{\link{sampler_parameters}} function. It is indeed recommended to build it through that particular function. \code{BaseMat} field is not needed.
 #' @param HyParam list containing hyperparameters needed by the sampler. It has to follow the same notation of the one generated by \code{\link{GM_hyperparameters}} function. It is indeed recommended to build it through that particular function.
 #' @param Init list containig initial values for Markov chain. It has to follow the same notation of the one generated by \code{\link{GM_init}} function. It is indeed recommended to build it through that particular function.
-#' @param form string that may take as values only \code{"Complete"} of \code{"Block"} . It states if the algorithm has to run with \code{"Block"} or \code{"Complete"} graphs.
+#' @param form string that states if the true graph has to be in \code{"Block"} or \code{"Complete"} form. Only possibilities are \code{"Complete"} and \code{"Block"}.
 #' @param prior string with the desidered prior for the graph. Possibilities are \code{"Uniform"}, \code{"Bernoulli"} and for \code{"Block"} graphs only \code{"TruncatedBernoulli"} and \code{"TruncatedUniform"} are also available.
 #' @param algo string with the desidered algorithm for sampling from a GGM. Possibilities are \code{"MH"}, \code{"RJ"} and \code{"DRJ"}.
 #' @param groups a list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
 #' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. If \code{"NULL"}, \code{"n_groups"} are automatically generated. Not needed if form is set to \code{"Complete"}.
-#' @param n_groups int, number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter.
+#' @param n_groups number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as \code{groups} parameter.
 #' @param seed integer, seeding value. Set 0 for random seed.
 #' @param print_info boolean, if true progress bar and execution time are displayed.
-#' @return This function returns a list with the posterior precision mean, a matrix with the probability of inclusion of each link, the number of accepted moves, the number of visited graphs and the list of all visited graphs.
+#' @return It returns a list composed of: \code{MeanK}, the posterior mean of all sampled precision matrix, \code{plinks} which contains the posterior probability of inclusion of each possible link.
+#' It is a \mjseqn{p \times p} matrix if \code{form} is \code{"Complete"}, or a \mjseqn{n\_groups \times n\_groups} matrix if \code{form} is \code{"Block"}. \code{AcceptedMoves} contains the number of
+#' Metropolis-Hastings moves that were accepted in the sampling, \code{VisitedGraphs} the number of graph that were visited at least once, \code{TracePlot_Gsize} is a vector of length \mjseqn{(niter - burnin)/thin}
+#' such that each element is equal to the size of the visited graph in that particular iteration and finally \code{SampledGraphs} is a list containing all the visited graphs and their absolute frequence of visit.
+#' To save memory, the graphs are represented only by the upper triangular part, stored row-wise. 
+#' A binary \code{".h5"} file named \code{file_name} is also generated, it contains all the sampled values.
 #' @export
 GGM_sampling = function( data, n, niter = 100000, burnin = niter/2, thin = 1, Param = NULL, HyParam = NULL, Init = NULL,
                          file_name = "GGMresults", form = "Complete", prior = "Uniform", algo = "RJ", groups = NULL, n_groups = 0, seed = 0, print_info = TRUE )
@@ -1208,18 +1232,21 @@ GGM_sampling = function( data, n, niter = 100000, burnin = niter/2, thin = 1, Pa
 
 #' Skeleton for Hyperparameters in Graphical Models
 #'
-#' This function simply creates a skeleton for all the hyperparameters that has to be fixed in graphical samplers. All the quantities has a default value,
-#' moreover some of them may not be needed in some algorithm. The goal of this function is to fix a precise notation that will be used in all the code.
-#' @param p integer, dimension of the graph. 
-#' @param a_tau_eps double, shape parameter for gamma prior distribution of \code{tau_eps} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.
-#' @param b_tau_eps double, inverse scale parameter for gamma prior distribution of \code{tau_eps} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.
-#' @param sigma_mu  double, covariance for normal multivariate distribution of mu parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.
-#' @param b_K double, it is prior GWishart shape parameter. It has to be larger than 2 in order to have a well defined distribution. Needed in all graphical model, i.e \code{FGM} and \code{GGM} sampler and in \code{FLM} with fixed graph.
-#' @param D_K matrix of double stored columnwise. It is prior GWishart inverse scale parameter. It has to be symmetric and positive definite. Default is identity matrix but \code{p} has to be provided in that case. Needed in all graphical model, i.e \code{FGM} and \code{GGM} sampler and in \code{FLM} with fixed graph.
-#' @param p_addrm double, probability of proposing a new graph by adding one link. Needed in all graphical model where the graph is random, i.e \code{FGM} and \code{GGM} sampler.
-#' @param sigmaG double, the standard deviation used to perturb elements of precision matrix when constructing the new proposed matrix. Needed in all graphical model where the graph is random, i.e \code{FGM} and \code{GGM} sampler. If algorithm is \code{"MH"} it is not used.
-#' @param Gprior double representing the prior probability of inclusion of each link in case \code{"Bernoulli"} prior is selected for the graph. Set 0.5 for \code{"Uniform"} prior. Needed in all graphical model where the graph is random, i.e \code{FGM} and \code{GGM} sampler.
-#' @return A list with all the inserted hyperparameters.
+#' \loadmathjax This function simply creates a skeleton for all the hyperparameters that has to be fixed in graphical samplers, that are \code{\link{GGM_sampling}} and \code{\link{FGM_sampling}}.
+#' Prefer to use \code{\link{LM_hyperparameters}} for \code{\link{FLM_sampling}}.
+#' All the quantities has a default value, moreover some of them may not be needed in some algorithm. The goal of this function is to fix a precise notation that will be used in all the code.
+#' @param p integer, the dimension of the underlying graph.
+#' @param a_tau_eps Shape parameter for gamma prior distribution of \code{tau_eps} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.
+#' @param b_tau_eps Rate parameter for gamma prior distribution of \code{tau_eps} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.
+#' @param sigma_mu  covariance for normal multivariate distribution of \code{mu} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.
+#' @param b_K  prior GWishart Shape parameter. It has to be larger than 2 in order to have a well defined distribution. Needed in all graphical model, i.e \code{FGM} and \code{GGM} sampler and in \code{FLM} with fixed graph.
+#' @param D_K matrix of size \mjseqn{p \times p}, it is prior GWishart Inverse-Scale parameter. It has to be symmetric and positive definite. Default is identity matrix. Needed in all graphical model, i.e \code{FGM} and \code{GGM} sampler and in \code{FLM} with fixed graph.
+#' @param p_addrm the probability of proposing a new graph by adding one link. It has to be in the range \mjseqn{(0,1)}. Needed in all graphical model where the graph is random, i.e \code{FGM} and \code{GGM} sampler.
+#' @param sigmaG  the standard deviation used to perturb elements of precision matrix when constructing the new proposed matrix. 
+#' Needed in all graphical model where the graph is random, i.e \code{FGM} and \code{GGM} sampler. If algorithm is \code{"MH"} it is not used.
+#' @param Gprior represents the prior probability of inclusion of each link in case \code{"Bernoulli"} prior is selected for the graph. It has to be in the range \mjseqn{(0,1)}.
+#' Set 0.5 for \code{"Uniform"} prior. Needed in all graphical model where the graph is random, i.e \code{FGM} and \code{GGM} sampler.
+#' @return A list with all the hyperparameters described as possible inputs. All values that are not explicitely provided are defaulted.
 #' @export
 GM_hyperparameters = function(p, a_tau_eps = 20, b_tau_eps = 0.002, sigma_mu = 100, b_K = 3,
                               D_K = NULL, p_addrm = 0.5, sigmaG = 0.5, Gprior = 0.5)
@@ -1243,20 +1270,22 @@ GM_hyperparameters = function(p, a_tau_eps = 20, b_tau_eps = 0.002, sigma_mu = 1
 
 #' Skeleton for Hyperparameters in Linear Models
 #'
-#' This function simply creates a skeleton for all the hyperparameters that has to be fixed in linear samplers. All the quantities has a default value,
+#' \loadmathjax This function simply creates a skeleton for all the hyperparameters that has to be fixed in linear samplers, i.e \code{\link{FLM_sampling}}. All the quantities has a default value,
 #' moreover some of them may not be needed in some algorithm. The goal of this function is to fix a precise notation that will be used in all the code.
-#' @param p integer, dimension of the graph. 
-#' @param a_tau_eps double, shape parameter for gamma prior distribution of \code{tau_eps} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.
-#' @param b_tau_eps double, inverse scale parameter for gamma prior distribution of \code{tau_eps} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.
-#' @param sigma_mu  double, covariance for normal multivariate distribution of mu parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.
-#' @param b_K double, it is prior GWishart shape parameter. It has to be larger than 2 in order to have a well defined distribution. Needed in all graphical model, i.e \code{FGM} and \code{GGM} sampler and in \code{FLM} with fixed graph.
-#' @param D_K matrix of double stored columnwise. It is prior GWishart inverse scale parameter. It has to be symmetric and positive definite. Default is identity matrix but \code{p} has to be provided in that case. Needed in all graphical model, i.e \code{FGM} and \code{GGM} sampler and in \code{FLM} with fixed graph.
-#' @param a_tauK double, shape parameter for gamma prior distribution for each \code{tau_K} parameters. Needed only in \code{FLM} sampler with diagonal graph.
-#' @param b_tauK double, inverse scale parameter for gamma prior distribution for each \code{tau_K} parameters. Needed only in \code{FLM} sampler with diagonal graph.
-#' @return A list with all the inserted hyperparameters.
+#' This function is meant to set only the skeleton for \code{\link{FLM_sampling}}, use \code{\link{GM_hyperparameters}} for \code{\link{GGM_sampling}} and \code{\link{FGM_sampling}}.
+#' @param p integer, the dimension of the underlying graph.
+#' @param a_tau_eps Shape parameter for gamma prior distribution of \code{tau_eps} parameter. 
+#' @param b_tau_eps Rate parameter for gamma prior distribution of \code{tau_eps} parameter. 
+#' @param sigma_mu  covariance for normal multivariate distribution of mu parameter. 
+#' @param b_K  prior GWishart Shape parameter. It has to be larger than 2 in order to have a well defined distribution. Needed only when using \code{\link{FLM_sampling}} with fixed graph.
+#' @param D_K  matrix of size \mjseqn{p \times p}. It is prior GWishart inverse scale parameter. It has to be symmetric and positive definite. 
+#' Default is identity matrix but \code{p} has to be provided in that case. Needed only when using \code{\link{FLM_sampling}} with fixed graph.
+#' @param a_tauK  Shape parameter for gamma prior distribution for each \code{tau_K} parameters. Needed only when using \code{\link{FLM_sampling}} with diagonal graph.
+#' @param b_tauK  Rate parameter for gamma prior distribution for each \code{tau_K} parameters. Needed only when using \code{\link{FLM_sampling}} with diagonal graph.
+#' @return A list with all the hyperparameters described as possible inputs. All values that are not explicitely provided are defaulted.
 #' @export
 LM_hyperparameters = function( p, a_tau_eps = 20, b_tau_eps = 0.002, sigma_mu = 100, b_K = 3,
-                               D_K = NULL, a_tauK = 0.5, b_tauK = 0.5 )
+                               D_K = NULL, a_tauK = 20, b_tauK = 0.002 )
 {
   if(is.null(D_K)){
       D_K = diag(p)
@@ -1273,14 +1302,16 @@ LM_hyperparameters = function( p, a_tau_eps = 20, b_tau_eps = 0.002, sigma_mu = 
 
 #' Skeleton for Parametes
 #'
-#' This function simply creates a skeleton for some parameters that has to be fixed in the samplers. All the quantities has a default value,
+#' \loadmathjax This function simply creates a skeleton for some parameters that has to be fixed in all samplers. All the quantities has a default value,
 #' moreover some of them may not be needed in some algorithm. The goal of this function is to fix a precise notation that will be used in all the code.
-#' @param MCprior positive integer, the number of iteration for the MonteCarlo approximation of prior normalizing constant of GWishart distribution. Needed in \code{"MH"} and \code{"RJ"} algorithms.
-#' @param MCpost positive integer, the number of iteration for the MonteCarlo approximation of posterior normalizing constant of GWishart distribution. Needed only in \code{"MH"} algorithms.
-#' @param BaseMat matrix of dimension \code{n_grid_points x p} containing the evalutation of \code{p} Bspline basis over a grid of \eqn{n_grid_points} nodes. May be defaulted as \code{NULL} but note this case it is not automatically generated.
-#' Use \code{\link{Generate_Basis}} to generete it. Needed in all Functional models, i.e \code{FGM} and \code{FLM} samplers.
-#' @param threshold double, threshold for convergence in GWishart sampler. It is not needed only in \code{FLM} sampler with diagonal graph.
-#' @return A list with all the inserted parameters.
+#' @param MCprior integer, the number of iteration for the MonteCarlo approximation of prior normalizing constant of GWishart distribution. Needed in \code{"MH"} and \code{"RJ"} algorithms.
+#' @param MCpost integer, the number of iteration for the MonteCarlo approximation of posterior normalizing constant of GWishart distribution. Needed only in \code{"MH"} algorithms.
+#' @param BaseMat matrix of dimension \mjseqn{n\_grid\_points \times n\_basis} containing the evaluation of all the \mjseqn{n\_basis} B-spine basis function in all the grid points.
+#' May be defaulted as \code{NULL} but note this case it is not automatically generated. 
+#' Note that it is not needed by \code{\link{GGM_samplinig}} but is mandatory in \code{\link{FGM_sampling}} and \code{\link{FLM_samplinig}}. For those cases,
+#' use \code{\link{Generate_Basis}} to generete it. 
+#' @param threshold threshold for convergence in GWishart sampler. It is not needed only in \code{FLM} sampler with diagonal graph.
+#' @return A list with all parameters described as possible inputs.
 #' @export
 sampler_parameters = function(MCprior = 500, MCpost = 750, BaseMat = NULL, threshold = 1e-14)
 {
@@ -1295,32 +1326,35 @@ sampler_parameters = function(MCprior = 500, MCpost = 750, BaseMat = NULL, thres
 
 #' Skeleton for initial values in Graphical model
 #'
-#' \loadmathjax This function simply creates a structure for setting initial values for Markov chians in all graphical samplers, that are \code{\link{GGM_sampling}} and FGM_sampling. All the quantities has a default value,
-#' that can be set to empty chains or random initial points. Some quantities are not needed in \code{\link{GGM_sampling}}, however they are all initialized. The goal of this function is to fix a precise notation that will be used in all the code.
-#' @param p integer, dimension of the graph.
-#' @param n integer, number of observed data.
-#' @param empty boolean, if \code{TRUE} all chians start from zero. If not, it is possible to set the desidered value explicitely by means of the other function parameters or just leave them \code{NULL} and random initial points will be used.
+#' \loadmathjax This function simply creates a structure for setting initial values for Markov chians in all graphical samplers, that are \code{\link{GGM_sampling}} and \code{\link{FGM_sampling}}. 
+#' All the quantities has a default value, that can be set to empty chains or random initial points. Some quantities are not needed in \code{\link{GGM_sampling}}, but they are all initialized. 
+#' The goal of this function is to fix a precise notation that will be used in all the code.
+#' Prefer to use \code{\link{LM_hyperparameters}} for \code{\link{FLM_sampling}}.
+#' @param p integer, the dimension of the underlying graph.
+#' @param n integer, the number of observed data.
+#' @param empty boolean, if \code{TRUE} all chians start from zero. If not, it is possible to set the desidered value explicitely by means of the other function parameters or just leave them \code{NULL} and random initial points are generated.
 #' @param G0 matrix representing the initial graph. If \code{form} is set to \code{"Complete"} it has to be a \mjseqn{p \times p} matrix,
-#' if form is \code{"Block"} then \code{groups} or \code{n_groups} has to be provided and the graph should respect the structure given by those groups. If \code{NULL}, a random graph is selected.
+#' if form is \code{"Block"} then \code{groups} or \code{n_groups} has to be provided and the graph should respect the structure given by those groups. Only the upper triangular part is needed. If \code{NULL}, a random graph is selected.
 #' @param K0 numeric \mjseqn{p \times p} matrix representing the initial precision matrix. It has to be consistent with structure of graph \code{G0}. If \code{NULL}, a random matrix is selected.
 #' @param Beta0 numeric \mjseqn{p \times n} matrix representing the initial beta coefficients. If \code{NULL}, they are randomly generated. Used only in \code{FGM_sampling}.
 #' @param mu0 numeric \mjseqn{p}-dimensional vector representing the initial mu coefficients. If \code{NULL}, they are randomly generated. Used only in \code{FGM_sampling}.
-#' @param tau_eps0 scalar number representing the initial tau_eps coefficients. If \code{NULL}, it is randomly generated. Used only in \code{FGM_sampling}.
+#' @param tau_eps0 scalar number representing the initial \code{tau_eps} coefficient. It has to be strictly positive. If \code{NULL}, it is randomly generated. Used only in \code{FGM_sampling}.
 #' @param form string that may take as values only \code{"Complete"} of \code{"Block"} . It states if the algorithm has to run with \code{"Block"} or \code{"Complete"} graphs.
 #' @param groups a list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
 #' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. If \code{"NULL"}, \code{"n_groups"} are automatically generated. Not needed if form is set to \code{"Complete"}.
-#' @param n_groups int, number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter.
+#' @param n_groups integer, number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter.
 #' @param seed integer, seeding value. Set 0 for random seed.
 #'
-#' @return
-#' @export
+#' @return A list with all the previously described initial values.
+#' @export 
 GM_init = function(p ,n, empty = TRUE, G0 = NULL, K0 = NULL, Beta0 = NULL, mu0 = NULL, tau_eps0 = NULL, form = "Complete", groups = NULL, n_groups = 0, seed = 0)
 {
 	if(!(form == "Complete" || form == "Block"))
 		stop("Only possible forms are Complete and Block")
 	if(form == "Block" && is.null(groups) && n_groups <= 0)
 		stop("Groups has to be available if Block form is selected.")
-
+  if(!is.null(tau_eps0) && tau_eps0 <= 0)
+    stop("tau_eps0 has to be strictly positive.")
   if(empty){
     if(form == "Complete"){
       G0 = diag(p)
@@ -1401,19 +1435,20 @@ GM_init = function(p ,n, empty = TRUE, G0 = NULL, K0 = NULL, Beta0 = NULL, mu0 =
 #' \loadmathjax This function simply creates a structure for setting initial values for Markov chians in \code{\link{FLM_sampling}}. All the quantities has a default value,
 #' that can be set to empty chains or random initial points. Some quantities are not needed, it depends on what version of \code{\link{FLM_sampling}} is called. However they are all initialized. 
 #' The goal of this function is to fix a precise notation that will be used in all the code.
-#' @param p integer, dimension of the graph.
-#' @param n integer, number of observed data.
+#' This function is meant to set only the initial values for \code{\link{FLM_sampling}}, use \code{\link{GM_init}} for \code{\link{GGM_sampling}} and \code{\link{FGM_sampling}}.
+#' @param p integer, the dimension of the underlying graph.
+#' @param n integer, the number of observed data.
 #' @param empty boolean, if \code{TRUE} all chians start from zero. If not, it is possible to set the desidered value explicitely by means of the other function parameters or just leave them \code{NULL} and random initial points will be used.
 #' @param K0 numeric \mjseqn{p \times p} matrix representing the initial precision matrix. It will not actually be used if \code{\link{FLM_sampling}} is called with \code{diagonal_graph} set to \code{TRUE}. 
 #' If \code{NULL}, a random matrix is selected.
 #' @param Beta0 numeric \mjseqn{p \times n} matrix representing the initial beta coefficients. If \code{NULL}, they are randomly generated. 
 #' @param mu0 numeric \mjseqn{p}-dimensional vector representing the initial mu coefficients. If \code{NULL}, they are randomly generated. 
-#' @param tau_eps0 scalar number representing the initial tau_eps coefficients. If \code{NULL}, it is randomly generated. 
+#' @param tau_eps0 scalar number representing the initial \code{tau_eps} coefficient. If \code{NULL}, it is randomly generated. 
 #' @param tauK0 numeric \mjseqn{p}-dimensional vector representing the initial values for the diagonal of precision matrix. It will not actually be used if \code{\link{FLM_sampling}} is called with \code{diagonal_graph} set to \code{FALSE}. 
 #' If \code{NULL}, they are randomly generated.
 #' @param seed integer, seeding value. Set 0 for random seed.
 #'
-#' @return
+#' @return A list with all the previously described initial values.
 #' @export
 #'
 LM_init = function(p ,n, empty = TRUE, K0 = NULL, Beta0 = NULL, mu0 = NULL, tau_eps0 = NULL, tauK0 = NULL, seed = 0)
@@ -1461,7 +1496,7 @@ LM_init = function(p ,n, empty = TRUE, K0 = NULL, Beta0 = NULL, mu0 = NULL, tau_
 
 #' Tuning \code{sigmaG} parameter
 #'
-#' The choice of \code{sigmaG} parameter is a crucial part of \code{"RJ"} and \code{"DRJ"} algorithm. It indeed represents the standard deviation for the proposal of new elements in the
+#' \loadmathjax The choice of \code{sigmaG} parameter is a crucial part of \code{"RJ"} and \code{"DRJ"} algorithm. It indeed represents the standard deviation for the proposal of new elements in the
 #' precision matrix. This function provides a simple utility for tuning this parameter by simply repeting \code{Nrep} times the first \code{niter} iteration for every proposed
 #' \code{sigmaG} in \code{sigmaG_list}.
 #' @param data matrix of size \eqn{p x p} containing \eqn{\sum(Y_i^{T}Y_i)}.
@@ -1478,7 +1513,6 @@ LM_init = function(p ,n, empty = TRUE, K0 = NULL, Beta0 = NULL, mu0 = NULL, tau_
 #' @param groups a list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
 #' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. If \code{NULL}, \code{n_groups} are automatically generated. Not needed if form is set to \code{"Complete"}.
 #' @return plots the mean acceptance ratio for each \code{sigmaG} and returns the highest one.
-#' @export
 sigmaG_GGM_tuning = function( data, n, niter = 1000, sigmaG_list = seq(0.05, 0.55, by = 0.05), Nrep = 10,
 							  Param = NULL, HyParam = NULL, form = "Complete", prior = "Uniform", algo = "RJ", n_groups = 0, groups = NULL  )
 {
@@ -1515,17 +1549,22 @@ sigmaG_GGM_tuning = function( data, n, niter = 1000, sigmaG_list = seq(0.05, 0.5
 }
 
 
-#' Block to Complete map
+#' Block graph to Complete graph map
 #'
-#' Function for mapping from a block matrix to its non-block representation. It can be used also for matrices whose entries are not just 1 or 0.
-#' @param Gblock matrix of size \eqn{n_groups x n_groups} to be mapped.
+#' \loadmathjax Function for mapping from a block matrix to its non-block representation. It is the \mjseqn{\rho} described in the report.
+#' It can be used also for matrices whose entries are not just 1 or 0, in particular it is useful to map the block form of the \code{plinks} matrix into its complete form.
+#' @param Gblock matrix of size \mjseqn{n\_groups \times n\_groups} to be mapped.
 #' @param groups list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
 #' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. It is possible to generete it through CreateGroups function.
-#' @return p x p matrix containing the Complete form of Gblock.
+#' @return It returns a \mjseqn{p \times p} matrix containing the complete form of \code{Gblock}.
 #' @export
 Block2Complete = function(Gblock, groups)
 {
   m = length(groups)
+  if(dim(Gblock)[1] != dim(Gblock)[2])
+    stop("The inserted Gblock graph has to the a squared matrix.")
+  if(dim(Gblock)[1]!=m)
+    stop("The dimension of the inserted graph is not coherent with the number of provided groups.")  
   p = 0
   for(i in 1:m)
     p = p + length(groups[[i]])
@@ -1550,15 +1589,17 @@ Block2Complete = function(Gblock, groups)
   return(G)
 }
 
-
+#This utility implements an hybrid Gibbs Sampler strategy in order to sample the posterior distribution of the parameters βi, μ, K, G, τε of the Functional Graphical Model 
+#for the spectrometric data analysis performed.
 
 #' Functional Graphical model for smoothing
 #'
-#' \loadmathjax This function performs a linear regression for functional data, according to model (INSERIRE FORMULA MODELLO).
-#' It is not a graphical model, the graph has to be fixed. It is possible to fix both a diagonal graph or a generic graph.
-#' @param p number of basis functions.
+#' \loadmathjax This function implements an hybrid Gibbs Sampler strategy to draw samples from the posterior distribution of a Functional Graphical Model. 
+#' It has a double goal, performing a smoothing of the inserted noisy curves and estimating the graph which describes the relationship among the regression coefficients.
+#'
+#' @param p integer, the number of basis functions. It also represents the dimension of the true underlying graph.
 #' @param data matrix of dimension \mjseqn{n\_grid\_points \times n} containing the evaluation of \code{n} functional data over a grid of \code{n_grid_points} nodes.
-#' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be \code{(niter - burnin)/thin}.
+#' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be \mjseqn{(niter - burnin)/thin}.
 #' @param burnin the number of discarded iterations.
 #' @param thin the thining value, it means that only one out of \code{thin} itarations is saved.
 #' @param thinG the thining value for graphical quantities, it means that Graph and Precision are only saved one every \code{thinG} itarations.
@@ -1577,7 +1618,8 @@ Block2Complete = function(Gblock, groups)
 #' @param print_info boolean, if true progress bar and execution time are displayed.
 #' @param seed integer, seeding value. Set 0 for random seed.
 #'
-#' @return Two lists are returned, one with all the sampler values and the other with the posterior means.
+#' @return Two lists are returned, the first one, called \code{PosteriorMeans}, is composed of the posterior mean of those parameters related to the functional smoothing. The second one,
+#' called \code{GraphAnalysis} is a summary of the sampled graphs. It is the same output of \code{\link{GGM_sampling}}, see its documentation for further details.
 #' @export
 FGM_sampling = function( p, data, niter = 100000, burnin = niter/2, thin = 1, thinG = 1, Param = NULL, HyParam = NULL, Init = NULL, 
                          file_name = "FGMresults", form = "Complete", prior = "Uniform", algo = "RJ", groups = NULL, n_groups = 0,

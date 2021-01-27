@@ -14,9 +14,9 @@ Generate_Basis_derivatives(
 )
 }
 \arguments{
-\item{n_basis}{number of basis functions.}
+\item{n_basis}{the number of basis functions.}
 
-\item{nderiv}{number of derivates that have to be computed.}
+\item{nderiv}{number of derivates that have to be computed. It can also be 0.}
 
 \item{range}{vector of two elements containing first the lower and then the upper bound of the interval.}
 
@@ -27,10 +27,10 @@ Generate_Basis_derivatives(
 \item{points}{number of grid points where the basis has to be evaluated. It is not used if the points are directly passed in the \code{grid_points} parameter.}
 }
 \value{
-a List of length nderiv+1 such that each element is a grid_points.size() x n_basis matrix representing the evaluation of
-all the k-th derivative of all the splines in all the grid points.
+a list of length nderiv+1 such that each element is a \mjseqn{n\_points \times n\_basis} matrix representing the evaluation of
+the \code{k}-th derivative of all the splines in all the grid points.
 }
 \description{
-This function creates a truncated Bspline basis in the interval \eqn{[range(1),range(2)]} and evaluate them over a grid of points up to derivative of order \code{nderiv}.
+\loadmathjax This function creates a truncated Bspline basis in the interval \mjseqn{\link{range(1),range(2)}} and evaluate them over a grid of points up to derivative of order \code{nderiv}.
 For convention, derivatives of order 0 are the splines themselves. This implimes that the first returned element is always equal to the output of the function \code{\link{Generate_Basis}}.
 }

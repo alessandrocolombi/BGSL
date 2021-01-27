@@ -2,10 +2,27 @@
 % Please edit documentation in R/RcppExports.R
 \name{Summary_Graph}
 \alias{Summary_Graph}
-\title{Graph summary}
+\title{Read the sampled Graph saved on file}
 \usage{
 Summary_Graph(file_name, stored_iterG, p, groups = NULL)
 }
+\arguments{
+\item{file_name, }{string with the name of the file to be open. It has to include the extension, usually \code{.h5}.}
+
+\item{p}{integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}.
+It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.}
+
+\item{groups}{List representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
+i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave \code{NULL} if the graph is not in block form.}
+
+\item{stored_iter}{integer, the number of saved iterations. It can be read from \code{\link{Read_InfoFile}}.}
+}
+\value{
+It returns a list composed of: \code{plinks} that contains the posterior probability of inclusion of each possible link. \code{AcceptedMoves} contains the number of
+Metropolis-Hastings moves that were accepted in the sampling, \code{VisitedGraphs} the number of graph that were visited at least once, \code{TracePlot_Gsize} is a vector
+such that each element is equal to the size of the visited graph in that particular iteration and finally \code{SampledGraphs} is a list containing all the visited graphs and their absolute frequence of visit.
+To save memory, the graphs are represented only by the upper triangular part, stored row-wise.
+}
 \description{
-Read from file informations about the file
+\loadmathjax This function reads the sampled graphs that are saved on a binary file and performs a summary of all visited graphs.
 }

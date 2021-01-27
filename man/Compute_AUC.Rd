@@ -15,5 +15,5 @@ Compute_AUC(x, y)
 A numeric value which is the area under the ROC curve.
 }
 \description{
-Function to compute the area under ROC curve exploiting trapezoidal rule.
+\loadmathjax Function to compute the area under ROC curve exploiting trapezoidal rule.
 }

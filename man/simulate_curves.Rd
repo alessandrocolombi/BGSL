@@ -14,6 +14,7 @@ simulate_curves(
   b = 3,
   D = NULL,
   tau_eps = 0,
+  rate = 0.01/2,
   spline_order = 3,
   n_picks = 1,
   height1 = 1,
@@ -22,7 +23,6 @@ simulate_curves(
   width2 = 24,
   position1 = 10,
   position2 = 2,
-  rate = 0.01/2,
   n_plot = n,
   highlight_band1 = NULL,
   highlight_band2 = NULL,
@@ -33,19 +33,23 @@ simulate_curves(
 )
 }
 \arguments{
-\item{p}{Dimension of the true underlying graph.}
+\item{p}{integer, the number of basis functions. It also represents the dimension of the true underlying graph.}
 
-\item{n}{Number of curves to be generated.}
+\item{n}{integer, the number of curves to be generated.}
 
-\item{range_x}{vector of length two defining the interval for the curves.}
+\item{range_x}{the range where the curves has to be plotted. Not needed if \code{n_plot} is 0.}
 
-\item{G}{matrix of size \eqn{p x p} representing the true underlying graph. Default is \code{NULL} that corresponds to a diagonal graph.}
+\item{G}{matrix of size \mjseqn{p \times p} representing the true underlying graph. Only the upper triangular part is needed. Default is \code{NULL} that corresponds to a diagonal graph.}
 
-\item{K}{matrix of size \eqn{p x p} representing the true underlying precision matrix. If \code{NULL}, a sample from a GWishart is drawn.}
+\item{K}{matrix of size \mjseqn{p \times p} representing the true underlying precision matrix. If \code{NULL}, a sample from a GWishart(\code{b}, \code{D}) is drawn.}
 
-\item{b}{GWishart shape parameter used if the matrix \code{K} has to be drawn. It has to be larger than 2 in order to have a well defined distribution. Default is 3.}
+\item{b}{GWishart Shape parameter used if the matrix \code{K} has to be drawn. It has to be larger than 2 in order to have a well defined distribution.}
 
-\item{D}{GWishart inverse scale matrix parameter used if the matrix \code{K} has to be drawn. It has to be symmetric and positive definite. Default is \code{0.01*diag(p)}.}
+\item{D}{GWishart Inverse Scale matrix parameter used if the matrix \code{K} has to be drawn. It has to be \mjseqn{p \times p}, symmetric and positive definite.}
+
+\item{tau_eps}{numerical value, it represents the precision of the Gaussian noise to be added to the curves. Set 0 to have smooth curve, no noise is added in that case.}
+
+\item{rate}{If \code{G} is \code{NULL}, only the diagonal elements of \code{K} are generated. They are sampled from a \mjseqn{Gamma(Shape = 5, Rate = rate)}.}
 
 \item{spline_order}{order of the Bsplines. Set four for cubic splines.}
 
@@ -59,28 +63,30 @@ simulate_curves(
 
 \item{width2}{Set how large the second pick has to be. This parameter acts like a standard deviation of a Normal distribution, so the larger it is, the thinner is the pick.}
 
-\item{position1}{Set where the first pick has to be located. Position is then computed as \code{range_x[1] + (range_x[2]-range_x[1])/position1}. Set 2 to place it in the middle.}
+\item{position1}{Set where the first pick has to be located. Position is then computed as \mjseqn{range_x\link{1} + (range_x\link{2}-range_x\link{1})/position1}.}
 
-\item{position2}{Set where the second pick has to be located. Position is then computed as \code{range_x[2] - (range_x[2]-range_x[1])/position2}. Set 2 to place it in the middle.}
+\item{position2}{Set where the second pick has to be located. Position is then computed as \mjseqn{range_x\link{2} - (range_x\link{2}-range_x\link{1})/position2}. Set 2 to place it in the middle.}
 
-\item{n_plot}{The number of curves to be plotted. If it is set to 0, no curves are displayed.}
+\item{n_plot}{the number of curves to be plotted. Set 0 for no plot.}
 
-\item{highlight_band1}{Vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \code{[1,n_basis]}.}
+\item{highlight_band1}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\link[=1,n\\_basis]{1,n\_basis}}.}
 
-\item{title_plot}{Title of the plot.}
+\item{highlight_band2}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\link[=1,n\\_basis]{1,n\_basis}}.}
 
-\item{xtitle}{Title of the x-axis.}
+\item{title_plot}{the title of the plot.}
 
-\item{ytitle}{Title of the x-axis.}
+\item{xtitle}{the title of the x-axis.}
+
+\item{ytitle}{the title of the x-axis.}
 
 \item{seed}{seed used to simulate data. Set 0 for random seed.}
 
-\item{n_grid_points}{dimension of the grid where the spline are evaluated.}
+\item{n_grid_points}{integer, the dimension of the grid where the spline are evaluated.}
 }
 \value{
-It returns a list with the simulated curves as well as all the other underlying parameters, that are Beta, mu, G, K. It then returns the (n_grid_points x p) design matrix
-containing the evaluation of all the splines in all the grid points. Finally it also returns the interal knots used in the creation of the splines.
+It returns a list composed of: all simulated curves in \code{data}, all underlying parameters, called \code{Beta}, \code{mu}, \code{K} and the true graph \code{G}.
+It also return the design matrix \code{basemat}, generated by \code{\link{Generate_Basis}} and the vector of the internal knots generating the splines, see \code{\link{Generate_Basis}}.
 }
 \description{
-This function genrates a dataset of n functional curves. Data are generated trying to simulate the shape of one or two Gaussian distributions.
+\loadmathjax This function genrates a dataset of n functional curves. Data are generated trying to simulate the shape of one or two Gaussian distributions.
 }

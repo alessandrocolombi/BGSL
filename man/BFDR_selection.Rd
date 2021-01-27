@@ -12,7 +12,8 @@ BFDR_selection(
 )
 }
 \arguments{
-\item{plinks}{matrix of size \eqn{p x p} containing the posterior inclusion probability for each link. It has to be upper triangular.}
+\item{plinks}{matrix containing the posterior inclusion probability for each link. It has to be upper triangular. Its dimension depends on the type of graph it represents.
+It is indeed possible to pass a \mjseqn{p \times p} matrix, or a \mjseqn{n\_groups \times n\_groups}.}
 
 \item{tol}{sequence of tolerances to be tested trying to select a graph truncating \code{plinks} at that value.}
 
@@ -25,5 +26,5 @@ a list of two elements: best_threshold, the best value of tol according to this 
 best_truncated_graph, the proposed posterior graph according to the analysis.
 }
 \description{
-Given the plinks matrix, this utility computes the False Discovery Rate Index, forcing the false discovery rates to be less than \code{min_rate.}
+\loadmathjax Given the plinks matrix, this utility computes the False Discovery Rate Index, forcing the false discovery rates to be less than \code{min_rate.}
 }

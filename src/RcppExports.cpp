@@ -6,36 +6,6 @@
 
 using namespace Rcpp;
 
-// test_null
-void test_null(Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, Rcpp::Nullable<Rcpp::List> l);
-RcppExport SEXP _BGSL_test_null(SEXP GSEXP, SEXP lSEXP) {
-BEGIN_RCPP
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> >::type G(GSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::List> >::type l(lSEXP);
-    test_null(G, l);
-    return R_NilValue;
-END_RCPP
-}
-// rGwish_old
-Rcpp::List rGwish_old(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, double const& b, Eigen::MatrixXd const& D, Rcpp::String norm, Rcpp::Nullable<Rcpp::List> groups, unsigned int const& max_iter, long double const& threshold_check, long double const& threshold_conv, int seed);
-RcppExport SEXP _BGSL_rGwish_old(SEXP GSEXP, SEXP bSEXP, SEXP DSEXP, SEXP normSEXP, SEXP groupsSEXP, SEXP max_iterSEXP, SEXP threshold_checkSEXP, SEXP threshold_convSEXP, SEXP seedSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> >::type G(GSEXP);
-    Rcpp::traits::input_parameter< double const& >::type b(bSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd const& >::type D(DSEXP);
-    Rcpp::traits::input_parameter< Rcpp::String >::type norm(normSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::List> >::type groups(groupsSEXP);
-    Rcpp::traits::input_parameter< unsigned int const& >::type max_iter(max_iterSEXP);
-    Rcpp::traits::input_parameter< long double const& >::type threshold_check(threshold_checkSEXP);
-    Rcpp::traits::input_parameter< long double const& >::type threshold_conv(threshold_convSEXP);
-    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(rGwish_old(G, b, D, norm, groups, max_iter, threshold_check, threshold_conv, seed));
-    return rcpp_result_gen;
-END_RCPP
-}
 // rGwish
 Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const& G, double const& b, Eigen::MatrixXd& D, Rcpp::String norm, Rcpp::String form, Rcpp::Nullable<Rcpp::List> groups, bool check_structure, unsigned int const& max_iter, long double const& threshold_check, long double const& threshold_conv, int seed);
 RcppExport SEXP _BGSL_rGwish(SEXP GSEXP, SEXP bSEXP, SEXP DSEXP, SEXP normSEXP, SEXP formSEXP, SEXP groupsSEXP, SEXP check_structureSEXP, SEXP max_iterSEXP, SEXP threshold_checkSEXP, SEXP threshold_convSEXP, SEXP seedSEXP) {
@@ -70,22 +40,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::List> >::type groups(groupsSEXP);
     Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
     rcpp_result_gen = Rcpp::wrap(log_Gconstant(G, b, D, MCiteration, groups, seed));
-    return rcpp_result_gen;
-END_RCPP
-}
-// log_Gconstant2
-long double log_Gconstant2(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, double const& b, Eigen::MatrixXd const& D, unsigned int const& MCiteration, Rcpp::Nullable<Rcpp::List> groups, int seed);
-RcppExport SEXP _BGSL_log_Gconstant2(SEXP GSEXP, SEXP bSEXP, SEXP DSEXP, SEXP MCiterationSEXP, SEXP groupsSEXP, SEXP seedSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> >::type G(GSEXP);
-    Rcpp::traits::input_parameter< double const& >::type b(bSEXP);
-    Rcpp::traits::input_parameter< Eigen::MatrixXd const& >::type D(DSEXP);
-    Rcpp::traits::input_parameter< unsigned int const& >::type MCiteration(MCiterationSEXP);
-    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::List> >::type groups(groupsSEXP);
-    Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
-    rcpp_result_gen = Rcpp::wrap(log_Gconstant2(G, b, D, MCiteration, groups, seed));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -191,19 +145,6 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// Compute_QuantileBeta
-Rcpp::List Compute_QuantileBeta(std::vector<Eigen::MatrixXd> const& SaveBeta, double const& lower_qtl, double const& upper_qtl);
-RcppExport SEXP _BGSL_Compute_QuantileBeta(SEXP SaveBetaSEXP, SEXP lower_qtlSEXP, SEXP upper_qtlSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< std::vector<Eigen::MatrixXd> const& >::type SaveBeta(SaveBetaSEXP);
-    Rcpp::traits::input_parameter< double const& >::type lower_qtl(lower_qtlSEXP);
-    Rcpp::traits::input_parameter< double const& >::type upper_qtl(upper_qtlSEXP);
-    rcpp_result_gen = Rcpp::wrap(Compute_QuantileBeta(SaveBeta, lower_qtl, upper_qtl));
-    return rcpp_result_gen;
-END_RCPP
-}
 // Compute_Quantiles
 Rcpp::List Compute_Quantiles(Rcpp::String const& file_name, unsigned int const& p, unsigned int const& n, unsigned int const& stored_iterG, unsigned int const& stored_iter, bool Beta, bool Mu, bool TauEps, bool Precision, unsigned int const& prec_elem, double const& lower_qtl, double const& upper_qtl);
 RcppExport SEXP _BGSL_Compute_Quantiles(SEXP file_nameSEXP, SEXP pSEXP, SEXP nSEXP, SEXP stored_iterGSEXP, SEXP stored_iterSEXP, SEXP BetaSEXP, SEXP MuSEXP, SEXP TauEpsSEXP, SEXP PrecisionSEXP, SEXP prec_elemSEXP, SEXP lower_qtlSEXP, SEXP upper_qtlSEXP) {
@@ -247,20 +188,20 @@ BEGIN_RCPP
 END_RCPP
 }
 // Extract_Chain
-Eigen::VectorXd Extract_Chain(Rcpp::String const& file_name, Rcpp::String const& variable, unsigned int const& stored_iter, unsigned int const& n, unsigned int const& p, unsigned int const& index1, unsigned int const& index2, unsigned int const& prec_elem);
-RcppExport SEXP _BGSL_Extract_Chain(SEXP file_nameSEXP, SEXP variableSEXP, SEXP stored_iterSEXP, SEXP nSEXP, SEXP pSEXP, SEXP index1SEXP, SEXP index2SEXP, SEXP prec_elemSEXP) {
+Eigen::VectorXd Extract_Chain(Rcpp::String const& file_name, Rcpp::String const& variable, unsigned int const& stored_iter, unsigned int const& p, unsigned int const& n, unsigned int index1, unsigned int index2, unsigned int const& prec_elem);
+RcppExport SEXP _BGSL_Extract_Chain(SEXP file_nameSEXP, SEXP variableSEXP, SEXP stored_iterSEXP, SEXP pSEXP, SEXP nSEXP, SEXP index1SEXP, SEXP index2SEXP, SEXP prec_elemSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::String const& >::type file_name(file_nameSEXP);
     Rcpp::traits::input_parameter< Rcpp::String const& >::type variable(variableSEXP);
     Rcpp::traits::input_parameter< unsigned int const& >::type stored_iter(stored_iterSEXP);
-    Rcpp::traits::input_parameter< unsigned int const& >::type n(nSEXP);
     Rcpp::traits::input_parameter< unsigned int const& >::type p(pSEXP);
-    Rcpp::traits::input_parameter< unsigned int const& >::type index1(index1SEXP);
-    Rcpp::traits::input_parameter< unsigned int const& >::type index2(index2SEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type n(nSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type index1(index1SEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type index2(index2SEXP);
     Rcpp::traits::input_parameter< unsigned int const& >::type prec_elem(prec_elemSEXP);
-    rcpp_result_gen = Rcpp::wrap(Extract_Chain(file_name, variable, stored_iter, n, p, index1, index2, prec_elem));
+    rcpp_result_gen = Rcpp::wrap(Extract_Chain(file_name, variable, stored_iter, p, n, index1, index2, prec_elem));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -426,11 +367,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_BGSL_test_null", (DL_FUNC) &_BGSL_test_null, 2},
-    {"_BGSL_rGwish_old", (DL_FUNC) &_BGSL_rGwish_old, 9},
     {"_BGSL_rGwish", (DL_FUNC) &_BGSL_rGwish, 11},
     {"_BGSL_log_Gconstant", (DL_FUNC) &_BGSL_log_Gconstant, 6},
-    {"_BGSL_log_Gconstant2", (DL_FUNC) &_BGSL_log_Gconstant2, 6},
     {"_BGSL_Create_RandomGraph", (DL_FUNC) &_BGSL_Create_RandomGraph, 6},
     {"_BGSL_rmvnormal", (DL_FUNC) &_BGSL_rmvnormal, 6},
     {"_BGSL_rwishart", (DL_FUNC) &_BGSL_rwishart, 5},
@@ -438,7 +376,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BGSL_Generate_Basis", (DL_FUNC) &_BGSL_Generate_Basis, 5},
     {"_BGSL_Generate_Basis_derivatives", (DL_FUNC) &_BGSL_Generate_Basis_derivatives, 6},
     {"_BGSL_Read_InfoFile", (DL_FUNC) &_BGSL_Read_InfoFile, 1},
-    {"_BGSL_Compute_QuantileBeta", (DL_FUNC) &_BGSL_Compute_QuantileBeta, 3},
     {"_BGSL_Compute_Quantiles", (DL_FUNC) &_BGSL_Compute_Quantiles, 12},
     {"_BGSL_Compute_PosteriorMeans", (DL_FUNC) &_BGSL_Compute_PosteriorMeans, 10},
     {"_BGSL_Extract_Chain", (DL_FUNC) &_BGSL_Extract_Chain, 8},

@@ -13,7 +13,7 @@ Generate_Basis(
 )
 }
 \arguments{
-\item{n_basis}{number of basis functions.}
+\item{n_basis}{the number of basis functions.}
 
 \item{range}{vector of two elements containing first the lower and then the upper bound of the interval.}
 
@@ -24,10 +24,10 @@ Generate_Basis(
 \item{points}{number of grid points where the basis has to be evaluated. It is not used if the points are directly passed in the \code{grid_points} parameter.}
 }
 \value{
-a List with a matrix of dimension grid_points.size() x n_basis such that r-th rows contains all the spline computed in grid_points\link{r} and j-th column
-contains the j-th spline evaluated in all points. It also returns a vector of size n_basis + 2 - order containing the internal knots used to create the spline
+a list containing a matrix of dimension \mjseqn{n\_points \times n\_basis} such that \code{r}-th rows contains all the spline computed in the \code{r}-th point of the grid and \code{j}-th column
+contains the \code{j}-th spline evaluated in all grid points. It also returns a vector of size \mjseqn{n\_basis + 2 - order} containing the internal knots used to create the spline.
 }
 \description{
-This function creates a truncated Bspline basis in the interval \eqn{[range(1),range(2)]} and evaluate them over a grid of points.
-It assumes uniformly spaced breakpoints and constructs the corresponding knot vector using a number of breaks equal to \eqn{n_basis + 2 - order}.
+\loadmathjax This function creates a truncated Bspline basis in the interval \mjseqn{\link{range(1),range(2)}} and evaluate them over a grid of points.
+It assumes uniformly spaced breakpoints and constructs the corresponding knot vector using a number of breaks equal to \mjseqn{n\_basis + 2 - order}.
 }

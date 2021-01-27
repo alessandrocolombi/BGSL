@@ -17,7 +17,7 @@ GWish_PriorConst_tuning(
 
 \item{b}{Shape parameter. It has to be larger than 2 in order to have a well defined distribution.}
 
-\item{D}{Inverse scale matrix. It has to be symmetric and positive definite.}
+\item{D}{Inverse scale matrix of size \mjseqn{p \times p}. It has to be symmetric and positive definite.}
 
 \item{nrep}{How many repetitions has to be performed for each possible threshold}
 

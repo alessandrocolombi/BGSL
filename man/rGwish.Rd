@@ -19,18 +19,20 @@ rGwish(
 )
 }
 \arguments{
-\item{G}{Matrix of int stored columnwise. If a standard R matrix is provided, it is automaticaly converted. The lower part
-is not used, the elements is taken in consideration only if the graph is in block form, i.e if groups is non null.}
+\item{G}{matrix representing the desired graph. It has to be a \mjseqn{p \times p} matrix if the graph is in block form, i.e if groups is non null,
+otherwise it has to be coherent with the number of groups. Only the upper triangular part is needed.}
 
-\item{b}{double, it is shape parameter. It has to be larger than 2 in order to have a well defined distribution.}
+\item{b}{GWishart Shape parameter. It has to be larger than 2 in order to have a well defined distribution.}
 
-\item{D}{Matrix of double stored columnwise. It represents the Scale or Inverse Scale parameter for a GWishart distribution. It is also possibile to provide a lower or upper triangular matrix representing the Cholesky decomposition of Inverse Scale matrix.}
+\item{D}{It is a \mjseqn{p \times p} matrix. Different parametrizations are possible, they are handled by the \code{form} input parameter.}
 
 \item{norm}{String to choose the matrix norm with respect to whom convergence takes place. The available choices are \code{"Mean"}, \code{"Inf"}, \code{"One"} and \code{"Squared"}.
 \code{"Mean"} is the default value and it is also used when a wrong input is provided.}
 
-\item{form}{String, states what type of parameter is represented by \code{D}. Possible values are \code{"Scale"}, \code{"InvScale"}, \code{"CholLower_InvScale"}, \code{"CholUpper_InvScale"}.
-Usually GWishart distributions are parametrized with respect to Inverse Scale matrix. However the first step of the sampling requires the Scale matrix parameter or, even better, its Cholesky decomposition.}
+\item{form}{String, states what type of parameter is represented by \code{D}. Possible values are \code{"Scale"} for Scale parametrization,
+\code{"InvScale"} for Inverse-Scale parametrization or \code{"CholLower_InvScale"} and \code{"CholUpper_InvScale"} to pass directly the Cholesky factorization of the Inverse-Scale matrix.
+Usually GWishart distributions are parametrized with respect to the Inverse Scale matrix. However the first step of the sampling requires the Scale matrix parameter or, even better, its Cholesky decomposition.
+This functions leaves a lot of freedom to the user so that the most efficient available parametrization can be used.}
 
 \item{groups}{List representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
 i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave NULL if the graph is not in block form.}
@@ -39,19 +41,19 @@ i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. L
 
 \item{max_iter}{unsigned int, the maximum number of iteration.}
 
-\item{threshold_check}{double, the accurancy for checking if the sampled matrix respects the structure of the graph.}
+\item{threshold_check}{the accurancy for checking if the sampled matrix respects the structure of the graph.}
 
-\item{threshold_conv}{double,  the threshold value for the convergence of sampling algorithm from GWishart. Algorithm stops if the difference between two subsequent iterations is less than \code{threshold_conv}.}
+\item{threshold_conv}{the threshold value for the convergence of sampling algorithm from GWishart. Algorithm stops if the difference between two subsequent iterations is less than \code{threshold_conv}.}
 
-\item{seed}{int, the value of the seed. Default value is 0 that implies that a random seed is drawn.}
+\item{seed}{integer, seeding value. Set 0 for random seed.}
 }
 \value{
-Rcpp::List containing the sampled matrix as an Eigen RowMajor matrix, a bool that states if the convergence was reached or not and finally an int with the number of performed iterations.
-If the graph is empty or complete, no iterations are performed. If check_structure is \code{TRUE}, then the result of that check is also returned.
+A list is returned, it is composed of: \code{Matrix} that contains the random matrix just sampled, \code{Converged} that is a boolean that states if the algorithm reached convergence or not,
+the number performed iterations can be found in \code{iterations} and, if requested in the \code{check_structure} parameters, an additional boolean called \code{CheckStructure} is returned.
 }
 \description{
-\loadmathjax This function draws a random matrices, distributed according to the GWishart distribution with shape parameter \code{b} and inverse scale \code{D},
-with respect to the graph structure \code{G}. \mjsdeqn{p\left(K~\lvert~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} \lvert K\rvert^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
-It implements the algorithm described by METTERE CITAZIONI LENKOSKI. It works with both decomposable and non decomposable graphs.
-In particular it is possible to provide a graph in block form.
+\loadmathjax This function draws a random matrices, distributed according to the GWishart distribution with Shape parameter \code{b} and Inverse-Scale matrix \code{D},
+whose structure is constrained by graph \code{G}. The GWishart distribution, taking into account a Shape-Inverse Scale parametrization, is the following:
+\mjsdeqn{p\left(K~\lvert~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} \lvert K\rvert^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
+It works with both decomposable and non decomposable graphs. In particular it is possible to provide a graph in block form.
 }

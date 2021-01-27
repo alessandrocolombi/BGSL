@@ -50,6 +50,7 @@ Groups::Groups(Container const & C){
 
 #ifdef STRICT_R_HEADERS
   Groups::Groups(Rcpp::List const & _L){
+    std::cout<<"Dentro a questo constructor"<<std::endl;
     this->resize(_L.size());
     for(IdxType i = 0; i < this->size(); ++i){
       InnerContainer v = _L[i];

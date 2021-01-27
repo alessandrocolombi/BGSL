@@ -11,31 +11,33 @@ LM_hyperparameters(
   sigma_mu = 100,
   b_K = 3,
   D_K = NULL,
-  a_tauK = 0.5,
-  b_tauK = 0.5
+  a_tauK = 20,
+  b_tauK = 0.002
 )
 }
 \arguments{
-\item{p}{integer, dimension of the graph.}
+\item{p}{integer, the dimension of the underlying graph.}
 
-\item{a_tau_eps}{double, shape parameter for gamma prior distribution of \code{tau_eps} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.}
+\item{a_tau_eps}{Shape parameter for gamma prior distribution of \code{tau_eps} parameter.}
 
-\item{b_tau_eps}{double, inverse scale parameter for gamma prior distribution of \code{tau_eps} parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.}
+\item{b_tau_eps}{Rate parameter for gamma prior distribution of \code{tau_eps} parameter.}
 
-\item{sigma_mu}{double, covariance for normal multivariate distribution of mu parameter. Needed in Functional Models, i.e \code{FGM} and \code{FLM} samplers.}
+\item{sigma_mu}{covariance for normal multivariate distribution of mu parameter.}
 
-\item{b_K}{double, it is prior GWishart shape parameter. It has to be larger than 2 in order to have a well defined distribution. Needed in all graphical model, i.e \code{FGM} and \code{GGM} sampler and in \code{FLM} with fixed graph.}
+\item{b_K}{prior GWishart Shape parameter. It has to be larger than 2 in order to have a well defined distribution. Needed only when using \code{\link{FLM_sampling}} with fixed graph.}
 
-\item{D_K}{matrix of double stored columnwise. It is prior GWishart inverse scale parameter. It has to be symmetric and positive definite. Default is identity matrix but \code{p} has to be provided in that case. Needed in all graphical model, i.e \code{FGM} and \code{GGM} sampler and in \code{FLM} with fixed graph.}
+\item{D_K}{matrix of size \mjseqn{p \times p}. It is prior GWishart inverse scale parameter. It has to be symmetric and positive definite.
+Default is identity matrix but \code{p} has to be provided in that case. Needed only when using \code{\link{FLM_sampling}} with fixed graph.}
 
-\item{a_tauK}{double, shape parameter for gamma prior distribution for each \code{tau_K} parameters. Needed only in \code{FLM} sampler with diagonal graph.}
+\item{a_tauK}{Shape parameter for gamma prior distribution for each \code{tau_K} parameters. Needed only when using \code{\link{FLM_sampling}} with diagonal graph.}
 
-\item{b_tauK}{double, inverse scale parameter for gamma prior distribution for each \code{tau_K} parameters. Needed only in \code{FLM} sampler with diagonal graph.}
+\item{b_tauK}{Rate parameter for gamma prior distribution for each \code{tau_K} parameters. Needed only when using \code{\link{FLM_sampling}} with diagonal graph.}
 }
 \value{
-A list with all the inserted hyperparameters.
+A list with all the hyperparameters described as possible inputs. All values that are not explicitely provided are defaulted.
 }
 \description{
-This function simply creates a skeleton for all the hyperparameters that has to be fixed in linear samplers. All the quantities has a default value,
+\loadmathjax This function simply creates a skeleton for all the hyperparameters that has to be fixed in linear samplers, i.e \code{\link{FLM_sampling}}. All the quantities has a default value,
 moreover some of them may not be needed in some algorithm. The goal of this function is to fix a precise notation that will be used in all the code.
+This function is meant to set only the skeleton for \code{\link{FLM_sampling}}, use \code{\link{GM_hyperparameters}} for \code{\link{GGM_sampling}} and \code{\link{FGM_sampling}}.
 }

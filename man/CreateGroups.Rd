@@ -6,7 +6,15 @@
 \usage{
 CreateGroups(p, n_groups)
 }
+\arguments{
+\item{p}{integer, the dimension of the underlying graph.}
+
+\item{n_groups}{number of desired groups. Has to be greater than \code{p}.}
+}
+\value{
+list representing the groups of the block form.
+}
 \description{
-This function creates a list with the groups. If possible, groups of equal size are created. The goal of this function is to fix a precise notation that will be used in all the code.
+\loadmathjax This function creates a list with the groups. If possible, groups of equal size are created. The goal of this function is to fix a precise notation that will be used in all the code.
 It is indeed recommended to use this function to create them as they need to follow a precise notation.
 }

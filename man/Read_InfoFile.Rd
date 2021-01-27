@@ -7,8 +7,12 @@
 Read_InfoFile(file_name)
 }
 \arguments{
-\item{file_name, }{string with the name of te file to be open. It has to include the extension, usually \code{.h5}.}
+\item{file_name, }{string with the name of the file to be open. It has to include the extension, usually \code{.h5}.}
+}
+\value{
+It returns a list containing \code{p}, the dimension of the graph, \code{n} the number of observed data, \code{stored_iter} the number of saved iterations for the regression parameters,
+\code{stored_iterG} the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix.
 }
 \description{
-Read from \code{file_name} some information that are needed to extract data from it.
+\loadmathjax Read from \code{file_name} some information that are needed to extract data from it.
 }

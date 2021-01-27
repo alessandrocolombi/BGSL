@@ -21,7 +21,7 @@ Sensitivity_analysis(
 
 \item{ROC}{boolean. If \code{TRUE}, the plot the ROC curve is showed.}
 
-\item{diag}{}
+\item{diag}{boolean, if the diagonal of \code{plinks} has to be included in the computations. Set \code{FALSE} if the graph is in complete form, set \code{TRUE} for block graphs.}
 }
 \value{
 A list of 5 elements: all_confusion, a list with all the confusion matrices, one for each tol value. best_threshold, the best value of tol according to this analysis.
@@ -29,6 +29,6 @@ best_confusion, the best confusion matrix, the one corresponding to best_thresho
 AUC, the AUC Index corresponding to the best value selected.
 }
 \description{
-Given the true graph and a \code{plinks} matrix, this utility computes the confusion matrices, plot the ROC curve (if required) and the AUC index,
+\loadmathjax Given the true graph and a \code{plinks} matrix, this utility computes the confusion matrices, plot the ROC curve (if requested) and the AUC index,
 selects the best threshold according to the number of misclassified links and also return the best graph according to the abovementioned analysis.
 }

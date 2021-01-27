@@ -16,7 +16,7 @@ rmvnormal(
 \arguments{
 \item{mean}{vector of size \code{p} representig the mean of the Gaussian distribution.}
 
-\item{Mat}{matrix of size \eqn{p x p} reprenting the covariance or the precision matrix or their Cholesky decompositions.}
+\item{Mat}{matrix of size \mjseqn{p \times p} representinf the covariance or the precision matrix or their Cholesky decompositions.}
 
 \item{isPrec}{boolean, set \code{TRUE} if Mat parameter is a precision, \code{FALSE} if it is a covariance.}
 
@@ -24,12 +24,12 @@ rmvnormal(
 
 \item{isUpper}{boolean, used only if \code{isChol} is \code{TRUE}. Set \code{TRUE} if Mat is upper triangular, \code{FALSE} if lower.}
 
-\item{seed}{int, works as R function set.seed(). If provived, the same results are always returned. Set 0 for randomly generated seed.}
+\item{seed}{integer, seeding value. Set 0 for random seed.}
 }
 \value{
-It returns a \code{p} dimensional vector with the sampled values.
+It returns a \mjseqn{p}-dimensional vector with the sampled values.
 }
 \description{
-This function draws random samples from Multivariate Gaussian distribution. It implements both covariance and precision parametrization.
+\loadmathjax This function draws random samples from Multivariate Gaussian distribution. It allows for both covariance and precision parametrization.
 It is also possible to pass directly the Cholesky decomposition if it is available before the call.
 }

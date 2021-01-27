@@ -2,7 +2,7 @@
 % Please edit documentation in R/RcppExports.R
 \name{Create_RandomGraph}
 \alias{Create_RandomGraph}
-\title{Generates random Graphs}
+\title{Generate a random graph}
 \usage{
 Create_RandomGraph(
   p,
@@ -14,22 +14,22 @@ Create_RandomGraph(
 )
 }
 \arguments{
-\item{p}{int, the dimension of the graph in its complete form.}
+\item{p}{integer, the dimension of the underlying graph. It has to be provided even if \code{form} is \code{"Block"}.}
 
-\item{n_groups}{int, the number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter.}
+\item{n_groups}{iinteger, number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered in \code{groups} parameter.}
 
-\item{form}{String, the only possibilities are \code{"Complete"} and \code{"Block"}.}
+\item{form}{string that may take as values only \code{"Complete"} of \code{"Block"} . It states if the algorithm has to run with \code{"Block"} or \code{"Complete"} graphs.}
 
 \item{groups}{List representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
 i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave \code{NULL} if the graph is not in block form.}
 
-\item{sparsity}{double, the desired sparsity of the randomly generated graph. It has to be striclty positive and striclty less than one. It is set to 0.5 otherwise.}
+\item{sparsity}{desired sparsity in the graph. It has to be in the range \mjseqn{(0,1)}.}
 
-\item{seed}{int, the value of the seed. Default value is 0 that implies that a random seed is drawn.}
+\item{seed}{integer, seeding value. Set 0 for random seed.}
 }
 \value{
-the adjacency matrix of the randomly generated graph.
+A list is returned, it contains the randomly generated graph in \code{G} and its complete form in \code{G_Complete}. Those two coincide if \code{form} is \code{"Complete"}.
 }
 \description{
-This function genrates random graph both in \code{"Complete"} or \code{"Block"} form
+\loadmathjax This function genrates random graphs both in \code{"Complete"} or \code{"Block"} form
 }

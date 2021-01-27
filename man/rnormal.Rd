@@ -2,10 +2,22 @@
 % Please edit documentation in R/RcppExports.R
 \name{rnormal}
 \alias{rnormal}
-\title{Sampler for Normal distribution}
+\title{Sampler for Normal distribution
+\loadmathjax This function draw a sample from the Gaussian distribution.}
 \usage{
 rnormal(mean = 0, sd = 1, seed = 0L)
 }
+\arguments{
+\item{mean}{the mean value.}
+
+\item{sd}{the standard deviation.}
+
+\item{seed}{integer, seeding value. Set 0 for random seed.}
+}
+\value{
+A single drawn values from N(mean, \mjseqn{sd^{2}})
+}
 \description{
 Sampler for Normal distribution
+\loadmathjax This function draw a sample from the Gaussian distribution.
 }

@@ -49,7 +49,7 @@ i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. I
 plots the mean acceptance ratio for each \code{sigmaG} and returns the highest one.
 }
 \description{
-The choice of \code{sigmaG} parameter is a crucial part of \code{"RJ"} and \code{"DRJ"} algorithm. It indeed represents the standard deviation for the proposal of new elements in the
+\loadmathjax The choice of \code{sigmaG} parameter is a crucial part of \code{"RJ"} and \code{"DRJ"} algorithm. It indeed represents the standard deviation for the proposal of new elements in the
 precision matrix. This function provides a simple utility for tuning this parameter by simply repeting \code{Nrep} times the first \code{niter} iteration for every proposed
 \code{sigmaG} in \code{sigmaG_list}.
 }

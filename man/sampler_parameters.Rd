@@ -12,19 +12,21 @@ sampler_parameters(
 )
 }
 \arguments{
-\item{MCprior}{positive integer, the number of iteration for the MonteCarlo approximation of prior normalizing constant of GWishart distribution. Needed in \code{"MH"} and \code{"RJ"} algorithms.}
+\item{MCprior}{integer, the number of iteration for the MonteCarlo approximation of prior normalizing constant of GWishart distribution. Needed in \code{"MH"} and \code{"RJ"} algorithms.}
 
-\item{MCpost}{positive integer, the number of iteration for the MonteCarlo approximation of posterior normalizing constant of GWishart distribution. Needed only in \code{"MH"} algorithms.}
+\item{MCpost}{integer, the number of iteration for the MonteCarlo approximation of posterior normalizing constant of GWishart distribution. Needed only in \code{"MH"} algorithms.}
 
-\item{BaseMat}{matrix of dimension \code{n_grid_points x p} containing the evalutation of \code{p} Bspline basis over a grid of \eqn{n_grid_points} nodes. May be defaulted as \code{NULL} but note this case it is not automatically generated.
-Use \code{\link{Generate_Basis}} to generete it. Needed in all Functional models, i.e \code{FGM} and \code{FLM} samplers.}
+\item{BaseMat}{matrix of dimension \mjseqn{n\_grid\_points \times n\_basis} containing the evaluation of all the \mjseqn{n\_basis} B-spine basis function in all the grid points.
+May be defaulted as \code{NULL} but note this case it is not automatically generated.
+Note that it is not needed by \code{\link{GGM_samplinig}} but is mandatory in \code{\link{FGM_sampling}} and \code{\link{FLM_samplinig}}. For those cases,
+use \code{\link{Generate_Basis}} to generete it.}
 
-\item{threshold}{double, threshold for convergence in GWishart sampler. It is not needed only in \code{FLM} sampler with diagonal graph.}
+\item{threshold}{threshold for convergence in GWishart sampler. It is not needed only in \code{FLM} sampler with diagonal graph.}
 }
 \value{
-A list with all the inserted parameters.
+A list with all parameters described as possible inputs.
 }
 \description{
-This function simply creates a skeleton for some parameters that has to be fixed in the samplers. All the quantities has a default value,
+\loadmathjax This function simply creates a skeleton for some parameters that has to be fixed in all samplers. All the quantities has a default value,
 moreover some of them may not be needed in some algorithm. The goal of this function is to fix a precise notation that will be used in all the code.
 }

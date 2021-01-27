@@ -20,14 +20,14 @@ GM_init(
 )
 }
 \arguments{
-\item{p}{integer, dimension of the graph.}
+\item{p}{integer, the dimension of the underlying graph.}
 
-\item{n}{integer, number of observed data.}
+\item{n}{integer, the number of observed data.}
 
-\item{empty}{boolean, if \code{TRUE} all chians start from zero. If not, it is possible to set the desidered value explicitely by means of the other function parameters or just leave them \code{NULL} and random initial points will be used.}
+\item{empty}{boolean, if \code{TRUE} all chians start from zero. If not, it is possible to set the desidered value explicitely by means of the other function parameters or just leave them \code{NULL} and random initial points are generated.}
 
 \item{G0}{matrix representing the initial graph. If \code{form} is set to \code{"Complete"} it has to be a \mjseqn{p \times p} matrix,
-if form is \code{"Block"} then \code{groups} or \code{n_groups} has to be provided and the graph should respect the structure given by those groups. If \code{NULL}, a random graph is selected.}
+if form is \code{"Block"} then \code{groups} or \code{n_groups} has to be provided and the graph should respect the structure given by those groups. Only the upper triangular part is needed. If \code{NULL}, a random graph is selected.}
 
 \item{K0}{numeric \mjseqn{p \times p} matrix representing the initial precision matrix. It has to be consistent with structure of graph \code{G0}. If \code{NULL}, a random matrix is selected.}
 
@@ -35,21 +35,23 @@ if form is \code{"Block"} then \code{groups} or \code{n_groups} has to be provid
 
 \item{mu0}{numeric \mjseqn{p}-dimensional vector representing the initial mu coefficients. If \code{NULL}, they are randomly generated. Used only in \code{FGM_sampling}.}
 
-\item{tau_eps0}{scalar number representing the initial tau_eps coefficients. If \code{NULL}, it is randomly generated. Used only in \code{FGM_sampling}.}
+\item{tau_eps0}{scalar number representing the initial \code{tau_eps} coefficient. It has to be strictly positive. If \code{NULL}, it is randomly generated. Used only in \code{FGM_sampling}.}
 
 \item{form}{string that may take as values only \code{"Complete"} of \code{"Block"} . It states if the algorithm has to run with \code{"Block"} or \code{"Complete"} graphs.}
 
 \item{groups}{a list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
 i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. If \code{"NULL"}, \code{"n_groups"} are automatically generated. Not needed if form is set to \code{"Complete"}.}
 
-\item{n_groups}{int, number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter.}
+\item{n_groups}{integer, number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter.}
 
 \item{seed}{integer, seeding value. Set 0 for random seed.}
 }
 \value{
-
+A list with all the previously described initial values.
 }
 \description{
-\loadmathjax This function simply creates a structure for setting initial values for Markov chians in all graphical samplers, that are \code{\link{GGM_sampling}} and FGM_sampling. All the quantities has a default value,
-that can be set to empty chains or random initial points. Some quantities are not needed in \code{\link{GGM_sampling}}, however they are all initialized. The goal of this function is to fix a precise notation that will be used in all the code.
+\loadmathjax This function simply creates a structure for setting initial values for Markov chians in all graphical samplers, that are \code{\link{GGM_sampling}} and \code{\link{FGM_sampling}}.
+All the quantities has a default value, that can be set to empty chains or random initial points. Some quantities are not needed in \code{\link{GGM_sampling}}, but they are all initialized.
+The goal of this function is to fix a precise notation that will be used in all the code.
+Prefer to use \code{\link{LM_hyperparameters}} for \code{\link{FLM_sampling}}.
 }

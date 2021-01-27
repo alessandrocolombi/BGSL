@@ -211,8 +211,16 @@ void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 			}
 					//std::cout<<"U:"<<std::endl<<U<<std::endl;
 			//Precision tauK
-			for(unsigned int i = 0; i < p; ++i){ //paralellizzabile ma secondo me non ne vale la pena
-				tauK(i) = rgamma(engine, a_tauK_post, 2/(U(i) + b_tauK) );
+			//-------------------------------------------------------------------------------------------------------------------------------------------------------
+			// Only for checking that the parallel for is fine --> it is
+							//VecCol U2(VecCol::Zero(p));
+							//for(unsigned int i = 0; i < n; ++i){
+								//U2 += (Beta.col(i) - mu).cwiseProduct(Beta.col(i) - mu);
+							//}
+								//std::cout<<"U-U2:"<<std::endl<<U-U2<<std::endl;
+			//-------------------------------------------------------------------------------------------------------------------------------------------------------
+			for(unsigned int j = 0; j < p; ++j){ //paralellizzabile ma secondo me non ne vale la pena
+				tauK(j) = rgamma(engine, a_tauK_post, 2/(U(j) + b_tauK) );
 			}
 					//std::cout<<"tauK:"<<std::endl<<tauK<<std::endl;
 			//Precision tau_eps

@@ -25,11 +25,11 @@ FGM_sampling(
 )
 }
 \arguments{
-\item{p}{number of basis functions.}
+\item{p}{integer, the number of basis functions. It also represents the dimension of the true underlying graph.}
 
 \item{data}{matrix of dimension \mjseqn{n\_grid\_points \times n} containing the evaluation of \code{n} functional data over a grid of \code{n_grid_points} nodes.}
 
-\item{niter}{the number of total iterations to be performed in the sampling. The number of saved iteration will be \code{(niter - burnin)/thin}.}
+\item{niter}{the number of total iterations to be performed in the sampling. The number of saved iteration will be \mjseqn{(niter - burnin)/thin}.}
 
 \item{burnin}{the number of discarded iterations.}
 
@@ -63,9 +63,10 @@ i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. I
 \item{seed}{integer, seeding value. Set 0 for random seed.}
 }
 \value{
-Two lists are returned, one with all the sampler values and the other with the posterior means.
+Two lists are returned, the first one, called \code{PosteriorMeans}, is composed of the posterior mean of those parameters related to the functional smoothing. The second one,
+called \code{GraphAnalysis} is a summary of the sampled graphs. It is the same output of \code{\link{GGM_sampling}}, see its documentation for further details.
 }
 \description{
-\loadmathjax This function performs a linear regression for functional data, according to model (INSERIRE FORMULA MODELLO).
-It is not a graphical model, the graph has to be fixed. It is possible to fix both a diagonal graph or a generic graph.
+\loadmathjax This function implements an hybrid Gibbs Sampler strategy to draw samples from the posterior distribution of a Functional Graphical Model.
+It has a double goal, performing a smoothing of the inserted noisy curves and estimating the graph which describes the relationship among the regression coefficients.
 }

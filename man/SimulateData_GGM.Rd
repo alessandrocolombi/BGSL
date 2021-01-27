@@ -17,29 +17,31 @@ SimulateData_GGM(
 )
 }
 \arguments{
-\item{p}{dimension of the response variable that is the dimension of the underlying graph.}
+\item{p}{integer, the dimension of the underlying graph.}
 
-\item{n}{number of observations.}
+\item{n}{integer, number of observations.}
 
-\item{n_groups}{number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as group parameter.}
+\item{n_groups}{number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as \code{group} parameter.}
 
 \item{form}{string that states if the true graph has to be in \code{"Block"} or \code{"Complete"} form. Only possibilities are \code{"Complete"} and \code{"Block"}.}
 
 \item{groups}{list representing the groups of block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
 i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave \code{NULL} if the graph is not in block form.}
 
-\item{adj_mat}{matrix representing the desired graph. It has to be a (p x p) matrix if form is \code{"Complete"} and has to be coherent with the number of groups if form is \code{"Block"}.
-If \code{NULL}, a random graph is generated.}
+\item{adj_mat}{matrix representing the desired graph. It has to be a \mjseqn{p \times p} matrix if form is \code{"Complete"} and has to be coherent with the number of groups if form is \code{"Block"}.
+Only the upper triangular part is needed. If \code{NULL}, a random graph is generated.}
 
-\item{seed}{seed used to simulate data. Set 0 for random seed.}
+\item{seed}{integer, seeding value. Set 0 for random seed.}
 
 \item{mean_null}{boolean, set \code{TRUE} if data has to be zero mean.}
 
-\item{sparsity}{desired sparsity in the graph. Not used if true graph is provided.}
+\item{sparsity}{desired sparsity in the graph. It has to be in the range \mjseqn{(0,1)}. Not used if true graph is provided.}
 }
 \value{
-a list containing a matrix called U with sum(Y_iY_i), the true precision, the true graph and if Block form is selected, the graph in its complete form is also returned.
+a list composed of: the covariance matrix of the generated data, it is called \code{U} and contains \mjseqn{\sum_{i=1}^{n}(y_{i}y_{i}^{T})},
+the true precision matrix called \code{Prec_true}, and the true graph called \code{G_true}.
+If \code{form} is \code{"Block"}, then \code{G_true} is in block form, i.e a \mjseqn{n\_groups \times n\_groups} matrix and it complete form is also returned, it is called \code{G_complete}.
 }
 \description{
-Simulate data from GGM
+\loadmathjax This function generates a dataset from a Gaussian Graphical Model where the precision matrix is distributes according to GWishart(3,\mjseqn{I_{p}}).
 }
