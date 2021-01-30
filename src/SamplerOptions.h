@@ -4,10 +4,7 @@
 #include "include_headers.h"
 #include "include_graphs.h"
 #include "include_helpers.h"
-#include "GraphPrior.h"
-#include "GGMFactory.h"
-#include "ProgressBar.h"
-#include "HDF5conversion.h"
+#include "include_GGM.h"
 
 struct SamplerTraits{
 	// RetK is a vector containing the upper triangular part of the precision matrix. It is important to remember that this choice implies that 
@@ -118,11 +115,7 @@ class Parameters : public SamplerTraits{
 	 	iter_to_store  = static_cast<unsigned int>((niter - nburn)/thin );
 	 	iter_to_storeG = static_cast<unsigned int>((niter - nburn)/thinG);
 	} 
-	//Parameters(int const & _niter, int const & _nburn, double const & _thin, double const & _thinG, MatCol const & _PHI):
-				//niter(_niter), nburn(_nburn), thin(_thin), thinG(_thinG), Basemat(_PHI)
-				//{
-					//TBasemat = Basemat.transpose();
-				//}			
+		
 	int niter;
 	int nburn;
 	int thin;
@@ -179,17 +172,7 @@ class Init : public SamplerTraits{
 		   	throw("Initial value for tau_eps0 cannot be 0");
 
 	};
-	/*
-	//Explicit constructor. Not yet tested
-	Init(MatCol const & _Beta0, VecCol const & _mu0, double const & _tau_eps0, MatRow const & _K0, Graph const & _G0, GroupsPtr const & _ptrGr):
-			Beta0(_Beta0), mu0(_mu0), tau_eps0(_tau_eps0), K0(_K0) , G0(_ptrGr)
-	{
-		   G0 = _G0;	
-		   if(tau_eps0 == 0)
-		   	throw("Initial value for tau_eps0 cannot be 0");
 
-	};
-	*/
 	void set_init(MatCol const & _Beta0, VecCol const & _mu0, double const & _tau_eps0, MatRow const & _K0, Graph const & _G0){
 		Beta0 = _Beta0;
 		mu0 = _mu0;
@@ -211,81 +194,7 @@ class Init : public SamplerTraits{
 
 
 // -----------------------------------------------------------------------------------------------------------------------------------------------
-/*
-//For Complete Graphs (GraphType)
-std::unique_ptr< GGM<GraphType, unsigned int> > 
-SelectMethod_GraphType(std::string const & namePr, std::string const & nameGGM, Hyperparameters const & hy, Parameters const & param){
-	//1) Select prior
-	std::unique_ptr< GraphPrior<GraphType, unsigned int> > prior = nullptr;
-	if(namePr == "Uniform")
-		prior = std::move( Create_GraphPrior<PriorType::Complete, PriorCategory::Uniform,   GraphType, unsigned int >() );
-	else if (namePr == "Bernoulli")
-		prior = std::move( Create_GraphPrior<PriorType::Complete, PriorCategory::Bernoulli, GraphType, unsigned int >(hy.Gprior) );
-	else
-		throw std::runtime_error("Error, the only possible priors right now are: Uniform and Bernoulli");
-	//2) Select algorithm
-	if(nameGGM == "MH")
-		return Create_GGM<GGMAlgorithm::MH, GraphType, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler , param.MCiterPrior, param.MCiterPost);
-	else if(nameGGM == "RJ")
-		return Create_GGM<GGMAlgorithm::RJ, GraphType, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler, hy.sigmaG, param.MCiterPrior);
-	else if(nameGGM == "DRJ")
-		return Create_GGM<GGMAlgorithm::DRJ,GraphType, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler, hy.sigmaG);
-	else
-		throw std::runtime_error("Error, the only possible GGM algorithm right now are: MH, RJ, DRJ");
-}
 
-//For Block Graphs (BlockGraph)
-std::unique_ptr< GGM<BlockGraph, unsigned int> > 
-SelectMethod_BlockGraph(std::string const & namePr, std::string const & nameGGM, Hyperparameters const & hy, Parameters const & param){
-	//1) Select prior
-	std::unique_ptr< GraphPrior<BlockGraph, unsigned int> > prior = nullptr;
-	if( namePr == "Uniform" )
-		prior = std::move( Create_GraphPrior<PriorType::Complete, PriorCategory::Uniform,   BlockGraph, unsigned int >() );
-	else if( namePr == "Bernoulli")
-		prior = std::move( Create_GraphPrior<PriorType::Complete, PriorCategory::Bernoulli, BlockGraph, unsigned int >(hy.Gprior) );
-	else if( namePr == "TruncatedUniform")
-		prior = std::move( Create_GraphPrior<PriorType::Truncated,PriorCategory::Uniform,   BlockGraph, unsigned int >() );
-	else if( namePr == "TruncatedBernoulli")
-		prior = std::move( Create_GraphPrior<PriorType::Truncated,PriorCategory::Bernoulli, BlockGraph, unsigned int >(hy.Gprior) );
-	else
-		throw std::runtime_error("Error, the only possible priors right now are: Uniform, TruncatedUniform, Bernoulli, TruncatedBernoulli ");
-	//2) Select algorithm
-	if(nameGGM == "MH")
-		return Create_GGM<GGMAlgorithm::MH, BlockGraph, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler , param.MCiterPrior, param.MCiterPost);
-	else if(nameGGM == "RJ")
-		return Create_GGM<GGMAlgorithm::RJ, BlockGraph, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler, hy.sigmaG, param.MCiterPrior);
-	else if(nameGGM == "DRJ")
-		return Create_GGM<GGMAlgorithm::DRJ,BlockGraph, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler, hy.sigmaG);
-	else
-		throw std::runtime_error("Error, the only possible GGM algorithm right now are: MH, RJ, DRJ");
-}
-
-//For Block Graphs (BlockGraphAdj)
-std::unique_ptr< GGM<BlockGraphAdj, unsigned int> > 
-SelectMethod_BlockGraphAdj(std::string const & namePr, std::string const & nameGGM, Hyperparameters const & hy, Parameters const & param){
-	//1) Select prior
-	std::unique_ptr< GraphPrior<BlockGraphAdj, unsigned int> > prior = nullptr;
-	if( namePr == "Uniform" )
-		prior = std::move( Create_GraphPrior<PriorType::Complete, PriorCategory::Uniform,   BlockGraphAdj, unsigned int >() );
-	else if( namePr == "Bernoulli")
-		prior = std::move( Create_GraphPrior<PriorType::Complete, PriorCategory::Bernoulli, BlockGraphAdj, unsigned int >(hy.Gprior) );
-	else if( namePr == "TruncatedUniform")
-		prior = std::move( Create_GraphPrior<PriorType::Truncated,PriorCategory::Uniform,   BlockGraphAdj, unsigned int >() );
-	else if( namePr == "TruncatedBernoulli")
-		prior = std::move( Create_GraphPrior<PriorType::Truncated,PriorCategory::Bernoulli, BlockGraphAdj, unsigned int >(hy.Gprior) );
-	else
-		throw std::runtime_error("Error, the only possible priors right now are: Uniform, TruncatedUniform, Bernoulli, TruncatedBernoulli ");
-	//2) Select algorithm
-	if(nameGGM == "MH")
-		return Create_GGM<GGMAlgorithm::MH, BlockGraphAdj, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler , param.MCiterPrior, param.MCiterPost);
-	else if(nameGGM == "RJ")
-		return Create_GGM<GGMAlgorithm::RJ, BlockGraphAdj, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler, hy.sigmaG, param.MCiterPrior);
-	else if(nameGGM == "DRJ")
-		return Create_GGM<GGMAlgorithm::DRJ,BlockGraphAdj, unsigned int >(prior, hy.b_K, hy.D_K, param.trGwishSampler, hy.sigmaG);
-	else
-		throw std::runtime_error("Error, the only possible GGM algorithm right now are: MH, RJ, DRJ");
-}
-*/
 //Generic
 template < template <typename> class GraphStructure = GraphType, typename T = unsigned int > 
 std::unique_ptr< GGM<GraphStructure, T> > 
@@ -299,7 +208,7 @@ SelectMethod_Generic(std::string const & namePr, std::string const & nameGGM, Hy
 		prior = std::move( Create_GraphPrior<PriorType::Complete, PriorCategory::Uniform, GraphStructure, T >() );
 	else if( namePr == "Bernoulli")
 		prior = std::move( Create_GraphPrior<PriorType::Complete, PriorCategory::Bernoulli, GraphStructure, T >(hy.Gprior) );
-	if constexpr( std::is_same_v< BlockGraphAdj<T>, Graph > || std::is_same_v< BlockGraph<T>, Graph > ){
+	if constexpr( internal_type_traits::isBlockGraph<GraphStructure, T>::value ){
 		if( namePr == "TruncatedUniform")
 		prior = std::move( Create_GraphPrior<PriorType::Truncated,PriorCategory::Uniform,   GraphStructure, T >() );
 		else if( namePr == "TruncatedBernoulli")

@@ -279,17 +279,9 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 	const unsigned int N(G.get_size());
 	const unsigned int max_n_links(0.5*N*(N-1));
 	const unsigned int N_free_elements(n_links + N);
-	const long double min_numeric_limits_ld = std::numeric_limits<long double>::min() * 1000;
 	long double result_MC{0};
 	unsigned int number_nan{0};
-			//if(seed == 0){
-				////std::random_device rd;
-				////seed=rd();
-				//seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-			//}
-			//sample::GSL_RNG engine(seed);
-			//std::default_random_engine engine(seed);
-			//std::normal_distribution<> rnorm{0.0,1.0}; //For sampling from normal distribution
+	
 	sample::rnorm rnorm;
 	sample::rchisq rchisq;
 	
@@ -303,13 +295,7 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 		std::vector<unsigned int> nbd_i = G.get_nbd(i);
 		nu[i] = std::count_if(nbd_i.cbegin(), nbd_i.cend(), [i](const unsigned int & idx){return idx > i;});
 	} 
-		//std::cout<<"nbd:"<<std::endl;
-			//for(auto v : nu)
-				//std::cout<<v<<", ";
-			//std::cout<<std::endl;
-
 	if(n_links == max_n_links){
-		//std::cout<<"Pieno"<<std::endl;
 		long double res_gamma{0};
 		for(IdxType i = 0; i < N; ++i){
 			res_gamma += std::lgammal( (long double)(0.5*(b + nu[i])) );
@@ -320,7 +306,7 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 	        	 	0.5*(b+N-1)*std::log(D.determinant())   );
 	}
 	else if(n_links == 0){
-		//std::cout<<"Vuoto"<<std::endl;
+		//Empty graph
 		long double sum_log_diag{0};
 		for(IdxType i = 0; i < N; ++i){
 			sum_log_diag += std::log( D(i,i) );
@@ -331,41 +317,29 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 	}
 	else{
 		//- Compute T = chol(D^-1), T has to be upper diagonal
-					//std::cout<<"D = "<<std::endl<<D<<std::endl;
 		const MatCol &T(chol_invD); //T is colwise because i need to extract its columns. Take a reference to keep same notation of free function
-							//std::cout<<"T = "<<std::endl<<T<<std::endl;
 		//- Define H st h_ij = t_ij/t_jj
 		MatCol H(MatCol::Zero(N,N)); //H is colwise because i would need to scan its col
 		for(unsigned int j = 0; j < N ; ++j)
 			H.col(j) = T.col(j) / T(j,j);
-		
-					//std::cout<<"H = "<<std::endl<<H<<std::endl;
-					//#pragma omp parallel
-					//{
-						//std::cout<<"Hello parallel"<<std::endl;
-					//}
-		int thread_id;
+
 		std::vector<double> vec_ss_nonfree;
 		std::vector<double> vec_ss_nonfree_result; //useful for parallel case, does not harm in sequential case (no unuseful copies are done)
 		
 
-		#pragma omp parallel private(thread_id),private(vec_ss_nonfree),shared(vec_ss_nonfree_result)
+		#pragma omp parallel private(vec_ss_nonfree),shared(vec_ss_nonfree_result)
 		{
 			int n_threads{1};
 			#ifdef PARALLELEXEC
 				n_threads = omp_get_num_threads();
-						//std::cout<<"n_threads = "<<n_threads<<std::endl;
 			#endif
 			vec_ss_nonfree.reserve(MCiteration/n_threads);
 			//Start MC for loop
 
 			for(IdxType iter = 0; iter < MCiteration/n_threads; ++ iter){
-				#ifdef PARALLELEXEC
-				thread_id = omp_get_thread_num();
-				#endif
+
 				MatRow Psi(MatRow::Zero(N,N));
-				//In the end it has to be exp(-1/2 sum( psi_nonfree_ij^2 )). I accumulate the sum of non free elements squared every time they are generated
-				double sq_sum_nonfree{0};
+				double sq_sum_nonfree{0}; //In the end it has to be exp(-1/2 sum( psi_nonfree_ij^2 )). I accumulate the sum of non free elements squared every time they are generated
 				//Step 2: Sampling the free elements
 				//- Sample the diagonal elements from chisq(b + nu_i) (or equivalently from a gamma((b+nu_i)/2, 1/2))
 				//- Sample the off-diagonal elements from N(0,1)
@@ -375,10 +349,7 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 				citerator it_nu = nu.cbegin();
 				for(unsigned int i = 0; i < N_free_elements; ++i){
 					if(time_to_diagonal == 0){
-						//vector_free_element[i] = std::sqrt(std::gamma_distribution<> (0.5*(b+(*it_nu)),2.0)(engine));
 						vector_free_element[i] = std::sqrt(rchisq(engine, (double)(b+(*it_nu)) ));
-						//if(vector_free_element[i] < min_numeric_limits_ld)
-							//throw std::runtime_error("Impossibile, un elemento diagonale è nullo");
 					}
 					else
 						vector_free_element[i] = rnorm(engine);
@@ -391,7 +362,7 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 
 				std::vector<double>::const_iterator it_fe = vector_free_element.cbegin();
 
-				if(H.isIdentity()){ //Takes into account also the case D diagonal but not identity
+				if(H.isIdentity()){ //Takes into account also the case D diagonal, not only D diagonal
 					//Step 3: Complete Psi (upper part)
 					//- If i==0 -> all null
 					Psi(0,0) = *it_fe;
@@ -402,7 +373,6 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 							it_fe++;
 						}
 					}
-							//std::cout<<"Psi dopo i = 0: "<<std::endl<<Psi<<std::endl;
 
 					Psi(1,1) = *it_fe; //Counting also the diagonal element because they have to be updated too
 					it_fe++;
@@ -416,8 +386,6 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 							it_fe++;
 						}
 					}
-
-								//std::cout<<"Psi dopo i = 1: "<<std::endl<<Psi<<std::endl;
 					//- If i>1 -> formula 2
 					for(unsigned int i = 2; i < N-1; ++i){ // i = N-1 (last element) is useless
 						Eigen::VectorXd S = Psi.block(0,i,i,1); //Non cache friendly 
@@ -432,7 +400,6 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 								it_fe++;
 							}
 						}
-								//std::cout<<"Psi dopo i = "<<i<<": "<<std::endl<<Psi<<std::endl;
 					}
 
 				}
@@ -450,7 +417,7 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 					};
 					//Step 3: Complete Psi (upper part)
 					//- If i==0 -> formula 1
-					// Sums is a NxN-1 matrix (probabilmente il numero di righe sarà N-1 ma vabbe) such that Sums(a,b) = CumSum(a,b+1), i.e CumSum(a,b) = Sums(a,b-1)
+					// Sums is a NxN-1 matrix such that Sums(a,b) = CumSum(a,b+1), i.e CumSum(a,b) = Sums(a,b-1)
 					Psi(0,0) = *it_fe;
 					it_fe++;
 					MatRow Sums(MatRow::Zero(N,N-1));
@@ -465,8 +432,6 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 							it_fe++;
 						}
 					}
-						//std::cout<<"Psi dopo i = 0: "<<std::endl<<Psi<<std::endl;
-						//std::cout<<"Sums dopo i = 0: "<<std::endl<<Sums<<std::endl;
 					//- If i==1 -> simplified case of formula 2
 					Psi(1,1) = *it_fe;
 					it_fe++;
@@ -481,8 +446,6 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 							it_fe++;
 						}
 					}
-							//std::cout<<"Psi dopo i = 1: "<<std::endl<<Psi<<std::endl;
-					//std::cout<<"Sums dopo i = 1: "<<std::endl<<Sums<<std::endl;
 					//- If i>1 -> formula 2
 					for(unsigned int i = 2; i < N-1; ++i){
 						Psi(i,i) = *it_fe;
@@ -500,16 +463,10 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 								it_fe++;
 							}
 						}
-							//std::cout<<"Psi dopo i = "<<i<<": "<<std::endl<<Psi<<std::endl;
 					}
 				}
 				//Step 4: Compute exp( -0.5 * sum_NonFreeElements(Psi_ij)^2 )
-											//long double temp = std::exp((long double)(-0.5 * sq_sum_nonfree));
-												//if(temp < min_numeric_limits_ld)
-												//temp = min_numeric_limits_ld;
 				if( sq_sum_nonfree != sq_sum_nonfree){
-					//throw std::runtime_error("!!!!!!!!!!!!!!! Molto probabile che ci sia un nan !!!!!!!!!!!!!!!!!!!");
-					//std::cout<<"!!!!!!!!!!!!!!! Molto probabile che ci sia un nan !!!!!!!!!!!!!!!!!!!"<<std::endl;
 					number_nan++;
 				}
 				else{
@@ -517,12 +474,10 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 				}
 			}
 
-									//std::cout<<"vec_ss_nonfree.size() = "<<vec_ss_nonfree.size()<<std::endl;
 			#ifdef PARALLELEXEC
 				#pragma omp barrier
 				#pragma omp critical
 				{
-							//std::cout<<"I'm td number #"<<omp_get_thread_num()<<std::endl;
 					vec_ss_nonfree_result.insert(vec_ss_nonfree_result.end(), 
 												 std::make_move_iterator(vec_ss_nonfree.begin()), std::make_move_iterator(vec_ss_nonfree.end())
 												);
@@ -532,19 +487,16 @@ long double GWishart::log_normalizing_constat(const CompleteStructure<Type> & G,
 		#ifndef PARALLELEXEC
 			std::swap(vec_ss_nonfree_result, vec_ss_nonfree);
 		#endif
-										//std::cout<<"vec_ss_nonfree_result.size() = "<<vec_ss_nonfree_result.size()<<std::endl;
 		result_MC = -std::log(vec_ss_nonfree_result.size()) + utils::logSumExp(vec_ss_nonfree_result);
-										//std::cout<<"result_MC = "<<result_MC<<std::endl;
 		//Step 5: Compute constant term and return
 		long double result_const_term{0};
 		#pragma parallel for reduction(+:result_const_term)
 		for(IdxType i = 0; i < N; ++i){
 			result_const_term += (long double)nu[i]/2.0*utils::log_2pi +
 								 (long double)(b+nu[i])/2.0*utils::log_2 +
-								 (long double)(b+G.get_nbd(i).size())*std::log(T(i,i)) + //Se T è l'identità posso anche evitare di calcolare questo termine
+								 (long double)(b+G.get_nbd(i).size())*std::log(T(i,i)) + 
 								 std::lgammal((long double)(0.5*(b + nu[i])));
 		}//This computation requires the best possible GWishart because il will generate a very large number
-					//std::cout<<"Constant term = "<<result_const_term<<std::endl;
 		return result_MC + result_const_term;
 	}
 	

@@ -8,7 +8,7 @@ enum class GraphForm{
 };
 
 //Functional Linear Model sampler.
-//It is not a graphical model, the precision matrix on the regression coefficients is forced to be diagonal
+//It is not a graphical model, the graph has to be fixed, diagonal or generic forms are both allowed
 template< GraphForm Graph = GraphForm::Diagonal>
 class FLMsampler : public FLMsamplerTraits
 {
@@ -24,11 +24,6 @@ class FLMsampler : public FLMsamplerTraits
 	{
 	 	this->check();
 	 	file_name += ".h5";
-	 	//if(seed == 0){
-	 		////std::random_device rd;
-	 		////seed=rd();
-	 		//seed = static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count());
-	 	//}
 	} 
 
 	void run();
@@ -42,7 +37,6 @@ class FLMsampler : public FLMsamplerTraits
 	unsigned int p;
 	unsigned int n;
 	unsigned int grid_pts;
-	//unsigned int seed;
 	sample::GSL_RNG engine;
 	bool print_pb;
 	std::string file_name;
@@ -80,11 +74,14 @@ void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 	const MatCol&  DK    	 = this->hy_params.DK; 
 	const auto &[niter, nburn, thin, Basemat, iter_to_store, threshold] = this->params;
 	unsigned int prec_elem{0}; //What is the number of elemets in the precision matrix to be saved? It depends on the template parameter. 
+	std::string sampler_version = "FLMsampler_";
 	if constexpr(Graph == GraphForm::Diagonal){ 
 		prec_elem = p;
+		sampler_version += "diagonal";
 	}
 	else{
 		prec_elem = n_elem_mat;
+		sampler_version += "fixed";
 	}
 	//Initial values
 	MatCol Beta = init.Beta0; //p x n
@@ -93,11 +90,11 @@ void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 	VecCol tauK = init.tauK0; 
 	MatRow K = init.K0;
 	const GraphType<unsigned int> &G = init.G; 
-	//Random engine and distributions
-	//sample::GSL_RNG engine(seed);
+
 	sample::rnorm rnorm;
 	sample::rmvnorm rmv; //Covariance parametrization
 	sample::rgamma  rgamma;
+
 	//Define all those quantities that can be compute once
 	const MatRow tbase_base = Basemat.transpose()*Basemat; // p x p
 	const MatCol tbase_data = Basemat.transpose()*data;	 //  p x n
@@ -108,26 +105,13 @@ void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 	const MatRow Irow(MatRow::Identity(p,p));
 	const VecCol one_over_sigma_mu_vec(VecCol::Constant(p,1/sigma_mu));
 	const MatRow one_over_sigma_mu_mat((1/sigma_mu)*Irow);
-						//Structure for saving on memory
-						//RetBeta	  SaveBeta;
-						//RetMu	  SaveMu;	 
-						//RetTauK	  SaveTauK;
-						//RetK 	  SaveK; 	 
-						//RetTaueps SaveTaueps;
-							//SaveBeta.reserve(iter_to_store);
-							//SaveMu.reserve(iter_to_store);
-							//if constexpr(Graph == GraphForm::Diagonal){
-								//SaveTauK.reserve(iter_to_store);
-							//}
-							//else{
-								//SaveK.reserve(iter_to_store);
-							//}
-						//	
-							//SaveTaueps.reserve(iter_to_store);
+	
 	//Open file
 	HDF5conversion::FileType file;
 	file = H5Fcreate(file_name.data(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT); 
-	SURE_ASSERT(file>0,"Cannot create file ");
+	if(file < 0)
+		throw std::runtime_error("Cannot create the file. The most probable reason is that the execution was stopped before closing a file having the same name of the one that was asked to be generated. Delete the old file or change the name of the new one");
+
 	int bi_dim_rank = 2; //for 2-dim datasets. Beta are matrices
 	int one_dim_rank = 1;//for 1-dim datasets. All other quantities
 	//Print file info
@@ -136,12 +120,20 @@ void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 	dataspace_info = H5Screate_simple(one_dim_rank, &Dim_info, NULL);
 	HDF5conversion::DatasetType  dataset_info;
 	dataset_info  = H5Dcreate(file,"/Info", H5T_NATIVE_UINT, dataspace_info, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	SURE_ASSERT(dataset_info>=0,"Cannot create dataset for Info");
+	if(dataset_info < 0)
+		throw std::runtime_error("Error can not create dataset for Info");
 	{
 		std::vector< unsigned int > info{p,n,iter_to_store,iter_to_store};
 		unsigned int * buffer_info = info.data();		
 		HDF5conversion::StatusType status = H5Dwrite(dataset_info, H5T_NATIVE_UINT, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer_info);
 	}
+	//Print what sampler has been used
+	HDF5conversion::DatasetType  dataset_version;
+	HDF5conversion::DataspaceType dataspace_version = H5Screate(H5S_NULL);
+	dataset_version = H5Dcreate(file, "/Sampler", H5T_STD_I32LE, dataspace_version, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
+	if(dataset_version < 0)
+		throw std::runtime_error("Error, can not create dataset for Sampler");
+	HDF5conversion::WriteString(dataset_version, sampler_version);
 	//Create dataspaces
 	HDF5conversion::DataspaceType dataspace_Beta, dataspace_Mu, dataspace_Prec, dataspace_TauEps;
 	HDF5conversion::ScalarType Dim_beta_ds[2] = {p, n*iter_to_store}; 
@@ -157,13 +149,18 @@ void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 	//Create dataset
 	HDF5conversion::DatasetType  dataset_Beta, dataset_Mu, dataset_Prec, dataset_TauEps;
 	dataset_Beta  = H5Dcreate(file,"/Beta", H5T_NATIVE_DOUBLE, dataspace_Beta, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	SURE_ASSERT(dataset_Beta>=0,"Cannot create dataset for Beta");
+	if(dataset_Beta < 0)
+		throw std::runtime_error("Error can not create dataset for Beta ");
 	dataset_Mu = H5Dcreate(file,"/Mu", H5T_NATIVE_DOUBLE, dataspace_Mu, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	SURE_ASSERT(dataset_Mu>=0,"Cannot create dataset for Mu");
+	if(dataset_Mu < 0)
+		throw std::runtime_error("Error can not create dataset for Mu");
+	//SURE_ASSERT(dataset_Mu>=0,"Cannot create dataset for Mu");
 	dataset_TauEps  = H5Dcreate(file,"/TauEps", H5T_NATIVE_DOUBLE, dataspace_TauEps, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	SURE_ASSERT(dataset_TauEps>=0,"Cannot create dataset for TauEps");
+	if(dataset_TauEps < 0)
+		throw std::runtime_error("Error can not create dataset for TauEps");
 	dataset_Prec = H5Dcreate(file,"/Precision", H5T_NATIVE_DOUBLE, dataspace_Prec, H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
-	SURE_ASSERT(dataset_Prec>=0,"Cannot create dataset for Precision");
+	if(dataspace_Prec < 0)
+		throw std::runtime_error("Error can not create dataset for Precision");
 
 
 
@@ -183,18 +180,17 @@ void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 			//mu
 			VecCol S_beta(Beta.rowwise().sum());
 			VecCol A(one_over_sigma_mu_vec + n*tauK);
-					//std::cout<<"A:"<<std::endl<<A<<std::endl;
-					//std::cout<<"S_beta:"<<std::endl<<S_beta<<std::endl;
-			for(unsigned int i = 0; i < p; ++i){ //paralellizzabile ma secondo me non ne vale la pena
-						//std::cout<<"(1/A(i))*tauK(i)*S_beta(i) = "<<(1/A(i))*tauK(i)*S_beta(i)<<std::endl;
+
+			for(unsigned int i = 0; i < p; ++i){ //For the moment, it is not worth to be parallelized
 				mu(i) = rnorm(engine, (1/A(i))*tauK(i)*S_beta(i), std::sqrt(1/A(i)));
 			}
+
+			
 			//Beta
 			CholTypeRow chol_invBn(tau_eps*tbase_base + MatRow (tauK.asDiagonal())); 
 			MatRow Bn(chol_invBn.solve(Irow));
 			VecCol Kmu = tauK.cwiseProduct(mu); 
-					//std::cout<<"Bn:"<<std::endl<<Bn<<std::endl;
-					//std::cout<<"Kmu:"<<std::endl<<Kmu<<std::endl;
+
 			//Quantities needed down the road
 			VecCol U(VecCol::Zero(p)); 
 			double b_tau_eps_post(Sdata_btaueps);
@@ -209,31 +205,21 @@ void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 				}
 				b_tau_eps_post += beta_i.dot(tbase_base*beta_i) - 2*beta_i.dot(tbase_data.col(i));  
 			}
-					//std::cout<<"U:"<<std::endl<<U<<std::endl;
 			//Precision tauK
-			//-------------------------------------------------------------------------------------------------------------------------------------------------------
-			// Only for checking that the parallel for is fine --> it is
-							//VecCol U2(VecCol::Zero(p));
-							//for(unsigned int i = 0; i < n; ++i){
-								//U2 += (Beta.col(i) - mu).cwiseProduct(Beta.col(i) - mu);
-							//}
-								//std::cout<<"U-U2:"<<std::endl<<U-U2<<std::endl;
-			//-------------------------------------------------------------------------------------------------------------------------------------------------------
-			for(unsigned int j = 0; j < p; ++j){ //paralellizzabile ma secondo me non ne vale la pena
+			for(unsigned int j = 0; j < p; ++j){ //For the moment, it is not worth to be parallelized
 				tauK(j) = rgamma(engine, a_tauK_post, 2/(U(j) + b_tauK) );
 			}
-					//std::cout<<"tauK:"<<std::endl<<tauK<<std::endl;
+
 			//Precision tau_eps
 			b_tau_eps_post /= 2.0;
 			tau_eps = rgamma(engine, a_tau_eps_post, 1/b_tau_eps_post);
+
+
+
 			//Save
 			if(iter >= nburn){
 
 				if((iter - nburn)%thin == 0 && it_saved < iter_to_store){
-							//SaveBeta.emplace_back(Beta);
-							//SaveMu.emplace_back(mu);
-							//SaveTaueps.emplace_back(tau_eps);
-							//SaveTauK.emplace_back(tauK);
 
 					HDF5conversion::AddMatrix(dataset_Beta,   Beta,    it_saved);	
 					HDF5conversion::AddVector(dataset_Mu,     mu,      it_saved);	
@@ -255,6 +241,7 @@ void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 			CholTypeRow chol_invBn(tau_eps*tbase_base + K); 
 			MatRow Bn(chol_invBn.solve(Irow));
 			VecCol Kmu(K*mu);
+
 			//Quantities needed down the road
 			MatCol U(MatCol::Zero(p,p)); //Has to be ColMajor
 			double b_tau_eps_post(Sdata_btaueps);
@@ -269,19 +256,21 @@ void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 				}
 				b_tau_eps_post += beta_i.dot(tbase_base*beta_i) - 2*beta_i.dot(tbase_data.col(i));  
 			}
+
 			//Precision K
 			MatCol D_plus_U(DK+U);
 			K = std::move( utils::rgwish(G,bK+n,D_plus_U,threshold,engine) );
+			
 			//Precision tau
 			b_tau_eps_post /= 2.0;
 			tau_eps = rgamma(engine, a_tau_eps_post, 1/b_tau_eps_post);
+			
+
+
 			//Save
 			if(iter >= nburn){
 				if((iter - nburn)%thin == 0 && it_saved < iter_to_store){
-							//SaveBeta.emplace_back(Beta);
-							//SaveMu.emplace_back(mu);
-							//SaveTaueps.emplace_back(tau_eps);
-							//SaveK.emplace_back(utils::get_upper_part(K));
+
 					VecCol UpperK{utils::get_upper_part(K)};
 					HDF5conversion::AddMatrix(dataset_Beta,   Beta,    it_saved);	
 					HDF5conversion::AddVector(dataset_Mu,     mu,      it_saved);	
@@ -292,6 +281,11 @@ void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 				}
 			}
 		}
+
+		//Check for user interruption
+		if(iter%1000 == 0){
+			Rcpp::checkUserInterrupt(); //files are not closed 
+		}
 	}
 
 	H5Dclose(dataset_Beta);
@@ -299,15 +293,11 @@ void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 	H5Dclose(dataset_Prec);
 	H5Dclose(dataset_Mu);
 	H5Dclose(dataset_info);
+	H5Dclose(dataset_version);
 	H5Fclose(file);
 
 	std::cout<<std::endl<<"FLM sampler has finished"<<std::endl;
-				//if constexpr(Graph == GraphForm::Diagonal){
-					//return std::make_tuple(SaveBeta, SaveMu, SaveTauK, SaveTaueps);
-				//}
-				//else{
-					//return std::make_tuple(SaveBeta, SaveMu, SaveK, SaveTaueps);
-				//}
+
 }
 
 

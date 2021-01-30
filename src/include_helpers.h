@@ -3,8 +3,8 @@
 
 #include "utils.h"
 #include "GWishart.h"
-#include "Precision.h"
 #include "GSLwrappers.h"
-
+#include "HDF5conversion.h"
+#include "ProgressBar.h"
 
 #endif

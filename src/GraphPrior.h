@@ -12,8 +12,6 @@ class GraphPrior
 {
 		using Graph = GraphStructure<T>;
 		public:
-		//mettere uno static_assert per il tipo inserito?
-		//GraphPrior();
 		virtual double Prob(Graph const & G) const = 0;
 		virtual double ratio(Graph const & G_num, Graph const & G_den) const = 0;
 		virtual double log_ratio(Graph const & G_num, Graph const & G_den) const  = 0;
@@ -45,19 +43,10 @@ class UniformPrior : public GraphPrior<GraphStructure, T>
 		}
 };
 
-//Non è una specializzazione, ha diretto ad un nome suo perché è indipendente da UniformPrior
-//Graph may be: BlockGraph / BlockGraphAdj
+//It is not a specialization of UniformPrior
 template<template <typename> class BlockGraphStructure = BlockGraph, typename T = unsigned int>
 class TruncatedUniformPrior : public GraphPrior< BlockGraphStructure, T >{
 	using BlockGraphType = BlockGraphStructure<T>;
-	/*
-	static_assert(std::is_same_v< BlockGraphAdj<T>, BlockGraphType > ||
-				  std::is_same_v< BlockGraph   <T>, BlockGraphType >  ,
-				  "Error, only graphs in block form are allowed in a truncated prior");
-		
-	static_assert(internal_type_traits::isBlockGraph<BlockGraphStructure>::value ,
-				  "_____ERROR_CREATING_A_PRIOR____ONLY_GRAPHS_IN_BLOCK_FORM_ARE_ALLOWED_IN_TRUNCATED_PRIORS___");
-	*/
 	static_assert(internal_type_traits::isBlockGraph<BlockGraphStructure, T>::value ,
 				  "_____ERROR_CREATING_A_PRIOR____ONLY_GRAPHS_IN_BLOCK_FORM_ARE_ALLOWED_IN_TRUNCATED_PRIORS___");
 	public:
@@ -78,7 +67,6 @@ class TruncatedUniformPrior : public GraphPrior< BlockGraphStructure, T >{
 };
 
 
-//Graph may be: GraphType / BlockGraph / BlockGraphAdj
 template<template <typename> class GraphStructure = GraphType, typename T = unsigned int >
 class BernoulliPrior : public GraphPrior<GraphStructure, T>
 {
@@ -110,16 +98,10 @@ class BernoulliPrior : public GraphPrior<GraphStructure, T>
 		double theta;	
 };
 
-//Graph may be: BlockGraph / BlockGraphAdj
 template<template <typename> class BlockGraphStructure = BlockGraph, typename T = unsigned int >
 class TruncatedBernoulliPrior : public GraphPrior< BlockGraphStructure, T>
 {
 		using BlockGraphType = BlockGraphStructure<T>;
-		/*
-		static_assert(std::is_same_v< BlockGraphAdj<T>, BlockGraphType > ||
-					  std::is_same_v< BlockGraph   <T>, BlockGraphType >  ,
-					  "Error, only graphs in block form are allowed in a truncated prior");
-		*/
 		static_assert(internal_type_traits::isBlockGraph<BlockGraphStructure, T>::value ,
 					  "_____ERROR_CREATING_A_PRIOR____ONLY_GRAPHS_IN_BLOCK_FORM_ARE_ALLOWED_IN_TRUNCATED_PRIORS___");	
 		public:
@@ -168,15 +150,7 @@ std::unique_ptr< GraphPrior<GraphStructure, T> > Create_GraphPrior(Args&&... arg
 	static_assert(Category == PriorCategory::Uniform || Category == PriorCategory::Bernoulli,
 			      "Error, only possible categories are Uniform and Bernoulli");
 	static_assert(std::is_same_v<bool, T> || std::is_same_v<unsigned int, T> || std::is_same_v<int, T>,
-				  "Error, the only type i can work with are bool, int and unsigned int."); //why??	
-	/*
-		What is the goal of this assert? How can the user build something different?
-		static_assert( std::is_same_v< BlockGraphAdj<T>, GraphStructure<T> > || 
-					   std::is_same_v< BlockGraph   <T>, GraphStructure<T> > || 
-					   std::is_same_v< GraphType    <T>, GraphStructure<T> >  ,
-					   "Error, the only graphs that i can manage are BlockGraphAdj, BlockGraph, GraphType");
-		// std::is_same_v<BlockGraphAdj, GraphStructure> --> error, they are skeletons of types, not type.	
-	*/
+				  "Error, the only type allowed for graphs are bool, int and unsigned int."); 	
 	  		   
 	if constexpr(Type == PriorType::Complete){
 		if constexpr(Category == PriorCategory::Uniform)
@@ -196,7 +170,12 @@ std::unique_ptr< GraphPrior<GraphStructure, T> > Create_GraphPrior(Args&&... arg
 
 // ----------------------------------------------------------------------------------------------------------------------------------------
 
-//Non ho idea di cosa stia facendo né tanto meno perché lo stia facendo
+
+
+
+
+
+//Just a test for generic factory. It works but is useless
 
 template< template <typename> class GraphStructure = GraphType, typename T = unsigned int , typename... Args  >
 using PriorBuilder = std::function	< std::unique_ptr< GraphPrior<GraphStructure, T> > //Return type

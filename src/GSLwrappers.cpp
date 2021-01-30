@@ -103,8 +103,7 @@ namespace spline{
 			    }
 
 			}
-			//for(auto __v : Basemat_derivatives)
-				//std::cout<<__v<<std::endl;
+
 			gsl_bspline_free(bw); //free workspace
 			gsl_matrix_free(dB); //free matrix dB
 			return Basemat_derivatives;

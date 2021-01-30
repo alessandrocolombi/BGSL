@@ -6,6 +6,7 @@ namespace HDF5conversion{
 	void AddMatrix(DatasetType & dataset, MatCol & Mat, unsigned int const & iter) //for Matrices of double (thought for Beta matrices)
 	{
 		MatRow Mat2(Mat); //hdf5 stores matrices in C-style that is row-wise. Has to respect that ordering.
+		
 		//dataset has dimension p x iter_to_store*n
 		ScalarType p = static_cast<ScalarType>(Mat.rows());
 		ScalarType n = static_cast<ScalarType>(Mat.cols());
@@ -27,27 +28,22 @@ namespace HDF5conversion{
 			throw std::runtime_error("In order to add a (p x n) matrix, the inserted dataset has to have p rows");
 		//If fine, go on describing the "selection" for that dataspace
 		StatusType status = H5Sselect_hyperslab(dataspace_sub, H5S_SELECT_SET, offset, stride, count, block); //define the memory space for the sub matrix (in dataset)
-		//hssize_t numel =  H5Sget_select_npoints (dataspace_sub); //just a check
-		//std::cout<<"numel = "<<numel<<std::endl;
 
 		MemspaceType memspace; //Used to define the part of Mat that has to be saved. It has to have the same number of elements specified in dataspace_sub. Experience suggests to use it linear (i.e rank = 1 and not 2).
 		int rank_mem = 1; //linear buffer
 		ScalarType dims_sub = p*n; //having the same number of elements of the matrix
 	    memspace = H5Screate_simple(rank_mem, &dims_sub, NULL);  //create dataspace for memspace
-	    //numel =  H5Sget_select_npoints (memspace); //just a check
-	    //std::cout<<"numel = "<<numel<<std::endl;
 	    
 	    //Write
 	    status = H5Dwrite(dataset, H5T_NATIVE_DOUBLE, memspace, dataspace_sub, H5P_DEFAULT, buffer); //H5Dwrite(dataset, type, memspace, dataspace_sub, H5P_DEFAULT, data_buffer);
-	    SURE_ASSERT(status>=0,"Cannot write file. Status"<< status);
-	    //std::cout<<"Write! "<<std::endl;
+	    if(status < 0)
+	    	throw std::runtime_error("Error in AddMatrix(). Can not write on file");
 	}
 	//Takes a bi-dimensional dataset of dimension (p x iter_to_store*n) and reads a column matrix (p x n) starting from position iter
 	MatCol ReadMatrix(DatasetType & dataset, unsigned int const & p, unsigned int const & n ,unsigned int const & iter) //for Matrices of double (thought for Beta matrices)
 	{
 		//dataset has dimension p x iter_to_store*n
-		//MatCol result(MatCol::Zero(p,n)); //Instantiate space for result matrix //<-----------------
-		MatRow result(MatRow::Zero(p,n)); //Instantiate space for result matrix //<-----------------
+		MatRow result(MatRow::Zero(p,n)); 
 		double * buffer = result.data();
 		ScalarType offset[2] = {0,iter*n}; //initial point in complete matrix
 		ScalarType count [2] = {1,1}; //leave 1,1 for basic usage. Means that only one block is read.
@@ -71,8 +67,8 @@ namespace HDF5conversion{
 		memspace = H5Screate_simple(rank_mem, &dims_sub, NULL);  //create dataspace for memspace
 		//Read
 		status=H5Dread(dataset, H5T_NATIVE_DOUBLE, memspace, dataspace_sub, H5P_DEFAULT, buffer);
-		SURE_ASSERT(status>=0,"Cannot read file data. Status"<< status);
-		//std::cout<<"result:"<<std::endl<<result<<std::endl;
+		if(status < 0)
+			throw std::runtime_error("Error in ReadMatrix(). Can not read from file");
 		return result;
 	}
 
@@ -95,20 +91,16 @@ namespace HDF5conversion{
 			throw std::runtime_error("It is possible to add a vector only in a one-dimensional dataset");
 		//If fine, go on describing the "selection" for that dataspace
 		StatusType status = H5Sselect_hyperslab(dataspace_sub, H5S_SELECT_SET, &offset, &stride, &count, &block); //define the memory space for the sub vector (in dataset)
-		//hssize_t numel =  H5Sget_select_npoints (dataspace_sub); //just a check
-		//std::cout<<"numel = "<<numel<<std::endl;
 
 		MemspaceType memspace; //Used to define the part of vect that has to be saved. It has to have the same number of elements specified in dataspace_sub. 
 		int rank_mem = 1; //linear buffer
 		ScalarType dims_sub = p; //having the same number of elements of the inserted vector
 	    memspace = H5Screate_simple(rank_mem, &dims_sub, NULL);  //create dataspace for memspace
-	    //numel =  H5Sget_select_npoints (memspace); //just a check
-	    //std::cout<<"numel = "<<numel<<std::endl;
 	    
 	    //Write
 	    status = H5Dwrite(dataset, H5T_NATIVE_DOUBLE, memspace, dataspace_sub, H5P_DEFAULT, buffer); //H5Dwrite(dataset, type, memspace, dataspace_sub, H5P_DEFAULT, data_buffer);
-	    SURE_ASSERT(status>=0,"Cannot write file. Status"<< status);
-	    //std::cout<<"Write! "<<std::endl;
+	    if(status < 0)
+	    	throw std::runtime_error("Error in AddVector(). Can not write on file");
 	}
 
 	//Takes a linear dataset of dimension (p*iter_to_store) and read a p-dimensional vector starting from position iter
@@ -130,19 +122,15 @@ namespace HDF5conversion{
 			throw std::runtime_error("It is possible to read a vector only in a one-dimensional dataset");
 		//If fine, go on describing the "selection" for that dataspace
 		StatusType status = H5Sselect_hyperslab(dataspace_sub, H5S_SELECT_SET, &offset, &stride, &count, &block); //define the memory space for the sub vector (in dataset)
-		//hssize_t numel =  H5Sget_select_npoints (dataspace_sub); //just a check
-		//std::cout<<"numel = "<<numel<<std::endl;
 
 		MemspaceType memspace; //Used to define the part of vector that has to be saved. It has to have the same number of elements specified in dataspace_sub. 
 		int rank_mem = 1; //linear buffer
 		ScalarType dims_sub = p; //having the same number of elements of the inserted vector
 	    memspace = H5Screate_simple(rank_mem, &dims_sub, NULL);  //create dataspace for memspace
-	    //numel =  H5Sget_select_npoints (memspace); //just a check
-	    //std::cout<<"numel = "<<numel<<std::endl;
 	    //Read
 	    status=H5Dread(dataset, H5T_NATIVE_DOUBLE, memspace, dataspace_sub, H5P_DEFAULT, buffer);
-	    SURE_ASSERT(status>=0,"Cannot read file data. Status"<< status);
-	    //std::cout<<"result:"<<std::endl<<result<<std::endl;
+	    if(status < 0)
+	    	throw std::runtime_error("Error in ReadVector(). Can not read from file ");
 	    return result;
 	}
 	
@@ -164,20 +152,16 @@ namespace HDF5conversion{
 			throw std::runtime_error("It is possible to add a scalar only in a one-dimensional dataset");
 		//If fine, go on describing the "selection" for that dataspace
 		StatusType status = H5Sselect_hyperslab(dataspace_sub, H5S_SELECT_SET, &offset, &stride, &count, &block); //define the memory space for the sub vector (in dataset)
-		//hssize_t numel =  H5Sget_select_npoints (dataspace_sub); //just a check
-		//std::cout<<"numel = "<<numel<<std::endl;
 
 		MemspaceType memspace; //Used to define the part of mu that has to be saved. It has to have the same number of elements specified in dataspace_sub. 
 		int rank_mem = 1; //linear buffer
 		ScalarType dims_sub = 1; //having just one element because it is adding a scalr
 	    memspace = H5Screate_simple(rank_mem, &dims_sub, NULL);  //create dataspace for memspace
-	    //numel =  H5Sget_select_npoints (memspace); //just a check
-	    //std::cout<<"numel = "<<numel<<std::endl;
 	    
 	    //Write
 	    status = H5Dwrite(dataset, H5T_NATIVE_DOUBLE, memspace, dataspace_sub, H5P_DEFAULT, buffer); //H5Dwrite(dataset, type, memspace, dataspace_sub, H5P_DEFAULT, data_buffer);
-	 	SURE_ASSERT(status>=0,"Cannot write file. Status"<< status);
-	    //std::cout<<"Write! "<<std::endl;
+	    if(status < 0)
+	    	throw std::runtime_error("Error in AddScalar(). Can not write on file ");
 	}
 
 	//Takes a linear dataset of dimension (iter_to_store) and read the value in position iter
@@ -199,19 +183,15 @@ namespace HDF5conversion{
 			throw std::runtime_error("It is possible to read a scalar only in a one-dimensional dataset");
 		//If fine, go on describing the "selection" for that dataspace
 		StatusType status = H5Sselect_hyperslab(dataspace_sub, H5S_SELECT_SET, &offset, &stride, &count, &block); //define the memory space for the sub vector (in dataset)
-		//hssize_t numel =  H5Sget_select_npoints (dataspace_sub); //just a check
-		//std::cout<<"numel = "<<numel<<std::endl;
 
 		MemspaceType memspace; //Used to define the part of mu that has to be saved. It has to have the same number of elements specified in dataspace_sub. 
 		int rank_mem = 1; //linear buffer
 		ScalarType dims_sub = 1; //having the same number of elements of the inserted vector
 	    memspace = H5Screate_simple(rank_mem, &dims_sub, NULL);  //create dataspace for memspace
-	    //numel =  H5Sget_select_npoints (memspace); //just a check
-	    //std::cout<<"numel = "<<numel<<std::endl;
 	    //Read
 	    status=H5Dread(dataset, H5T_NATIVE_DOUBLE, memspace, dataspace_sub, H5P_DEFAULT, buffer);
-	    SURE_ASSERT(status>=0,"Cannot read file data. Status"<< status);
-	    //std::cout<<"result:"<<std::endl<<result<<std::endl;
+	    if(status < 0)
+	    	throw std::runtime_error("Error in ReadScalar(). Can not read from file");
 	    return result;
 	}
 
@@ -234,20 +214,15 @@ namespace HDF5conversion{
 			throw std::runtime_error("It is possible to add a vector only in a one-dimensional dataset");
 		//If fine, go on describing the "selection" for that dataspace
 		StatusType status = H5Sselect_hyperslab(dataspace_sub, H5S_SELECT_SET, &offset, &stride, &count, &block); //define the memory space for the sub vector (in dataset)
-		//hssize_t numel =  H5Sget_select_npoints (dataspace_sub); //just a check
-		//std::cout<<"numel = "<<numel<<std::endl;
 
 		MemspaceType memspace; //Used to define the part of vect that has to be saved. It has to have the same number of elements specified in dataspace_sub. 
 		int rank_mem = 1; //linear buffer
 		ScalarType dims_sub = p; //having the same number of elements of the inserted vector
 	    memspace = H5Screate_simple(rank_mem, &dims_sub, NULL);  //create dataspace for memspace
-	    //numel =  H5Sget_select_npoints (memspace); //just a check
-	    //std::cout<<"numel = "<<numel<<std::endl;
-	    
 	    //Write 
 	    status = H5Dwrite(dataset, H5T_NATIVE_UINT, memspace, dataspace_sub, H5P_DEFAULT, buffer); //H5Dwrite(dataset, type, memspace, dataspace_sub, H5P_DEFAULT, data_buffer);
-	    SURE_ASSERT(status>=0,"Cannot write file. Status"<< status);
-	    //std::cout<<"Write! "<<std::endl;
+	    if(status < 0)
+	    	throw std::runtime_error("Error in AddUintVector. Can not write on file");
 	}
 
 	//Takes a linear dataset of dimension (p*iter_to_store) and read a p-dimensional vector starting from position iter
@@ -269,18 +244,15 @@ namespace HDF5conversion{
 			throw std::runtime_error("It is possible to read a vector only in a one-dimensional dataset");
 		//If fine, go on describing the "selection" for that dataspace
 		StatusType status = H5Sselect_hyperslab(dataspace_sub, H5S_SELECT_SET, &offset, &stride, &count, &block); //define the memory space for the sub vector (in dataset)
-		//hssize_t numel =  H5Sget_select_npoints (dataspace_sub); //just a check
-		//std::cout<<"numel = "<<numel<<std::endl;
 
 		MemspaceType memspace; //Used to define the part of vector that has to be saved. It has to have the same number of elements specified in dataspace_sub. 
 		int rank_mem = 1; //linear buffer
 		ScalarType dims_sub = p; //having the same number of elements of the inserted vector
 	    memspace = H5Screate_simple(rank_mem, &dims_sub, NULL);  //create dataspace for memspace
-	    //numel =  H5Sget_select_npoints (memspace); //just a check
-	    //std::cout<<"numel = "<<numel<<std::endl;
 	    //Read
 	    status=H5Dread(dataset, H5T_NATIVE_UINT, memspace, dataspace_sub, H5P_DEFAULT, buffer);
-	    SURE_ASSERT(status>=0,"Cannot read file data. Status"<< status);
+	    if(status < 0)
+	    	throw std::runtime_error("Error in ReadUintVector. Can not read from file");
 	    return result;
 	}
 
@@ -314,16 +286,14 @@ namespace HDF5conversion{
 		auto coord = new ScalarType [stored_iter][2]; /* first dimension is the number of points that will be selected, second argument is the Dataset rank */
 		//std::cout<<"coordinate:"<<std::endl;
 		for(int i = 0; i < stored_iter; ++i){ //fill the array 
-			//coord[i][0] = spline_index; coord[i][1] = curve_index + n_curves*i; //coefficients are the defined with the following notation:
 			coord[i][0] = spline_index; coord[i][1] = curve_index + n_curves*i; //coefficients are the defined with the following notation:
 			//the i-th (first index) of the stored_iter points has spline_index (the assigned value) as first coordinate (the second index)
 			//the i-th (first index) of the stored_iter points has curve_index + n_curves*i (the assigned value) as second coordinate (the second index)
-			//std::cout<<"("<<spline_index<<", "<<curve_index + n_curves*i<<")"<<std::endl;
 		}				
 		StatusType status = H5Sselect_elements(dataspace, H5S_SELECT_SET, stored_iter, *coord);
 		status = H5Dread(dataset, H5T_NATIVE_DOUBLE, mid2, dataspace, H5P_DEFAULT, pchain);
-		SURE_ASSERT(status>=0,"Cannot read file data. Status"<< status);
-		//std::cout<<"chain:"<<std::endl<<chain<<std::endl;
+		if(status < 0)
+			throw std::runtime_error("Error in GetChain_from_Matrix(), can not extract the chain");
 		delete [] coord; //check with valgrind, no leak are possible
 		return chain;
 	}
@@ -353,7 +323,6 @@ namespace HDF5conversion{
 		mid2 = H5Screate_simple(1, &PointsToRead, NULL);
 		//Specity coordinates of the points to be selected. Has to respect HDF5 notation (which sucks btw)
 		auto coord = new ScalarType [stored_iter][1]; /* first dimension is the number of points that will be selected, second argument is the Dataset rank */
-		//std::cout<<"coordinate:"<<std::endl;
 		for(int i = 0; i < stored_iter; ++i){ //fill the array 
 			coord[i][0] = index + i*p;  //coefficients are the defined with the following notation:
 			//the i-th (first index) of the stored_iter points has index + i*p (the assigned value) as first coordinate (the second index)
@@ -361,11 +330,9 @@ namespace HDF5conversion{
 		}				
 		StatusType status = H5Sselect_elements(dataspace, H5S_SELECT_SET, stored_iter, *coord);
 		status = H5Dread(dataset, H5T_NATIVE_DOUBLE, mid2, dataspace, H5P_DEFAULT, pchain);
-		SURE_ASSERT(status>=0,"Cannot read file data. Status"<< status);
-		//std::cout<<"chain:"<<std::endl<<chain<<std::endl;
+		if(status < 0)
+			throw std::runtime_error("Error in GetChain_from_Vector(). Can not extract the chain");
 		delete [] coord; //check with valgrind, no leak are possible
-
-		SampledGraphs s;
 		return chain;
 	}
 	
@@ -392,24 +359,158 @@ namespace HDF5conversion{
 		return std::make_tuple(SaveG, GraphSize, visited);
 	}
 
+	/*This function gets a dataset and a std::string. It create an attribute called attribute_name and write the string on it. Do not write more than one string on that attribute. */
+	void WriteString(DatasetType & dataset, std::string const & str, std::string const & attribute_name)
+	{
+		const int 	LENGTH = str.size()+1;
+		MemspaceType 	memtype;
+		FileType 		filetype;
+		DataspaceType 	space;
+		hid_t      		attr; /* Write on attribute */
+		StatusType      status;
+		ScalarType      dims[1] = {1}; //Write only one string
+
+
+		filetype = H5Tcopy (H5T_FORTRAN_S1); // we save the strings as FORTRAN strings, therefore they do not need space for the null terminator in the file.
+		status   = H5Tset_size (filetype, LENGTH - 1);            
+		memtype  = H5Tcopy(H5T_C_S1);
+		status   = H5Tset_size(memtype, LENGTH);
+
+		space = H5Screate_simple(1, dims, NULL);
+
+		
+		//Create the attribute and write the string data to it.
+		attr = H5Acreate(dataset, attribute_name.c_str(), filetype, space, H5P_DEFAULT,H5P_DEFAULT); 
+		if(attr < 0)
+			throw std::runtime_error("Error, can not create attribute");
+		status = H5Awrite(attr, memtype, str.c_str()); 
+		if(status < 0)
+			throw std::runtime_error("Error, can not write the string on attribute");
+		/*
+		 * Close and release resources.
+		 */
+		status = H5Aclose (attr);
+		status = H5Sclose (space);
+		status = H5Tclose (filetype);
+		status = H5Tclose (memtype);
+	}
+	/*This string gets a dataset having an atrribute called attribute_name and read a single word from it. Can not read more then one word */
+	std::string ReadString(DatasetType & dataset, std::string const & attribute_name)
+	{
+		MemspaceType memtype;
+		FileType 	 filetype;
+		DataspaceType space;
+		hid_t    	  attr; 
+		ScalarType    dims[1] = {1};
+		size_t      sdim;
+		int         ndims;
+		StatusType  status;
+		char		**rdata; 
+		            
+		attr = H5Aopen(dataset, attribute_name.c_str(), H5P_DEFAULT);
+
+		
+		//Get the datatype and its size.
+		filetype = H5Aget_type(attr);
+		sdim = H5Tget_size(filetype);
+		sdim++;                         /* Make room for null terminator */
+
+		/*
+		 * Get dataspace and allocate memory for read buffer.  This is a
+		 * two dimensional attribute so the dynamic allocation must be done
+		 * in steps.
+		 */
+		space = H5Aget_space(attr);
+		ndims = H5Sget_simple_extent_dims(space, dims, NULL);
+
+		
+		//Allocate array of pointers to rows.
+		rdata = (char **) malloc (dims[0] * sizeof (char *));
+
+		
+		//Allocate space for integer data.
+		rdata[0] = (char *) malloc (dims[0] * sdim * sizeof (char));
+
+		//Set the rest of the pointers to rows to the correct addresses. ---> useful only if reading more then one word, it is not the case
+		for (int i=1; i<dims[0]; i++)
+		    rdata[i] = rdata[0] + i * sdim; 
+
+		//Create the memory datatype.
+		memtype = H5Tcopy (H5T_C_S1);
+		status = H5Tset_size (memtype, sdim);
+		//read
+		status = H5Aread(attr, memtype, rdata[0]);
+		if(status < 0)
+			throw std::runtime_error("Error, can not read the name of the sampler");
+		
+		//Copy on std:string
+		std::string result(rdata[0]);
+
+		//Close and release resources.
+		free (rdata[0]);
+		free (rdata);
+		status = H5Aclose (attr);
+		return result;
+	}
 	//Return vector with information needed to read the file. They are p, n, iter_to_store, iter_to_storeG
-	std::vector< unsigned int > GetInfo(std::string const & file_name)
+	std::tuple<std::vector< unsigned int >, std::string >
+	GetInfo(std::string const & file_name)
+	{
+		HDF5conversion::FileType file;
+		HDF5conversion::DatasetType dataset_info;
+		HDF5conversion::DatasetType dataset_version;
+		//Open file
+		file=H5Fopen(file_name.data(), H5F_ACC_RDONLY, H5P_DEFAULT); //it is read only
+		if(file < 0)
+			throw std::runtime_error("Error in GetInfo(). Can not open the file. The most probable reason is that is was not closed correctly.");
+		//Open datasets
+		dataset_info  = H5Dopen(file, "/Info", H5P_DEFAULT);
+		if(dataset_info < 0)
+			throw std::runtime_error("Error, can not open dataset for Info");
+		dataset_version  = H5Dopen(file, "/Sampler", H5P_DEFAULT);
+		if(dataset_version < 0)
+			throw std::runtime_error("Error, can not read what type of sampler was used");
+		
+		std::vector< unsigned int > info(4);
+		unsigned int * buffer = info.data();
+		HDF5conversion::StatusType status = H5Dread(dataset_info, H5T_NATIVE_UINT, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer);
+		if(status < 0)
+			throw std::runtime_error("Error, can not read Info");
+		
+		std::string sampler_version = HDF5conversion::ReadString(dataset_version);
+
+		
+		H5Dclose(dataset_info);
+		H5Dclose(dataset_version);
+		H5Fclose(file);
+
+		return std::tie(info, sampler_version);
+	}
+
+	//Do not delete, needed to open old files
+	std::vector< unsigned int >
+	GetInfo_old(std::string const & file_name)
 	{
 		HDF5conversion::FileType file;
 		HDF5conversion::DatasetType dataset_info;
 		//Open file
 		file=H5Fopen(file_name.data(), H5F_ACC_RDONLY, H5P_DEFAULT); //it is read only
-		SURE_ASSERT(file>0,"Cannot open file, read only mode selected");
+		if(file < 0)
+			throw std::runtime_error("Error in GetInfo(). Can not open the file. The most probable reason is that is was not closed correctly.");
 		//Open datasets
 		dataset_info  = H5Dopen(file, "/Info", H5P_DEFAULT);
-		SURE_ASSERT(dataset_info>=0,"Cannot create dataset for Beta");
-
+		if(dataset_info < 0)
+			throw std::runtime_error("Error, can not open dataset for Info");
+		
 		std::vector< unsigned int > info(4);
 		unsigned int * buffer = info.data();
 		HDF5conversion::StatusType status = H5Dread(dataset_info, H5T_NATIVE_UINT, H5S_ALL, H5S_ALL, H5P_DEFAULT, buffer);
-		SURE_ASSERT(status>=0,"Cannot read file data. Status"<< status);
-		H5Fclose(file);
+		if(status < 0)
+			throw std::runtime_error("Error, can not read Info");
+		
 		H5Dclose(dataset_info);
+		H5Fclose(file);
+
 		return info;
 	}
 

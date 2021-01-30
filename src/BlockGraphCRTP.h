@@ -7,6 +7,7 @@
 #include "include_graphs.h"
 
 
+
 template<class D, class T=unsigned int>
 class BlockGraphBaseCRTP{
   public:
@@ -65,9 +66,6 @@ class BlockGraphBaseCRTP{
       return (0.5*this->get_size()*(this->get_size()-1) + this->get_size() - this->get_number_singleton());
     }
     //Find
-          //inline unsigned int find_group_idx(IdxType const & i)const{
-            //return ptr_groups->find(i);
-          //}
     inline unsigned int find_group_idx(IdxType const & i)const{
       return ptr_groups->map_of_indeces[(unsigned int)i]; //this is for vector
       //auto it = ptr_groups->map_of_indeces.find((unsigned int)i);
@@ -100,8 +98,6 @@ class BlockGraphBaseCRTP{
     //virtual T& operator()(IdxType const & i, IdxType const & j) = 0;
     //Clone
     //virtual std::unique_ptr< BlockGraphBaseCRTP<T> > clone() const = 0;
-    //Desctructor
-    //virtual ~BlockGraphBaseCRTP() = default;
   protected:
     GroupsPtr ptr_groups;
     unsigned int n_singleton;
@@ -132,7 +128,6 @@ typename BlockGraphBaseCRTP<D,T>::IdxType BlockGraphBaseCRTP<D,T>::compute_diago
   return res;
 }
  
-//Questa fa abbastanza schifo ma è difficile da scrivere 
 template<class D, class T>
 std::pair<unsigned int, unsigned int> 
 BlockGraphBaseCRTP<D,T>::pos_to_ij(typename BlockGraphBaseCRTP<D,T>::IdxType const & pos) const{
@@ -224,7 +219,7 @@ class BlockGraph : public BlockGraphBaseCRTP<BlockGraph<T>, T>{
     }
     //BlockGraph(BlockGraph const & _Gr); default is ok
     //BlockGraph(BlockGraph&& _Gr); default is ok
-    //BlockGraph()=default; NON voglio il default constructor
+    //BlockGraph()=default; Default construct is not allowed
 
     //Getters
     inline InnerData get_graph() const{
@@ -307,11 +302,11 @@ typename BlockGraph<T>::Adj BlockGraph<T>::get_adj_list()const{
         std::vector<unsigned int> singleton = this->get_pos_singleton();
         auto it = std::find(singleton.cbegin(), singleton.cend(), i);
         if(it == singleton.cend() ){
-          //std::cout<<"Not a singleton, I can add"<<std::endl;
+          //Not a singleton, it can be added
           adj_list.emplace_back(data(i,i));
         }
         else{
-          //std::cout<<"It's a singleton"<<std::endl;
+          //it is a singleton, it can not be added. Do nothing
         }
       }
       else
@@ -320,8 +315,6 @@ typename BlockGraph<T>::Adj BlockGraph<T>::get_adj_list()const{
       }
     }
   }
-  if(adj_list.size() != this->get_possible_block_links())
-    std::cout<<"Something wrong i can feel it"<<std::endl;
   return adj_list;
 }
 template<class T>
@@ -330,7 +323,6 @@ void BlockGraph<T>::set_graph(typename BlockGraph<T>::Adj const & A){
   if( M*(M-1)/2 + M - this->n_singleton != A.size() )
     throw std::runtime_error("The number of groups is not coherent with the size of the adjacency matrix");
 
-  //std::cout<<"Copy?"<<std::endl;
   fillFromAdj(A);
   neighbours.clear();
   this->find_neighbours();
@@ -342,7 +334,6 @@ void BlockGraph<T>::set_graph(typename BlockGraph<T>::Adj&& A){
   unsigned int M{this->ptr_groups->get_n_groups()};
   if( M*(M-1)/2 + M - this->n_singleton != A.size() )
     throw std::runtime_error("The number of groups is not coherent with the size of the adjacency matrix");
-  //std::cout<<"Move?"<<std::endl;
   fillFromAdj(std::move(A));
 
   // Without the last line, A.size() becomes 0. So if I try to access A[0] I get a Segmentation Fault.
@@ -369,13 +360,10 @@ template<class T>
 void BlockGraph<T>::fillRandom(double sparsity, unsigned int seed){
 
   if(sparsity > 1.0){
-    std::cerr<<"Sparsity larger then 1, set to 0.5";
+    //Sparsity larger then 1, set to 0.5
     sparsity = 0.5;
   }
-  // If I do not give the sees I initialize the sequence using the random device. Every call will produce a different matrix
   if(seed==0){
-    //std::random_device rd;
-    //seed=rd();
     seed = static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count());
     std::seed_seq seq = {seed}; //seed provived here has to be random. Than std::seed_seq adds entropy becasuse steady_clock is not sufficientyl widespread
     std::vector<unsigned int> seeds(1);
@@ -418,7 +406,6 @@ void BlockGraph<T>::fillRandom(double sparsity, unsigned int seed){
 }
 template<class T>
 void BlockGraph<T>::fillFromAdj(Adj const & A){
-  //std::cout<<"Copy!"<<std::endl;
   unsigned int M{this->ptr_groups->get_n_groups()};
   data.resize(M,M);
   data = InnerData::Zero(M,M);
@@ -428,11 +415,11 @@ void BlockGraph<T>::fillFromAdj(Adj const & A){
         std::vector<unsigned int> singleton = this->ptr_groups->get_pos_singleton();
         auto it = std::find(singleton.cbegin(), singleton.cend(), i);
         if(it == singleton.cend() ){
-          //std::cout<<"Not a singleton, I can add"<<std::endl;
+          //It is not a singleton, it can be added
           data(i,j) = A[this->compute_diagonal_position(i)];
         }
         else{
-          //std::cout<<"It's a singleton"<<std::endl;
+          //It's a singleton, can not be added. Do nothing
           data(i,j) = 1;
         }
       }
@@ -444,7 +431,6 @@ void BlockGraph<T>::fillFromAdj(Adj const & A){
 
 template<class T>
 void BlockGraph<T>::fillFromAdj(typename BlockGraph<T>::Adj&& A){
-  //std::cout<<"Move!"<<std::endl;
   unsigned int M{this->ptr_groups->get_n_groups()};
   data.resize(M,M);
   data = InnerData::Zero(M,M);
@@ -454,11 +440,11 @@ void BlockGraph<T>::fillFromAdj(typename BlockGraph<T>::Adj&& A){
         std::vector<unsigned int> singleton = this->ptr_groups->get_pos_singleton();
         auto it = std::find(singleton.cbegin(), singleton.cend(), i);
         if(it == singleton.cend() ){
-          //std::cout<<"Not a singleton, I can add"<<std::endl;
+          //It is not a singleton, it can be added
           data(i,j) = A[this->compute_diagonal_position(i)];
         }
         else{
-          //std::cout<<"It's a singleton"<<std::endl;
+          //It's a singleton, can not be added. Do nothing
           data(i,j) = 1;
         }
       }
@@ -481,12 +467,10 @@ void BlockGraph<T>::find_neighbours(){
         if(idx_i == j){
           std::vector<unsigned int> v(this->ptr_groups->get_group(j));
           std::copy_if(v.begin(), v.end(), std::inserter(temp, temp.begin()), [i](IdxType const & idx){return !(idx==i);} ); 
-          //std::copy_if(v.begin(), v.end(), std::inserter(neighbours[i], neighbours[i].end()), [i](IdxType const & idx){return !(idx==i);} ); 
         }
         else{
           std::vector<unsigned int> v(this->ptr_groups->get_group(j)) ;
           std::copy(v.begin(), v.end(), std::inserter(temp, temp.begin())); 
-          //std::copy(v.begin(), v.end(), std::inserter(neighbours[i], neighbours[i].end())); 
         }
       }
     }
@@ -525,15 +509,6 @@ class CompleteView{
     using InnerData     = typename BlockGraph<T>::InnerData;
     //Constructor
     CompleteView(BlockGraph<T>const & _G):G(_G), data(_G.data){};
-
-    //T operator()( typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & i, 
-                  //typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & j) const
-    //{
-      //if(i == j)
-        //return true;
-      //else
-        //return G( G.find_group_idx(i), G.find_group_idx(j) ); 
-    //}
 
     T operator()( typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & i, 
                   typename BlockGraphBaseCRTP<BlockGraph<T>,T>::IdxType const & j) const
@@ -674,7 +649,6 @@ class BlockGraphAdj : public BlockGraphBaseCRTP<BlockGraphAdj<T>, T>{
     }
     // Operators
     T  operator()(IdxType const & i, IdxType const & j)const;
-    //T& operator()(IdxType const & i, IdxType const & j; //Meglio usare add e remove (i,j), questa nel caso in cui selezioni un singleton è un problema
 
     friend std::ostream & operator<<(std::ostream & str, BlockGraphAdj const & G){
       if(G.get_size() == 0)
@@ -816,25 +790,6 @@ T BlockGraphAdj<T>::operator()(typename BlockGraphBaseCRTP<BlockGraphAdj,T>::Idx
     return (i < j) ? data[this->compute_diagonal_position(i) + (j-i)] : data[this->compute_diagonal_position(j) + (i-j)];
 }
 
-//template<class T>
-//T& BlockGraphAdj<T>::operator()(typename BlockGraphBaseCRTP<BlockGraphAdj,T>::IdxType const & i, typename BlockGraphBaseCRTP<BlockGraphAdj,T>::IdxType const & j){
-//
-  //if(i == j){
-    //std::vector<unsigned int> singleton = this->ptr_groups->get_pos_singleton();
-    //auto it = std::find(singleton.cbegin(), singleton.cend(), i);
-    //if(it == singleton.cend() ){
-      ////std::cout<<"Not a singleton, I can add"<<std::endl;
-      //return data[this->compute_diagonal_position(i)];
-    //}
-    //else{
-      //std::cout<<"Cannot add a singleton"<<std::endl;
-      //throw std::runtime_error("Cannot address a singleton");
-    //}
-  //}
-  //else{
-    //return  (i<j) ? (data[this->compute_diagonal_position(i) + (j-i)]) : (data[this->compute_diagonal_position(j) + (i-j)]);
-  //}
-//}
 
 template<class T>
 void BlockGraphAdj<T>::find_neighbours(){

@@ -17,9 +17,6 @@ struct GraphTypeTraits{
 };
 
 
-//About streaming operator
-// https://stackoverflow.com/questions/4660123/overloading-friend-operator-for-template-class
-
 template<class T=unsigned int>
 class GraphType : public GraphTypeTraits<T>{
 public:
@@ -28,12 +25,10 @@ public:
   using IdxType		    = typename GraphTypeTraits<T>::IdxType;
   using InnerData     = typename GraphTypeTraits<T>::InnerData;
   using Neighbourhood = typename GraphTypeTraits<T>::Neighbourhood;
-  //using ColType       = typename GraphTypeTraits<T>::ColType;
-  //using RowType       = typename GraphTypeTraits<T>::RowType;
+
   //Constructors
   //GraphType()=default;
   GraphType(Adj const & _A){
-    //data.resize( 0.5 * ( 1 + std::sqrt(1 + 8*_A.size() )), 0.5 * ( 1 + std::sqrt(1 + 8*_A.size() )) );
     data = InnerData::Identity( 0.5 * ( 1 + std::sqrt(1 + 8*_A.size() )),  0.5 * ( 1 + std::sqrt(1 + 8*_A.size() )));
     IdxType pos{0};
     for(IdxType i = 0; i < data.rows() - 1; ++i)
@@ -44,9 +39,11 @@ public:
   };
   GraphType(IdxType const & _N): data(InnerData::Identity(_N, _N)){
     this->find_neighbours();
-  }; //passo solo il numero di vertici
+  }; //takes only the number of nodes
+
   //GraphType(GraphType const & _Gr); default is ok
   //GraphType(GraphType&& _Gr); default is ok
+
   GraphType(InnerData const & _M): data(_M){
     if(data.rows() != data.cols())
       throw std::runtime_error("Matrix insereted as graph is not squared");
@@ -103,7 +100,6 @@ public:
   }
   //Set the entire graph
   void set_graph(Adj const & A){
-    //data.resize( 0.5 * ( 1 + std::sqrt(1 + 8*A.size() )) , 0.5 * ( 1 + std::sqrt(1 + 8*A.size() )) );
     data = InnerData::Identity( 0.5 * ( 1 + std::sqrt(1 + 8*A.size() )),  0.5 * ( 1 + std::sqrt(1 + 8*A.size() )));
     IdxType pos{0};
     for(IdxType i = 0; i < data.rows() - 1; ++i)
@@ -114,7 +110,6 @@ public:
     find_neighbours();  
   }
   void set_graph(Adj&& A){
-    //data.resize( 0.5 * ( 1 + std::sqrt(1 + 8*A.size() )) , 0.5 * ( 1 + std::sqrt(1 + 8*A.size() )) );
     data = InnerData::Identity( 0.5 * ( 1 + std::sqrt(1 + 8*A.size() )),  0.5 * ( 1 + std::sqrt(1 + 8*A.size() )));
     IdxType pos{0};
     for(IdxType i = 0; i < data.rows() - 1; ++i)
@@ -164,6 +159,7 @@ public:
         }
         return str;
   }
+
   IdxType compute_diagonal_position(IdxType const & i) const{
     if(i == 0)
       return 0;
@@ -195,10 +191,7 @@ void GraphType<T>::fillRandom(double sparsity, unsigned int seed){
     std::cerr<<"Sparsity larger then 1, set to 0.5";
     sparsity = 0.5;
   }
-  // If I do not give the sees I initialize the sequence using the random device. Every call will produce a different matrix
   if(seed==0){
-    //std::random_device rd;
-    //seed=rd();
    seed = static_cast<unsigned int>(std::chrono::steady_clock::now().time_since_epoch().count());
    std::seed_seq seq = {seed}; //seed provived here has to be random. Than std::seed_seq adds entropy becasuse steady_clock is not sufficientyl widespread
    std::vector<unsigned int> seeds(1);

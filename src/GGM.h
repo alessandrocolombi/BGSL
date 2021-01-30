@@ -19,13 +19,6 @@ struct GGMTraits{
 	using GroupsPtr   		= std::shared_ptr<const Groups>;
 	using PriorPtr			= std::unique_ptr<GraphPrior<GraphStructure, T>>;
 	using Graph 			= GraphStructure<T>;
-	/*
-		template <typename Partial>
-		using CompleteBlockType = std::conditional_t< std::is_same_v<Graph,  BlockGraph<T>>, CompleteView<Partial> , CompleteViewAdj<Partial> > ;	
-		template <typename Partial2>
-		using CompleteSkeleton  = std::conditional_t< std::is_same_v<Graph , GraphType<T> >, GraphType<Partial2>, CompleteBlockType<Partial2> > ;
-		using CompleteType 		= CompleteSkeleton<T>;
-	*/
 	//Watch out here, using template aliasing for template parameters
 	template<typename S>
 	using CompleteSkeleton = typename internal_type_traits::Complete_skeleton<GraphStructure>::template CompleteSkeleton<S>;
@@ -33,7 +26,6 @@ struct GGMTraits{
 	using CompleteSkeleton2 = typename internal_type_traits::Complete_type<GraphStructure, T>::template CompleteSkeleton<SS>;
 	using CompleteType 		= typename internal_type_traits::Complete_type<GraphStructure, T>::CompleteType;
 	using PrecisionType     = GWishart ;
-	//using PrecisionType     = Precision<CompleteSkeleton, T> ;
 	using ReturnType 		= std::tuple<MatRow, int>; //The last int stands for move accepted (1) or refused (0)	
 };
 
@@ -64,8 +56,6 @@ class GGM : public GGMTraits<GraphStructure, T> {
 	
 	public:
 		//Constructors
-		//GGM(PriorPtr& _ptr_prior):
-				//ptr_prior(std::move(_ptr_prior)) {} 
 		GGM(PriorPtr& _ptr_prior,double const & _b , MatCol const & _D, double const & _trGwishSampler):
 				ptr_prior(std::move(_ptr_prior)),  Kprior( _b, _D ), trGwishSampler(_trGwishSampler) {}
 		GGM(PriorPtr& _ptr_prior,unsigned int const & _p, double const & _trGwishSampler): 
@@ -96,7 +86,7 @@ class GGM : public GGMTraits<GraphStructure, T> {
 		inline void init_precision(Graph & G, MatRow const & mat){
 			Kprior.set_matrix(G.completeview(), mat);
 			Kprior.compute_Chol();
-			if constexpr(std::is_same_v<Graph , GraphType<T> >){
+			if constexpr(internal_type_traits::isCompleteGraph<GraphStructure,T>::value){
 				positions.resize(G.get_possible_links());
 			}
 			else{
@@ -119,7 +109,7 @@ class GGM : public GGMTraits<GraphStructure, T> {
 		double trGwishSampler;
 		std::vector<unsigned int> positions; //vector storing all possible positions. --> ones union zeros = positions
 		//MoveType Move;
-		std::pair<unsigned int, unsigned int> selected_link; //Not used in ARMH case
+		std::pair<unsigned int, unsigned int> selected_link; 
 		MatCol D_plus_U;
 		MatCol chol_inv_DplusU;
 		
@@ -135,13 +125,7 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 	if(alpha >= 1.0 || alpha <= 0.0){
 	  alpha = 0.5;
 	}
-				//if(seed==0){
-					////std::random_device rd;
-					////seed=rd();
-					//seed=static_cast<unsigned int>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
-				//}
-				//std::default_random_engine engine_stl(seed);
-				//std::uniform_real_distribution<double> rand(0.,1.);
+
 	sample::runif rand;
 	sample::runif_int rand_int;
 
@@ -149,15 +133,15 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 	MoveType Move;
 	//Select move type
 	if(Gold.get_n_links() == 0){
-				//std::cout<<"Empty graph, add"<<std::endl;
+				//Empty graph, add
 		Move = MoveType::Add;
 	}
 	else if(Gold.get_n_links() == Gold.get_possible_links()){
-				//std::cout<<"Full graph, remove"<<std::endl;
+				//Full graph, remove
 		Move = MoveType::Remove;
 	}
 	else{
-				//std::cout<<"Not empty nor full, choose by change"<<std::endl;
+				//Not empty nor full, choose by change
 		(rand(engine) < alpha) ? (Move = MoveType::Add) : (Move = MoveType::Remove);
 	}
 
@@ -181,17 +165,9 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 			else{
 				zeros.resize(Gold.get_possible_block_links() - Gold.get_n_block_links());
 			}
-			//std::vector<unsigned int> positions(adj_list.size());
-			//std::iota(positions.begin(), positions.end(), 0); //fill with increasing values
+
 			std::copy_if(positions.cbegin(), positions.cend(), zeros.begin(), [&adj_list](unsigned int const & pos){return (bool)adj_list[pos]==false;}); //fill vector zeros with the positions where zeros are stored
 			
-			/* vecchio modo
-			std::vector<unsigned int> selected(1);
-			std::sample(zeros.cbegin(), zeros.cend(), selected.begin(), 1, engine_stl);
-			adj_list[selected[0]] = 1; //set value in ad_list to true, i.e create a link
-			selected_link = Gold.pos_to_ij(selected[0]);
-			*/
-
 			unsigned int selected{zeros[rand_int(engine, zeros.size())]};
 			adj_list[selected] = 1; //set value in ad_list to true, i.e create a link
 			selected_link = Gold.pos_to_ij(selected);
@@ -199,7 +175,6 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 				return std::make_tuple( Graph (adj_list),  log_proposal_Graph, Move );
 			}
 			else{
-				//std::vector< std::pair<unsigned int, unsigned int> > L(Gold.map_to_complete(selected_link.first, selected_link.second));
 				return std::make_tuple( Graph (adj_list, Gold.get_ptr_groups()), log_proposal_Graph, Move );
 			}
 			
@@ -221,16 +196,8 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 		else{
 			ones.resize(Gold.get_n_block_links());
 		}
-		//std::vector<unsigned int> positions(adj_list.size());
-		//std::iota(positions.begin(), positions.end(), 0); //fill with increasing values
 		std::copy_if(positions.cbegin(), positions.cend(), ones.begin(), [&adj_list](unsigned int const & pos){return (bool)adj_list[pos]==true;});
 
-		/*
-		std::vector<unsigned int> selected(1);
-		std::sample(ones.cbegin(), ones.cend(), selected.begin(), 1, engine);
-		adj_list[selected[0]] = 0;
-		selected_link = Gold.pos_to_ij(selected[0]);
-		*/
 		unsigned int selected{ones[rand_int(engine, ones.size())]};
 		adj_list[selected] = 0; //set value in ad_list to true, i.e create a link
 		selected_link = Gold.pos_to_ij(selected);
@@ -238,7 +205,6 @@ GGM<GraphStructure, T>::propose_new_graph(typename GGMTraits<GraphStructure, T>:
 			return std::make_tuple( Graph (adj_list), log_proposal_Graph, Move );
 		}
 		else{
-			//std::vector< std::pair<unsigned int, unsigned int> > L(Gold.map_to_complete(selected_link.first, selected_link.second)); 
 			return std::make_tuple( Graph (adj_list, Gold.get_ptr_groups()), log_proposal_Graph, Move );
 		}
 	}

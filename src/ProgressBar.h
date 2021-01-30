@@ -16,7 +16,6 @@ public:
 
         
         auto& str = Rcpp::Rcout;
-        
         //auto& str = std::cout;
         
         currUpdateVal %= pBarUpdater.length();

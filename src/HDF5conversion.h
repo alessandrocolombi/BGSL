@@ -3,7 +3,7 @@
 
 #undef H5_USE_16_API
 #include "hdf5.h"
-#include "extendedAssert.h"
+//#include "extendedAssert.h" --> no loger used
 #include "include_headers.h"
 
 /* Functions for writing and reading on HDF5 datasets
@@ -28,6 +28,7 @@
 namespace HDF5conversion{
 	
 	using FileType 		= hid_t;
+	using DataType 		= hid_t;
 	using DatasetType 	= hid_t;
 	using DataspaceType = hid_t;
 	using MemspaceType 	= hid_t;
@@ -78,8 +79,18 @@ namespace HDF5conversion{
 	std::tuple<SampledGraphs, VecCol, int>
 	GetGraphsChain(DatasetType & dataset, unsigned int const & n_elem, unsigned int const & stored_iter);
 
+	/*This function gets a dataset and a std::string. It create an attribute called attribute_name and write the string on it. Do not write more than one string on that attribute. */
+	void WriteString(DatasetType & dataset, std::string const & str, std::string const & attribute_name = "Attribute");
+	
+	/*This string gets a dataset having an atrribute called attribute_name and read a single word from it. Can not read more then one word */
+	std::string ReadString(DatasetType & dataset, std::string const & attribute_name = "Attribute");
+
 	//Return vector with information needed to read the file. They are p, n, iter_to_store, iter_to_storeG
-	std::vector< unsigned int > GetInfo(std::string const & file_name);
+	std::tuple<std::vector< unsigned int >, std::string > GetInfo(std::string const & file_name);
+
+	//Do not delete, needed to open old files
+	std::vector< unsigned int >
+	GetInfo_old(std::string const & file_name);
 	
 }
 

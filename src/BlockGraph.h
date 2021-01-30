@@ -1,21 +1,13 @@
 #ifndef __BLOCKGRAPHTEMPLATE_H__
 #define __BLOCKGRAPHTEMPLATE_H__
 
-//#include <Rcpp.h>
 
 #include "include_headers.h"
 #include "Groups.h"
 
-
-// #ifdef PARALLELEXEC
-// #  if defined(__GNUC__) && (__GNUC__ >= 9)
-// #    include <execution>
-// #	 warning "Using parallel implementation"
-// #  else
-// #    undef PARALLELEXEC
-// #  endif
-// #endif
-
+/*
+  Old version of BlockGraph, it is no longer used. It still is a good example of how to extend internal_type_traits namespace
+*/
 
 namespace utils{ 
 

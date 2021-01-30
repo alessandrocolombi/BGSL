@@ -175,13 +175,6 @@ $ pacman -U mingw-w64-x86_64-gsl-2.6-1-any.pkg.tar.xz
 $ rm -f -r pkg src *.xz *.gz #clean the folder
 $ cd ../
 ```
-4. Anxious users can check that everythig is fine writing in a new terminal 
-```shell
-$ gsl-configure  --cflags
--I/mingw64/include #where the header files are
-$ gsl-configure --libs
--L/mingw64/lib -lgsl -lgslcblas -lm #where the linked libraries are
-```
 If 32-bit version is needed, perform the same test but with "C:\rtools40\mingw32.exe" terminal.
 
 ### HDF5
@@ -191,8 +184,8 @@ All you have to do now is to repeat the same procedure as for GSL. Open a Rtools
 $ cd rtools-packages
 $ cd mingw-w64-hdf5
 $ makepkg-mingw --syncdeps --noconfirm
-$ pacman -U mingw-i686-hdf5-1.10.5-9002-any.pkg-tar.xz
-$ pacman -U mingw-x86_64-hdf5-1.10.5-9002-any.pkg-tar.xz
+$ pacman -U mingw-w64-i686-hdf5-1.10.5-9002-any.pkg-tar.xz
+$ pacman -U mingw-w64-x86_64-hdf5-1.10.5-9002-any.pkg-tar.xz
 $ rm -f -r pkg src *.xz *.gz *.bz2 #clean the folder
 $ cd ../
 ```

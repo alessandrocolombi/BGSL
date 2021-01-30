@@ -2,45 +2,16 @@
 #define __TYPETRAITS_HPP__
 #include "include_headers.h"
 
-//Handcrafted type_trait
+//Handcrafted type traits
 namespace internal_type_traits
 {
 
-	//--------------------------------------------------------------------
 	/*Type_traits to check is a Graph is in Block form.
 	  Usage example:
 	  internal_type_traits::isBlockGraph<BlockGraph, int>::value --> true
 	  internal_type_traits::isBlockGraph<CompleteView, bool>::value --> false
 	*/
 
-	/*
-		template< template <typename> class GraphStructure, typename T >
-		struct isBlockGraph
-		{
-		  static constexpr bool value{false};
-		};
-		template< typename T >
-		struct isBlockGraph<BlockGraph,T>
-		{
-		  static constexpr bool value{true};
-		};
-		template< typename T >
-		struct isBlockGraph<BlockGraphAdj,T>
-		{
-		  static constexpr bool value{true};
-		};
-	
-	template< template <typename> class GraphStructure >
-	struct isBlockGraph : public std::false_type {};
-	template<>
-	struct isBlockGraph<BlockGraph> : public std::true_type{};
-	template<>
-	struct isBlockGraph<BlockGraphAdj> : public std::true_type{};
-	template<>
-	struct isBlockGraph<BlockGraphAdjDyn> : public std::true_type{};
-	template<>
-	struct isBlockGraph<BlockGraphDyn> : public std::true_type{};
-	*/
 	template< template <typename> class GraphStructure, typename T >
 	struct isBlockGraph
 	{
@@ -181,7 +152,6 @@ namespace internal_type_traits
 														CompleteBlockType2<Final> //type defined if false --> keep the one defined above 
 													> ;
 	};
-	//--------------------------------------------------------------------
 	
 	
 }

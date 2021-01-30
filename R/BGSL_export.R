@@ -16,149 +16,6 @@ check_structure = function(G, K, threshold = 1e-5){
   return (TRUE);
 }
 
-#' Tuning the threshold for the GWishart sampler
-#'
-#' This function select possible threshold for the convergence of the matrix in the GWishart sampler. The sampler starts drawing a sampler from a Wishart
-#' and then starts a loop for imposing all the zeros in the right positions. The loop has to be stopped according to some convergence criteria and this
-#' that not always the structure of the graph is pefectly respected. This function propose some threshold for stopping the loop according to the percentage
-#' of sampled matrix that have the right structure out of nrep trials.
-#' Four possibilities are returned according to four possible levels, that are 0.95, 0.98, 0.99 and 1. If some level is not reach in the selected threshold level, then NA is returned
-#' @param p The dimension of the graph in complete form
-#' @param nrep How many repetitions has to be performed for each possible threshold
-#' @param initial_threshold The first and larger threshold to be tested
-#' @param max_threshold The last and smaller threshold to be tested
-#' @param norm The norm with respect to which convergence happens
-#'
-#' @return A list with four possible threshold levels and the exepected number of iteration for each threshold
-#' @export
-GWish_sampler_tuning = function(p, nrep = 1000, initial_threshold = 1e-2, max_threshold = 1e-14, norm = "Mean"){
-  if(nrep <= 0 || initial_threshold <= 0 || max_threshold <= 0)
-    stop("Error, parameters has to be positive.");
-  n = 200
-  level95 = list("Threshold" = NA, "ExpectedIter" = NA)
-  level98 = list("Threshold" = NA, "ExpectedIter" = NA)
-  level99 = list("Threshold" = NA, "ExpectedIter" = NA)
-  level1  = list("Threshold" = NA, "ExpectedIter" = NA)
-  found_lv95 = F
-  found_lv98 = F
-  found_lv99 = F
-  found_lv1  = F
-  tr = initial_threshold
-  while(!(found_lv1 & found_lv99  & found_lv98 & found_lv95) & tr >= max_threshold){
-    b = 3
-    D = diag(p)
-    n_converged = 0
-    n_structure = 0
-    iterations = rep(0,nrep)
-    for(i in 1:nrep){
-      G = Create_RandomGraph(p, sparsity = 0.5)
-      K = rGwish(G = G, b = b, D = D)$Matrix
-      U = matrix(0, nrow = p, ncol = p)
-      for (j in 1:n) {
-        beta_i = rmvnormal(mean = rep(0,p), Mat = K)
-        U = U + (beta_i) %*% t(beta_i)
-      }
-      PrecList = rGwish(G = G, b = b+n, D = D+U, norm = norm, threshold_conv = tr)
-      n_converged = n_converged+PrecList$Converged
-      n_structure = n_structure+PrecList$CheckStructure
-      iterations[i] =PrecList$iterations
-    }
-    iterations = iterations[iterations > 0]
-    iterations = sum(iterations)/length(iterations)
-    n_converged = n_converged/nrep
-    n_structure = n_structure/nrep
-    if(!found_lv95 & n_structure >= 0.95){
-      found_lv95 = T
-      level95$Threshold = tr
-      level95$ExpectedIter = iterations
-    }
-    if(!found_lv98 & n_structure >= 0.98){
-      found_lv98 = T
-      level98$Threshold = tr
-      level98$ExpectedIter = iterations
-    }
-    if(!found_lv99 & n_structure >= 0.99){
-      found_lv99 = T
-      level99$Threshold = tr
-      level99$ExpectedIter = iterations
-    }
-    if(!found_lv1 & n_structure >= 1){
-      found_lv1 = T
-      level1$Threshold = tr
-      level1$ExpectedIter = iterations
-    }
-    cat('\n Finished with threshold = ',tr,'\n')
-    tr = tr/10
-  }
-  return ( list("level95"=level95, "level98"=level98, "level99"=level99, "level1"=level1) )
-}
-
-
-#' Tuning MC iterations for prior normalizing constant of GWishart distribution
-#'
-#' This function selects the number of MonteCarlo iterations when computing a the GWishart prior normalizing constant. The problem is that the MonteCarlo
-#' method by ATACK-MASSAM requires computing exp(-0.5 sum(Phi_ij)^2). As the number of nodes in the graph grows, that quantity is smaller and smaller and
-#' it is possible that it is lower than zero machina. If that is the case, the number of MC iterarions needs to be larger.
-#' This function propose some possible MC iterations loop according to the percentage of computed constant different from -Inf out of nrep trials.
-#' Four possibilities are returned according to four possible levels, that are 0.95, 0.98, 0.99 and 1. If some level is not reach in the selected threshold level, then NA is returned
-#'
-#' @param p The dimension of the graph in complete form
-#' @param b Shape parameter. It has to be larger than 2 in order to have a well defined distribution.
-#' @param D Inverse scale matrix of size \mjseqn{p \times p}. It has to be symmetric and positive definite.
-#' @param nrep How many repetitions has to be performed for each possible threshold
-#' @param MCiter_list The list containg the Monte Carlo iterations to be taken into consideration
-#'
-#' @return A list with four possible MCiteration levels
-#' @export
-GWish_PriorConst_tuning = function(p, b=3, D = diag(p), nrep = 100, MCiter_list = c(100,250,500,1000,2500,5000,10000)){
-  if(nrep <= 0 )
-    stop("Error, parameters has to be positive.");
-  if(!isSymmetric(D))
-    stop("Inverse scale matrix D has to the symmetric.")
-  level95 = list("MCiterations" = NA)
-  level98 = list("MCiterations" = NA)
-  level99 = list("MCiterations" = NA)
-  level1  = list("MCiterations" = NA)
-  found_lv95 = F
-  found_lv98 = F
-  found_lv99 = F
-  found_lv1  = F
-
-  counter = 1
-  while(!(found_lv1 & found_lv99  & found_lv98 & found_lv95) & counter <= length(MCiter_list) ){
-
-    MCiter = MCiter_list[counter]
-    result = rep(0,nrep)
-    for(i in 1:nrep){
-      G = Create_RandomGraph(p, sparsity = 0.5)
-      result[i] = log_Gconstant(G = G, b = b, D = D, MCiteration = MCiter)
-    }
-    count_inf = length(result[result == -Inf])
-    count_inf = count_inf/nrep
-    count_inf = 1 - count_inf
-    if(!found_lv95 & count_inf >= 0.95){
-      found_lv95 = T
-      level95$MCiterations = MCiter
-    }
-    if(!found_lv98 & count_inf >= 0.98){
-      found_lv98 = T
-      level98$MCiterations = MCiter
-    }
-    if(!found_lv99 & count_inf >= 0.99){
-      found_lv99 = T
-      level99$MCiterations = MCiter
-    }
-    if(!found_lv1 & count_inf >= 1){
-      found_lv1 = T
-      level1$MCiterations = MCiter
-    }
-    cat('\n Finished with MCiter = ',MCiter,'\n')
-    counter = counter + 1
-  }
-  return ( list("level95"=level95, "level98"=level98, "level99"=level99, "level1"=level1) )
-}
-
-
 #' Tuning MC iterations for posterior normalizing constant of GWishart distribution
 #'
 #' This function selects the number of MonteCarlo iterations when computing a the GWishart posterior normalizing constant. The problem is that the MonteCarlo
@@ -790,18 +647,18 @@ FLM_sampling = function( p, data, niter = 100000, burnin = niter/2, thin = 1, di
   n = dim(data)[2]
   #Checks Param / HyParam / Init structures
   if(is.null(Param))
-    Param = sampler_parameters()
+    Param = BGSL:::sampler_parameters()
   else if(is.null(Param$BaseMat) || is.null(Param$threshold))
     stop("Param list is incorrectly set. Please use sampler_parameters() function to create it. Hint: in Functional Models, BaseMat field cannot be defaulted. Use Generate_Basis() to create it.")    
   if(is.null(HyParam))
-    HyParam = LM_hyperparameters(p = p)
+    HyParam = BGSL:::LM_hyperparameters(p = p)
   else if( is.null(HyParam$D_K) || is.null(HyParam$b_K) || is.null(HyParam$a_tau_eps) || is.null(HyParam$b_tau_eps) || is.null(HyParam$sigma_mu) || is.null(HyParam$a_tauK) || is.null(HyParam$b_tauK) )
     stop("HyParam list is incorrectly set. Please use LM_hyperparameters() function to create it, or just leave NULL for default values.")
   if(dim(HyParam$D_K)[1]!= p){
     stop("Prior inverse scale matrix D is not coherent with the number of basis function. It has to be a (p x p) matrix.")
   }
   if(is.null(Init))
-    Init = LM_init(p = p, n = n, empty = TRUE )
+    Init = BGSL:::LM_init(p = p, n = n, empty = TRUE )
   else if(is.null(Init$Beta0) || is.null(Init$K0) || is.null(Init$mu0) || is.null(Init$tauK0) || is.null(Init$tau_eps0) )
     stop("Init list is incorrectly set. Please use LM_init() function to create it, or just leave NULL for default values.")
 
@@ -814,12 +671,12 @@ FLM_sampling = function( p, data, niter = 100000, burnin = niter/2, thin = 1, di
       stop("True graph G was wrongly inserted. It has to be a (p x p) matrix")  
   }
 
-  return (FLM_sampling_c( data, niter, burnin, thin, Param$BaseMat, 
-                          G, 
-                          Init$Beta0, Init$mu0, Init$tau_eps0, Init$tauK0, Init$K0, #initial values
-                          HyParam$a_tau_eps, HyParam$b_tau_eps, HyParam$sigma_mu, HyParam$a_tauK, HyParam$b_tauK, HyParam$b_K, HyParam$D_K, #hyperparameters
-                          file_name, diagonal_graph, Param$threshold, seed, print_info
-                        )
+  return (BGSL:::FLM_sampling_c( data, niter, burnin, thin, Param$BaseMat, 
+                                  G, 
+                                  Init$Beta0, Init$mu0, Init$tau_eps0, Init$tauK0, Init$K0, #initial values
+                                  HyParam$a_tau_eps, HyParam$b_tau_eps, HyParam$sigma_mu, HyParam$a_tauK, HyParam$b_tauK, HyParam$b_K, HyParam$D_K, #hyperparameters
+                                  file_name, diagonal_graph, Param$threshold, seed, print_info
+                                )
 
          )
 }
@@ -1140,7 +997,7 @@ SimulateData_GGM = function(p, n, n_groups = 0, form = "Complete", groups = NULL
 				stop("Size of adjacency matrix is not coherent with the number of groups")
 		}
 	}
-	return (SimulateData_GGM_c(p,n,n_groups,form,graph,adj_mat,seed,mean_null,sparsity,groups))
+	return (BGSL:::SimulateData_GGM_c(p,n,n_groups,form,graph,adj_mat,seed,mean_null,sparsity,groups))
 }
 
 #' Sampler for Guassian Graphical Models
@@ -1184,12 +1041,12 @@ GGM_sampling = function( data, n, niter = 100000, burnin = niter/2, thin = 1, Pa
 		stop("Groups has to be available if Block form is selected.")
   #Checks Param / HyParam / Init structures
 	if(is.null(Param))
-		Param = sampler_parameters()
+		Param = BGSL:::sampler_parameters()
   else if(is.null(Param$MCprior) || is.null(Param$MCpost) || is.null(Param$threshold))
     stop("Param list is incorrectly set. Please use sampler_parameters() function to create it, or just leave NULL for default values.")
 
 	if(is.null(HyParam))
-		HyParam = GM_hyperparameters(p = p)
+		HyParam = BGSL:::GM_hyperparameters(p = p)
   else if(is.null(HyParam$D_K) || is.null(HyParam$b_K) || is.null(HyParam$Gprior) || is.null(HyParam$sigmaG) || is.null(HyParam$p_addrm))
     stop("HyParam list is incorrectly set. Please use GM_hyperparameters() function to create it, or just leave NULL for default values.")
  	if(dim(HyParam$D_K)[1]!= p){
@@ -1197,19 +1054,19 @@ GGM_sampling = function( data, n, niter = 100000, burnin = niter/2, thin = 1, Pa
 	}
 
   if(is.null(Init))
-    Init = GM_init(p = p, n = n, empty = TRUE , form = form, groups = groups, n_groups = n_groups)
+    Init = BGSL:::GM_init(p = p, n = n, empty = TRUE , form = form, groups = groups, n_groups = n_groups)
   else if(is.null(Init$G0) || is.null(Init$K0))
     stop("Init list is incorrectly set. Please use GM_init() function to create it, or just leave NULL for default values.")
 
 	if(form == "Block" && is.null(groups)){
 		if(n_groups <= 1 || n_groups > p)
 		  stop("Error, invalid number of groups inserted");
-		groups = CreateGroups(p,n_groups)
+		groups = BGSL:::CreateGroups(p,n_groups)
 	}
 
 	if( dim(data)[1] != dim(data)[2] ){
 		U = data%*%t(data)
-		return (GGM_sampling_c( U, p, n, niter, burnin, thin, file_name, 
+		return (BGSL:::GGM_sampling_c( U, p, n, niter, burnin, thin, file_name, 
                             HyParam$D_K, HyParam$b_K, 
                             Init$G0, Init$K0,
 								            Param$MCprior,Param$MCpost,Param$threshold,
@@ -1217,7 +1074,7 @@ GGM_sampling = function( data, n, niter = 100000, burnin = niter/2, thin = 1, Pa
                             groups, seed, HyParam$Gprior,
                             HyParam$sigmaG,HyParam$p_addrm, print_info ) )
 	}else{
-		return (GGM_sampling_c( data, p, n, niter, burnin, thin, file_name,
+		return (BGSL:::GGM_sampling_c( data, p, n, niter, burnin, thin, file_name,
                             HyParam$D_K, HyParam$b_K,
                             Init$G0, Init$K0,
 								            Param$MCprior,Param$MCpost,Param$threshold,
@@ -1359,7 +1216,7 @@ GM_init = function(p ,n, empty = TRUE, G0 = NULL, K0 = NULL, Beta0 = NULL, mu0 =
       if(is.null(groups)){
         if(n_groups <= 1 || n_groups > p)
           stop("Error, invalid number of groups inserted")
-        groups = CreateGroups(p,n_groups)
+        groups = BGSL:::CreateGroups(p,n_groups)
       }
       G0 = diag(length(groups))
     }
@@ -1372,33 +1229,33 @@ GM_init = function(p ,n, empty = TRUE, G0 = NULL, K0 = NULL, Beta0 = NULL, mu0 =
   }else{
     if(is.null(G0)){
       if(form == "Complete"){
-        G0 = Create_RandomGraph(p = p, form = "Complete",  groups = NULL, sparsity = 0.5, seed = seed  )$G
+        G0 = BGSL:::Create_RandomGraph(p = p, form = "Complete",  groups = NULL, sparsity = 0.5, seed = seed  )$G
       }
       else if(form == "Block"){
         if(is.null(groups)){
           if(n_groups <= 1 || n_groups > p)
             stop("Error, invalid number of groups inserted")
 
-          groups = CreateGroups(p,n_groups)
+          groups = BGSL:::CreateGroups(p,n_groups)
         }
-        G0 = Create_RandomGraph(p = p, form = "Block",  groups = groups, sparsity = 0.5, seed = seed  )$G
-        Gcomp = Block2Complete(G0, groups)
+        G0 = BGSL:::Create_RandomGraph(p = p, form = "Block",  groups = groups, sparsity = 0.5, seed = seed  )$G
+        Gcomp = BGSL:::Block2Complete(G0, groups)
       }
       else
         stop("Only possible forms are Complete and Block")
     }
     if(is.null(K0)){
       Dtemp = diag(p)
-      K0 = rGwish(G0, 3, Dtemp, groups = groups, threshold_conv = 1e-16, seed = seed)$Matrix
+      K0 = BGSL:::rGwish(G0, 3, Dtemp, groups = groups, threshold_conv = 1e-16, seed = seed)$Matrix
     }
 
     #Check correctness
     if(form == "Block"){
-        if(!(check_structure(Gcomp, K0)))
+        if(!(BGSL:::check_structure(Gcomp, K0)))
           stop("Matrix K does not respect structure of graph G0")
     }
     if(form == "Complete"){
-      if(!(check_structure(G0, K0)))
+      if(!(BGSL:::check_structure(G0, K0)))
         stop("Matrix K does not respect structure of graph G0")
     }
 
@@ -1407,12 +1264,12 @@ GM_init = function(p ,n, empty = TRUE, G0 = NULL, K0 = NULL, Beta0 = NULL, mu0 =
       tau_eps0 = rgamma(n = 1, shape = 50, rate = 2)
     }
     if(is.null(mu0)){
-      mu0 = rmvnormal(mean = rep(0,p), Mat = diag(p), isPrec = FALSE)
+      mu0 = BGSL:::rmvnormal(mean = rep(0,p), Mat = diag(p), isPrec = FALSE)
     }
     if(is.null(Beta0)){
       Beta0 = matrix(0,nrow = p, ncol = n)
       for(i in 1:n){
-        Beta0[,i] = rmvnormal(mean = mu0, Mat = K0, isPrec = TRUE, isChol = FALSE)
+        Beta0[,i] = BGSL:::rmvnormal(mean = mu0, Mat = K0, isPrec = TRUE, isChol = FALSE)
       }
     }
   }
@@ -1461,13 +1318,13 @@ LM_init = function(p ,n, empty = TRUE, K0 = NULL, Beta0 = NULL, mu0 = NULL, tau_
     #Not checking if it respect the true graphs structure
     if(is.null(K0)){
       I = diag(p)
-      K0 = rGwish(I, 3, I, groups = NULL, threshold_conv = 1e-16, seed = seed)$Matrix
+      K0 = BGSL:::rGwish(I, 3, I, groups = NULL, threshold_conv = 1e-16, seed = seed)$Matrix
     }
     if(is.null(tau_eps0)){
       tau_eps0 = rgamma(n = 1, shape = 50, rate = 2)
     }
     if(is.null(mu0)){
-      mu0 = rmvnormal(mean = rep(0,p), Mat = diag(p), isPrec = FALSE)
+      mu0 = BGSL:::rmvnormal(mean = rep(0,p), Mat = diag(p), isPrec = FALSE)
     }
     if(is.null(tauK0)){
       tauK0 = rep(0,p)
@@ -1478,7 +1335,7 @@ LM_init = function(p ,n, empty = TRUE, K0 = NULL, Beta0 = NULL, mu0 = NULL, tau_
     if(is.null(Beta0)){
       Beta0 = matrix(0,nrow = p, ncol = n)
       for(i in 1:n){
-        Beta0[,i] = rmvnormal(mean = mu0, Mat = K0, isPrec = TRUE, isChol = FALSE)
+        Beta0[,i] = BGSL:::rmvnormal(mean = mu0, Mat = K0, isPrec = TRUE, isChol = FALSE)
       }
     }
   }
@@ -1491,56 +1348,72 @@ LM_init = function(p ,n, empty = TRUE, K0 = NULL, Beta0 = NULL, mu0 = NULL, tau_
   return (init)
 }
 
+
 #' Tuning \code{sigmaG} parameter
 #'
 #' \loadmathjax The choice of \code{sigmaG} parameter is a crucial part of \code{"RJ"} and \code{"DRJ"} algorithm. It indeed represents the standard deviation for the proposal of new elements in the
-#' precision matrix. This function provides a simple utility for tuning this parameter by simply repeting \code{Nrep} times the first \code{niter} iteration for every proposed
+#' precision matrix. This function provides an utility for tuning this parameter by simply repeting \code{Nrep} times the first \code{niter} iteration for every proposed
 #' \code{sigmaG} in \code{sigmaG_list}.
-#' @param data matrix of size \eqn{p x p} containing \eqn{\sum(Y_i^{T}Y_i)}.
+#' @param data two possibilities are available. (1) a \mjseqn{p \times n} matrix corresponding to \code{n} observation of \code{p}-dimensional variables or (2) 
+#' a \mjseqn{p \times p} matrix representing \mjseqn{\sum_{i=1}^{n}(y_{i}y_{i}^{T})}, where \mjseqn{y_{i}} is the \code{i}-th observation of a \code{p}-dimensional variale. 
+#' Data are assumed to be zero mean.
 #' @param n number of observed values.
-#' @param niter iteration to be performed in the sampling.
+#' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be \mjseqn{(niter - burnin)/thin}.
 #' @param sigmaG_list list containing the values of \code{sigmaG} that has to be tested.
 #' @param Nrep how many times each \code{sigmaG} has to be tested.
 #' @param Param list containing parameters needed by the sampler. It has to follow the same notation of the one generated by \code{\link{sampler_parameters}} function. It is indeed recommended to build it through that particular function. \code{BaseMat} field is not needed.
 #' @param HyParam list containing hyperparameters needed by the sampler. It has to follow the same notation of the one generated by \code{\link{GM_hyperparameters}} function. It is indeed recommended to build it through that particular function.
-#' @param form string that may take as values only \code{"Complete"} of \code{"Block"}. It states if the algorithm has to run with \code{"Block"} or \code{"Complete"} graphs.
+#' @param Init list containig initial values for Markov chain. It has to follow the same notation of the one generated by \code{\link{GM_init}} function. It is indeed recommended to build it through that particular function.
+#' @param form string that states if the true graph has to be in \code{"Block"} or \code{"Complete"} form. Only possibilities are \code{"Complete"} and \code{"Block"}.
 #' @param prior string with the desidered prior for the graph. Possibilities are \code{"Uniform"}, \code{"Bernoulli"} and for \code{"Block"} graphs only \code{"TruncatedBernoulli"} and \code{"TruncatedUniform"} are also available.
-#' @param algo string with the desidered algorithm for sampling from a \code{GGM}. Possibilities are \code{"MH"}, \code{"RJ"} and \code{"DRJ"}.
-#' @param n_groups integer, number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as \code{groups} parameter.
+#' @param algo string with the desidered algorithm for sampling from a GGM. Possibilities are \code{"MH"}, \code{"RJ"} and \code{"DRJ"}.
 #' @param groups a list representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group,
-#' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. If \code{NULL}, \code{n_groups} are automatically generated. Not needed if form is set to \code{"Complete"}.
+#' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. If \code{"NULL"}, \code{"n_groups"} are automatically generated. Not needed if form is set to \code{"Complete"}.
+#' @param n_groups number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered as \code{groups} parameter.
+#' @param seed integer, seeding value. Set 0 for random seed.
 #' @return plots the mean acceptance ratio for each \code{sigmaG} and returns the highest one.
+#' @export
 sigmaG_GGM_tuning = function( data, n, niter = 1000, sigmaG_list = seq(0.05, 0.55, by = 0.05), Nrep = 10,
-							                Param = NULL, HyParam = NULL, form = "Complete", prior = "Uniform", algo = "RJ", n_groups = 0, groups = NULL  )
+							                Param = NULL, HyParam = NULL,  Init = NULL, n_groups = 0, groups = NULL,
+                              form = "Complete", prior = "Uniform", algo = "RJ", seed = 0  )
 {
 	nburn = niter-1
 	thin  = 1
 	accepted = rep(0,length(sigmaG_list))
 	counter = 1
+  file_name = "temp_sigmaGTuning"
+  file_name_ext = "temp_sigmaGTuning.h5"
 	if(is.null(Param))
-		Param = sampler_parameters()
+		Param = BGSL:::sampler_parameters()
 	if(is.null(HyParam))
-		HyParam = GM_hyperparameters(p = p)
+		HyParam = BGSL:::GM_hyperparameters(p = p)
+  if(is.null(Init))
+    Init = BGSL:::GM_init(p = p, n = n, empty = TRUE , form = form, groups = groups, n_groups = n_groups)  
+
 	for(sigmaG in sigmaG_list){
 		cat('\n Starting sigmaG = ',sigmaG,'\n')
 		#pb <- txtProgressBar(min = 1, max = Nrep, initial = 1, style = 3)
 	  	tot = 0
 	  	HyParam$sigmaG = sigmaG
 	  for(i in 1:Nrep){
-	    result = GGM_sampling(	data = data, n = n, niter = niter, burnin = nburn, thin = thin,
-                      			Param = param, HyParam = hy, groups = NULL, n_groups = n_groups,
-                      			prior = prior, form = form, algo = algo,
-                      			seed = 0, print_info = FALSE  )
+  	    result = BGSL:::GGM_sampling(	data = data, n = n, niter = niter, burnin = nburn, thin = thin,
+                         			        Param = param, HyParam = hy, Init = init, groups = NULL, n_groups = n_groups,
+                        			        prior = prior, form = form, algo = algo, file_name = file_name,
+                        			        seed = seed, print_info = FALSE  )
 	    tot = tot + result$AcceptedMoves
 	    #setTxtProgressBar(pb, i)
-	    cat('  i = ',i,', acc = ',result$AcceptedMoves,'  ||  ')
+	    cat('\n  i = ',i,', acc = ',result$AcceptedMoves,'\n')
 	  }
 	  #close(pb)
 	  accepted[counter] = tot/Nrep
 	  counter = counter + 1
 	}
 	accepted = accepted/niter
-	x11();plot(accepted, pch = 16, col = 'black', xlab = "sigmaG", ylab = "Acceptance Ratio", xaxt = 'n')
+  suppressMessages(file.remove(file_name_ext))
+  col_plot = rep("black", length(sigmaG_list))
+  col_plot[which.max(accepted)] = "red"
+	x11();plot(accepted, pch = 16, col = col_plot, xlab = "sigmaG", ylab = "Acceptance Ratio", xaxt = 'n')
+  title(main = "Tuning sigmaG parameter")
 	mtext(text = sigmaG_list, side=1, line=0.3, at = 1:length(sigmaG_list) , las=2, cex=1.0)
 	return (sigmaG_list[which.max(accepted)])
 }
@@ -1628,11 +1501,11 @@ FGM_sampling = function( p, data, niter = 100000, burnin = niter/2, thin = 1, th
 
   #Checks Param / HyParam / Init structures
   if(is.null(Param))
-    Param = sampler_parameters()
+    Param = BGSL:::sampler_parameters()
   else if(is.null(Param$BaseMat) || is.null(Param$threshold) || is.null(Param$MCprior) || is.null(Param$MCpost))
     stop("Param list is incorrectly set. Please use sampler_parameters() function to create it. Hint: in Functional Models, BaseMat field cannot be defaulted. Use Generate_Basis() to create it.")    
   if(is.null(HyParam))
-    HyParam = GM_hyperparameters(p = p)
+    HyParam = BGSL:::GM_hyperparameters(p = p)
   else if( is.null(HyParam$D_K) || is.null(HyParam$b_K) || is.null(HyParam$a_tau_eps) || is.null(HyParam$b_tau_eps) || 
            is.null(HyParam$sigma_mu) || is.null(HyParam$p_addrm) || is.null(HyParam$sigmaG) || is.null(HyParam$Gprior) )
     stop("HyParam list is incorrectly set. Please use GM_hyperparameters() function to create it, or just leave NULL for default values.")
@@ -1640,7 +1513,7 @@ FGM_sampling = function( p, data, niter = 100000, burnin = niter/2, thin = 1, th
     stop("Prior inverse scale matrix D is not coherent with the number of basis function. It has to be a (p x p) matrix.")
   }
   if(is.null(Init))
-    Init = GM_init(p = p, n = n, empty = TRUE, groups = groups, n_groups = n_groups )
+    Init = BGSL:::GM_init(p = p, n = n, empty = TRUE, groups = groups, n_groups = n_groups )
   else if(is.null(Init$Beta0) || is.null(Init$K0) || is.null(Init$mu0) || is.null(Init$tau_eps0) || is.null(Init$G0) )
     stop("Init list is incorrectly set. Please use GM_init() function to create it, or just leave NULL for default values.")
 
@@ -1648,12 +1521,12 @@ FGM_sampling = function( p, data, niter = 100000, burnin = niter/2, thin = 1, th
   if(form == "Block" && is.null(groups)){
     if(n_groups <= 1 || n_groups > p)
       stop("Error, invalid number of groups inserted");
-    groups = CreateGroups(p,n_groups)
+    groups = BGSL:::CreateGroups(p,n_groups)
   }  
   
   #Launch sampler
   return (
-          FGM_sampling_c( data, niter, burnin, thin, thinG,  #data and iterations
+          BGSL:::FGM_sampling_c( data, niter, burnin, thin, thinG,  #data and iterations
                           Param$BaseMat, file_name,  #Basemat and name of file 
                           Init$Beta0, Init$mu0, Init$tau_eps0, Init$G0, Init$K0,  #initial values
                           HyParam$a_tau_eps, HyParam$b_tau_eps,  HyParam$sigma_mu, HyParam$b_K, HyParam$D_K, HyParam$sigmaG,  HyParam$p_addrm , HyParam$Gprior, #hyperparam

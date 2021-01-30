@@ -4,8 +4,6 @@
 #include "include_headers.h"
 #include "include_helpers.h"
 #include "include_graphs.h"
-#include "ProgressBar.h"
-#include "HDF5conversion.h"
 
 
 struct FLMsamplerTraits{
@@ -21,7 +19,7 @@ struct FLMsamplerTraits{
 	// RetK is a vector containing the upper triangular part of the precision matrix. It is important to remember that this choice implies that 
 	// elements are saved row by row.
 	using RetBeta	  		= std::vector<MatCol>; 
-	using RetMu		  		= std::vector<VecCol>; //Sarebbe meglio salvarli in una matrice pxiter_to_store cosi poi posso fare operazioni rowwise
+	using RetMu		  		= std::vector<VecCol>; 
 	using RetTauK	 	  	= std::vector<VecCol>; 
 	using RetK	 	  		= std::vector<VecCol>; 
 	using RetTaueps	  		= std::vector<double>;
