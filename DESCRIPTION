@@ -7,7 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "colombi.alessandro@hotmail.it",
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: An Rpackage for dealing with Functional Gaussian Graphical Models, in particular it is possible to impose a block structure.
+Description: A R package for Bayesian structual learning in undirected graphical models which allows to impose a block structure. This kind of modeling is applied to functional data analysis, improving the classical smoothing technique.
 License: `use_gpl3_license()` 
 Encoding: UTF-8
 LazyData: true
