@@ -208,7 +208,8 @@ namespace analysis{
 				LowerBound(i,j) = gsl_stats_quantile_from_sorted_data(&chain.data()[0], 1, chain.size(), alpha_lower);
 				UpperBound(i,j) = gsl_stats_quantile_from_sorted_data(&chain.data()[0], 1, chain.size(), alpha_upper);
 			}
-			std::cout<<"Finihed p = "<<i<<std::endl;
+			std::cout<<"Finihed p = "<<i+1<<"/"<<p<<std::endl;
+			Rcpp::checkUserInterrupt();
 		}
 
 		H5Dclose(dataset_rd);

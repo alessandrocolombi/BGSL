@@ -819,59 +819,52 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
     }
     auto start = std::chrono::high_resolution_clock::now();
     int accepted = Sampler.run();
-    //auto [SampledK, SampledG, accepted, visited] = Sampler.run();
     auto stop = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> timer = stop - start;
     if(print_info){
       Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
     }
-    Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
-    //Posterior Analysis
-    Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
-    VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
-    MatRow MeanK(MatRow::Zero(p,p));
-    unsigned int pos{0};
-    for(unsigned int i = 0; i < p; ++i){
-      for(unsigned int j = i; j < p; ++j){
-        MeanK(i,j) = MeanK_vett(pos++);
+    if(accepted < 0){
+      std::string name(file_name);
+      name += ".h5";
+      Rcpp::Rcout<<"Removing file "<<name<<std::endl;
+      Rcpp::Function R_file_remove("file.remove");
+      R_file_remove(name);
+                  //return Rcpp::List::create ( Rcpp::Named("MeanK"), 
+            //Rcpp::Named("plinks"),  
+            //Rcpp::Named("AcceptedMoves"), 
+            //Rcpp::Named("VisitedGraphs"), 
+            //Rcpp::Named("TracePlot_Gsize"), 
+            //Rcpp::Named("SampledGraphs")  );
+      return Rcpp::List::create();
+    }
+    else{
+      //Posterior Analysis
+      Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
+      Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
+      VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
+      MatRow MeanK(MatRow::Zero(p,p));
+      unsigned int pos{0};
+      for(unsigned int i = 0; i < p; ++i){
+        for(unsigned int j = i; j < p; ++j){
+          MeanK(i,j) = MeanK_vett(pos++);
+        }
       }
-    }
-    //std::cout<<"MeanK_vett:"<<std::endl<<MeanK_vett<<std::endl;
-    //std::cout<<"MeanK:"<<std::endl<<MeanK<<std::endl;
-    auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p);
-    //Create Rcpp::List of sampled Graphs
-    std::vector< Rcpp::List > L(SampledG.size());
-    int counter = 0;
-    for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
-      L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
-    }
-    return Rcpp::List::create ( Rcpp::Named("MeanK")= MeanK, 
-                                Rcpp::Named("plinks")= plinks,  
-                                Rcpp::Named("AcceptedMoves")= accepted, 
-                                Rcpp::Named("VisitedGraphs")= visited, 
-                                Rcpp::Named("TracePlot_Gsize")= TracePlot, 
-                                Rcpp::Named("SampledGraphs")= L   );
-    /*
-    //Posterior Analysis
-    auto[MeanK_vec, plinks] = analysis::PointwiseEstimate<decltype(SampledG)>(std::tie(SampledK, SampledG),param.iter_to_storeG);
-    MatRow MeanK(MatRow::Zero(p,p));
-    unsigned int pos{0};
-    for(unsigned int i = 0; i < p; ++i){
-      for(unsigned int j = i; j < p; ++j){
-        MeanK(i,j) = MeanK_vec(pos++);
+      auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p);
+      //Create Rcpp::List of sampled Graphs
+      std::vector< Rcpp::List > L(SampledG.size());
+      int counter = 0;
+      for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
+        L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
       }
-    } 
-    //Create Rcpp::List of sampled Graphs
-    std::vector< Rcpp::List > L(SampledG.size());
-    int counter = 0;
-    for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
-      L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+      return Rcpp::List::create ( Rcpp::Named("MeanK")= MeanK, 
+                                  Rcpp::Named("plinks")= plinks,  
+                                  Rcpp::Named("AcceptedMoves")= accepted, 
+                                  Rcpp::Named("VisitedGraphs")= visited, 
+                                  Rcpp::Named("TracePlot_Gsize")= TracePlot, 
+                                  Rcpp::Named("SampledGraphs")= L   );
     }
-    return Rcpp::List::create ( Rcpp::Named("MeanK")= MeanK, 
-                                Rcpp::Named("plinks")= plinks,  
-                                Rcpp::Named("AcceptedMoves")= accepted, 
-                                Rcpp::Named("VisitedGraphs")= visited, 
-                                Rcpp::Named("SampledGraphs")= L   );*/
+    
   }
   else if(form == "Block")
   {
@@ -893,57 +886,53 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
     }
     auto start = std::chrono::high_resolution_clock::now();
     int accepted = Sampler.run();
-    //auto [SampledK, SampledG, accepted, visited] = Sampler.run();
     auto stop = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> timer = stop - start;
     if(print_info){
       Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
     }
-    Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
-    //Posterior Analysis
-    Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
-    VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
-    MatRow MeanK(MatRow::Zero(p,p));
-    unsigned int pos{0};
-    for(unsigned int i = 0; i < p; ++i){
-      for(unsigned int j = i; j < p; ++j){
-        MeanK(i,j) = MeanK_vett(pos++);
+    if(accepted < 0){
+      std::string name(file_name);
+      name += ".h5";
+      Rcpp::Rcout<<"Removing file "<<name<<std::endl;
+      Rcpp::Function R_file_remove("file.remove");
+      R_file_remove(name);
+      //return Rcpp::List::create ( Rcpp::Named("MeanK"), 
+                                  //Rcpp::Named("plinks"),  
+                                  //Rcpp::Named("AcceptedMoves"), 
+                                  //Rcpp::Named("VisitedGraphs"), 
+                                  //Rcpp::Named("TracePlot_Gsize"), 
+                                  //Rcpp::Named("SampledGraphs")  );
+      return Rcpp::List::create();
+    }
+    else{
+      //Posterior Analysis
+      Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
+      Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
+      VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
+      MatRow MeanK(MatRow::Zero(p,p));
+      unsigned int pos{0};
+      for(unsigned int i = 0; i < p; ++i){
+        for(unsigned int j = i; j < p; ++j){
+          MeanK(i,j) = MeanK_vett(pos++);
+        }
       }
-    }
-    auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p, ptr_gruppi);
-    //Create Rcpp::List of sampled Graphs
-    std::vector< Rcpp::List > L(SampledG.size());
-    int counter = 0;
-    for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
-      L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
-    }
-    return Rcpp::List::create ( Rcpp::Named("MeanK")= MeanK, 
-                                Rcpp::Named("plinks")= plinks,  
-                                Rcpp::Named("AcceptedMoves")= accepted, 
-                                Rcpp::Named("VisitedGraphs")= visited, 
-                                Rcpp::Named("TracePlot_Gsize")= TracePlot, 
-                                Rcpp::Named("SampledGraphs")= L   );
-    /*
-    //Posterior Analysis
-    auto[MeanK_vec, plinks] = analysis::PointwiseEstimate<decltype(SampledG)>(std::tie(SampledK, SampledG),param.iter_to_storeG, ptr_gruppi);
-    MatRow MeanK(MatRow::Zero(p,p));
-    unsigned int pos{0};
-    for(unsigned int i = 0; i < p; ++i){
-      for(unsigned int j = i; j < p; ++j){
-        MeanK(i,j) = MeanK_vec(pos++);
+      auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p, ptr_gruppi);
+      //Create Rcpp::List of sampled Graphs
+      std::vector< Rcpp::List > L(SampledG.size());
+      int counter = 0;
+      for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
+        L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
       }
+      return Rcpp::List::create ( Rcpp::Named("MeanK")= MeanK, 
+                                  Rcpp::Named("plinks")= plinks,  
+                                  Rcpp::Named("AcceptedMoves")= accepted, 
+                                  Rcpp::Named("VisitedGraphs")= visited, 
+                                  Rcpp::Named("TracePlot_Gsize")= TracePlot, 
+                                  Rcpp::Named("SampledGraphs")= L   );
     }
-    //Create Rcpp::List of sampled Graphs
-    std::vector< Rcpp::List > L(SampledG.size());
-    int counter = 0;
-    for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
-      L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
-    }
-    return Rcpp::List::create ( Rcpp::Named("MeanK")= MeanK, 
-                                Rcpp::Named("plinks")= plinks, 
-                                Rcpp::Named("AcceptedMoves")=accepted, 
-                                Rcpp::Named("VisitedGraphs")=visited, 
-                                Rcpp::Named("SampledGraphs")=L );*/
+
+    
   }
   else
     throw std::runtime_error("Error, the only possible form are: Complete and Block.");
@@ -976,45 +965,45 @@ Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
     init.set_init(Beta0, mu0, tau_eps0, tauK0);
     FLMsampler<GraphForm::Diagonal> Sampler(data, param, hy, init, file_name, seed, print_info);
     //Run
+    if(print_info){
+      Rcpp::Rcout<<"FLM Sampler diagonal starts:"<<std::endl; 
+    }
     auto start = std::chrono::high_resolution_clock::now();
-    Sampler.run();
-    //auto [SaveBeta, SaveMu, SaveTauK, SaveTaueps] = Sampler.run();
+    int status = Sampler.run();
     auto stop = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> timer = stop - start;
     if(print_info){
       Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
     }
-    Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
-    Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
-    MatCol MeanBeta   =  analysis::Matrix_PointwiseEstimate( file_name_extension, param.iter_to_store, p, n );
-    VecCol MeanMu     =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Mu" );
-    VecCol MeanTauK   =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Precision" );
-    double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
+    if(status < 0 ){
+      std::string name(file_name);
+      name += ".h5";
+      Rcpp::Rcout<<"Removing file "<<name<<std::endl;
+      Rcpp::Function R_file_remove("file.remove");
+      R_file_remove(name);
+      Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta"), 
+                                                       Rcpp::Named("MeanMu"), 
+                                                       Rcpp::Named("MeanTauK"),   
+                                                       Rcpp::Named("MeanTaueps") );   
+      return PosteriorMeans;
+    }
+    else{
+      //Posterior analysis
+      Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
+      Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
+      MatCol MeanBeta   =  analysis::Matrix_PointwiseEstimate( file_name_extension, param.iter_to_store, p, n );
+      VecCol MeanMu     =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Mu" );
+      VecCol MeanTauK   =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Precision" );
+      double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
+      
+      Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
+                                                       Rcpp::Named("MeanMu")=MeanMu, 
+                                                       Rcpp::Named("MeanTauK")=MeanTauK ,   
+                                                       Rcpp::Named("MeanTaueps")=MeanTaueps );   
+      return PosteriorMeans;
+    }
     
-    Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
-                                                     Rcpp::Named("MeanMu")=MeanMu, 
-                                                     Rcpp::Named("MeanTauK")=MeanTauK ,   
-                                                     Rcpp::Named("MeanTaueps")=MeanTaueps );   
-    
-    return PosteriorMeans;
 
-        
-          ////Summary
-          //auto [MeanBeta, MeanMu, MeanTauK,MeanTaueps] = 
-            //analysis::PointwiseEstimate( std::tie(SaveBeta, SaveMu, SaveTauK, SaveTaueps),param.iter_to_store );
-          ////Return an Rcpp::List
-          //Rcpp::List SampledValues = Rcpp::List::create ( Rcpp::Named("SaveBeta")=SaveBeta, 
-                                                          //Rcpp::Named("SaveMu")=SaveMu, 
-                                                          //Rcpp::Named("SaveTauK")=SaveTauK ,   
-                                                          //Rcpp::Named("SaveTaueps")=SaveTaueps ); 
-  //
-          //Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
-                                                          //Rcpp::Named("MeanMu")=MeanMu, 
-                                                          //Rcpp::Named("MeanTauK")=MeanTauK ,   
-                                                          //Rcpp::Named("MeanTaueps")=MeanTaueps );   
-  //       
-          //return Rcpp::List::create(Rcpp::Named("SampledValues")=SampledValues,Rcpp::Named("PostMeans")=PosteriorMeans);
-        
   }
   else{
     
@@ -1031,48 +1020,53 @@ Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
     init.set_init(Beta0, mu0, tau_eps0, K0 );
     FLMsampler<GraphForm::Fix> Sampler(data, param, hy, init, file_name, seed, print_info);
     //Run
+    if(print_info){
+      Rcpp::Rcout<<"FLM Sampler fixed starts:"<<std::endl; 
+    }
     auto start = std::chrono::high_resolution_clock::now();
-    Sampler.run();
-    //auto [SaveBeta, SaveMu, SaveK, SaveTaueps] = Sampler.run();
+    int  status = Sampler.run();
     auto stop = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double> timer = stop - start;
     if(print_info){
       Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
     }
-    Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
-    Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
-    MatCol MeanBeta   =  analysis::Matrix_PointwiseEstimate( file_name_extension, param.iter_to_store, p, n );
-    VecCol MeanMu     =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Mu" );
-    VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, 0.5*p*(p+1), "Precision" );
-    double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
-    
-    MatRow MeanK(MatRow::Zero(p,p));
-    unsigned int pos{0};
-        for(unsigned int i = 0; i < p; ++i){
-          for(unsigned int j = i; j < p; ++j){
-            MeanK(i,j) = MeanK_vett(pos++);
+
+    if(status < 0){
+      std::string name(file_name);
+      name += ".h5";
+      Rcpp::Rcout<<"Removing file "<<name<<std::endl;
+      Rcpp::Function R_file_remove("file.remove");
+      R_file_remove(name);
+      Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta"), 
+                                                       Rcpp::Named("MeanMu"), 
+                                                       Rcpp::Named("MeanTauK"),   
+                                                       Rcpp::Named("MeanTaueps") );   
+      return PosteriorMeans;
+    }
+    else{
+      //Posterior analysis
+      Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
+      Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
+      MatCol MeanBeta   =  analysis::Matrix_PointwiseEstimate( file_name_extension, param.iter_to_store, p, n );
+      VecCol MeanMu     =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Mu" );
+      VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, 0.5*p*(p+1), "Precision" );
+      double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
+      
+      MatRow MeanK(MatRow::Zero(p,p));
+      unsigned int pos{0};
+          for(unsigned int i = 0; i < p; ++i){
+            for(unsigned int j = i; j < p; ++j){
+              MeanK(i,j) = MeanK_vett(pos++);
+            }
           }
-        }
-    Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
-                                                     Rcpp::Named("MeanMu")=MeanMu, 
-                                                     Rcpp::Named("MeanK")=MeanK ,   
-                                                     Rcpp::Named("MeanTaueps")=MeanTaueps );   
+      Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
+                                                       Rcpp::Named("MeanMu")=MeanMu, 
+                                                       Rcpp::Named("MeanK")=MeanK ,   
+                                                       Rcpp::Named("MeanTaueps")=MeanTaueps );   
+      
+      return PosteriorMeans;
+    }
     
-    return PosteriorMeans;
-                  ////Summary
-                  //auto [MeanBeta, MeanMu, MeanK,MeanTaueps] = 
-                    //analysis::PointwiseEstimate( std::tie(SaveBeta, SaveMu, SaveK, SaveTaueps),param.iter_to_store );
-                  ////Return an Rcpp::List
-                  //Rcpp::List SampledValues = Rcpp::List::create ( Rcpp::Named("SaveBeta")=SaveBeta, 
-                                                                  //Rcpp::Named("SaveMu")=SaveMu, 
-                                                                  //Rcpp::Named("SaveK")=SaveK ,   
-                                                                  //Rcpp::Named("SaveTaueps")=SaveTaueps ); 
-              //
-                  //Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
-                                                                  //Rcpp::Named("MeanMu")=MeanMu, 
-                                                                  //Rcpp::Named("MeanK")=MeanK ,   
-                                                                  //Rcpp::Named("MeanTaueps")=MeanTaueps );   
-                  //return Rcpp::List::create(Rcpp::Named("SampledValues")=SampledValues,Rcpp::Named("PostMeans")=PosteriorMeans);
   }
 }
 
@@ -1115,49 +1109,72 @@ Rcpp::List FGM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
    //Crete sampler obj
    FGMsampler  Sampler(data, param, hy, init, method, file_name, seed, print_info);
    //Run
+   if(print_info){
+     Rcpp::Rcout<<"FGM Sampler starts:"<<std::endl; 
+   }
    auto start = std::chrono::high_resolution_clock::now();
    int accepted = Sampler.run();
-   //auto [SampledBeta, SampledMu, SampledK, SampledG, SampledTaueps] = Sampler.run();
    auto stop = std::chrono::high_resolution_clock::now();
    std::chrono::duration<double> timer = stop - start;
    if(print_info){
      Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
    }
-   //Posterior Analysis
-   Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
-   Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
-   MatCol MeanBeta   =  analysis::Matrix_PointwiseEstimate( file_name_extension, param.iter_to_store, p, n );
-   VecCol MeanMu     =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Mu" );
-   VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
-   double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
-   MatRow MeanK(MatRow::Zero(p,p));
-   unsigned int pos{0};
-       for(unsigned int i = 0; i < p; ++i){
-         for(unsigned int j = i; j < p; ++j){
-           MeanK(i,j) = MeanK_vett(pos++);
-         }
-       }
-   //Graph analysis
-   auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p);
-   //Create Rcpp::List of sampled Graphs
-   std::vector< Rcpp::List > L(SampledG.size());
-   int counter = 0;
-   for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
-     L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+   if(accepted < 0){
+      std::string name(file_name);
+      name += ".h5";
+      Rcpp::Rcout<<"Removing file "<<name<<std::endl;
+      Rcpp::Function R_file_remove("file.remove");
+      R_file_remove(name);
+      Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta"), 
+                                                       Rcpp::Named("MeanMu"), 
+                                                       Rcpp::Named("MeanK"),   
+                                                       Rcpp::Named("MeanTaueps") );   
+
+      Rcpp::List GraphAnalysis  = Rcpp::List::create ( Rcpp::Named("plinks"),  
+                                                       Rcpp::Named("AcceptedMoves"), 
+                                                       Rcpp::Named("VisitedGraphs"), 
+                                                       Rcpp::Named("TracePlot_Gsize"), 
+                                                       Rcpp::Named("SampledGraphs")  );
+      return Rcpp::List::create ( Rcpp::Named("PosteriorMeans")=PosteriorMeans, Rcpp::Named("GraphAnalysis")=GraphAnalysis );
    }
+   else{
+      //Posterior Analysis
+      Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
+      Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
+      MatCol MeanBeta   =  analysis::Matrix_PointwiseEstimate( file_name_extension, param.iter_to_store, p, n );
+      VecCol MeanMu     =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Mu" );
+      VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
+      double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
+      MatRow MeanK(MatRow::Zero(p,p));
+      unsigned int pos{0};
+          for(unsigned int i = 0; i < p; ++i){
+            for(unsigned int j = i; j < p; ++j){
+              MeanK(i,j) = MeanK_vett(pos++);
+            }
+          }
+      //Graph analysis
+      auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p);
+      //Create Rcpp::List of sampled Graphs
+      std::vector< Rcpp::List > L(SampledG.size());
+      int counter = 0;
+      for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
+        L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+      }
 
-   Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
-                                                    Rcpp::Named("MeanMu")=MeanMu, 
-                                                    Rcpp::Named("MeanK")=MeanK ,   
-                                                    Rcpp::Named("MeanTaueps")=MeanTaueps );   
+      Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
+                                                       Rcpp::Named("MeanMu")=MeanMu, 
+                                                       Rcpp::Named("MeanK")=MeanK ,   
+                                                       Rcpp::Named("MeanTaueps")=MeanTaueps );   
 
-   Rcpp::List GraphAnalysis  = Rcpp::List::create ( Rcpp::Named("plinks")= plinks,  
-                                                    Rcpp::Named("AcceptedMoves")= accepted, 
-                                                    Rcpp::Named("VisitedGraphs")= visited, 
-                                                    Rcpp::Named("TracePlot_Gsize")= TracePlot, 
-                                                    Rcpp::Named("SampledGraphs")= L   );
+      Rcpp::List GraphAnalysis  = Rcpp::List::create ( Rcpp::Named("plinks")= plinks,  
+                                                       Rcpp::Named("AcceptedMoves")= accepted, 
+                                                       Rcpp::Named("VisitedGraphs")= visited, 
+                                                       Rcpp::Named("TracePlot_Gsize")= TracePlot, 
+                                                       Rcpp::Named("SampledGraphs")= L   );
 
-   return Rcpp::List::create ( Rcpp::Named("PosteriorMeans")=PosteriorMeans, Rcpp::Named("GraphAnalysis")=GraphAnalysis );  
+      return Rcpp::List::create ( Rcpp::Named("PosteriorMeans")=PosteriorMeans, Rcpp::Named("GraphAnalysis")=GraphAnalysis ); 
+   }
+    
  }
  else if(form == "Block")
  {
@@ -1173,49 +1190,72 @@ Rcpp::List FGM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
    //Crete sampler obj
    FGMsampler<BlockGraph, unsigned int> Sampler(data, param, hy, init, method, file_name, seed, print_info);
    //Run
+   if(print_info){
+     Rcpp::Rcout<<"FGM Sampler starts:"<<std::endl; 
+   }
    auto start = std::chrono::high_resolution_clock::now();
    int accepted = Sampler.run();
-   //auto [SampledBeta, SampledMu, SampledK, SampledG, SampledTaueps] = Sampler.run();
    auto stop = std::chrono::high_resolution_clock::now();
    std::chrono::duration<double> timer = stop - start;
    if(print_info){
      Rcpp::Rcout<<std::endl<<"Time: "<<timer.count()<<" s "<<std::endl; 
    }
-   //Posterior Analysis
-   Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
-   Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
-   MatCol MeanBeta   =  analysis::Matrix_PointwiseEstimate( file_name_extension, param.iter_to_store, p, n );
-   VecCol MeanMu     =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Mu" );
-   VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
-   double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
-   MatRow MeanK(MatRow::Zero(p,p));
-   unsigned int pos{0};
-       for(unsigned int i = 0; i < p; ++i){
-         for(unsigned int j = i; j < p; ++j){
-           MeanK(i,j) = MeanK_vett(pos++);
-         }
-       }
-   //Graph analysis
-   auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p, ptr_gruppi);
-   //Create Rcpp::List of sampled Graphs
-   std::vector< Rcpp::List > L(SampledG.size());
-   int counter = 0;
-   for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
-     L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+   if(accepted < 0){
+      std::string name(file_name);
+      name += ".h5";
+      Rcpp::Rcout<<"Removing file "<<name<<std::endl;
+      Rcpp::Function R_file_remove("file.remove");
+      R_file_remove(name);
+      Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta"), 
+                                                       Rcpp::Named("MeanMu"), 
+                                                       Rcpp::Named("MeanK"),   
+                                                       Rcpp::Named("MeanTaueps") );   
+
+      Rcpp::List GraphAnalysis  = Rcpp::List::create ( Rcpp::Named("plinks"),  
+                                                       Rcpp::Named("AcceptedMoves"), 
+                                                       Rcpp::Named("VisitedGraphs"), 
+                                                       Rcpp::Named("TracePlot_Gsize"), 
+                                                       Rcpp::Named("SampledGraphs")  );
+      return Rcpp::List::create ( Rcpp::Named("PosteriorMeans")=PosteriorMeans, Rcpp::Named("GraphAnalysis")=GraphAnalysis );
    }
+   else{
+      //Posterior Analysis
+      Rcpp::Rcout<<"Created file: "<<std::string (file_name)<<".h5"<<std::endl;
+      Rcpp::Rcout<<"Computing PosterionMeans ... "<<std::endl;
+      MatCol MeanBeta   =  analysis::Matrix_PointwiseEstimate( file_name_extension, param.iter_to_store, p, n );
+      VecCol MeanMu     =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_store, p, "Mu" );
+      VecCol MeanK_vett =  analysis::Vector_PointwiseEstimate( file_name_extension, param.iter_to_storeG, 0.5*p*(p+1), "Precision" );
+      double MeanTaueps =  analysis::Scalar_PointwiseEstimate( file_name_extension, param.iter_to_store );
+      MatRow MeanK(MatRow::Zero(p,p));
+      unsigned int pos{0};
+          for(unsigned int i = 0; i < p; ++i){
+            for(unsigned int j = i; j < p; ++j){
+              MeanK(i,j) = MeanK_vett(pos++);
+            }
+          }
+      //Graph analysis
+      auto [plinks, SampledG, TracePlot, visited] = analysis::Summary_Graph(file_name_extension, param.iter_to_storeG, p, ptr_gruppi);
+      //Create Rcpp::List of sampled Graphs
+      std::vector< Rcpp::List > L(SampledG.size());
+      int counter = 0;
+      for(auto it = SampledG.cbegin(); it != SampledG.cend(); ++it){
+        L[counter++] = Rcpp::List::create(Rcpp::Named("Graph")=it->first, Rcpp::Named("Frequency")=it->second);
+      }
 
-   Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
-                                                    Rcpp::Named("MeanMu")=MeanMu, 
-                                                    Rcpp::Named("MeanK")=MeanK ,   
-                                                    Rcpp::Named("MeanTaueps")=MeanTaueps );   
+      Rcpp::List PosteriorMeans = Rcpp::List::create ( Rcpp::Named("MeanBeta")=MeanBeta, 
+                                                       Rcpp::Named("MeanMu")=MeanMu, 
+                                                       Rcpp::Named("MeanK")=MeanK ,   
+                                                       Rcpp::Named("MeanTaueps")=MeanTaueps );   
 
-   Rcpp::List GraphAnalysis  = Rcpp::List::create ( Rcpp::Named("plinks")= plinks,  
-                                                    Rcpp::Named("AcceptedMoves")= accepted, 
-                                                    Rcpp::Named("VisitedGraphs")= visited, 
-                                                    Rcpp::Named("TracePlot_Gsize")= TracePlot, 
-                                                    Rcpp::Named("SampledGraphs")= L   );
+      Rcpp::List GraphAnalysis  = Rcpp::List::create ( Rcpp::Named("plinks")= plinks,  
+                                                       Rcpp::Named("AcceptedMoves")= accepted, 
+                                                       Rcpp::Named("VisitedGraphs")= visited, 
+                                                       Rcpp::Named("TracePlot_Gsize")= TracePlot, 
+                                                       Rcpp::Named("SampledGraphs")= L   );
 
-   return Rcpp::List::create ( Rcpp::Named("PosteriorMeans")=PosteriorMeans, Rcpp::Named("GraphAnalysis")=GraphAnalysis ); 
+      return Rcpp::List::create ( Rcpp::Named("PosteriorMeans")=PosteriorMeans, Rcpp::Named("GraphAnalysis")=GraphAnalysis ); 
+   }
+   
  }
  else
    throw std::runtime_error("Error, the only possible forms are: Complete and Block.");

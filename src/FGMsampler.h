@@ -3,7 +3,6 @@
 
 #include "SamplerOptions.h"
 
-
 /*FGM sampler for sampling from a functional graphical model. It both perform a smoothing procedure and the estimation of the graph describing the dependece structure of regression coefficients*/
 
 template<template <typename> class GraphStructure = GraphType, typename T = unsigned int  >
@@ -59,12 +58,8 @@ void FGMsampler<GraphStructure, T >::check() const{
 
 
 template<template <typename> class GraphStructure, typename T  >
-int FGMsampler<GraphStructure, T /*, RetGraph*/ >::run()
+int FGMsampler<GraphStructure, T >::run()
 {
-
-	if(print_pb){
-		std::cout<<"FGM sampler started"<<std::endl;
-	}
 	
 	//Typedefs
 	GGM<GraphStructure, T> & GGM_method= *ptr_GGM_method;
@@ -208,7 +203,6 @@ int FGMsampler<GraphStructure, T /*, RetGraph*/ >::run()
 			b_tau_eps_post += beta_i.dot(tbase_base*beta_i) - 2*beta_i.dot(tbase_data.col(i));  
 		}
 
-
 		//Precision tau
 		b_tau_eps_post /= 2.0;
 		tau_eps = rGamma(engine, a_tau_eps_post, 1/b_tau_eps_post);
@@ -220,8 +214,20 @@ int FGMsampler<GraphStructure, T /*, RetGraph*/ >::run()
 		total_accepted += accepted_mv;
 
 		//Check for user interruption
-		if(iter%1000 == 0){
-			Rcpp::checkUserInterrupt(); //files are not closed 
+		try{
+		  Rcpp::checkUserInterrupt();
+		}
+		catch(Rcpp::internal::InterruptedException e){
+			Rcpp::Rcout<<"Execution stopped during iter "<<iter<<"/"<<niter<<std::endl;
+			H5Dclose(dataset_Graph);
+			H5Dclose(dataset_Beta);
+			H5Dclose(dataset_TauEps);
+			H5Dclose(dataset_Prec);
+			H5Dclose(dataset_Mu);
+			H5Dclose(dataset_info);
+			H5Dclose(dataset_version);
+			H5Fclose(file);
+			return -1;
 		}
 		
 		//Save
@@ -264,7 +270,6 @@ int FGMsampler<GraphStructure, T /*, RetGraph*/ >::run()
 	H5Dclose(dataset_version);
 	H5Fclose(file);
 
-	std::cout<<std::endl<<"FGM sampler has finished"<<std::endl;
 	return total_accepted;
 }
 

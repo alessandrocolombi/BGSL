@@ -153,9 +153,18 @@ int GGMsampler<GraphStructure, T >::run()
 		std::tie(K, accepted_mv) = GGM_method(data, n, G, p_addrm, engine); //G is modified inside the function.
 		total_accepted += accepted_mv;
 
-		//Check for user interruption
-		if(iter%1000 == 0){
-			Rcpp::checkUserInterrupt(); //files are not closed 
+		//Check for User interruption
+		try{
+			Rcpp::checkUserInterrupt();
+		}
+		catch(Rcpp::internal::InterruptedException e){
+			Rcpp::Rcout<<"Execution stopped during iter "<<iter<<"/"<<niter<<std::endl;
+			H5Dclose(dataset_Graph);
+			H5Dclose(dataset_Prec);
+			H5Dclose(dataset_info);
+			H5Dclose(dataset_version);
+			H5Fclose(file);
+			return -1;
 		}
 
 		//Save

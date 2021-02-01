@@ -26,7 +26,7 @@ class FLMsampler : public FLMsamplerTraits
 	 	file_name += ".h5";
 	} 
 
-	void run();
+	int run();
 
 	private:
 	void check() const;
@@ -53,15 +53,11 @@ void FLMsampler<Graph>::check() const{
 }
 
 template< GraphForm Graph >
-void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType 
+int FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType 
 {	
 	static_assert(Graph == GraphForm::Diagonal || Graph == GraphForm::Fix,
 			      "Error, this sampler is not a graphical model, the graph has to be given. The possibilities for Graph parameter are GraphForm::Diagonal or GraphForm::Fix");
 	
-	if(print_pb){
-		std::cout<<"FLM sampler started"<<std::endl;
-	}
-
 	// Declare all parameters (makes use of C++17 structured bindings)
 	const unsigned int & r = grid_pts;
 	const unsigned int n_elem_mat = 0.5*p*(p+1); //Number of elements in the upper part of precision matrix (diagonal inclused). It is what is saved if K is a matrix
@@ -282,9 +278,20 @@ void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 			}
 		}
 
-		//Check for user interruption
-		if(iter%1000 == 0){
-			Rcpp::checkUserInterrupt(); //files are not closed 
+		//Check for User interruption
+		try{
+		  Rcpp::checkUserInterrupt();
+		}
+		catch(Rcpp::internal::InterruptedException e){
+			Rcpp::Rcout<<"Execution stopped during iter "<<iter<<"/"<<niter<<std::endl;
+			H5Dclose(dataset_Beta);
+			H5Dclose(dataset_TauEps);
+			H5Dclose(dataset_Prec);
+			H5Dclose(dataset_Mu);
+			H5Dclose(dataset_info);
+			H5Dclose(dataset_version);
+			H5Fclose(file);
+			return -1;
 		}
 	}
 
@@ -295,9 +302,7 @@ void FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 	H5Dclose(dataset_info);
 	H5Dclose(dataset_version);
 	H5Fclose(file);
-
-	std::cout<<std::endl<<"FLM sampler has finished"<<std::endl;
-
+	return 0;
 }
 
 

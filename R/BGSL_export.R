@@ -384,7 +384,7 @@ smooth_curves_credible_bands = function(  beta, betaLower, betaUpper, BaseMat, n
     if(is.null(internal_knots)){
       if(n_plot > 1){
         x11(height=4)
-        matplot( x = X, t(Ymean[1:n_plot,]), type = 'l', lty = 2,
+        matplot( x = X, t(Ymean[1:n_plot,]), type = 'l', lty = 1,
                 col = c('steelblue','steelblue1','skyblue3', 'lightsteelblue1'),
                 lwd = 3, ylim = c(min(Ylower[1:n_plot,]),max(Yupper[1:n_plot,])), axes = T,
                 main = title_plot, xlab = xtitle,
@@ -398,7 +398,7 @@ smooth_curves_credible_bands = function(  beta, betaLower, betaUpper, BaseMat, n
       }
       else if(n_plot == 1){
         x11(height=4)
-        matplot( x = X, (Ymean[1:n_plot,]), type = 'l', lty = 2,
+        matplot( x = X, (Ymean[1:n_plot,]), type = 'l', lty = 1,
                 col = c('steelblue','steelblue1','skyblue3', 'lightsteelblue1'),
                 lwd = 3, ylim = c(min(Ylower[1:n_plot,]),max(Yupper[1:n_plot,])), axes = T,
                 main = title_plot, xlab = xtitle,
@@ -425,7 +425,7 @@ smooth_curves_credible_bands = function(  beta, betaLower, betaUpper, BaseMat, n
         names_y = round(seq(min(Ymean[1:n_plot,]), max(Ymean[1:n_plot,]), length.out = 10), digits = 2)
         if(n_plot > 1){
           x11(height=4)
-            matplot(x = X, t(Ymean[1:n_plot,]), type = 'l', lty = 2,
+            matplot(x = X, t(Ymean[1:n_plot,]), type = 'l', lty = 1,
                     col = c('steelblue','steelblue1','skyblue3', 'lightsteelblue1'),
                     lwd = 3, ylim = c(min(Ylower[1:n_plot,]),max(Yupper[1:n_plot,])), axes = F,
                     main = title_plot, xlab = xtitle,
@@ -450,7 +450,7 @@ smooth_curves_credible_bands = function(  beta, betaLower, betaUpper, BaseMat, n
         }
         else if(n_plot == 1){
             x11(height=4)
-              matplot(x = X, (Ymean[1:n_plot,]), type = 'l', lty = 2,
+              matplot(x = X, (Ymean[1:n_plot,]), type = 'l', lty = 1,
                       col = c('steelblue','steelblue1','skyblue3', 'lightsteelblue1'),
                       lwd = 3, ylim = c(min(Ylower[1:n_plot,]),max(Yupper[1:n_plot,])), axes = F,
                       main = title_plot, xlab = xtitle,
@@ -532,9 +532,9 @@ plot_curves = function( data1, data2 = NULL, range, n_plot = 1, grid_points = NU
                 main = title_plot, xlab = xtitle,
                 ylab = ytitle)
         if(!is.null(data2)){
-            matplot( x = X, t(data2[1:n_plot,]), type = 'l', lty = 2,
+            matplot( x = X, t(data2[1:n_plot,]), type = 'l', lty = 1,
             col = c('steelblue','steelblue1','skyblue3', 'lightsteelblue1'), lwd = 3, add = T)
-            legend("topright", legend=c(legend_name1, legend_name2), col = c('darkolivegreen','steelblue'), lty = c(1,2), lwd = 3)
+            legend("topright", legend=c(legend_name1, legend_name2), col = c('darkolivegreen','steelblue'), lty = c(1,1), lwd = 3)
         }
       }
       else if(n_plot == 1){
@@ -545,9 +545,9 @@ plot_curves = function( data1, data2 = NULL, range, n_plot = 1, grid_points = NU
                 main = title_plot, xlab = xtitle,
                 ylab = ytitle)
        if(!is.null(data2)){
-           matplot( x = X, (data2[1:n_plot,]), type = 'l', lty = 2,
+           matplot( x = X, (data2[1:n_plot,]), type = 'l', lty = 1,
            col = c('steelblue','steelblue1','skyblue3', 'lightsteelblue1'), lwd = 3, add = T)
-           legend("topright", legend=c(legend_name1, legend_name2), col = c('darkolivegreen','steelblue'), lty = c(1,2), lwd = 3)
+           legend("topright", legend=c(legend_name1, legend_name2), col = c('darkolivegreen','steelblue'), lty = c(1,1), lwd = 3)
        }
       }
     }
@@ -571,9 +571,9 @@ plot_curves = function( data1, data2 = NULL, range, n_plot = 1, grid_points = NU
                     main = title_plot, xlab = xtitle,
                     ylab = ytitle)
             if(!is.null(data2)){
-                matplot( x = X, t(data2[1:n_plot,]), type = 'l', lty = 2,
+                matplot( x = X, t(data2[1:n_plot,]), type = 'l', lty = 1,
                 col = c('steelblue','steelblue1','skyblue3', 'lightsteelblue1'), lwd = 3, add = T)
-                legend("topright", legend=c(legend_name1, legend_name2), col = c('darkolivegreen','steelblue'), lty = c(1,2), lwd = 3)
+                legend("topright", legend=c(legend_name1, legend_name2), col = c('darkolivegreen','steelblue'), lty = c(1,1), lwd = 3)
             }
             abline(v = knots, lty = 2, col = 'black')
                 if(!is.null(highlight_band1)){
@@ -595,9 +595,9 @@ plot_curves = function( data1, data2 = NULL, range, n_plot = 1, grid_points = NU
                       main = title_plot, xlab = xtitle,
                       ylab = ytitle)
               if(!is.null(data2)){
-                  matplot( x = X, (data2[1:n_plot,]), type = 'l', lty = 2,
+                  matplot( x = X, (data2[1:n_plot,]), type = 'l', lty = 1,
                   col = c('steelblue','steelblue1','skyblue3', 'lightsteelblue1'), lwd = 3, add = T)
-                  legend("topright", legend=c(legend_name1, legend_name2), col = c('darkolivegreen','steelblue'), lty = c(1,2), lwd = 3)
+                  legend("topright", legend=c(legend_name1, legend_name2), col = c('darkolivegreen','steelblue'), lty = c(1,1), lwd = 3)
               }
               abline(v = knots, lty = 2, col = 'black')
                   if(!is.null(highlight_band1)){
@@ -1400,6 +1400,8 @@ sigmaG_GGM_tuning = function( data, n, niter = 1000, sigmaG_list = seq(0.05, 0.5
                          			        Param = param, HyParam = hy, Init = init, groups = NULL, n_groups = n_groups,
                         			        prior = prior, form = form, algo = algo, file_name = file_name,
                         			        seed = seed, print_info = FALSE  )
+        if(length(result) == 0)
+          stop("GGM_sampling is returning an empty list. Execution stops")
 	    tot = tot + result$AcceptedMoves
 	    #setTxtProgressBar(pb, i)
 	    cat('\n  i = ',i,', acc = ',result$AcceptedMoves,'\n')
