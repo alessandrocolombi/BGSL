@@ -22,7 +22,7 @@ LinkingTo:
     RcppEigen (>= 0.3.3.7.0)
 Imports: 
     Rcpp,
-    mathjaxr (>= 1.0-1)
+    mathjaxr (>= 1.0-2)
 Suggests: 
     plot.matrix (>= 1.5.2),
     fields (>= 11.6)
