@@ -66,14 +66,20 @@ $ sudo apt-get update
 $ sudo apt-get install r-base-dev
 $ R
 ```
-The last instruction should launch the program and display the downloaded version that should be at least 4.0.2.
-7. Install [Rstudio](https://rstudio.com/products/rstudio/download/#download) as IDE for `R`. It is not the only possibility but it is a standard choice and highly recommended. 
+The last instruction should launch the program and display the downloaded version that should be at least 4.0.2.<br/>
+7. Install [Rstudio](https://rstudio.com/products/rstudio/download/#download) as IDE for `R`. It is not the only possibility but it is a standard choice and highly recommended. Once you downloaded it, write the following lines to unpack it.
+```shell
+$ cd Downloads/
+$ sudo apt-get install gdebi 
+$ sudo gdebi rstudio-1.3.1093-amd64.deb 
+```
+The last command need to be modified accordin to the downloaded version. <br/>
 
-The very last step is to install the `devtools` package. This installation may take few minutes since has many dependencies that rely on external libraries. It is indeed suggested to install them at this stage simply typing 
+8. The very last step is to install the `devtools` package. This installation may take few minutes since has many dependencies that rely on external libraries. It is indeed suggested to install them at this stage simply typing 
 ```shell
 $ sudo apt-get install libssl-dev libcurl4-openssl-dev libxml2-dev libgit2-dev libnode-dev
 ```
-Once they have all been installed, you are ready to complete this first step launching this command from `R` console.
+9. Once they have all been installed, you are ready to complete this first step. Open Rstudio and launch this command from `R` console.
 ```R
 install.packages("devtools")
 ```

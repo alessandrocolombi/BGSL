@@ -282,7 +282,7 @@ int FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 		try{
 		  Rcpp::checkUserInterrupt();
 		}
-		catch(Rcpp::internal::InterruptedException e){
+		catch(Rcpp::internal::InterruptedException e){ //Close all files before leaving
 			Rcpp::Rcout<<"Execution stopped during iter "<<iter<<"/"<<niter<<std::endl;
 			H5Dclose(dataset_Beta);
 			H5Dclose(dataset_TauEps);

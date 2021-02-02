@@ -19,10 +19,7 @@ struct GroupsTraits{
   //using IdxMap                    = std::map<unsigned int, unsigned int>;
 };
 
-//Il container dei Groups è una sorta di rho function. Il contenitore esterno rappresenta i nodi del grafo a blocchi, quindi (*this)[i] sono tutti i nodi del 
-//grafo grande associati ad i. 
-// map_of_indeces -> invece rappresenta l'operazione inversa, è indicizzata rispetto ai nodi del grafo completo e mappa nei nodi di quello a blocchi.
-// 
+
 
 //Groups class is thought to be a sort of rho function. It is a vector of vectors. the external vector represents the nodes of the graph in block form. 
 //This means that (*this)[i] contains all the nodes of the complete graphs that are grouped in the i-th node in block form.

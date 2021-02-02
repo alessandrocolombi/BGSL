@@ -102,7 +102,6 @@ DoubleReversibleJumpsMH<GraphStructure, T>::operator()(MatCol const & data, unsi
 	//6) Perform the move and return
 	int accepted;
 	if( rand(engine) < acceptance_ratio ){//Accepted
-		//Gold = Gnew;
 		Gold = std::move(Gnew); //Move semantic is available for graphs
 		accepted = 1;
 	}

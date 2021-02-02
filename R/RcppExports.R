@@ -256,104 +256,22 @@ FGM_sampling_c <- function(data, niter, burnin, thin, thinG, BaseMat, file_name,
     .Call(`_BGSL_FGM_sampling_c`, data, niter, burnin, thin, thinG, BaseMat, file_name, Beta0, mu0, tau_eps0, G0, K0, a_tau_eps, b_tau_eps, sigmamu, bK, DK, sigmaG, paddrm, Gprior, MCprior, MCpost, threshold, form, prior, algo, groups, seed, print_info)
 }
 
-#' Read information from file
-#'
-#' \loadmathjax Read from \code{file_name} some information that are needed to extract data from it. 
-#' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
-#' @return It returns a list containing \code{p}, the dimension of the graph, \code{n} the number of observed data, \code{stored_iter} the number of saved iterations for the regression parameters,
-#' \code{stored_iterG} the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix.
 Read_InfoFile_old <- function(file_name) {
     .Call(`_BGSL_Read_InfoFile_old`, file_name)
 }
 
-#' Compute quantiles of sampled values
-#'
-#' \loadmathjax This function reads the sampled values saved in a binary file and computes the quantiles of the desired level.
-#' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
-#' @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
-#' It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
-#' @param n integer, the number of observed data.
-#' @param stored_iterG integer, the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix. Required only if \code{Precision} parameter is \code{TRUE}.
-#' @param stored_iter integer, the number of saved iterations for the regression parameters, i.e \mjseqn{\beta}s, \mjseqn{\mu} and \mjseqn{\tau_{\epsilon}}. 
-#' Required if at least one of \code{Beta}, \code{Mu},  \code{TauEps} parameter is \code{TRUE}.
-#' @param Beta boolean, set \code{TRUE} to compute the quantiles for all \code{p*n} \mjseqn{\beta} coefficients. It may require long time.
-#' @param Mu boolean, set \code{TRUE} to compute the quantiles for all \mjseqn{p} parameters. 
-#' @param TauEps boolean, set \code{TRUE} to compute the quantiles of \mjseqn{\tau_{\epsilon}} parameter.
-#' @param Precision boolean, set \code{TRUE} to compute the quantiles for all the elements of the precision matrix. Some care is requested. 
-#' If the file represents the output of \code{GGM}, \code{FGM} of \code{FLM} with fixed graph, the sampled precision matrices are of size \mjseqn{p \times p}. In that case set \code{prec_elem} parameter
-#' equal to \mjseqn{\frac{p(p+1)}{2}}. Instead, for outputs coming from \code{FLM} sampler with diagonal graph, only the diagonal of the precision matrix is saved. If so, set \code{prec_ele} eqaul to \mjseqn{p}.
-#' @param prec_elem integer, set equal to \mjseqn{p} if \code{file_name} represents the output of \code{FLM} sampler with diagonal graph. Set \mjseqn{\frac{p(p+1)}{2}} otherwise.
-#' @param lower_qtl the level of the first desired quantile.
-#' @param upper_qtl the level of the second desired quantile.
-#'
-#' @return It returns a list containig the upper and lower quantiles of the requested quantities.
 Compute_Quantiles_old <- function(file_name, p, n, stored_iterG = 0L, stored_iter = 0L, Beta = FALSE, Mu = FALSE, TauEps = FALSE, Precision = FALSE, prec_elem = 0L, lower_qtl = 0.05, upper_qtl = 0.95) {
     .Call(`_BGSL_Compute_Quantiles_old`, file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision, prec_elem, lower_qtl, upper_qtl)
 }
 
-#' Read chain from file
-#'
-#' \loadmathjax This function read from a binary file the sampled chain for the \code{index1}-th component of variable specified in \code{variable}. The chain is then saved in memory to make it available for further analysis.
-#' Both \code{index1} and \code{index2} start counting from 1, the first element is obtained by settin \code{index1} equal to 1, not 0.
-#' Only \code{"Beta"} coefficients require the usage of \code{index2}. This function allows to extract only one chain at the time. The idea of writing the sampled values on a file is indeed to
-#' avoid to fill the memory. This function has to carefully used.
-#' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
-#' @param variable string, the name of the dataset to be read from the file. Only possibilities are \code{"Beta"}, \code{"Mu"}, \code{"Precision"} and \code{"TauEps"}.
-#' @param stored_iter integer, the number of saved iterations. It can be read from \code{\link{Read_InfoFile}}.
-#' @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
-#' It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
-#' @param n integer, the number of observed data.
-#' @param index1 integer, the index of the element whose chain has to read from the file. The first elements corresponds to \code{index1} equal to 1. 
-#' If \code{variable} is equal to \code{"Precision"} some care is required. If the file represents the output of \code{GGM}, \code{FGM} of \code{FLM} with fixed graph, the sampled precision matrices 
-#' are of size \mjseqn{p \times p} stored row by row. This means that the second diagonal elements corresponds to \code{index1} equal to \mjseqn{p+1}. 
-#' Moreover, in this case set \code{prec_elem} parameter equal to \mjseqn{\frac{p(p+1)}{2}}. 
-#' Instead, for outputs coming from \code{FLM} sampler with diagonal graph, only the diagonal of the precision matrix is saved. If so, \code{index1} ranges from 1 up to \mjseqn{p}. Moreover, set \code{prec_ele} eqaul to \mjseqn{p}.
-#' If \code{variable} is equal to \code{"Beta"}, this index ranges for 1 up to \mjseqn{p}, it represents the spine coefficinet.
-#' @param index2 integer, to be used only if \code{variable} is equal to \code{"Beta"}. It ranges from 1 up to \mjseqn{n}. In this case, the chain for the spline_index-th coefficients of the curve_index-th curve is read.
-#' @param prec_elem integer, set equal to \mjseqn{p} if \code{file_name} represents the output of \code{FLM} sampler with diagonal graph. Set \mjseqn{\frac{p(p+1)}{2}} otherwise.
-#'
-#' @return It returns a numeric vector all the sampled values of the required element.
 Extract_Chain_old <- function(file_name, variable, stored_iter, p, n = 0L, index1 = 1L, index2 = 1L, prec_elem = 0L) {
     .Call(`_BGSL_Extract_Chain_old`, file_name, variable, stored_iter, p, n, index1, index2, prec_elem)
 }
 
-#' Compute Posterior means of sampled values
-#'
-#' \loadmathjax This function reads the sampled values saved in a binary file and computes the mean of the requested quantities.
-#' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
-#' @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
-#' It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
-#' @param n integer, the number of observed data.
-#' @param stored_iterG integer, the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix. Required only if \code{Precision} parameter is \code{TRUE}.
-#' @param stored_iter integer, the number of saved iterations for the regression parameters, i.e \mjseqn{\beta}s, \mjseqn{\mu} and \mjseqn{\tau_{\epsilon}}.
-#' Required if at least one of \code{Beta}, \code{Mu},  \code{TauEps} parameter is \code{TRUE}.
-#' @param Beta boolean, set \code{TRUE} to compute the mean for all \code{p*n} \mjseqn{\beta} coefficients. It may require long time.
-#' @param Mu boolean, set \code{TRUE} to compute the mean for all \mjseqn{p} parameters. 
-#' @param TauEps boolean, set \code{TRUE} to compute the mean of \mjseqn{\tau_{\epsilon}} parameter.
-#' @param Precision boolean, set \code{TRUE} to compute the mean for all the elements of the precision matrix. Some care is requested. 
-#' If the file represents the output of \code{GGM}, \code{FGM} of \code{FLM} with fixed graph, the sampled precision matrices are of size \mjseqn{p \times p}. In that case set \code{prec_elem} parameter
-#' equal to \mjseqn{\frac{p(p+1)}{2}}. Instead, for outputs coming from \code{FLM} sampler with diagonal graph, only the diagonal of the precision matrix is saved. If so, set \code{prec_ele} eqaul to \mjseqn{p}.
-#' @param prec_elem integer, set equal to \mjseqn{p} if \code{file_name} represents the output of \code{FLM} sampler with diagonal graph. Set \mjseqn{\frac{p(p+1)}{2}} otherwise.
-#'
-#' @return It returns a list containig the mean of the requested quantities.
 Compute_PosteriorMeans_old <- function(file_name, p, n, stored_iterG = 0L, stored_iter = 0L, Beta = FALSE, Mu = FALSE, TauEps = FALSE, Precision = FALSE, prec_elem = 0L) {
     .Call(`_BGSL_Compute_PosteriorMeans_old`, file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision, prec_elem)
 }
 
-#' Read the sampled Graph saved on file
-#'
-#' \loadmathjax This function reads the sampled graphs that are saved on a binary file and performs a summary of all visited graphs.
-#' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
-#' @param stored_iter integer, the number of saved iterations. It can be read from \code{\link{Read_InfoFile}}.
-#' @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
-#' It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
-#' @param groups List representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group, 
-#' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave \code{NULL} if the graph is not in block form.
-#'
-#' @return It returns a list composed of: \code{plinks} that contains the posterior probability of inclusion of each possible link. \code{AcceptedMoves} contains the number of
-#' Metropolis-Hastings moves that were accepted in the sampling, \code{VisitedGraphs} the number of graph that were visited at least once, \code{TracePlot_Gsize} is a vector 
-#' such that each element is equal to the size of the visited graph in that particular iteration and finally \code{SampledGraphs} is a list containing all the visited graphs and their absolute frequence of visit.
-#' To save memory, the graphs are represented only by the upper triangular part, stored row-wise. 
 Summary_Graph_old <- function(file_name, stored_iterG, p, groups = NULL) {
     .Call(`_BGSL_Summary_Graph_old`, file_name, stored_iterG, p, groups)
 }

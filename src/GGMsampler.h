@@ -157,7 +157,7 @@ int GGMsampler<GraphStructure, T >::run()
 		try{
 			Rcpp::checkUserInterrupt();
 		}
-		catch(Rcpp::internal::InterruptedException e){
+		catch(Rcpp::internal::InterruptedException e){ //Close all files before leaving
 			Rcpp::Rcout<<"Execution stopped during iter "<<iter<<"/"<<niter<<std::endl;
 			H5Dclose(dataset_Graph);
 			H5Dclose(dataset_Prec);

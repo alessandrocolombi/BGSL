@@ -108,7 +108,6 @@ class GGM : public GGMTraits<GraphStructure, T> {
 		PrecisionType Kprior;
 		double trGwishSampler;
 		std::vector<unsigned int> positions; //vector storing all possible positions. --> ones union zeros = positions
-		//MoveType Move;
 		std::pair<unsigned int, unsigned int> selected_link; 
 		MatCol D_plus_U;
 		MatCol chol_inv_DplusU;

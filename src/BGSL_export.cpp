@@ -52,7 +52,6 @@ Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Ei
   sample::GSL_RNG engine( static_cast<unsigned int>(seed) );
   if (groups.isNotNull()){ //Assume it is a BlockGraph   
     Rcpp::List L(groups); // casting to underlying type List
-    //Rcpp::Rcout << "List is not NULL." << std::endl;
     std::shared_ptr<const Groups> ptr_gr = std::make_shared<const Groups>(L); //Create pointer to groups
     BlockGraph<unsigned int> Graph(G, ptr_gr);
     auto rgwish_fun = utils::build_rgwish_function<CompleteView, unsigned int>(form, norm);
@@ -71,7 +70,6 @@ Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Ei
     
   }
   else{ //Assume it is a Complete Graph
-    //Rcpp::Rcout << "List is NULL." << std::endl;
     GraphType<unsigned int> Graph(G);
     auto rgwish_fun = utils::build_rgwish_function<GraphType, unsigned int>(form, norm);
     auto [Mat, converged, iter] = rgwish_fun(Graph.completeview(), b, D, threshold_conv, engine, max_iter);
@@ -121,7 +119,6 @@ long double log_Gconstant(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dyn
       return utils::log_normalizing_constat(Graph.completeview(), b, D, MCiteration, engine);
     }
     else{ //Assume it is a BlockGraph
-      //Rcpp::Rcout << "List is NULL." << std::endl;
       GraphType<unsigned int> Graph(G);
       return utils::log_normalizing_constat(Graph.completeview(), b, D, MCiteration, engine);
     }
@@ -830,12 +827,6 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
       Rcpp::Rcout<<"Removing file "<<name<<std::endl;
       Rcpp::Function R_file_remove("file.remove");
       R_file_remove(name);
-                  //return Rcpp::List::create ( Rcpp::Named("MeanK"), 
-            //Rcpp::Named("plinks"),  
-            //Rcpp::Named("AcceptedMoves"), 
-            //Rcpp::Named("VisitedGraphs"), 
-            //Rcpp::Named("TracePlot_Gsize"), 
-            //Rcpp::Named("SampledGraphs")  );
       return Rcpp::List::create();
     }
     else{
@@ -897,12 +888,6 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
       Rcpp::Rcout<<"Removing file "<<name<<std::endl;
       Rcpp::Function R_file_remove("file.remove");
       R_file_remove(name);
-      //return Rcpp::List::create ( Rcpp::Named("MeanK"), 
-                                  //Rcpp::Named("plinks"),  
-                                  //Rcpp::Named("AcceptedMoves"), 
-                                  //Rcpp::Named("VisitedGraphs"), 
-                                  //Rcpp::Named("TracePlot_Gsize"), 
-                                  //Rcpp::Named("SampledGraphs")  );
       return Rcpp::List::create();
     }
     else{
@@ -1269,12 +1254,12 @@ Rcpp::List FGM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
 * quale sampler è stato usato.
 */
 
-//' Read information from file
-//'
-//' \loadmathjax Read from \code{file_name} some information that are needed to extract data from it. 
-//' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
-//' @return It returns a list containing \code{p}, the dimension of the graph, \code{n} the number of observed data, \code{stored_iter} the number of saved iterations for the regression parameters,
-//' \code{stored_iterG} the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix.
+// Read information from file
+//
+// \loadmathjax Read from \code{file_name} some information that are needed to extract data from it. 
+// @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
+// @return It returns a list containing \code{p}, the dimension of the graph, \code{n} the number of observed data, \code{stored_iter} the number of saved iterations for the regression parameters,
+// \code{stored_iterG} the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix.
 // [[Rcpp::export]]
 Rcpp::List Read_InfoFile_old( Rcpp::String const & file_name )
 {
@@ -1288,27 +1273,27 @@ Rcpp::List Read_InfoFile_old( Rcpp::String const & file_name )
 
 
 
-//' Compute quantiles of sampled values
-//'
-//' \loadmathjax This function reads the sampled values saved in a binary file and computes the quantiles of the desired level.
-//' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
-//' @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
-//' It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
-//' @param n integer, the number of observed data.
-//' @param stored_iterG integer, the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix. Required only if \code{Precision} parameter is \code{TRUE}.
-//' @param stored_iter integer, the number of saved iterations for the regression parameters, i.e \mjseqn{\beta}s, \mjseqn{\mu} and \mjseqn{\tau_{\epsilon}}. 
-//' Required if at least one of \code{Beta}, \code{Mu},  \code{TauEps} parameter is \code{TRUE}.
-//' @param Beta boolean, set \code{TRUE} to compute the quantiles for all \code{p*n} \mjseqn{\beta} coefficients. It may require long time.
-//' @param Mu boolean, set \code{TRUE} to compute the quantiles for all \mjseqn{p} parameters. 
-//' @param TauEps boolean, set \code{TRUE} to compute the quantiles of \mjseqn{\tau_{\epsilon}} parameter.
-//' @param Precision boolean, set \code{TRUE} to compute the quantiles for all the elements of the precision matrix. Some care is requested. 
-//' If the file represents the output of \code{GGM}, \code{FGM} of \code{FLM} with fixed graph, the sampled precision matrices are of size \mjseqn{p \times p}. In that case set \code{prec_elem} parameter
-//' equal to \mjseqn{\frac{p(p+1)}{2}}. Instead, for outputs coming from \code{FLM} sampler with diagonal graph, only the diagonal of the precision matrix is saved. If so, set \code{prec_ele} eqaul to \mjseqn{p}.
-//' @param prec_elem integer, set equal to \mjseqn{p} if \code{file_name} represents the output of \code{FLM} sampler with diagonal graph. Set \mjseqn{\frac{p(p+1)}{2}} otherwise.
-//' @param lower_qtl the level of the first desired quantile.
-//' @param upper_qtl the level of the second desired quantile.
-//'
-//' @return It returns a list containig the upper and lower quantiles of the requested quantities.
+// Compute quantiles of sampled values
+//
+// \loadmathjax This function reads the sampled values saved in a binary file and computes the quantiles of the desired level.
+// @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
+// @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
+// It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
+// @param n integer, the number of observed data.
+// @param stored_iterG integer, the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix. Required only if \code{Precision} parameter is \code{TRUE}.
+// @param stored_iter integer, the number of saved iterations for the regression parameters, i.e \mjseqn{\beta}s, \mjseqn{\mu} and \mjseqn{\tau_{\epsilon}}. 
+// Required if at least one of \code{Beta}, \code{Mu},  \code{TauEps} parameter is \code{TRUE}.
+// @param Beta boolean, set \code{TRUE} to compute the quantiles for all \code{p*n} \mjseqn{\beta} coefficients. It may require long time.
+// @param Mu boolean, set \code{TRUE} to compute the quantiles for all \mjseqn{p} parameters. 
+// @param TauEps boolean, set \code{TRUE} to compute the quantiles of \mjseqn{\tau_{\epsilon}} parameter.
+// @param Precision boolean, set \code{TRUE} to compute the quantiles for all the elements of the precision matrix. Some care is requested. 
+// If the file represents the output of \code{GGM}, \code{FGM} of \code{FLM} with fixed graph, the sampled precision matrices are of size \mjseqn{p \times p}. In that case set \code{prec_elem} parameter
+// equal to \mjseqn{\frac{p(p+1)}{2}}. Instead, for outputs coming from \code{FLM} sampler with diagonal graph, only the diagonal of the precision matrix is saved. If so, set \code{prec_ele} eqaul to \mjseqn{p}.
+// @param prec_elem integer, set equal to \mjseqn{p} if \code{file_name} represents the output of \code{FLM} sampler with diagonal graph. Set \mjseqn{\frac{p(p+1)}{2}} otherwise.
+// @param lower_qtl the level of the first desired quantile.
+// @param upper_qtl the level of the second desired quantile.
+//
+// @return It returns a list containig the upper and lower quantiles of the requested quantities.
 // [[Rcpp::export]]
 Rcpp::List Compute_Quantiles_old( Rcpp::String const & file_name, unsigned int const & p, unsigned int const & n, unsigned int const & stored_iterG = 0, unsigned int const & stored_iter = 0, 
                               bool Beta = false, bool Mu = false, bool TauEps = false, bool Precision = false, unsigned int const & prec_elem = 0,
@@ -1356,28 +1341,28 @@ Rcpp::List Compute_Quantiles_old( Rcpp::String const & file_name, unsigned int c
 }
 
 
-//' Read chain from file
-//'
-//' \loadmathjax This function read from a binary file the sampled chain for the \code{index1}-th component of variable specified in \code{variable}. The chain is then saved in memory to make it available for further analysis.
-//' Both \code{index1} and \code{index2} start counting from 1, the first element is obtained by settin \code{index1} equal to 1, not 0.
-//' Only \code{"Beta"} coefficients require the usage of \code{index2}. This function allows to extract only one chain at the time. The idea of writing the sampled values on a file is indeed to
-//' avoid to fill the memory. This function has to carefully used.
-//' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
-//' @param variable string, the name of the dataset to be read from the file. Only possibilities are \code{"Beta"}, \code{"Mu"}, \code{"Precision"} and \code{"TauEps"}.
-//' @param stored_iter integer, the number of saved iterations. It can be read from \code{\link{Read_InfoFile}}.
-//' @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
-//' It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
-//' @param n integer, the number of observed data.
-//' @param index1 integer, the index of the element whose chain has to read from the file. The first elements corresponds to \code{index1} equal to 1. 
-//' If \code{variable} is equal to \code{"Precision"} some care is required. If the file represents the output of \code{GGM}, \code{FGM} of \code{FLM} with fixed graph, the sampled precision matrices 
-//' are of size \mjseqn{p \times p} stored row by row. This means that the second diagonal elements corresponds to \code{index1} equal to \mjseqn{p+1}. 
-//' Moreover, in this case set \code{prec_elem} parameter equal to \mjseqn{\frac{p(p+1)}{2}}. 
-//' Instead, for outputs coming from \code{FLM} sampler with diagonal graph, only the diagonal of the precision matrix is saved. If so, \code{index1} ranges from 1 up to \mjseqn{p}. Moreover, set \code{prec_ele} eqaul to \mjseqn{p}.
-//' If \code{variable} is equal to \code{"Beta"}, this index ranges for 1 up to \mjseqn{p}, it represents the spine coefficinet.
-//' @param index2 integer, to be used only if \code{variable} is equal to \code{"Beta"}. It ranges from 1 up to \mjseqn{n}. In this case, the chain for the spline_index-th coefficients of the curve_index-th curve is read.
-//' @param prec_elem integer, set equal to \mjseqn{p} if \code{file_name} represents the output of \code{FLM} sampler with diagonal graph. Set \mjseqn{\frac{p(p+1)}{2}} otherwise.
-//'
-//' @return It returns a numeric vector all the sampled values of the required element.
+// Read chain from file
+//
+// \loadmathjax This function read from a binary file the sampled chain for the \code{index1}-th component of variable specified in \code{variable}. The chain is then saved in memory to make it available for further analysis.
+// Both \code{index1} and \code{index2} start counting from 1, the first element is obtained by settin \code{index1} equal to 1, not 0.
+// Only \code{"Beta"} coefficients require the usage of \code{index2}. This function allows to extract only one chain at the time. The idea of writing the sampled values on a file is indeed to
+// avoid to fill the memory. This function has to carefully used.
+// @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
+// @param variable string, the name of the dataset to be read from the file. Only possibilities are \code{"Beta"}, \code{"Mu"}, \code{"Precision"} and \code{"TauEps"}.
+// @param stored_iter integer, the number of saved iterations. It can be read from \code{\link{Read_InfoFile}}.
+// @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
+// It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
+// @param n integer, the number of observed data.
+// @param index1 integer, the index of the element whose chain has to read from the file. The first elements corresponds to \code{index1} equal to 1. 
+// If \code{variable} is equal to \code{"Precision"} some care is required. If the file represents the output of \code{GGM}, \code{FGM} of \code{FLM} with fixed graph, the sampled precision matrices 
+// are of size \mjseqn{p \times p} stored row by row. This means that the second diagonal elements corresponds to \code{index1} equal to \mjseqn{p+1}. 
+// Moreover, in this case set \code{prec_elem} parameter equal to \mjseqn{\frac{p(p+1)}{2}}. 
+// Instead, for outputs coming from \code{FLM} sampler with diagonal graph, only the diagonal of the precision matrix is saved. If so, \code{index1} ranges from 1 up to \mjseqn{p}. Moreover, set \code{prec_ele} eqaul to \mjseqn{p}.
+// If \code{variable} is equal to \code{"Beta"}, this index ranges for 1 up to \mjseqn{p}, it represents the spine coefficinet.
+// @param index2 integer, to be used only if \code{variable} is equal to \code{"Beta"}. It ranges from 1 up to \mjseqn{n}. In this case, the chain for the spline_index-th coefficients of the curve_index-th curve is read.
+// @param prec_elem integer, set equal to \mjseqn{p} if \code{file_name} represents the output of \code{FLM} sampler with diagonal graph. Set \mjseqn{\frac{p(p+1)}{2}} otherwise.
+//
+// @return It returns a numeric vector all the sampled values of the required element.
 // [[Rcpp::export]]
 Eigen::VectorXd Extract_Chain_old( Rcpp::String const & file_name, Rcpp::String const & variable, unsigned int const & stored_iter, unsigned int const & p, 
                                unsigned int const & n = 0, unsigned int  index1 = 1, unsigned int index2 = 1, unsigned int const & prec_elem = 0  )
@@ -1451,25 +1436,25 @@ Eigen::VectorXd Extract_Chain_old( Rcpp::String const & file_name, Rcpp::String 
   return result;
 }
 
-//' Compute Posterior means of sampled values
-//'
-//' \loadmathjax This function reads the sampled values saved in a binary file and computes the mean of the requested quantities.
-//' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
-//' @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
-//' It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
-//' @param n integer, the number of observed data.
-//' @param stored_iterG integer, the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix. Required only if \code{Precision} parameter is \code{TRUE}.
-//' @param stored_iter integer, the number of saved iterations for the regression parameters, i.e \mjseqn{\beta}s, \mjseqn{\mu} and \mjseqn{\tau_{\epsilon}}.
-//' Required if at least one of \code{Beta}, \code{Mu},  \code{TauEps} parameter is \code{TRUE}.
-//' @param Beta boolean, set \code{TRUE} to compute the mean for all \code{p*n} \mjseqn{\beta} coefficients. It may require long time.
-//' @param Mu boolean, set \code{TRUE} to compute the mean for all \mjseqn{p} parameters. 
-//' @param TauEps boolean, set \code{TRUE} to compute the mean of \mjseqn{\tau_{\epsilon}} parameter.
-//' @param Precision boolean, set \code{TRUE} to compute the mean for all the elements of the precision matrix. Some care is requested. 
-//' If the file represents the output of \code{GGM}, \code{FGM} of \code{FLM} with fixed graph, the sampled precision matrices are of size \mjseqn{p \times p}. In that case set \code{prec_elem} parameter
-//' equal to \mjseqn{\frac{p(p+1)}{2}}. Instead, for outputs coming from \code{FLM} sampler with diagonal graph, only the diagonal of the precision matrix is saved. If so, set \code{prec_ele} eqaul to \mjseqn{p}.
-//' @param prec_elem integer, set equal to \mjseqn{p} if \code{file_name} represents the output of \code{FLM} sampler with diagonal graph. Set \mjseqn{\frac{p(p+1)}{2}} otherwise.
-//'
-//' @return It returns a list containig the mean of the requested quantities.
+// Compute Posterior means of sampled values
+//
+// \loadmathjax This function reads the sampled values saved in a binary file and computes the mean of the requested quantities.
+// @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
+// @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
+// It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
+// @param n integer, the number of observed data.
+// @param stored_iterG integer, the number of saved iterations for the graphical related quantities, i.e the graph and the precision matrix. Required only if \code{Precision} parameter is \code{TRUE}.
+// @param stored_iter integer, the number of saved iterations for the regression parameters, i.e \mjseqn{\beta}s, \mjseqn{\mu} and \mjseqn{\tau_{\epsilon}}.
+// Required if at least one of \code{Beta}, \code{Mu},  \code{TauEps} parameter is \code{TRUE}.
+// @param Beta boolean, set \code{TRUE} to compute the mean for all \code{p*n} \mjseqn{\beta} coefficients. It may require long time.
+// @param Mu boolean, set \code{TRUE} to compute the mean for all \mjseqn{p} parameters. 
+// @param TauEps boolean, set \code{TRUE} to compute the mean of \mjseqn{\tau_{\epsilon}} parameter.
+// @param Precision boolean, set \code{TRUE} to compute the mean for all the elements of the precision matrix. Some care is requested. 
+// If the file represents the output of \code{GGM}, \code{FGM} of \code{FLM} with fixed graph, the sampled precision matrices are of size \mjseqn{p \times p}. In that case set \code{prec_elem} parameter
+// equal to \mjseqn{\frac{p(p+1)}{2}}. Instead, for outputs coming from \code{FLM} sampler with diagonal graph, only the diagonal of the precision matrix is saved. If so, set \code{prec_ele} eqaul to \mjseqn{p}.
+// @param prec_elem integer, set equal to \mjseqn{p} if \code{file_name} represents the output of \code{FLM} sampler with diagonal graph. Set \mjseqn{\frac{p(p+1)}{2}} otherwise.
+//
+// @return It returns a list containig the mean of the requested quantities.
 // [[Rcpp::export]]
 Rcpp::List Compute_PosteriorMeans_old( Rcpp::String const & file_name, unsigned int const & p, unsigned int const & n, unsigned int const & stored_iterG = 0, unsigned int const & stored_iter = 0, 
                                        bool Beta = false, bool Mu = false, bool TauEps = false, bool Precision = false, unsigned int const & prec_elem = 0)
@@ -1516,20 +1501,20 @@ Rcpp::List Compute_PosteriorMeans_old( Rcpp::String const & file_name, unsigned 
 }
 
 
-//' Read the sampled Graph saved on file
-//'
-//' \loadmathjax This function reads the sampled graphs that are saved on a binary file and performs a summary of all visited graphs.
-//' @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
-//' @param stored_iter integer, the number of saved iterations. It can be read from \code{\link{Read_InfoFile}}.
-//' @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
-//' It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
-//' @param groups List representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group, 
-//' i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave \code{NULL} if the graph is not in block form.
-//'
-//' @return It returns a list composed of: \code{plinks} that contains the posterior probability of inclusion of each possible link. \code{AcceptedMoves} contains the number of
-//' Metropolis-Hastings moves that were accepted in the sampling, \code{VisitedGraphs} the number of graph that were visited at least once, \code{TracePlot_Gsize} is a vector 
-//' such that each element is equal to the size of the visited graph in that particular iteration and finally \code{SampledGraphs} is a list containing all the visited graphs and their absolute frequence of visit.
-//' To save memory, the graphs are represented only by the upper triangular part, stored row-wise. 
+// Read the sampled Graph saved on file
+//
+// \loadmathjax This function reads the sampled graphs that are saved on a binary file and performs a summary of all visited graphs.
+// @param file_name, string with the name of the file to be open. It has to include the extension, usually \code{.h5}.
+// @param stored_iter integer, the number of saved iterations. It can be read from \code{\link{Read_InfoFile}}.
+// @param p integer, the dimension of the graph or the number of basis functions used. It depends on the type of output that is contained in \code{file_name}. 
+// It has the same meaning of \code{p} parameter of \code{\link{GGM_sampling}}, \code{\link{FLM_sampling}} or \code{\link{FGM_sampling}}.
+// @param groups List representing the groups of the block form. Numerations starts from 0 and vertrices has to be contiguous from group to group, 
+// i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. Leave \code{NULL} if the graph is not in block form.
+//
+// @return It returns a list composed of: \code{plinks} that contains the posterior probability of inclusion of each possible link. \code{AcceptedMoves} contains the number of
+// Metropolis-Hastings moves that were accepted in the sampling, \code{VisitedGraphs} the number of graph that were visited at least once, \code{TracePlot_Gsize} is a vector 
+// such that each element is equal to the size of the visited graph in that particular iteration and finally \code{SampledGraphs} is a list containing all the visited graphs and their absolute frequence of visit.
+// To save memory, the graphs are represented only by the upper triangular part, stored row-wise. 
 // [[Rcpp::export]]
 Rcpp::List Summary_Graph_old(Rcpp::String const & file_name, unsigned int const & stored_iterG, unsigned int const & p, Rcpp::Nullable<Rcpp::List> groups = R_NilValue)
 {
