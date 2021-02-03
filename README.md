@@ -74,7 +74,6 @@ $ sudo apt-get install gdebi
 $ sudo gdebi rstudio-1.3.1093-amd64.deb 
 ```
 The last command need to be modified accordin to the downloaded version. <br/>
-
 8. The very last step is to install the `devtools` package. This installation may take few minutes since has many dependencies that rely on external libraries. It is indeed suggested to install them at this stage simply typing 
 ```shell
 $ sudo apt-get install libssl-dev libcurl4-openssl-dev libxml2-dev libgit2-dev libnode-dev
