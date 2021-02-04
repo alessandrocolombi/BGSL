@@ -46,6 +46,7 @@ thin      =       20
 thinG     =        1
 file_name = "FGMtest"
 file_name_ext = paste0(file_name, ".h5")
+?FGM_sampling
 result = FGM_sampling(p = p, data = data, niter = niter, burnin = nburn, thin = thin, thinG = thinG,
                       Param = param, HyParam = hy, Init = init, file_name = file_name, form = form,
                       prior = prior, algo = algo, n_groups = n_groups, print_info = T)
