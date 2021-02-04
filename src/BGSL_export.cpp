@@ -17,11 +17,13 @@ using VecCol        = Eigen::VectorXd;
 using VecRow        = Eigen::RowVectorXd;
 
 
+ 
+
 //' A direct sampler for GWishart distributed random variables.  
 //'
 //'\loadmathjax This function draws a random matrices, distributed according to the GWishart distribution with Shape parameter \code{b} and Inverse-Scale matrix \code{D}, 
 //' whose structure is constrained by graph \code{G}. The GWishart distribution, taking into account a Shape-Inverse Scale parametrization, is the following:
-//' \mjsdeqn{p\left(K~\lvert~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} \lvert K\rvert^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
+//' \mjsdeqn{p(K~|~ G, b,D) = I_{G}\left(b, D\right)^{-1} |K|^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
 //' It works with both decomposable and non decomposable graphs. In particular it is possible to provide a graph in block form. 
 //' @param G matrix representing the desired graph. It has to be a \mjseqn{p \times p} matrix if the graph is in block form, i.e if groups is non null, 
 //' otherwise it has to be coherent with the number of groups. Only the upper triangular part is needed.
@@ -91,7 +93,7 @@ Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Ei
 //' Normalizing constant for GWishart distribution
 //'
 //' \loadmathjax This function computes the logarithm of the normalizing constant of GWishart distribution. Its distribution, taking into account a Shape-Inverse Scale parametrization, is the following:
-//' \mjsdeqn{p\left(K~\lvert~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} \lvert K\rvert^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
+//' \mjsdeqn{p\left(K~|~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} |K|^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
 //' The Monte Carlo method, developed by Atay-Kayis and Massam (2005), is implemented. It works with both decomposable and non decomposable graphs. 
 //' In particular it is possible to provide a graph in block form. 
 //' @param G matrix representing the desired graph. It has to be a \mjseqn{p \times p} matrix if the graph is in block form, i.e if groups is non null, 
@@ -129,7 +131,7 @@ long double log_Gconstant(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dyn
 
 //' Generate a random graph
 //'
-//' \loadmathjax This function genrates random graphs both in \code{"Complete"} or \code{"Block"} form
+//' \loadmathjax This function genrates random graphs both in \code{"Complete"} or \code{"Block"} form. 
 //' @param p integer, the dimension of the underlying graph. It has to be provided even if \code{form} is \code{"Block"}.
 //' @param n_groups iinteger, number of desired groups. Not used if form is \code{"Complete"} or if the groups are directly insered in \code{groups} parameter.
 //' @param form string that may take as values only \code{"Complete"} of \code{"Block"} . It states if the algorithm has to run with \code{"Block"} or \code{"Complete"} graphs.
@@ -231,7 +233,7 @@ rmvnormal(Eigen::VectorXd mean, Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dyn
 //' Sampler for Wishart random variables
 //'
 //' \loadmathjax This function draws random samples from Wishart distribution. We use a Shape-Inverse Scale parametrization, the corresponding density is reported below
-//' \mjsdeqn{ f(X) = \frac{\lvert X \lvert^{(b-2)/2}~~\exp\left( - \frac{1}{2}tr\left(X~D\right)\right)}{2^{p(b+p-1)/2}~\lvert D^{-1}\lvert^{(b+p-1)/2}~\Gamma_{p}((b+p-1)/2)}}
+//' \mjsdeqn{ f(X) = \frac{|X|^{(b-2)/2}~~\exp\left( - \frac{1}{2}tr\left(X~D\right)\right)}{2^{p(b+p-1)/2}~|D^{-1}|^{(b+p-1)/2}~\Gamma_{p}((b+p-1)/2)}}
 //' It is also possible to pass directly the Cholesky decomposition of the Inverse Scale matrix if it is available before the call.
 //' @param b it is Shape parameter. 
 //' @param D Inverse-Scale matrix of size \mjseqn{p \times p}. It may represent its Cholesky decomposition.

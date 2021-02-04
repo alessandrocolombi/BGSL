@@ -54,6 +54,6 @@ the number performed iterations can be found in \code{iterations} and, if reques
 \description{
 \loadmathjax This function draws a random matrices, distributed according to the GWishart distribution with Shape parameter \code{b} and Inverse-Scale matrix \code{D},
 whose structure is constrained by graph \code{G}. The GWishart distribution, taking into account a Shape-Inverse Scale parametrization, is the following:
-\mjsdeqn{p\left(K~\lvert~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} \lvert K\rvert^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
+\mjsdeqn{p(K~|~ G, b,D) = I_{G}\left(b, D\right)^{-1} |K|^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
 It works with both decomposable and non decomposable graphs. In particular it is possible to provide a graph in block form.
 }

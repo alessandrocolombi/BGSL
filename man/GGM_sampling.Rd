@@ -66,6 +66,8 @@ To save memory, the graphs are represented only by the upper triangular part, st
 A binary \code{".h5"} file named \code{file_name} is also generated, it contains all the sampled values.
 }
 \description{
-\loadmathjax This function draws samples a posteriori from a Gaussian Graphical Models. The prior chosen for the precision matrix is a GWishart, whose parameters can be fixed in \code{HyParam}.
+\loadmathjax This function draws samples a posteriori from a Gaussian Graphical Models.
+\mjtdeqn{$$\begin{eqnarray*}y_{1},\dots,y_{n}|K \sim& N_{p}\left(0,K\right) \cr K| G \sim& GWish\left(d,D\right) \cr G \sim&\pi\left(G\right)\end{eqnarray*}$$}{\begin{eqnarray*}y_{1},\dots,y_{n}|K \sim& N_{p}\left(0,K\right) \cr K| G \sim& GWish\left(d,D\right) \cr G \sim&\pi\left(G\right)\end{eqnarray*}}{\begin{eqnarray*}y_{1},\dots,y_{n}|K \sim& N_{p}\left(0,K\right) \cr K| G \sim& GWish\left(d,D\right) \cr G \sim&\pi\left(G\right)\end{eqnarray*}}
+The prior chosen for the precision matrix is a GWishart, whose parameters can be fixed in \code{HyParam}.
 Diffefent priors are available for the graph, they can be set via \code{prior} input.
 }

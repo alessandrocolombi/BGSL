@@ -31,5 +31,5 @@ i.e ((0,1,2),(3,4)) is fine but ((1,2,3), (4,5)) and ((1,3,5), (2,4)) are not. L
 A list is returned, it contains the randomly generated graph in \code{G} and its complete form in \code{G_Complete}. Those two coincide if \code{form} is \code{"Complete"}.
 }
 \description{
-\loadmathjax This function genrates random graphs both in \code{"Complete"} or \code{"Block"} form
+\loadmathjax This function genrates random graphs both in \code{"Complete"} or \code{"Block"} form.
 }

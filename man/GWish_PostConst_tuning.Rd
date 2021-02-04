@@ -31,7 +31,7 @@ A list with four possible MCiteration levels
 }
 \description{
 This function selects the number of MonteCarlo iterations when computing a the GWishart posterior normalizing constant. The problem is that the MonteCarlo
-method by ATACK-MASSAM requires computing exp(-0.5 sum(Phi_ij)^2). As the number of nodes in the graph grows, that quantity is smaller and smaller and
+method by Atack-Massam requires computing exp(-0.5 sum(Phi_ij)^2). As the number of nodes in the graph grows, that quantity is smaller and smaller and
 it is possible that it is lower than zero machina. If that is the case, the number of MC iterarions needs to be larger.
 This function propose some possible MC iterations loop according to the percentage of computed constant different from -Inf out of nrep trials.
 Four possibilities are returned according to four possible levels, that are 0.95, 0.98, 0.99 and 1. If some level is not reach in the selected threshold level, then NA is returned

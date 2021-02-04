@@ -19,7 +19,7 @@ check_structure = function(G, K, threshold = 1e-5){
 #' Tuning MC iterations for posterior normalizing constant of GWishart distribution
 #'
 #' This function selects the number of MonteCarlo iterations when computing a the GWishart posterior normalizing constant. The problem is that the MonteCarlo
-#' method by ATACK-MASSAM requires computing exp(-0.5 sum(Phi_ij)^2). As the number of nodes in the graph grows, that quantity is smaller and smaller and
+#' method by Atack-Massam requires computing exp(-0.5 sum(Phi_ij)^2). As the number of nodes in the graph grows, that quantity is smaller and smaller and
 #' it is possible that it is lower than zero machina. If that is the case, the number of MC iterarions needs to be larger.
 #' This function propose some possible MC iterations loop according to the percentage of computed constant different from -Inf out of nrep trials.
 #' Four possibilities are returned according to four possible levels, that are 0.95, 0.98, 0.99 and 1. If some level is not reach in the selected threshold level, then NA is returned
@@ -621,7 +621,10 @@ plot_curves = function( data1, data2 = NULL, range, n_plot = 1, grid_points = NU
 #' Functional Linear model for smoothing
 #'
 #' \loadmathjax This function performs a linear regression for functional data. 
-#' It is not a graphical model, the graph has to be fixed. It is possible to fix both a diagonal graph or a generic graph.
+#' It is not a graphical model, the graph has to be fixed. It is possible to fix both a diagonal graph or a generic graph. In the first case, the model one sample from is the following,
+#' \mjtdeqn{$$\begin{eqnarray*}Y_{i}~|~\beta_{i},~\tau_{\epsilon} ~\sim~&N_{r}\left(\Phi\beta_{i},\tau_{\epsilon}I_{r}\right), \forall i = 1:n \cr \beta_{1},\dots,\beta_{n}~|~\mu,~K~\sim~&N_{p}\left(\mu,K\right) K=diag\left(\tau_{1},\dots,\tau_{p}\right) \cr \mu~\sim~&N_{p}\left(0,\sigma_{\mu}I_{p}\right) \cr \tau_{\epsilon} ~\sim~& Gamma\left(a,b\right) \cr \tau_{j} ~\sim~& Gamma\left(\frac{a}{2},\frac{b}{2}\right) \forall j = 1:p \end{eqnarray*}$$}{\begin{eqnarray*}Y_{i}~|~\beta_{i},~\tau_{\epsilon} &~\sim~&N_{r}\left(\Phi\beta_{i},\tau_{\epsilon}I_{r}\right), &\forall i &= 1:n \cr \beta_{1},\dots,\beta_{n}~|~\mu,~K&~\sim~&N_{p}\left(\mu,K\right) &K&=diag\left(\tau_{1},\dots,\tau_{p}\right) \cr \mu&~\sim~&N_{p}\left(0,\sigma_{\mu}I_{p}\right) \cr \tau_{\epsilon} &~\sim~& Gamma\left(a,b\right) \cr \tau_{j} &~\sim~& Gamma\left(\frac{a}{2},\frac{b}{2}\right) &\forall j &= 1:p \end{eqnarray*}}{\begin{eqnarray*}Y_{i}~|~\beta_{i},~\tau_{\epsilon} &~\sim~&N_{r}\left(\Phi\beta_{i},\tau_{\epsilon}I_{r}\right), &\forall i &= 1:n \cr \beta_{1},\dots,\beta_{n}~|~\mu,~K&~\sim~&N_{p}\left(\mu,K\right) &K&=diag\left(\tau_{1},\dots,\tau_{p}\right) \cr \mu&~\sim~&N_{p}\left(0,\sigma_{\mu}I_{p}\right) \cr \tau_{\epsilon} &~\sim~& Gamma\left(a,b\right) \cr \tau_{j} &~\sim~& Gamma\left(\frac{a}{2},\frac{b}{2}\right) &\forall j &= 1:p \end{eqnarray*}}
+#' Otherwise it is possible to keep the graph fixed even if it is not diagonal. In this case the precision matrix is modeled a priori as a \code{GWishart}. The resulting model is the following,
+#' \mjtdeqn{$$\begin{eqnarray*}Y_{i}~|~\beta_{i},~\tau_{\epsilon} ~\sim~&N_{r}\left(\Phi\beta_{i},\tau_{\epsilon}I_{r}\right), \forall i = 1:n \cr \beta_{1},\dots,\beta_{n}~|~\mu,~K~\sim~&N_{p}\left(\mu,K\right) \cr \mu~\sim~&N_{p}\left(0,\sigma_{\mu}I_{p}\right) \cr \tau_{\epsilon} ~\sim~& Gamma\left(a,b\right) \cr K~|~ G ~\sim~& GWish\left(d,D\right) \cr G ~~& fixed \end{eqnarray*}$$}{\begin{eqnarray*}Y_{i}~|~\beta_{i},~\tau_{\epsilon} &~\sim~&N_{r}\left(\Phi\beta_{i},\tau_{\epsilon}I_{r}\right), &\forall i &= 1:n \cr \beta_{1},\dots,\beta_{n}~|~\mu,~K&~\sim~&N_{p}\left(\mu,K\right) \cr \mu&~\sim~&N_{p}\left(0,\sigma_{\mu}I_{p}\right) \cr \tau_{\epsilon} &~\sim~& Gamma\left(a,b\right) \cr K~|~ G ~&\sim~& GWish\left(d,D\right) \cr G ~&~ fixed \end{eqnarray*}}{\begin{eqnarray*}Y_{i}~|~\beta_{i},~\tau_{\epsilon} &~\sim~&N_{r}\left(\Phi\beta_{i},\tau_{\epsilon}I_{r}\right), &\forall i &= 1:n \cr \beta_{1},\dots,\beta_{n}~|~\mu,~K&~\sim~&N_{p}\left(\mu,K\right) \cr \mu&~\sim~&N_{p}\left(0,\sigma_{\mu}I_{p}\right) \cr \tau_{\epsilon} &~\sim~& Gamma\left(a,b\right) \cr K~|~ G ~&\sim~& GWish\left(d,D\right) \cr G ~&~ fixed \end{eqnarray*}}
 #' @param p number of basis functions.
 #' @param data matrix of dimension \mjseqn{n\_curves \times n\_grid\_points} containing the evaluation of \code{n} functional data over a grid of \code{n_grid_points} nodes.
 #' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be \mjseqn{(niter - burnin)/thin}.
@@ -1002,7 +1005,9 @@ SimulateData_GGM = function(p, n, n_groups = 0, form = "Complete", groups = NULL
 
 #' Sampler for Guassian Graphical Models
 #'
-#' \loadmathjax This function draws samples a posteriori from a Gaussian Graphical Models. The prior chosen for the precision matrix is a GWishart, whose parameters can be fixed in \code{HyParam}.
+#' \loadmathjax This function draws samples a posteriori from a Gaussian Graphical Models. 
+#' \mjtdeqn{$$\begin{eqnarray*}y_{1},\dots,y_{n}|K \sim& N_{p}\left(0,K\right) \cr K| G \sim& GWish\left(d,D\right) \cr G \sim&\pi\left(G\right)\end{eqnarray*}$$}{\begin{eqnarray*}y_{1},\dots,y_{n}|K \sim& N_{p}\left(0,K\right) \cr K| G \sim& GWish\left(d,D\right) \cr G \sim&\pi\left(G\right)\end{eqnarray*}}{\begin{eqnarray*}y_{1},\dots,y_{n}|K \sim& N_{p}\left(0,K\right) \cr K| G \sim& GWish\left(d,D\right) \cr G \sim&\pi\left(G\right)\end{eqnarray*}}
+#' The prior chosen for the precision matrix is a GWishart, whose parameters can be fixed in \code{HyParam}.
 #' Diffefent priors are available for the graph, they can be set via \code{prior} input.
 #' @param data two possibilities are available. (1) a \mjseqn{p \times n} matrix corresponding to \code{n} observation of \code{p}-dimensional variables or (2) 
 #' a \mjseqn{p \times p} matrix representing \mjseqn{\sum_{i=1}^{n}(y_{i}y_{i}^{T})}, where \mjseqn{y_{i}} is the \code{i}-th observation of a \code{p}-dimensional variale. 
@@ -1464,9 +1469,9 @@ Block2Complete = function(Gblock, groups)
 
 #' Functional Graphical model for smoothing
 #'
-#' \loadmathjax This function implements an hybrid Gibbs Sampler strategy to draw samples from the posterior distribution of a Functional Graphical Model. 
+#' \loadmathjax This function implements an hybrid Gibbs Sampler strategy to draw samples from the posterior distribution of a Functional Graphical Model, reported below.
+#' \mjtdeqn{$$\begin{eqnarray*}Y_{i}~|~\beta_{i},~\tau_{\epsilon} \sim~&N_{r}\left(\Phi\beta_{i},\tau_{\epsilon}I_{r}\right), &\forall i = 1:n \cr \beta_{1},\dots,\beta_{n}~|~\mu,~K\sim~&N_{p}\left(\mu,K\right) \cr \mu\sim~&N_{p}\left(0,\sigma_{\mu}I_{p}\right) \cr \tau_{\epsilon} \sim~& Gamma\left(a,b\right) \cr K~|~ G ~\sim~& GWish\left(d,D\right) \cr G ~\sim~&\pi\left(G\right) \end{eqnarray*}$$}{\begin{eqnarray*}Y_{i}~|~\beta_{i},~\tau_{\epsilon} &\sim~&N_{r}\left(\Phi\beta_{i},\tau_{\epsilon}I_{r}\right), &\forall i &= 1:n \cr \beta_{1},\dots,\beta_{n}~|~\mu,~K&\sim~&N_{p}\left(\mu,K\right) \cr \mu&\sim~&N_{p}\left(0,\sigma_{\mu}I_{p}\right) \cr \tau_{\epsilon} &\sim~& Gamma\left(a,b\right) \cr K~|~ G &\sim~& GWish\left(d,D\right) \cr G &\sim~&\pi\left(G\right) \end{eqnarray*}}{\begin{eqnarray*}Y_{i}~|~\beta_{i},~\tau_{\epsilon} &\sim~&N_{r}\left(\Phi\beta_{i},\tau_{\epsilon}I_{r}\right), &\forall i &= 1:n \cr \beta_{1},\dots,\beta_{n}~|~\mu,~K&\sim~&N_{p}\left(\mu,K\right) \cr \mu&\sim~&N_{p}\left(0,\sigma_{\mu}I_{p}\right) \cr \tau_{\epsilon} &\sim~& Gamma\left(a,b\right) \cr K~|~ G &\sim~& GWish\left(d,D\right) \cr G &\sim~&\pi\left(G\right) \end{eqnarray*}}
 #' It has a double goal, performing a smoothing of the inserted noisy curves and estimating the graph which describes the relationship among the regression coefficients.
-#'
 #' @param p integer, the number of basis functions. It also represents the dimension of the true underlying graph.
 #' @param data matrix of dimension \mjseqn{n\_grid\_points \times n} containing the evaluation of \code{n} functional data over a grid of \code{n_grid_points} nodes.
 #' @param niter the number of total iterations to be performed in the sampling. The number of saved iteration will be \mjseqn{(niter - burnin)/thin}.

@@ -22,6 +22,6 @@ It returns the \mjseqn{p \times p} sampled matrix.
 }
 \description{
 \loadmathjax This function draws random samples from Wishart distribution. We use a Shape-Inverse Scale parametrization, the corresponding density is reported below
-\mjsdeqn{ f(X) = \frac{\lvert X \lvert^{(b-2)/2}~~\exp\left( - \frac{1}{2}tr\left(X~D\right)\right)}{2^{p(b+p-1)/2}~\lvert D^{-1}\lvert^{(b+p-1)/2}~\Gamma_{p}((b+p-1)/2)}}
+\mjsdeqn{ f(X) = \frac{|X|^{(b-2)/2}~~\exp\left( - \frac{1}{2}tr\left(X~D\right)\right)}{2^{p(b+p-1)/2}~|D^{-1}|^{(b+p-1)/2}~\Gamma_{p}((b+p-1)/2)}}
 It is also possible to pass directly the Cholesky decomposition of the Inverse Scale matrix if it is available before the call.
 }

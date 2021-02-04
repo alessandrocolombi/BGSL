@@ -26,7 +26,7 @@ log of the normalizing constant of GWishart distribution.
 }
 \description{
 \loadmathjax This function computes the logarithm of the normalizing constant of GWishart distribution. Its distribution, taking into account a Shape-Inverse Scale parametrization, is the following:
-\mjsdeqn{p\left(K~\lvert~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} \lvert K\rvert^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
+\mjsdeqn{p\left(K~|~ G, b,D \right) = I_{G}\left(b, D\right)^{-1} |K|^{\frac{b - 2}{2}} \exp\left( - \frac{1}{2}tr\left(K D\right)\right)}
 The Monte Carlo method, developed by Atay-Kayis and Massam (2005), is implemented. It works with both decomposable and non decomposable graphs.
 In particular it is possible to provide a graph in block form.
 }
