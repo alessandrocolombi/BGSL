@@ -17,7 +17,7 @@ data  = sim$U
 
 #Parameters and hyperparameters
 threshold =  1e-14
-hy = GM_hyperparameters(p = p)
+hy = GM_hyperparameters(p = p, sigmaG = 0.5)
 param = sampler_parameters(threshold = threshold)
 algo    = "DRJ"
 prior   = "Uniform"
@@ -26,12 +26,6 @@ form    = "Block"
 #initial values
 init = GM_init(p = p, n = n, empty = T, form = form, n_groups = M)
 
-
-#tuning sigmaG
-hy$sigmaG = sigmaG_GGM_tuning(data = data, n = n, niter = 1000, Nrep = 10, n_groups = M, 
-                              sigmaG_list = c(0.1,0.25,0.5,0.6),
-                              form = form, prior = prior, algo = algo)
-
 #Run
 niter     =   100000
 nburn     =    50000
@@ -39,6 +33,7 @@ thin      =        1
 thinG     =        1
 file_name = "GGMtest"
 file_name_ext = paste0(file_name,".h5")
+?GGM_sampling
 result = GGM_sampling(data = data, n = n, niter = niter, burnin = nburn, thin = thin,
                       Param = param, HyParam = hy, Init = init, 
                       prior = prior, form = form, algo = algo, file_name = file_name, 
