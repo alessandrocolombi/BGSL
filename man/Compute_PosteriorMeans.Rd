@@ -22,7 +22,7 @@ Compute_PosteriorMeans(
 \item{TauEps}{boolean, set \code{TRUE} to compute the mean of \mjseqn{\tau_{\epsilon}} parameter.}
 
 \item{Precision}{boolean, set \code{TRUE} to compute the mean for all the elements of the precision matrix
-or the \mjseqn{\tau_{j}} coefficients if the file contains the output of a \code{\link{FLMsampling}}, diagonal version.}
+or the \mjseqn{\tau_{j}} coefficients if the file contains the output of a \code{\link{FLM_sampling}}, diagonal version.}
 }
 \value{
 It returns a list containig the mean of the requested quantities.

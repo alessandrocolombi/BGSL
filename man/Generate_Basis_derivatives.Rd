@@ -20,11 +20,11 @@ Generate_Basis_derivatives(
 
 \item{range}{vector of two elements containing first the lower and then the upper bound of the interval.}
 
+\item{n_points}{number of grid points where the basis has to be evaluated. It is not used if the points are directly passed in the \code{grid_points} parameter.}
+
 \item{grid_points}{vector of points where the basis has to be evaluated. If defaulted, then \code{n_points} are uniformly generated in the interval.}
 
 \item{order}{integer, order of the Bsplines. Set four for cubic splines.}
-
-\item{points}{number of grid points where the basis has to be evaluated. It is not used if the points are directly passed in the \code{grid_points} parameter.}
 }
 \value{
 a list of length nderiv+1 such that each element is a \mjseqn{n\_points \times n\_basis} matrix representing the evaluation of

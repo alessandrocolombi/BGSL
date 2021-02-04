@@ -340,6 +340,91 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// Read_InfoFile_old
+Rcpp::List Read_InfoFile_old(Rcpp::String const& file_name);
+RcppExport SEXP _BGSL_Read_InfoFile_old(SEXP file_nameSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::String const& >::type file_name(file_nameSEXP);
+    rcpp_result_gen = Rcpp::wrap(Read_InfoFile_old(file_name));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Compute_Quantiles_old
+Rcpp::List Compute_Quantiles_old(Rcpp::String const& file_name, unsigned int const& p, unsigned int const& n, unsigned int const& stored_iterG, unsigned int const& stored_iter, bool Beta, bool Mu, bool TauEps, bool Precision, unsigned int const& prec_elem, double const& lower_qtl, double const& upper_qtl);
+RcppExport SEXP _BGSL_Compute_Quantiles_old(SEXP file_nameSEXP, SEXP pSEXP, SEXP nSEXP, SEXP stored_iterGSEXP, SEXP stored_iterSEXP, SEXP BetaSEXP, SEXP MuSEXP, SEXP TauEpsSEXP, SEXP PrecisionSEXP, SEXP prec_elemSEXP, SEXP lower_qtlSEXP, SEXP upper_qtlSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::String const& >::type file_name(file_nameSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type n(nSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type stored_iterG(stored_iterGSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type stored_iter(stored_iterSEXP);
+    Rcpp::traits::input_parameter< bool >::type Beta(BetaSEXP);
+    Rcpp::traits::input_parameter< bool >::type Mu(MuSEXP);
+    Rcpp::traits::input_parameter< bool >::type TauEps(TauEpsSEXP);
+    Rcpp::traits::input_parameter< bool >::type Precision(PrecisionSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type prec_elem(prec_elemSEXP);
+    Rcpp::traits::input_parameter< double const& >::type lower_qtl(lower_qtlSEXP);
+    Rcpp::traits::input_parameter< double const& >::type upper_qtl(upper_qtlSEXP);
+    rcpp_result_gen = Rcpp::wrap(Compute_Quantiles_old(file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision, prec_elem, lower_qtl, upper_qtl));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Extract_Chain_old
+Eigen::VectorXd Extract_Chain_old(Rcpp::String const& file_name, Rcpp::String const& variable, unsigned int const& stored_iter, unsigned int const& p, unsigned int const& n, unsigned int index1, unsigned int index2, unsigned int const& prec_elem);
+RcppExport SEXP _BGSL_Extract_Chain_old(SEXP file_nameSEXP, SEXP variableSEXP, SEXP stored_iterSEXP, SEXP pSEXP, SEXP nSEXP, SEXP index1SEXP, SEXP index2SEXP, SEXP prec_elemSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::String const& >::type file_name(file_nameSEXP);
+    Rcpp::traits::input_parameter< Rcpp::String const& >::type variable(variableSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type stored_iter(stored_iterSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type n(nSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type index1(index1SEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type index2(index2SEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type prec_elem(prec_elemSEXP);
+    rcpp_result_gen = Rcpp::wrap(Extract_Chain_old(file_name, variable, stored_iter, p, n, index1, index2, prec_elem));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Compute_PosteriorMeans_old
+Rcpp::List Compute_PosteriorMeans_old(Rcpp::String const& file_name, unsigned int const& p, unsigned int const& n, unsigned int const& stored_iterG, unsigned int const& stored_iter, bool Beta, bool Mu, bool TauEps, bool Precision, unsigned int const& prec_elem);
+RcppExport SEXP _BGSL_Compute_PosteriorMeans_old(SEXP file_nameSEXP, SEXP pSEXP, SEXP nSEXP, SEXP stored_iterGSEXP, SEXP stored_iterSEXP, SEXP BetaSEXP, SEXP MuSEXP, SEXP TauEpsSEXP, SEXP PrecisionSEXP, SEXP prec_elemSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::String const& >::type file_name(file_nameSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type n(nSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type stored_iterG(stored_iterGSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type stored_iter(stored_iterSEXP);
+    Rcpp::traits::input_parameter< bool >::type Beta(BetaSEXP);
+    Rcpp::traits::input_parameter< bool >::type Mu(MuSEXP);
+    Rcpp::traits::input_parameter< bool >::type TauEps(TauEpsSEXP);
+    Rcpp::traits::input_parameter< bool >::type Precision(PrecisionSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type prec_elem(prec_elemSEXP);
+    rcpp_result_gen = Rcpp::wrap(Compute_PosteriorMeans_old(file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision, prec_elem));
+    return rcpp_result_gen;
+END_RCPP
+}
+// Summary_Graph_old
+Rcpp::List Summary_Graph_old(Rcpp::String const& file_name, unsigned int const& stored_iterG, unsigned int const& p, Rcpp::Nullable<Rcpp::List> groups);
+RcppExport SEXP _BGSL_Summary_Graph_old(SEXP file_nameSEXP, SEXP stored_iterGSEXP, SEXP pSEXP, SEXP groupsSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::String const& >::type file_name(file_nameSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type stored_iterG(stored_iterGSEXP);
+    Rcpp::traits::input_parameter< unsigned int const& >::type p(pSEXP);
+    Rcpp::traits::input_parameter< Rcpp::Nullable<Rcpp::List> >::type groups(groupsSEXP);
+    rcpp_result_gen = Rcpp::wrap(Summary_Graph_old(file_name, stored_iterG, p, groups));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_BGSL_rGwish", (DL_FUNC) &_BGSL_rGwish, 11},
@@ -360,6 +445,11 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BGSL_GGM_sampling_c", (DL_FUNC) &_BGSL_GGM_sampling_c, 23},
     {"_BGSL_FLM_sampling_c", (DL_FUNC) &_BGSL_FLM_sampling_c, 23},
     {"_BGSL_FGM_sampling_c", (DL_FUNC) &_BGSL_FGM_sampling_c, 29},
+    {"_BGSL_Read_InfoFile_old", (DL_FUNC) &_BGSL_Read_InfoFile_old, 1},
+    {"_BGSL_Compute_Quantiles_old", (DL_FUNC) &_BGSL_Compute_Quantiles_old, 12},
+    {"_BGSL_Extract_Chain_old", (DL_FUNC) &_BGSL_Extract_Chain_old, 8},
+    {"_BGSL_Compute_PosteriorMeans_old", (DL_FUNC) &_BGSL_Compute_PosteriorMeans_old, 10},
+    {"_BGSL_Summary_Graph_old", (DL_FUNC) &_BGSL_Summary_Graph_old, 4},
     {NULL, NULL, 0}
 };
 

@@ -37,6 +37,8 @@ simulate_curves(
 
 \item{n}{integer, the number of curves to be generated.}
 
+\item{r}{integer, the dimension of the grid where the spline are evaluated.}
+
 \item{range_x}{the range where the curves has to be plotted. Not needed if \code{n_plot} is 0.}
 
 \item{G}{matrix of size \mjseqn{p \times p} representing the true underlying graph. Only the upper triangular part is needed. Default is \code{NULL} that corresponds to a diagonal graph.}
@@ -80,8 +82,6 @@ simulate_curves(
 \item{ytitle}{the title of the x-axis.}
 
 \item{seed}{seed used to simulate data. Set 0 for random seed.}
-
-\item{n_grid_points}{integer, the dimension of the grid where the spline are evaluated.}
 }
 \value{
 It returns a list composed of: all simulated curves in \code{data}, all underlying parameters, called \code{Beta}, \code{mu}, \code{K} and the true graph \code{G}.

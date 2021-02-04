@@ -24,7 +24,7 @@ Compute_Quantiles(
 \item{TauEps}{boolean, set \code{TRUE} to compute the quantiles of \mjseqn{\tau_{\epsilon}} parameter.}
 
 \item{Precision}{boolean, set \code{TRUE} to compute the mean for all the elements of the precision matrix
-or the \mjseqn{\tau_{j}} coefficients if the file contains the output of a \code{\link{FLMsampling}}, diagonal version.}
+or the \mjseqn{\tau_{j}} coefficients if the file contains the output of a \code{\link{FLM_sampling}}, diagonal version.}
 
 \item{lower_qtl}{the level of the first desired quantile.}
 

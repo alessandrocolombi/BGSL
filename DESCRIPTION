@@ -8,7 +8,7 @@ Authors@R:
            email = "colombi.alessandro@hotmail.it",
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: A R package for Bayesian structual learning in undirected graphical models which allows to impose a block structure. This kind of modeling is applied to functional data analysis, improving the classical smoothing technique.
-License: `use_gpl3_license()` 
+License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

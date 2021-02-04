@@ -17,11 +17,11 @@ Generate_Basis(
 
 \item{range}{vector of two elements containing first the lower and then the upper bound of the interval.}
 
+\item{n_points}{number of grid points where the basis has to be evaluated. It is not used if the points are directly passed in the \code{grid_points} parameter.}
+
 \item{grid_points}{vector of points where the basis has to be evaluated. If defaulted, then \code{n_points} are uniformly generated in the interval.}
 
 \item{order}{integer, order of the Bsplines. Set four for cubic splines.}
-
-\item{points}{number of grid points where the basis has to be evaluated. It is not used if the points are directly passed in the \code{grid_points} parameter.}
 }
 \value{
 a list containing a matrix of dimension \mjseqn{n\_points \times n\_basis} such that \code{r}-th rows contains all the spline computed in the \code{r}-th point of the grid and \code{j}-th column
