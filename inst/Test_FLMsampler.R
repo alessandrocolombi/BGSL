@@ -28,7 +28,7 @@ nburn = 25000
 thin  =     1
 file_name = "FLMtest"
 file_name_ext = paste0(file_name, ".h5")
-
+?FLM_sampling
 res = FLM_sampling(p = p, data = data, niter = niter, burnin = nburn, thin = thin, diagonal_graph = T,
                    Param = param, HyParam = hy, Init = init, file_name = file_name, G = NULL,
                    print_info =  T, seed = 0) #Runtime is about 2 minutes
