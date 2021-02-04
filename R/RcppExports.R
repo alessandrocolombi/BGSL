@@ -256,23 +256,3 @@ FGM_sampling_c <- function(data, niter, burnin, thin, thinG, BaseMat, file_name,
     .Call(`_BGSL_FGM_sampling_c`, data, niter, burnin, thin, thinG, BaseMat, file_name, Beta0, mu0, tau_eps0, G0, K0, a_tau_eps, b_tau_eps, sigmamu, bK, DK, sigmaG, paddrm, Gprior, MCprior, MCpost, threshold, form, prior, algo, groups, seed, print_info)
 }
 
-Read_InfoFile_old <- function(file_name) {
-    .Call(`_BGSL_Read_InfoFile_old`, file_name)
-}
-
-Compute_Quantiles_old <- function(file_name, p, n, stored_iterG = 0L, stored_iter = 0L, Beta = FALSE, Mu = FALSE, TauEps = FALSE, Precision = FALSE, prec_elem = 0L, lower_qtl = 0.05, upper_qtl = 0.95) {
-    .Call(`_BGSL_Compute_Quantiles_old`, file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision, prec_elem, lower_qtl, upper_qtl)
-}
-
-Extract_Chain_old <- function(file_name, variable, stored_iter, p, n = 0L, index1 = 1L, index2 = 1L, prec_elem = 0L) {
-    .Call(`_BGSL_Extract_Chain_old`, file_name, variable, stored_iter, p, n, index1, index2, prec_elem)
-}
-
-Compute_PosteriorMeans_old <- function(file_name, p, n, stored_iterG = 0L, stored_iter = 0L, Beta = FALSE, Mu = FALSE, TauEps = FALSE, Precision = FALSE, prec_elem = 0L) {
-    .Call(`_BGSL_Compute_PosteriorMeans_old`, file_name, p, n, stored_iterG, stored_iter, Beta, Mu, TauEps, Precision, prec_elem)
-}
-
-Summary_Graph_old <- function(file_name, stored_iterG, p, groups = NULL) {
-    .Call(`_BGSL_Summary_Graph_old`, file_name, stored_iterG, p, groups)
-}
-
