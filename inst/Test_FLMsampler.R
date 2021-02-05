@@ -93,7 +93,7 @@ tauK_low  = quantiles$Precision$Lower
 tauK_upp  = quantiles$Precision$Upper
 tauK_true = diag(sim$K)
 
-x11():plot(tauK_est, type = 'p', pch = 16, ylab = " ", xlab = "x", xaxt = 'n', ylim = c(min(tauK_low),max(tauK_upp)))
+x11();plot(tauK_est, type = 'p', pch = 16, ylab = " ", xlab = "x", xaxt = 'n', ylim = c(min(tauK_low),max(tauK_upp)))
 title(main = "Summary of TauK coefficients")
 mtext(text = x_grid, side = 1, line = 0.3, at = 1:length(x_grid), las = 2, cex = 0.9)
 points(tauK_true, type = 'p', pch = 16, col = 'red')
@@ -119,7 +119,7 @@ abline(h = Beta_low[1,1], lty = 1, col = 'black', lwd = 2)
 abline(h = Beta_upp[1,1], lty = 1, col = 'black', lwd = 2)
 title(main = "Summary for Beta(1,1)")
 legend("topright", legend = c("true value", "0.95 quantiles", "mean value"),
-       col = c('grey50','black', 'green'),  lty = c(2,1,2), lwd = 3)
+       col = c('red','black', 'green'),  lty = c(2,1,2), lwd = 3)
 
 
 Beta_true = t(sim$beta)
