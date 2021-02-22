@@ -2,7 +2,7 @@
 % Please edit documentation in R/BGSL_export.R
 \name{GGM_sampling}
 \alias{GGM_sampling}
-\title{Sampler for Guassian Graphical Models}
+\title{Sampler for Gaussian Graphical Models}
 \usage{
 GGM_sampling(
   data,

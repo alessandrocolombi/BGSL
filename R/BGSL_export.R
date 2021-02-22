@@ -833,7 +833,7 @@ BFDR_selection = function (plinks, tol = seq(0.1, 1, by = 0.025), min_rate = 0.0
     above_tr = plinks_vet[plinks_vet >= tolerance]
     FDR[i] = sum(1 - above_tr)/length(above_tr)
   }
-  if (FDR[1] < min_rate) {
+  if(FDR[1] < min_rate) {
     best_soglia_fdr = tol[1]
   }
   else for (i in 2:length(FDR)) {
@@ -1003,7 +1003,7 @@ SimulateData_GGM = function(p, n, n_groups = 0, form = "Complete", groups = NULL
 	return (BGSL:::SimulateData_GGM_c(p,n,n_groups,form,graph,adj_mat,seed,mean_null,sparsity,groups))
 }
 
-#' Sampler for Guassian Graphical Models
+#' Sampler for Gaussian Graphical Models
 #'
 #' \loadmathjax This function draws samples a posteriori from a Gaussian Graphical Models. 
 #' \mjtdeqn{$$\begin{eqnarray*}y_{1},\dots,y_{n}|K \sim& N_{p}\left(0,K\right) \cr K| G \sim& GWish\left(d,D\right) \cr G \sim&\pi\left(G\right)\end{eqnarray*}$$}{\begin{eqnarray*}y_{1},\dots,y_{n}|K \sim& N_{p}\left(0,K\right) \cr K| G \sim& GWish\left(d,D\right) \cr G \sim&\pi\left(G\right)\end{eqnarray*}}{\begin{eqnarray*}y_{1},\dots,y_{n}|K \sim& N_{p}\left(0,K\right) \cr K| G \sim& GWish\left(d,D\right) \cr G \sim&\pi\left(G\right)\end{eqnarray*}}

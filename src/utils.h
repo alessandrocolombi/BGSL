@@ -775,8 +775,8 @@ namespace utils{
 									 (long double)(b+G.get_nbd(i).size())*std::log(T(i,i)) + 
 									 std::lgammal((long double)(0.5*(b + nu[i])));
 			}//This computation requires the best possible precision because il will generate a very large number
-			std::cout<<"result_MC = "<<result_MC<<std::endl;
-			std::cout<<"result_const_term = "<<result_const_term<<std::endl;
+			//std::cout<<"result_MC = "<<result_MC<<std::endl;
+			//std::cout<<"result_const_term = "<<result_const_term<<std::endl;
 			return result_MC + result_const_term;
 		}
 	}

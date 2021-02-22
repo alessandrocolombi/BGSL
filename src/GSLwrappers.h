@@ -46,7 +46,7 @@ namespace sample{
 					std::vector<unsigned int> seeds(1);
 					seq.generate(seeds.begin(), seeds.end());
 					seed = seeds[0];
-					std::cout<<"seed = "<<seed<<std::endl;
+					//std::cout<<"seed = "<<seed<<std::endl;
 				}
 				else{
 					seed = _seed;
