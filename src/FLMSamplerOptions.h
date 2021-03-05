@@ -5,16 +5,27 @@
 #include "include_helpers.h"
 #include "include_graphs.h"
 
+/*Update: I want to take into account curves that are measured ON THE SAME GRID but not necessarily in all points. The common grid is called Grid and it has r points, every curve is evaluated on a 
+  subset of Grid, having r_i points. 
+  Modification needed: 
+  - every curve has its own BaseMat, they all are submatrices of the biggest possible one, which always has size (r x p). Instead of saving n different submatrices, i store a 
+    vector of vector, it has length n (one element for each curve) and the i-th elements contains the indices of the points at which that particular curve has been measured.
+    --> Indices are numbered form 0 to r-1
+  - The structure of the data also need to be changed, curves are now measured on r_i points that is general smaller than r.  
+*/
 
 struct FLMsamplerTraits{
 
 	using IdxType  	  		= std::size_t;
 	using MatRow      		= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>; 
 	using MatCol      		= Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>; 
+	using ArrInt            = Eigen::Array<unsigned int, Eigen::Dynamic, 1>;
 	using VecRow      		= Eigen::RowVectorXd;
 	using VecCol      		= Eigen::VectorXd;
 	using CholTypeRow 		= Eigen::LLT<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>, Eigen::Upper>;
 	using CholTypeCol 		= Eigen::LLT<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>, Eigen::Lower>;
+	using Grid              = std::vector< std::vector<unsigned int> >;    
+	using Data              = std::vector< VecCol >;         
 	//Types used for saving in memory and not on file
 	// RetK is a vector containing the upper triangular part of the precision matrix. It is important to remember that this choice implies that 
 	// elements are saved row by row.
@@ -63,10 +74,42 @@ class FLMHyperparameters : public FLMsamplerTraits{
 class FLMParameters : public FLMsamplerTraits{
 	public:
 	FLMParameters()=default;
-	FLMParameters(int const & _niter, int const & _nburn, int const & _thin, MatCol const & _PHI, double const & _trGwishSampler = 1e-8):
-				niter(_niter), nburn(_nburn), thin(_thin), Basemat(_PHI), trGwishSampler(_trGwishSampler)
+	FLMParameters(int const & _niter, int const & _nburn, int const & _thin, MatCol const & _PHI, Grid const & _grid, double const & _trGwishSampler = 1e-8):
+				  niter(_niter), nburn(_nburn), thin(_thin), Basemat(_PHI), trGwishSampler(_trGwishSampler), grid(_grid)
 	{
 					iter_to_store  = static_cast<unsigned int>((niter - nburn)/thin );
+					/*Check that the grid points are valid:
+					  - no empty grid
+					  - no repeated indices
+					  - no index should exceed r-1
+					  - need to be sorted
+					*/
+					auto check_grid = [this](std::vector<unsigned int> & g)
+					{
+						unsigned int r = this->Basemat.rows();
+
+						if(g.size() == 0)
+							throw std::runtime_error("Error when genereting the grid. No grid points are availabe for this curve.");
+
+						// remove consecutive (adjacent) duplicates, lighten the sort
+						auto last = std::unique(g.begin(), g.end());
+						g.erase(last, g.end());
+
+						// sort the range and unique again to be sure that no duplicates are possible
+						if(!std::is_sorted(g.begin(), g.end())){
+							std::sort(g.begin(), g.end()); //if not sorted, sort it
+						}
+						
+						last = std::unique(g.begin(), g.end()); //find unique values
+						g.erase(last, g.end()); //erase the non-unique values. g is now sorted and having only unique elements
+						
+						if(g.size() > r)
+							throw std::runtime_error("Error when genereting the grid. The dimension of the grid for this curve exceed the size of the common grid.");
+						if(g[g.size()-1] >= r)
+							throw std::runtime_error("Error when genereting the grid. The highest index of the grid for this curve exceed the size of the common grid.");
+					};
+
+					std::for_each(grid.begin(), grid.end(), check_grid); //check every set of indices for each curve
 	}
 	int niter;
 	int nburn;
@@ -74,6 +117,7 @@ class FLMParameters : public FLMsamplerTraits{
 	MatCol Basemat; //grid_pts x p
 	unsigned int iter_to_store;
 	double trGwishSampler;
+	Grid grid;
 	friend std::ostream & operator<<(std::ostream &str, FLMParameters & pm){
 		str<<"niter = "<<pm.niter<<std::endl;
 		str<<"nburn = "<<pm.nburn<<std::endl;

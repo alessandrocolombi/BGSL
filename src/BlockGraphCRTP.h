@@ -57,8 +57,8 @@ class BlockGraphBaseCRTP{
     inline unsigned int get_group_size(IdxType const & i)const{
       return ptr_groups->get_group_size(i);
     }
-    unsigned int get_n_links() const              {static_cast<D*>(this)->get_n_links();}
-    unsigned int get_n_block_links() const        {static_cast<D*>(this)->get_n_block_links();}
+    unsigned int get_n_links() const              {static_cast<D*>(this)->get_n_links(); return 0;}
+    unsigned int get_n_block_links() const        {static_cast<D*>(this)->get_n_block_links(); return 0;}
     inline unsigned int get_possible_links() const{
       return 0.5*this->get_complete_size()*(this->get_complete_size()-1);
     }

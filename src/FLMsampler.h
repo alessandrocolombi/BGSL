@@ -17,7 +17,7 @@ class FLMsampler : public FLMsamplerTraits
 										//std::tuple<RetBeta, RetMu, RetTauK, RetTaueps> , 
 										//std::tuple<RetBeta, RetMu, RetK, RetTaueps>    > ;
 	public:
-	FLMsampler( MatCol const & _data, FLMParameters const & _params, FLMHyperparameters const & _hy_params, 
+	FLMsampler( Data const & _data /*MatCol const & _data*/, FLMParameters const & _params, FLMHyperparameters const & _hy_params, 
 			    InitFLM const & _init,  std::string const & _file_name = "FLMresult", unsigned int _seed = 0, bool _print_pb = true):
 			    data(_data), params(_params), hy_params(_hy_params) ,init(_init),
 				p(_init.Beta0.rows()), n(_init.Beta0.cols()), grid_pts(_params.Basemat.rows()), engine(_seed), print_pb(_print_pb), file_name(_file_name)
@@ -30,13 +30,14 @@ class FLMsampler : public FLMsamplerTraits
 
 	private:
 	void check() const;
-	MatCol data; //grid_pts x n
+	//MatCol data; //grid_pts x n
+	Data data; // vector of length n containing VecCol of length grid_pts_i
 	FLMParameters params;
 	FLMHyperparameters hy_params;
 	InitFLM init;
 	unsigned int p;
 	unsigned int n;
-	unsigned int grid_pts;
+	unsigned int grid_pts; // è inutile questo no? meglio fare un vettore con tutti gli r_i al massimo
 	sample::GSL_RNG engine;
 	bool print_pb;
 	std::string file_name;
@@ -44,12 +45,19 @@ class FLMsampler : public FLMsamplerTraits
 
 template< GraphForm Graph >
 void FLMsampler<Graph>::check() const{
-	if(data.rows() != grid_pts) //check for grid_pts
-		throw std::runtime_error("Error, incoerent number of grid points");
-	if(data.cols() != n) //check for n
-		throw std::runtime_error("Error, incoerent number of data");
+	//if(data.rows() != grid_pts) //check for grid_pts
+		//throw std::runtime_error("Error, incoerent number of grid points");
+	//if(data.cols() != n) //check for n
+		//throw std::runtime_error("Error, incoerent number of data");
+
+	if(data.size() != n || params.grid.size() != n ) //check for n
+			throw std::runtime_error("Error, incoerent number of data");
 	if( params.Basemat.cols() != p || p != init.mu0.size() ) //check for p
 			throw std::runtime_error("Error, incoerent number of basis");
+	for(int i = 0; i < n; ++i){
+		if(data[i].size() != params.grid[i].size())
+			throw std::runtime_error("Error in checking data, measurement of data and grid points are not coherent.");
+	}	
 }
 
 template< GraphForm Graph >
@@ -59,7 +67,7 @@ int FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 			      "Error, this sampler is not a graphical model, the graph has to be given. The possibilities for Graph parameter are GraphForm::Diagonal or GraphForm::Fix");
 	
 	// Declare all parameters (makes use of C++17 structured bindings)
-	const unsigned int & r = grid_pts;
+	const unsigned int & r = grid_pts; //Never used
 	const unsigned int n_elem_mat = 0.5*p*(p+1); //Number of elements in the upper part of precision matrix (diagonal inclused). It is what is saved if K is a matrix
 	const double&  a_tau_eps = this->hy_params.a_tau_eps;
 	const double&  b_tau_eps = this->hy_params.b_tau_eps;
@@ -68,7 +76,19 @@ int FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 	const double&  b_tauK    = this->hy_params.b_tauK; 
 	const double&  bK    	 = this->hy_params.bK; 
 	const MatCol&  DK    	 = this->hy_params.DK; 
-	const auto &[niter, nburn, thin, Basemat, iter_to_store, threshold] = this->params;
+	const auto &[niter, nburn, thin, Basemat, iter_to_store, threshold, grid] = this->params;
+
+									//std::cout<<"BaseMat:"<<std::endl<<Basemat<<std::endl;
+									//std::cout<<"Griglia"<<std::endl;
+										//for(auto __v : grid){
+												//for(auto __vv : __v)
+													//std::cout<<__vv<<", ";
+								//
+											//std::cout<<std::endl;
+										//}
+								//
+										//std::cout<<std::endl;
+
 	unsigned int prec_elem{0}; //What is the number of elemets in the precision matrix to be saved? It depends on the template parameter. 
 	std::string sampler_version = "FLMsampler_";
 	if constexpr(Graph == GraphForm::Diagonal){ 
@@ -92,11 +112,69 @@ int FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 	sample::rgamma  rgamma;
 
 	//Define all those quantities that can be compute once
-	const MatRow tbase_base = Basemat.transpose()*Basemat; // p x p
-	const MatCol tbase_data = Basemat.transpose()*data;	 //  p x n
-	const double Sdata(data.cwiseProduct(data).sum()); // Sum_i(<yi, yi>) sum of the inner products of each data 
+	 MatCol data_mat(MatCol(MatCol::Zero(r,n)));
+	 for(int i = 0; i < n; i++){
+	 	data_mat.col(i) = data[i];
+	 }	
+	 const MatRow tbase_base = Basemat.transpose()*Basemat; // p x p
+	 const MatCol tbase_data = Basemat.transpose()*data_mat;	 //  p x n
+	
+	std::vector< unsigned int > idx_p(p); //vector of length p containing 0:(p-1). Needed to excact the sub-matrices of BaseMat
+	std::iota(idx_p.begin(), idx_p.end(), 0);
+												//std::cout<<"idx_p = "<<std::endl;
+													//for(auto __v : idx_p)
+														//std::cout<<__v<<", ";
+													//std::cout<<std::endl;
+	std::vector< MatRow > tbase_base_vet{n, MatRow::Zero(p,p)}; //vector of size n containing p x p matrices
+													//std::cout<<"tbase_base_vet"<<std::endl;
+													//for(auto __v : tbase_base_vet)
+														//std::cout<<__v<<std::endl;
+													//std::cout<<std::endl;
+	std::transform(grid.begin(), grid.end(), tbase_base_vet.begin(),
+		[&Basemat, &idx_p](std::vector< unsigned int > const & g)
+		{
+			
+			MatCol BaseMat_i = utils::indexing( Basemat, Eigen::Map<const ArrInt> (&(g[0]), g.size()), Eigen::Map<const ArrInt> (&(idx_p[0]), idx_p.size()) );
+													//std::cout<<"BaseMat_i:"<<std::endl<<BaseMat_i<<std::endl;
+													//std::cout<<"BaseMat_i.transpose()*BaseMat_i:"<<std::endl<<BaseMat_i.transpose()*BaseMat_i<<std::endl;
+			MatCol res = BaseMat_i.transpose()*BaseMat_i;
+			return res;
+		} 
+	);
+													//std::cout<<"tbase_base:"<<std::endl<<tbase_base<<std::endl;
+													//std::cout<<"tbase_base_vet"<<std::endl;
+														//for(auto __v : tbase_base_vet)
+															//std::cout<<__v<<std::endl;
+														//std::cout<<std::endl;
+
+
+	std::vector< VecCol > tbase_data_vet{n, VecCol::Zero(p)}; //vector of size n containing Eigen vector of length p
+	std::transform(grid.begin(), grid.end(), data.cbegin(), tbase_data_vet.begin(),
+		[&Basemat, &idx_p](std::vector< unsigned int > const & g, VecCol const & yi)
+		{
+			MatCol BaseMat_i = utils::indexing( Basemat, Eigen::Map<const ArrInt> (&(g[0]), g.size()), Eigen::Map<const ArrInt> (&(idx_p[0]), idx_p.size()) );
+														//std::cout<<"BaseMat_i.transpose()*yi:"<<std::endl<<BaseMat_i.transpose()*yi<<std::endl;
+			VecCol res = BaseMat_i.transpose()*yi;
+			return res;
+			//return ( utils::indexing( Basemat.transpose(), Eigen::Map<const ArrInt> (&(idx_p[0]), idx_p.size()), Eigen::Map<const ArrInt> (&(g[0]), g.size()) ) * yi );  
+		} 
+	);
+													//std::cout<<"tbase_data:"<<std::endl<<tbase_data<<std::endl;
+													//std::cout<<"tbase_data_vet"<<std::endl;
+														//for(auto __v : tbase_data_vet)
+															//std::cout<<__v<<std::endl;
+														//std::cout<<std::endl;
+
+	//const double Sdata_old( data_mat.cwiseProduct(data_mat).sum() ); // Sum_i(<yi, yi>) sum of the inner products of each data 
+	double Sdata = std::accumulate(data.cbegin(), data.cend(), 0.0, 
+									[](double & res, VecCol const & yi){
+										return res + yi.dot(yi);
+									} ) ;
+											//std::cout<<"Sdata_old:"<<std::endl<<Sdata_old<<std::endl;
+											//std::cout<<"Sdata:"<<std::endl<<Sdata<<std::endl;
+	const unsigned int sum_ri = std::accumulate(grid.cbegin(), grid.cend(), 0, [](unsigned int res, std::vector< unsigned int > const & g){return ( res + g.size() );});
 	const double Sdata_btaueps(Sdata+b_tau_eps);
-	const double a_tau_eps_post = (n*r + a_tau_eps)*0.5;	
+	const double a_tau_eps_post = (sum_ri+ a_tau_eps)*0.5;	
 	const double a_tauK_post = (n + a_tauK)*0.5;	
 	const MatRow Irow(MatRow::Identity(p,p));
 	const VecCol one_over_sigma_mu_vec(VecCol::Constant(p,1/sigma_mu));
@@ -183,24 +261,30 @@ int FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 
 			
 			//Beta
-			CholTypeRow chol_invBn(tau_eps*tbase_base + MatRow (tauK.asDiagonal())); 
-			MatRow Bn(chol_invBn.solve(Irow));
+			//CholTypeRow chol_invBn(tau_eps*tbase_base + MatRow (tauK.asDiagonal())); 
+			//MatRow Bn(chol_invBn.solve(Irow));
 			VecCol Kmu = tauK.cwiseProduct(mu); 
 
 			//Quantities needed down the road
 			VecCol U(VecCol::Zero(p)); 
 			double b_tau_eps_post(Sdata_btaueps);
-			#pragma omp parallel for shared(Beta, U), reduction(+ : b_tau_eps_post)
+			//#pragma omp parallel for shared(Beta, U), reduction(+ : b_tau_eps_post)
 			for(unsigned int i = 0; i < n; ++i){
-				VecCol bn_i = Bn*(tau_eps*tbase_data.col(i) + Kmu); 
+
+				CholTypeRow chol_invBn(tau_eps*tbase_base_vet[i] + MatRow (tauK.asDiagonal())); 
+				MatRow Bn(chol_invBn.solve(Irow));
+				//VecCol bn_i = Bn*(tau_eps*tbase_data.col(i) + Kmu); 
+				VecCol bn_i = Bn*(tau_eps*tbase_data_vet[i] + Kmu); 
 				VecCol beta_i = rmv(engine, bn_i, Bn); //Since it has to be used in some calculations, save it so that it won't be necessary to find it later
-				#pragma omp critical 
-				{
+				//#pragma omp critical 
+				//{
 					Beta.col(i) = beta_i;
 					U += (beta_i - mu).cwiseProduct(beta_i - mu);
-				}
-				b_tau_eps_post += beta_i.dot(tbase_base*beta_i) - 2*beta_i.dot(tbase_data.col(i));  
+				//}
+				//b_tau_eps_post += beta_i.dot(tbase_base*beta_i) - 2*beta_i.dot(tbase_data.col(i));  
+				b_tau_eps_post += beta_i.dot(tbase_base_vet[i]*beta_i) - 2*beta_i.dot(tbase_data_vet[i]);  
 			}
+			//std::cout<<"Beta:"<<std::endl<<Beta<<std::endl;
 			//Precision tauK
 			for(unsigned int j = 0; j < p; ++j){ //For the moment, it is not worth to be parallelized
 				tauK(j) = rgamma(engine, a_tauK_post, 2/(U(j) + b_tauK) );
@@ -227,6 +311,7 @@ int FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 			}
 		}
 		else{
+
 			//mu
 			VecCol S_beta(Beta.rowwise().sum());
 			CholTypeRow chol_invA(one_over_sigma_mu_mat + n*K); 
@@ -234,23 +319,28 @@ int FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 			VecCol a(A*(K*S_beta));
 			mu = rmv(engine, a, A);
 			//Beta
-			CholTypeRow chol_invBn(tau_eps*tbase_base + K); 
-			MatRow Bn(chol_invBn.solve(Irow));
+			//CholTypeRow chol_invBn(tau_eps*tbase_base + K); 
+			//MatRow Bn(chol_invBn.solve(Irow));
 			VecCol Kmu(K*mu);
 
 			//Quantities needed down the road
 			MatCol U(MatCol::Zero(p,p)); //Has to be ColMajor
 			double b_tau_eps_post(Sdata_btaueps);
-			#pragma omp parallel for shared(Beta, U), reduction(+ : b_tau_eps_post)
+			//#pragma omp parallel for shared(Beta, U), reduction(+ : b_tau_eps_post)
 			for(unsigned int i = 0; i < n; ++i){
-				VecCol bn_i = Bn*(tau_eps*tbase_data.col(i) + Kmu); 
+
+				CholTypeRow chol_invBn(tau_eps*tbase_base_vet[i] + K); 
+				MatRow Bn(chol_invBn.solve(Irow));
+				//VecCol bn_i = Bn*(tau_eps*tbase_data.col(i) + Kmu); 
+				VecCol bn_i = Bn*(tau_eps*tbase_data_vet[i] + Kmu); 
 				VecCol beta_i = rmv(engine, bn_i, Bn); //Since it has to be used in some calculations, save it so that it won't be necessary to find it later
-				#pragma omp critical 
-				{
+				//#pragma omp critical 
+				//{
 					Beta.col(i) = beta_i;
 					U += (beta_i - mu)*(beta_i - mu).transpose();
-				}
-				b_tau_eps_post += beta_i.dot(tbase_base*beta_i) - 2*beta_i.dot(tbase_data.col(i));  
+				//}
+				b_tau_eps_post += beta_i.dot(tbase_base_vet[i]*beta_i) - 2*beta_i.dot(tbase_data_vet[i].col(i));  
+				//b_tau_eps_post += beta_i.dot(tbase_base*beta_i) - 2*beta_i.dot(tbase_data.col(i));  
 			}
 
 			//Precision K

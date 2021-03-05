@@ -248,8 +248,8 @@ GGM_sampling_c <- function(data, p, n, niter, burnin, thin, file_name, D, b, G0,
     .Call(`_BGSL_GGM_sampling_c`, data, p, n, niter, burnin, thin, file_name, D, b, G0, K0, MCprior, MCpost, threshold, form, prior, algo, groups, seed, Gprior, sigmaG, paddrm, print_info)
 }
 
-FLM_sampling_c <- function(data, niter, burnin, thin, BaseMat, G, Beta0, mu0, tau_eps0, tauK0, K0, a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK, bK, DK, file_name, diagonal_graph = TRUE, threshold_GWish = 0.00000001, seed = 0L, print_info = TRUE) {
-    .Call(`_BGSL_FLM_sampling_c`, data, niter, burnin, thin, BaseMat, G, Beta0, mu0, tau_eps0, tauK0, K0, a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK, bK, DK, file_name, diagonal_graph, threshold_GWish, seed, print_info)
+FLM_sampling_c <- function(data_list, niter, burnin, thin, BaseMat, grid_list, G, Beta0, mu0, tau_eps0, tauK0, K0, a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK, bK, DK, file_name, diagonal_graph = TRUE, threshold_GWish = 0.00000001, seed = 0L, print_info = TRUE) {
+    .Call(`_BGSL_FLM_sampling_c`, data_list, niter, burnin, thin, BaseMat, grid_list, G, Beta0, mu0, tau_eps0, tauK0, K0, a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK, bK, DK, file_name, diagonal_graph, threshold_GWish, seed, print_info)
 }
 
 FGM_sampling_c <- function(data, niter, burnin, thin, thinG, BaseMat, file_name, Beta0, mu0, tau_eps0, G0, K0, a_tau_eps, b_tau_eps, sigmamu, bK, DK, sigmaG, paddrm, Gprior, MCprior, MCpost, threshold, form = "Complete", prior = "Uniform", algo = "MH", groups = NULL, seed = 0L, print_info = TRUE) {

@@ -269,16 +269,17 @@ BEGIN_RCPP
 END_RCPP
 }
 // FLM_sampling_c
-Rcpp::List FLM_sampling_c(Eigen::MatrixXd const& data, int const& niter, int const& burnin, double const& thin, Eigen::MatrixXd const& BaseMat, Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, Eigen::MatrixXd const& Beta0, Eigen::VectorXd const& mu0, double const& tau_eps0, Eigen::VectorXd const& tauK0, Eigen::MatrixXd const& K0, double const& a_tau_eps, double const& b_tau_eps, double const& sigmamu, double const& aTauK, double const& bTauK, double const& bK, Eigen::MatrixXd const& DK, Rcpp::String file_name, bool diagonal_graph, double const& threshold_GWish, int seed, bool print_info);
-RcppExport SEXP _BGSL_FLM_sampling_c(SEXP dataSEXP, SEXP niterSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP BaseMatSEXP, SEXP GSEXP, SEXP Beta0SEXP, SEXP mu0SEXP, SEXP tau_eps0SEXP, SEXP tauK0SEXP, SEXP K0SEXP, SEXP a_tau_epsSEXP, SEXP b_tau_epsSEXP, SEXP sigmamuSEXP, SEXP aTauKSEXP, SEXP bTauKSEXP, SEXP bKSEXP, SEXP DKSEXP, SEXP file_nameSEXP, SEXP diagonal_graphSEXP, SEXP threshold_GWishSEXP, SEXP seedSEXP, SEXP print_infoSEXP) {
+Rcpp::List FLM_sampling_c(Rcpp::List const& data_list, int const& niter, int const& burnin, double const& thin, Eigen::MatrixXd const& BaseMat, Rcpp::List const& grid_list, Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G, Eigen::MatrixXd const& Beta0, Eigen::VectorXd const& mu0, double const& tau_eps0, Eigen::VectorXd const& tauK0, Eigen::MatrixXd const& K0, double const& a_tau_eps, double const& b_tau_eps, double const& sigmamu, double const& aTauK, double const& bTauK, double const& bK, Eigen::MatrixXd const& DK, Rcpp::String file_name, bool diagonal_graph, double const& threshold_GWish, int seed, bool print_info);
+RcppExport SEXP _BGSL_FLM_sampling_c(SEXP data_listSEXP, SEXP niterSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP BaseMatSEXP, SEXP grid_listSEXP, SEXP GSEXP, SEXP Beta0SEXP, SEXP mu0SEXP, SEXP tau_eps0SEXP, SEXP tauK0SEXP, SEXP K0SEXP, SEXP a_tau_epsSEXP, SEXP b_tau_epsSEXP, SEXP sigmamuSEXP, SEXP aTauKSEXP, SEXP bTauKSEXP, SEXP bKSEXP, SEXP DKSEXP, SEXP file_nameSEXP, SEXP diagonal_graphSEXP, SEXP threshold_GWishSEXP, SEXP seedSEXP, SEXP print_infoSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Eigen::MatrixXd const& >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List const& >::type data_list(data_listSEXP);
     Rcpp::traits::input_parameter< int const& >::type niter(niterSEXP);
     Rcpp::traits::input_parameter< int const& >::type burnin(burninSEXP);
     Rcpp::traits::input_parameter< double const& >::type thin(thinSEXP);
     Rcpp::traits::input_parameter< Eigen::MatrixXd const& >::type BaseMat(BaseMatSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List const& >::type grid_list(grid_listSEXP);
     Rcpp::traits::input_parameter< Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> >::type G(GSEXP);
     Rcpp::traits::input_parameter< Eigen::MatrixXd const& >::type Beta0(Beta0SEXP);
     Rcpp::traits::input_parameter< Eigen::VectorXd const& >::type mu0(mu0SEXP);
@@ -297,7 +298,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double const& >::type threshold_GWish(threshold_GWishSEXP);
     Rcpp::traits::input_parameter< int >::type seed(seedSEXP);
     Rcpp::traits::input_parameter< bool >::type print_info(print_infoSEXP);
-    rcpp_result_gen = Rcpp::wrap(FLM_sampling_c(data, niter, burnin, thin, BaseMat, G, Beta0, mu0, tau_eps0, tauK0, K0, a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK, bK, DK, file_name, diagonal_graph, threshold_GWish, seed, print_info));
+    rcpp_result_gen = Rcpp::wrap(FLM_sampling_c(data_list, niter, burnin, thin, BaseMat, grid_list, G, Beta0, mu0, tau_eps0, tauK0, K0, a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK, bK, DK, file_name, diagonal_graph, threshold_GWish, seed, print_info));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -443,7 +444,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_BGSL_SimulateData_GGM_c", (DL_FUNC) &_BGSL_SimulateData_GGM_c, 10},
     {"_BGSL_CreateGroups", (DL_FUNC) &_BGSL_CreateGroups, 2},
     {"_BGSL_GGM_sampling_c", (DL_FUNC) &_BGSL_GGM_sampling_c, 23},
-    {"_BGSL_FLM_sampling_c", (DL_FUNC) &_BGSL_FLM_sampling_c, 23},
+    {"_BGSL_FLM_sampling_c", (DL_FUNC) &_BGSL_FLM_sampling_c, 24},
     {"_BGSL_FGM_sampling_c", (DL_FUNC) &_BGSL_FGM_sampling_c, 29},
     {"_BGSL_Read_InfoFile_old", (DL_FUNC) &_BGSL_Read_InfoFile_old, 1},
     {"_BGSL_Compute_Quantiles_old", (DL_FUNC) &_BGSL_Compute_Quantiles_old, 12},

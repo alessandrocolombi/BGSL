@@ -8,6 +8,7 @@ sampler_parameters(
   MCprior = 500,
   MCpost = 750,
   BaseMat = NULL,
+  Grid = NULL,
   threshold = 1e-14
 )
 }
@@ -20,6 +21,8 @@ sampler_parameters(
 May be defaulted as \code{NULL} but note this case it is not automatically generated.
 Note that it is not needed by \code{\link{GGM_sampling}} but is mandatory in \code{\link{FGM_sampling}} and \code{\link{FLM_sampling}}. For those cases,
 use \code{\link{Generate_Basis}} to generete it.}
+
+\item{Grid}{vector of length equal to the number of curves, it is used to specify on what points each curve has been measured. The numbering of the grid points is zero based.}
 
 \item{threshold}{threshold for convergence in GWishart sampler. It is not needed only in \code{FLM} sampler with diagonal graph.}
 }

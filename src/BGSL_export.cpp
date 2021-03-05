@@ -13,6 +13,7 @@ using MatRow        = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eige
 using MatCol        = Eigen::MatrixXd;
 using MatUnsRow     = Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 using MatUnsCol     = Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor>;
+using VecUnsCol     = Eigen::Matrix<unsigned int, Eigen::Dynamic, 1>;
 using VecCol        = Eigen::VectorXd;
 using VecRow        = Eigen::RowVectorXd;
 
@@ -927,27 +928,43 @@ Rcpp::List GGM_sampling_c(  Eigen::MatrixXd const & data,
 
 
 
+/* Eigen::MatrixXd const & data */
 // [[Rcpp::export]]
-Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int const & burnin, double const & thin, Eigen::MatrixXd const & BaseMat,
+Rcpp::List FLM_sampling_c(Rcpp::List const & data_list, int const & niter, int const & burnin, double const & thin, Eigen::MatrixXd const & BaseMat, Rcpp::List const & grid_list,
                           Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> G,
                           Eigen::MatrixXd const & Beta0, Eigen::VectorXd const & mu0, double const & tau_eps0, Eigen::VectorXd const & tauK0, Eigen::MatrixXd const & K0,
                           double const & a_tau_eps, double const & b_tau_eps, double const & sigmamu, double const & aTauK, double const & bTauK, double const & bK, Eigen::MatrixXd const & DK,
                           Rcpp::String file_name, bool diagonal_graph = true, 
                           double const & threshold_GWish = 0.00000001, int seed = 0, bool print_info = true)
-{
-
+{  
   const unsigned int p = BaseMat.cols();
-  const unsigned int n = data.cols();
+  //const unsigned int n = data.cols();
+  const unsigned int n = data_list.length();
   const unsigned int r = BaseMat.rows();
+
+  //Convert grid points and data
+  std::vector< VecUnsCol > grid_eigen(n);
+  std::vector< std::vector<unsigned int> > grid(n);
+  std::vector< VecCol > data(n);
+  for(int i = 0; i < n; ++i){
+    data[i] = data_list[i];
+    grid_eigen[i] = grid_list[i];
+
+    grid[i].resize(grid_eigen[i].size());
+    for(int j = 0; j < grid_eigen[i].size(); ++j)
+      grid[i][j] = grid_eigen[i](j);
+  }
+
+
   Rcpp::String file_name_extension(file_name);
   file_name_extension += ".h5";
-  if(data.rows() != r)
-    throw std::runtime_error("Dimension of data and BaseMat are incoherent. data has to be (n_grid_points x n), BaseMat is (n_grid_points x p)");
+  //if(data.rows() != r)
+    //throw std::runtime_error("Dimension of data and BaseMat are incoherent. data has to be (n_grid_points x n), BaseMat is (n_grid_points x p)");
   
   if(diagonal_graph){
     //FLMHyperparameters hy(p);
     FLMHyperparameters hy(a_tau_eps, b_tau_eps, sigmamu, aTauK, bTauK );
-    FLMParameters param(niter, burnin, thin, BaseMat);
+    FLMParameters param(niter, burnin, thin, BaseMat, grid);
     InitFLM init(n,p);
     init.set_init(Beta0, mu0, tau_eps0, tauK0);
     FLMsampler<GraphForm::Diagonal> Sampler(data, param, hy, init, file_name, seed, print_info);
@@ -996,7 +1013,7 @@ Rcpp::List FLM_sampling_c(Eigen::MatrixXd const & data, int const & niter, int c
     
     //FLMHyperparameters hy(p);
     FLMHyperparameters hy(a_tau_eps, b_tau_eps, sigmamu, bK, DK );
-    FLMParameters param(niter, burnin, thin, BaseMat, threshold_GWish);
+    FLMParameters param(niter, burnin, thin, BaseMat, grid, threshold_GWish);
     if(G.rows() != G.cols())
       throw std::runtime_error("Inserted graph is not squared");
     if(G.rows() != p)

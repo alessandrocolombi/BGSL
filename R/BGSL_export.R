@@ -647,12 +647,21 @@ plot_curves = function( data1, data2 = NULL, range, n_plot = 1, grid_points = NU
 FLM_sampling = function( p, data, niter = 100000, burnin = niter/2, thin = 1, diagonal_graph = T, G = NULL ,
                          Param = NULL, HyParam = NULL, Init = NULL, print_info = TRUE, seed = 0, file_name = "FLMresults" )
 {
-  n = dim(data)[2]
+  #n = dim(data)[2]
+  n = length(data)
   #Checks Param / HyParam / Init structures
   if(is.null(Param))
     Param = BGSL:::sampler_parameters()
   else if(is.null(Param$BaseMat) || is.null(Param$threshold))
     stop("Param list is incorrectly set. Please use sampler_parameters() function to create it. Hint: in Functional Models, BaseMat field cannot be defaulted. Use Generate_Basis() to create it.")    
+  if(is.null(Param$Grid)){
+    cat('Common grid case \n ')
+    r = dim(Param$BaseMat)[1]
+    Param$Grid = list()
+    for(i in 1:n)
+      Param$Grid[[i]] = 0:(r-1)
+  }
+
   if(is.null(HyParam))
     HyParam = BGSL:::LM_hyperparameters(p = p)
   else if( is.null(HyParam$D_K) || is.null(HyParam$b_K) || is.null(HyParam$a_tau_eps) || is.null(HyParam$b_tau_eps) || is.null(HyParam$sigma_mu) || is.null(HyParam$a_tauK) || is.null(HyParam$b_tauK) )
@@ -660,6 +669,7 @@ FLM_sampling = function( p, data, niter = 100000, burnin = niter/2, thin = 1, di
   if(dim(HyParam$D_K)[1]!= p){
     stop("Prior inverse scale matrix D is not coherent with the number of basis function. It has to be a (p x p) matrix.")
   }
+
   if(is.null(Init))
     Init = BGSL:::LM_init(p = p, n = n, empty = TRUE )
   else if(is.null(Init$Beta0) || is.null(Init$K0) || is.null(Init$mu0) || is.null(Init$tauK0) || is.null(Init$tau_eps0) )
@@ -673,8 +683,7 @@ FLM_sampling = function( p, data, niter = 100000, burnin = niter/2, thin = 1, di
     if(dim(G)[1] != dim(G)[2] || dim(G)[1] != p )
       stop("True graph G was wrongly inserted. It has to be a (p x p) matrix")  
   }
-
-  return (BGSL:::FLM_sampling_c( data, niter, burnin, thin, Param$BaseMat, 
+  return (BGSL:::FLM_sampling_c(  data, niter, burnin, thin, Param$BaseMat, Param$Grid,
                                   G, 
                                   Init$Beta0, Init$mu0, Init$tau_eps0, Init$tauK0, Init$K0, #initial values
                                   HyParam$a_tau_eps, HyParam$b_tau_eps, HyParam$sigma_mu, HyParam$a_tauK, HyParam$b_tauK, HyParam$b_K, HyParam$D_K, #hyperparameters
@@ -1170,15 +1179,17 @@ LM_hyperparameters = function( p, a_tau_eps = 20, b_tau_eps = 0.002, sigma_mu = 
 #' May be defaulted as \code{NULL} but note this case it is not automatically generated. 
 #' Note that it is not needed by \code{\link{GGM_sampling}} but is mandatory in \code{\link{FGM_sampling}} and \code{\link{FLM_sampling}}. For those cases,
 #' use \code{\link{Generate_Basis}} to generete it. 
+#' @param Grid vector of length equal to the number of curves, it is used to specify on what points each curve has been measured. The numbering of the grid points is zero based.
 #' @param threshold threshold for convergence in GWishart sampler. It is not needed only in \code{FLM} sampler with diagonal graph.
 #' @return A list with all parameters described as possible inputs.
 #' @export
-sampler_parameters = function(MCprior = 500, MCpost = 750, BaseMat = NULL, threshold = 1e-14)
+sampler_parameters = function(MCprior = 500, MCpost = 750, BaseMat = NULL, Grid = NULL, threshold = 1e-14)
 {
 
 	param = list( "MCprior"   = MCprior,
 				  "MCpost"    = MCpost,
 				  "BaseMat"   = BaseMat,
+          "Grid"      = Grid,
 				  "threshold" = threshold )
 	return (param)
 }
