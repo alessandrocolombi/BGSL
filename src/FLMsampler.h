@@ -78,17 +78,6 @@ int FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 	const MatCol&  DK    	 = this->hy_params.DK; 
 	const auto &[niter, nburn, thin, Basemat, iter_to_store, threshold, grid] = this->params;
 
-									//std::cout<<"BaseMat:"<<std::endl<<Basemat<<std::endl;
-									//std::cout<<"Griglia"<<std::endl;
-										//for(auto __v : grid){
-												//for(auto __vv : __v)
-													//std::cout<<__vv<<", ";
-								//
-											//std::cout<<std::endl;
-										//}
-								//
-										//std::cout<<std::endl;
-
 	unsigned int prec_elem{0}; //What is the number of elemets in the precision matrix to be saved? It depends on the template parameter. 
 	std::string sampler_version = "FLMsampler_";
 	if constexpr(Graph == GraphForm::Diagonal){ 
@@ -121,57 +110,29 @@ int FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 	
 	std::vector< unsigned int > idx_p(p); //vector of length p containing 0:(p-1). Needed to excact the sub-matrices of BaseMat
 	std::iota(idx_p.begin(), idx_p.end(), 0);
-												//std::cout<<"idx_p = "<<std::endl;
-													//for(auto __v : idx_p)
-														//std::cout<<__v<<", ";
-													//std::cout<<std::endl;
 	std::vector< MatRow > tbase_base_vet{n, MatRow::Zero(p,p)}; //vector of size n containing p x p matrices
-													//std::cout<<"tbase_base_vet"<<std::endl;
-													//for(auto __v : tbase_base_vet)
-														//std::cout<<__v<<std::endl;
-													//std::cout<<std::endl;
 	std::transform(grid.begin(), grid.end(), tbase_base_vet.begin(),
 		[&Basemat, &idx_p](std::vector< unsigned int > const & g)
 		{
 			
 			MatCol BaseMat_i = utils::indexing( Basemat, Eigen::Map<const ArrInt> (&(g[0]), g.size()), Eigen::Map<const ArrInt> (&(idx_p[0]), idx_p.size()) );
-													//std::cout<<"BaseMat_i:"<<std::endl<<BaseMat_i<<std::endl;
-													//std::cout<<"BaseMat_i.transpose()*BaseMat_i:"<<std::endl<<BaseMat_i.transpose()*BaseMat_i<<std::endl;
 			MatCol res = BaseMat_i.transpose()*BaseMat_i;
 			return res;
 		} 
 	);
-													//std::cout<<"tbase_base:"<<std::endl<<tbase_base<<std::endl;
-													//std::cout<<"tbase_base_vet"<<std::endl;
-														//for(auto __v : tbase_base_vet)
-															//std::cout<<__v<<std::endl;
-														//std::cout<<std::endl;
-
-
 	std::vector< VecCol > tbase_data_vet{n, VecCol::Zero(p)}; //vector of size n containing Eigen vector of length p
 	std::transform(grid.begin(), grid.end(), data.cbegin(), tbase_data_vet.begin(),
 		[&Basemat, &idx_p](std::vector< unsigned int > const & g, VecCol const & yi)
 		{
 			MatCol BaseMat_i = utils::indexing( Basemat, Eigen::Map<const ArrInt> (&(g[0]), g.size()), Eigen::Map<const ArrInt> (&(idx_p[0]), idx_p.size()) );
-														//std::cout<<"BaseMat_i.transpose()*yi:"<<std::endl<<BaseMat_i.transpose()*yi<<std::endl;
 			VecCol res = BaseMat_i.transpose()*yi;
 			return res;
-			//return ( utils::indexing( Basemat.transpose(), Eigen::Map<const ArrInt> (&(idx_p[0]), idx_p.size()), Eigen::Map<const ArrInt> (&(g[0]), g.size()) ) * yi );  
 		} 
 	);
-													//std::cout<<"tbase_data:"<<std::endl<<tbase_data<<std::endl;
-													//std::cout<<"tbase_data_vet"<<std::endl;
-														//for(auto __v : tbase_data_vet)
-															//std::cout<<__v<<std::endl;
-														//std::cout<<std::endl;
-
-	//const double Sdata_old( data_mat.cwiseProduct(data_mat).sum() ); // Sum_i(<yi, yi>) sum of the inner products of each data 
 	double Sdata = std::accumulate(data.cbegin(), data.cend(), 0.0, 
 									[](double & res, VecCol const & yi){
 										return res + yi.dot(yi);
 									} ) ;
-											//std::cout<<"Sdata_old:"<<std::endl<<Sdata_old<<std::endl;
-											//std::cout<<"Sdata:"<<std::endl<<Sdata<<std::endl;
 	const unsigned int sum_ri = std::accumulate(grid.cbegin(), grid.cend(), 0, [](unsigned int res, std::vector< unsigned int > const & g){return ( res + g.size() );});
 	const double Sdata_btaueps(Sdata+b_tau_eps);
 	const double a_tau_eps_post = (sum_ri+ a_tau_eps)*0.5;	
@@ -339,7 +300,7 @@ int FLMsampler<Graph>::run() //typename FLMsampler<Graph>::RetType
 					Beta.col(i) = beta_i;
 					U += (beta_i - mu)*(beta_i - mu).transpose();
 				//}
-				b_tau_eps_post += beta_i.dot(tbase_base_vet[i]*beta_i) - 2*beta_i.dot(tbase_data_vet[i].col(i));  
+				b_tau_eps_post += beta_i.dot(tbase_base_vet[i]*beta_i) - 2*beta_i.dot(tbase_data_vet[i]);   
 				//b_tau_eps_post += beta_i.dot(tbase_base*beta_i) - 2*beta_i.dot(tbase_data.col(i));  
 			}
 
