@@ -28,6 +28,6 @@ a list containing a matrix of dimension \mjseqn{n\_points \times n\_basis} such 
 contains the \code{j}-th spline evaluated in all grid points. It also returns a vector of size \mjseqn{n\_basis + 2 - order} containing the internal knots used to create the spline.
 }
 \description{
-\loadmathjax This function creates a truncated Bspline basis in the interval \mjseqn{[range(1),range(2)]} and evaluate them over a grid of points.
+\loadmathjax This function creates a truncated Bspline basis in the interval \mjseqn{\[range(1),range(2)\]} and evaluate them over a grid of points.
 It assumes uniformly spaced breakpoints and constructs the corresponding knot vector using a number of breaks equal to \mjseqn{n\_basis + 2 - order}.
 }

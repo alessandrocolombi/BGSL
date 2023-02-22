@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // rGwish
 Rcpp::List rGwish(Eigen::Matrix<unsigned int, Eigen::Dynamic, Eigen::Dynamic, Eigen::ColMajor> const& G, double const& b, Eigen::MatrixXd& D, Rcpp::String norm, Rcpp::String form, Rcpp::Nullable<Rcpp::List> groups, bool check_structure, unsigned int const& max_iter, long double const& threshold_check, long double const& threshold_conv, int seed);
 RcppExport SEXP _BGSL_rGwish(SEXP GSEXP, SEXP bSEXP, SEXP DSEXP, SEXP normSEXP, SEXP formSEXP, SEXP groupsSEXP, SEXP check_structureSEXP, SEXP max_iterSEXP, SEXP threshold_checkSEXP, SEXP threshold_convSEXP, SEXP seedSEXP) {

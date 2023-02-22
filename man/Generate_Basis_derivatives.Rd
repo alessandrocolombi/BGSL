@@ -31,6 +31,6 @@ a list of length nderiv+1 such that each element is a \mjseqn{n\_points \times n
 the \code{k}-th derivative of all the splines in all the grid points.
 }
 \description{
-\loadmathjax This function creates a truncated Bspline basis in the interval \mjseqn{[range(1),range(2)]} and evaluate them over a grid of points up to derivative of order \code{nderiv}.
+\loadmathjax This function creates a truncated Bspline basis in the interval \mjseqn{\[range(1),range(2)\]} and evaluate them over a grid of points up to derivative of order \code{nderiv}.
 For convention, derivatives of order 0 are the splines themselves. This implimes that the first returned element is always equal to the output of the function \code{\link{Generate_Basis}}.
 }

@@ -34,9 +34,9 @@ plot_curves(
 \item{internal_knots}{vector with the internal knots used to construct the splines. Can be obtained as return value of function \code{\link{Generate_Basis}}. Default is null.
 If provided, \code{n_basis} are displayed in the plot. The \code{k}-th interval represents the segment where the \code{k}-th spline dominates the others.}
 
-\item{highlight_band1}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.}
+\item{highlight_band1}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\[1,n\_basis\]}.}
 
-\item{highlight_band2}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{[1,n\_basis]}.}
+\item{highlight_band2}{a vector that states if a particular band of the plot has to be highlighted. It has to be a vector within the range \mjseqn{\[1,n\_basis\]}.}
 
 \item{title_plot}{the title of the plot.}
 

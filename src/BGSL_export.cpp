@@ -8,6 +8,7 @@
 #include <RcppEigen.h>
 #include <RcppParallel.h>
 #include "BGSLheaders.h"
+//' @importFrom RcppParallel RcppParallelLibs
 
 using MatRow        = Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor>;
 using MatCol        = Eigen::MatrixXd;
