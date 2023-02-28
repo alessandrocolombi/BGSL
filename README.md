@@ -120,7 +120,7 @@ The last mandatory package to be installed is `mathjaxr`. It is needed to improv
 Other useful packages are `fields` and `plot.matrix`, used to plot matrices. It is not mandatory to install them, it is just a suggestion to visualize the graphs.
 All those packages can be installed directly from the `R` console via
 ```R
-install.packages(c("Rcpp", "RcppEigen", "RcppParallel", "fields", "plot.matrix", "mathjaxr"))
+install.packages(c("Rcpp", "RcppEigen", "RcppParallel", "fields", "tidyverse", "plot.matrix", "mathjaxr"))
 ```
 
 ### BGSL
@@ -168,6 +168,19 @@ It is now possible to clone the repository
 $ git clone https://github.com/r-windows/rtools-packages.git
 $ cd rtools-packages
 ```
+3. Install **GSL** in window, open the Rtools bash terminal and type
+```shell
+$ pacman -Sy 
+$ pacman -S mingw-w64-{x86_64,i686}-gsl
+```
+The first command updates the packages and the second one installs the library. Installation may take a while.
+4. Install **HDF5** in window, open the Rtools bash terminal and type
+```shell
+$ pacman -Sy 
+$ pacman -S mingw-w64-{x86_64,i686}-hdf5
+```
+Installation may take a while also in this case.
+<!-- 
 3. Compile and install GSL, you just need to write
 ```shell
 $ cd mingw-w64-gsl
@@ -195,12 +208,14 @@ $ rm -f -r pkg src *.xz *.gz *.bz2 #clean the folder
 $ cd ../
 ```
 Building and installing **HDF5** may take a while as well.
+ -->
+
 
 ### R depencencies
 
 No difference with Unix system here, [see](#R-depencencies) for details or simply type on `R` console
 ```R
-install.packages(c("Rcpp", "RcppEigen", "RcppParallel", "fields", "plot.matrix", "mathjaxr"))
+install.packages(c("Rcpp", "RcppEigen", "RcppParallel", "fields", "tidyverse" ,"plot.matrix", "mathjaxr"))
 ```
 
 ### BGSL
