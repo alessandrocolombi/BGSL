@@ -1,6 +1,6 @@
 Package: BGSL
 Title: Bayesian Structural Learning of Block Graphs
-Version: 0.0.0.9000
+Version: 0.1
 Authors@R: 
     person(given = "Alessandro",
            family = "Colombi",
@@ -25,4 +25,5 @@ Imports:
     mathjaxr (>= 1.0-2)
 Suggests: 
     plot.matrix (>= 1.5.2),
-    fields (>= 11.6)
+    fields (>= 11.6),
+    tidyverse
