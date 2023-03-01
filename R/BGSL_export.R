@@ -1638,3 +1638,44 @@ ACheatmap = function(Mat, center_value = 0, col.upper = "darkred", col.center = 
   box()
 
 }
+
+
+
+#' KL_dist
+#'
+#' @param Ktr true precision matrix
+#' @param K estimated precision
+#'
+#' @export
+KL_dist = function(Ktr,K){
+  p = dim(K)[1]
+  inv_Ktr = solve(Ktr)
+  A = sum( diag(inv_Ktr%*%K) )
+  B = log( det(K)/det(Ktr) )
+  return (0.5*(A - p - B))
+}
+#' upper2complete
+#'
+#' @param A matrix
+#'
+#' @export
+upper2complete = function(A){
+  diag_A = diag(A)
+  A = A + t(A)
+  diag(A) = diag_A
+  return(A)
+}
+#' Graph_distance
+#'
+#' @param G1 first graph
+#' @param G2 second graph
+#' @param diag if diagonal should be included or not
+#' @export
+Graph_distance = function(G1,G2,diag = F){
+
+  G1_vett = G1[upper.tri(G1,diag = diag)]
+  G2_vett = G2[upper.tri(G1,diag = diag)]
+  Table   = table(G1_vett, G2_vett)
+
+  return ( Table[1,2] + Table[2,1] )
+}
