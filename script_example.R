@@ -54,7 +54,7 @@ info = Read_InfoFile(file_name = file_name_ext)
 #1) plinks
 plinks = result$plinks
 #2) bfdr selection
-an = BFDR_selection(plinks, diag = T)
+an = BFDR_selection(plinks, min_rate = 0.05, diag = T)
 threshold = an$best_treshold
 #3) complete form
 PL = matrix(0,M,M)
@@ -85,7 +85,7 @@ res = bdgraph(data = data, n = n, iter = niter, burnin = nburn, threshold = 1e-1
 #1) plinks
 plinks_BD = plinks(res)
 #2) bfdr selection
-an_BD = BFDR_selection(plinks_BD, diag = F)
+an_BD = BFDR_selection(plinks_BD,min_rate = 0.05, diag = F)
 threshold_BD = an_BD$best_treshold
 #3) complete form
 Gfinal_est_BD = matrix(0,p,p)
@@ -136,7 +136,7 @@ info = Read_InfoFile(file_name = file_name_ext)
 #1) plinks
 plinks = result$plinks
 #2) bfdr selection
-an = BFDR_selection(plinks, diag = T)
+an = BFDR_selection(plinks,min_rate = 0.05, diag = T)
 threshold = an$best_treshold
 #3) complete form
 PL = matrix(0,p,p)
@@ -274,7 +274,7 @@ info = Read_InfoFile(file_name = file_name_ext)
 #1) plinks
 plinks = result$plinks
 #2) bfdr selection
-an = BFDR_selection(plinks, diag = T)
+an = BFDR_selection(plinks,min_rate = 0.05, diag = T)
 threshold = an$best_treshold
 #3) complete form
 PL = matrix(0,M,M)
@@ -305,7 +305,7 @@ res = bdgraph(data = data, n = n, iter = niter, burnin = nburn, threshold = 1e-1
 #1) plinks
 plinks_BD = plinks(res)
 #2) bfdr selection
-an_BD = BFDR_selection(plinks_BD, diag = F)
+an_BD = BFDR_selection(plinks_BD,min_rate = 0.05, diag = F)
 threshold_BD = an_BD$best_treshold
 #3) complete form
 Gfinal_est_BD = matrix(0,p,p)
@@ -356,7 +356,7 @@ info = Read_InfoFile(file_name = file_name_ext)
 #1) plinks
 plinks = result$plinks
 #2) bfdr selection
-an = BFDR_selection(plinks, diag = T)
+an = BFDR_selection(plinks,min_rate = 0.05, diag = T)
 threshold = an$best_treshold
 #3) complete form
 PL = matrix(0,p,p)
@@ -502,7 +502,7 @@ for(i in 1:Nsim){
   #1) plinks
   plinks = result$plinks
   #2) bfdr selection
-  an = BFDR_selection(plinks, diag = T)
+  an = BFDR_selection(plinks,min_rate = 0.05, diag = T)
   threshold = an$best_treshold
   #3) complete form
   PL = matrix(0,M,M)
@@ -535,7 +535,7 @@ for(i in 1:Nsim){
   #1) plinks
   plinks_BD = plinks(res)
   #2) bfdr selection
-  an_BD = BFDR_selection(plinks_BD, diag = F)
+  an_BD = BFDR_selection(plinks_BD,min_rate = 0.05, diag = F)
   threshold_BD = an_BD$best_treshold
   #3) complete form
   Gfinal_est_BD = matrix(0,p,p)
@@ -592,7 +592,7 @@ for(i in 1:Nsim){
   #1) plinks
   plinks = result$plinks
   #2) bfdr selection
-  an = BFDR_selection(plinks, diag = T)
+  an = BFDR_selection(plinks,min_rate = 0.05, diag = T)
   threshold = an$best_treshold
   #3) complete form
   PL = matrix(0,p,p)
@@ -759,7 +759,7 @@ for(i in 1:Nsim){
   #1) plinks
   plinks = result$plinks
   #2) bfdr selection
-  an = BFDR_selection(plinks, diag = T)
+  an = BFDR_selection(plinks, min_rate = 0.05, diag = T)
   threshold = an$best_treshold
   #3) complete form
   PL = matrix(0,M,M)
@@ -792,7 +792,7 @@ for(i in 1:Nsim){
   #1) plinks
   plinks_BD = plinks(res)
   #2) bfdr selection
-  an_BD = BFDR_selection(plinks_BD, diag = F)
+  an_BD = BFDR_selection(plinks_BD, min_rate = 0.05, diag = F)
   threshold_BD = an_BD$best_treshold
   #3) complete form
   Gfinal_est_BD = matrix(0,p,p)
@@ -849,7 +849,7 @@ for(i in 1:Nsim){
   #1) plinks
   plinks = result$plinks
   #2) bfdr selection
-  an = BFDR_selection(plinks, diag = T)
+  an = BFDR_selection(plinks,min_rate = 0.05, diag = T)
   threshold = an$best_treshold
   #3) complete form
   PL = matrix(0,p,p)
@@ -963,6 +963,108 @@ data %>% mutate(type = as.factor(type)) %>%
   scale_fill_manual(values = c("forestgreen", "deepskyblue3", "darkred"))
 
 
+
+
+# Application ------------------------------------------------------------
+
+library(BGSL)
+library(plot.matrix)
+library(fields)
+library(latex2exp)
+
+
+# Load data
+data("purees")
+data = purees$data
+wavelengths = as.numeric(purees$wavelengths[,1])
+
+# Set dimensions
+p =  40
+n = dim(data)[1]
+r = dim(data)[2]
+range_x = range(wavelengths)
+basis = Generate_Basis(n_basis = p, range = range_x, grid_points = wavelengths, order =3)
+BaseMat = basis$BaseMat
+
+# Bspline knots
+nodes= rep(0,p+1)
+nodes = c(wavelengths[1],
+          wavelengths[1] + (basis$InternalKnots[1]-wavelengths[1])/2,
+          basis$InternalKnots,
+          wavelengths[length(wavelengths)] - (wavelengths[length(wavelengths)]-basis$InternalKnots[length(basis$InternalKnots)])/2,
+          wavelengths[length(wavelengths)])
+A = round(nodes[1:p],digits = 1)
+B = round(nodes[2:(p+1)],digits = 1)
+names = rep("",p)
+for(i in 1:p){
+  names[i] = paste0(A[i],"-",B[i])
+}
+
+
+# plot
+plot_curves(data1 = data, n_plot = 351, internal_knots = basis$InternalKnots,
+            range = range(wavelengths), grid_points = wavelengths)
+
+# niter and groups
+niter     =   500000
+nburn     =    50000
+thin      =     5000
+thinG     =       50
+
+groups = list(0:3, 4:5, 6:8, 9:12, 13:17, 18:21, 22:27, 28:32, 33:39)
+
+n_groups = length(groups)
+
+#Set parameters and hyperparameters
+sigmaG  =    1.0
+threshold =  1e-15
+hy = GM_hyperparameters(p = p, sigmaG = sigmaG, D = 1*diag(1,p), Gprior = 0.25)
+param = sampler_parameters(threshold = threshold, BaseMat = BaseMat)
+algo    = "DRJ"
+prior   = "Bernoulli"
+form    = "Block"
+
+#Set initial values
+init    = GM_init(p = p, n = n, empty = T, form = form, groups = groups, n_groups = n_groups)
+
+#Run
+file_name = "FGMpurees"
+file_name_ext = paste0(file_name, ".h5")
+result = FGM_sampling(p = p, data = t(data), niter = niter, burnin = nburn, thin = thin, thinG = thinG,
+                      Param = param, HyParam = hy, Init = init, file_name = file_name, form = form,
+                      prior = prior, algo = algo, groups = groups, n_groups = n_groups, print_info = F,
+                      seed = 23242526)
+
+#0) read info
+info = Read_InfoFile(file_name_ext)
+#1) get results and compute quantiles
+Beta_est   = result$PosteriorMeans$MeanBeta
+K_est      = result$PosteriorMeans$MeanK
+
+plinks = result$GraphAnalysis$plinks
+plinks
+#2) bfdr selection
+an = BFDR_selection(plinks,tol = seq(0.75, 1, by = 0.0000001), diag = T)
+threshold = an$best_treshold
+#3) complete form
+PL = matrix(0,n_groups,n_groups)
+PL[plinks >= threshold] = 1
+Gfinal_est = Block2Complete(PL, groups = groups)
+Gfinal_est = Gfinal_est + t(Gfinal_est)
+diag(Gfinal_est) = rep(1,p)
+
+# plot
+par(mfrow = c(2,2), mar = c(1,1,1,1))
+ACheatmap(
+  Gfinal_est,
+  use_x11_device = F,
+  horizontal = F,
+  main = file_name,
+  center_value = NULL,
+  col.center = "darkolivegreen",
+  col.upper = "grey50",
+  col.lower = "white"
+)
 
 
 

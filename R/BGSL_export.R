@@ -814,19 +814,9 @@ simulate_curves = function( p = 10, n = 300, r = 235,range_x = c(100,200), G = N
   return(simulated_data)
 }
 
-#' Bayesian FDR Analysis
-#'
-#' \loadmathjax Given the plinks matrix, this utility computes the False Discovery Rate Index, forcing the false discovery rates to be less than \code{min_rate.}
-#' @param plinks matrix containing the posterior inclusion probability for each link. It has to be upper triangular. Its dimension depends on the type of graph it represents.
-#' It is indeed possible to pass a \mjseqn{p \times p} matrix, or a \mjseqn{n\_groups \times n\_groups}.
-#' @param tol sequence of tolerances to be tested trying to select a graph truncating \code{plinks} at that value.
-#' @param min_rate fix false discoveries to remain under this selected threshold.
-#' @param diag boolean, if the diagonal of \code{plinks} has to be included in the computations. Set \code{FALSE} if the graph is in complete form, set \code{TRUE} for block graphs.
-#'
-#' @return a list of two elements: best_threshold, the best value of tol according to this analysis.
-#' best_truncated_graph, the proposed posterior graph according to the analysis.
+
 #' @export
-BFDR_selection = function (plinks, tol = seq(0.1, 1, by = 0.025), min_rate = 0.05, diag = F)
+BFDR_selection = function (plinks, tol = seq(0.1, 1, by = 0.025), min_rate = 0.002, diag = F)
 {
   if(dim(plinks)[1] != dim(plinks)[2])
     stop("plinksinks matrix has to be squared")
